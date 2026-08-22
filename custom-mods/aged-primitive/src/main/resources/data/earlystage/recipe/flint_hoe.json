@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    "FF",
+    " S",
+    " S"
+  ],
+  "key": {
+    "F": "earlystage:flint",
+    "S": "minecraft:stick"
+  },
+  "result": {
+    "id": "earlystage:flint_hoe"
+  }
+}

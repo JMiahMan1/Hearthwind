@@ -1,0 +1,21 @@
+{
+  "item.earlystage.rock": "Rock",
+  "item.earlystage.flint": "Flint",
+  "item.earlystage.flint_pickaxe": "Flint Pickaxe",
+  "item.earlystage.flint_axe": "Flint Axe",
+  "item.earlystage.flint_shovel": "Flint Shovel",
+  "item.earlystage.flint_hoe": "Flint Hoe",
+  "item.earlystage.flint_sword": "Flint Sword",
+  "item.earlystage.stone_shears": "Stone Shears",
+  "item.agedaddition.coal_piece": "Coal Piece",
+  "item.agedaddition.copper_nugget": "Copper Nugget",
+  "item.agedaddition.diamond_piece": "Diamond Piece",
+  "item.agedaddition.emerald_piece": "Emerald Piece",
+  "item.agedaddition.lapis_lazuli_piece": "Lapis Lazuli Piece",
+  "item.agedaddition.nether_star_piece": "Nether Star Piece",
+  "item.agedaddition.netherite_scrap_piece": "Netherite Scrap Piece",
+  "item.agedaddition.quartz_piece": "Quartz Piece",
+  "item.agedaddition.raw_copper_nugget": "Raw Copper Nugget",
+  "item.agedaddition.raw_gold_nugget": "Raw Gold Nugget",
+  "item.agedaddition.raw_iron_nugget": "Raw Iron Nugget"
+}

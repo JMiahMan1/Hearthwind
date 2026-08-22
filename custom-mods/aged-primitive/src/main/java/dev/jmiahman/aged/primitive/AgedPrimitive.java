@@ -10,6 +10,7 @@ public class AgedPrimitive implements ModInitializer {
 
 	@Override
 	public void onInitialize() {
-		LOGGER.info("Aged Primitive initialized");
+		AgedPrimitiveItems.init();
+		AgedPrimitiveLoot.init();
 	}
 }
