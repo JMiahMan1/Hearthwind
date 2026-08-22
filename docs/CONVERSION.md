@@ -52,23 +52,48 @@ Artifacts land in `conversion/build/dist/`. The generated `.mrpack` installs
 through Modrinth App / Prism / ATLauncher; `dist/server/mods` can be dropped
 onto a fabric-loader server directly.
 
+## Native server datapack (replaces paxi)
+
+`conversion/scripts/migrate_datapack.py` ports the original 1.20.1 paxi
+datapack to a native world datapack shipped at
+`world/datapacks/aged-server/` (embedded in the `.mrpack` overrides and
+materialized by `build_pack.py --server-dir`). Migration passes:
+
+- directory singularization (`loot_tables -> loot_table`, `tags/items ->
+  tags/item`, ...) and the 1.21.2+ recipe schema (flat string ingredients,
+  `result.id`);
+- tag refs to uninstalled mods become `{"required": false}` so registry
+  loading never fails and entries auto-activate once our custom mods ship;
+- worldgen overrides referencing cut mods are dropped (vanilla takes over);
+- `minecraft:uniform` int providers flattened for 26.x;
+- `pack.mcmeta` is generated from `datapack.pack_format` in
+  `build.conf.json`. After a Minecraft bump re-verify the number from the
+  server jar's `version.json` (`pack_version.data_major`; 26.2 = 107).
+
+**Verified**: fabric-loader 0.19.3 + 41 resolved mods on MC 26.2 reaches
+`Done` with the migrated datapack installed. Remaining log warnings are
+non-fatal parse notices for loot/recipe files that reference dropped or
+not-yet-rebuilt mod items — vanilla fallbacks apply and the same files act as
+the rebuild spec for `aged-*`.
+
 ## Current readiness (26.2)
 
-35/52 curated entries resolve exactly on 26.2 today. Near-misses on 26.1 /
-26.1.1 (YUNG's suite, End Remastered, Medieval Buildings, ModernFix, Kiwi,
-The Lost Castle) auto-resolve as authors publish newer builds — just rerun
-`resolve_deps.py`. Stalled-at-1.21.x entries (antique atlas, exposure,
-herdspanic, log-begone, playeranimator, noisium) need watchlist monitoring or
-replacement.
+41/57 entries resolve (including auto-resolved transitive dependencies —
+the resolver walks Modrinth required-dep chains itself). Near-misses on
+26.1 / 26.1.1 (YUNG's suite, End Remastered, Medieval Buildings, ModernFix,
+Kiwi, The Lost Castle) auto-resolve as authors publish newer builds — just
+rerun `resolve_deps.py`. Stalled-at-1.21.x entries (antique atlas, exposure,
+herdspanic, log-begone) need watchlist monitoring or replacement.
 
 ## Roadmap
 
 1. [x] Feasibility study + support matrix
 2. [x] Fork, curated manifest, resolver/builder scripts
-3. [ ] Custom mod skeletons (`custom-mods/`) with parity configs from 1.20.1 pack
-4. [ ] Native world datapack (ore-piece recipes etc., replacing paxi)
-5. [ ] Spin up local fabric 26.2 server, boot test with resolved set
-6. [ ] Snapshot watchlist CI (nightly `--mc <latest snapshot>` probe)
+3. [x] Server datapack migration (native pack, replaces paxi)
+4. [x] Boot test: local fabric 26.2 server reaches `Done` with full mod set + datapack
+5. [x] Custom mod skeletons (`custom-mods/`) build on Java 25 / loom 1.17 and load on a dedicated 26.2 server
+6. [ ] Gameplay systems per module (thirst/temperature/diet/spoilage -> skills -> primitive -> seasons), using the migrated datapack as tuning spec
+7. [ ] Snapshot watchlist CI (nightly `--mc <latest snapshot>` probe)
 
 ## License
 

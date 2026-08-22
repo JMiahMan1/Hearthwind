@@ -1,0 +1,19 @@
+{
+	"schemaVersion": 1,
+	"id": "aged_primitive",
+	"version": "${version}",
+	"name": "Aged Primitive",
+	"description": "primitive-tech start and recipe gating (replaces earlystage, tiered).",
+	"authors": ["JMiahMan1"],
+	"license": "MIT",
+	"environment": "*",
+	"entrypoints": {
+		"main": ["dev.jmiahman.aged.primitive.AgedPrimitive"]
+	},
+	"depends": {
+		"fabricloader": ">=0.19.3",
+		"minecraft": "~26.2",
+		"java": ">=25",
+		"fabric-api": "*"
+	}
+}

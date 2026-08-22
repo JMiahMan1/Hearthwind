@@ -46,4 +46,17 @@ One Gradle multi-module workspace targets Fabric API for MC `26.2`. The
 `gradle.properties` `minecraft_version=` is the only place the game version
 appears — bump it in lockstep with `conversion/build.conf.json`.
 
-Status: skeletons pending. See docs/CONVERSION.md roadmap.
+```bash
+cd custom-mods
+./gradlew build            # all four modules -> aged-*-26.2+0.1.0.jar
+./gradlew :aged-skills:build   # single module
+```
+
+Jars land in `<module>/build/libs/`. Drop them into the server `mods/`
+directory (or add to the pack via `conversion/curated/mods-manifest.json`
+once they carry real features).
+
+**Status:** skeletons build clean on Java 25 / loom 1.17 and load on a
+dedicated 26.2 server (all four appear in the fabric mod list, boot reaches
+`Done`). Gameplay systems are next per module, using the migrated datapack
+(`conversion/datapacks/aged-server/`) as the tuning spec.

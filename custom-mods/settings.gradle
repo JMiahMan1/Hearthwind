@@ -1,0 +1,17 @@
+pluginManagement {
+	repositories {
+		maven {
+			name = 'Fabric'
+			url = 'https://maven.fabricmc.net/'
+		}
+		mavenCentral()
+		gradlePluginPortal()
+	}
+}
+
+rootProject.name = 'aged-custom'
+
+include 'aged-survival'
+include 'aged-skills'
+include 'aged-primitive'
+include 'aged-world'
