@@ -1,0 +1,14 @@
+{
+ "type": "minecraft:crafting_shaped",
+ "key": {
+  "#": "agedaddition:emerald_piece"
+ },
+ "pattern": [
+  "##",
+  "##"
+ ],
+ "result": {
+  "id": "minecraft:emerald"
+ },
+ "show_notification": true
+}

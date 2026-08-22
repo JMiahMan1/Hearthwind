@@ -3,3 +3,5 @@ conversion/build/
 build/
 run/
 *.log
+__pycache__/
+.tmp-test-server/

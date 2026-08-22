@@ -1,0 +1,123 @@
+{
+ "replace": true,
+ "values": [
+  "minecraft:wheat",
+  "minecraft:carrot",
+  "minecraft:potato",
+  "minecraft:beetroot",
+  "minecraft:torchflower",
+  "minecraft:sweet_berries",
+  {
+   "id": "brewery:hops",
+   "required": false
+  },
+  {
+   "id": "farm_and_charm:corn",
+   "required": false
+  },
+  {
+   "id": "farm_and_charm:oat",
+   "required": false
+  },
+  {
+   "id": "farm_and_charm:barley",
+   "required": false
+  },
+  {
+   "id": "farm_and_charm:lettuce",
+   "required": false
+  },
+  {
+   "id": "farm_and_charm:onion",
+   "required": false
+  },
+  {
+   "id": "farm_and_charm:tomato",
+   "required": false
+  },
+  {
+   "id": "farm_and_charm:strawberry",
+   "required": false
+  },
+  {
+   "id": "herbalbrews:green_tea_leaf",
+   "required": false
+  },
+  {
+   "id": "herbalbrews:yerba_mate_leaf",
+   "required": false
+  },
+  {
+   "id": "herbalbrews:rooibos_leaf",
+   "required": false
+  },
+  {
+   "id": "herbalbrews:coffee_beans",
+   "required": false
+  },
+  {
+   "id": "natures_spirit:coconut_half",
+   "required": false
+  },
+  {
+   "id": "natures_spirit:young_coconut_half",
+   "required": false
+  },
+  {
+   "id": "natures_spirit:desert_turnip",
+   "required": false
+  },
+  {
+   "id": "natures_spirit:green_olives",
+   "required": false
+  },
+  {
+   "id": "natures_spirit:black_olives",
+   "required": false
+  },
+  {
+   "id": "nethervinery:crimson_grape",
+   "required": false
+  },
+  {
+   "id": "nethervinery:warped_grape",
+   "required": false
+  },
+  {
+   "id": "vinery:cherry",
+   "required": false
+  },
+  {
+   "id": "vinery:red_grape",
+   "required": false
+  },
+  {
+   "id": "vinery:white_grape",
+   "required": false
+  },
+  {
+   "id": "vinery:savanna_grapes_red",
+   "required": false
+  },
+  {
+   "id": "vinery:savanna_grapes_white",
+   "required": false
+  },
+  {
+   "id": "vinery:taiga_grapes_red",
+   "required": false
+  },
+  {
+   "id": "vinery:taiga_grapes_white",
+   "required": false
+  },
+  {
+   "id": "vinery:jungle_grapes_white",
+   "required": false
+  },
+  {
+   "id": "vinery:jungle_grapes_red",
+   "required": false
+  }
+ ]
+}

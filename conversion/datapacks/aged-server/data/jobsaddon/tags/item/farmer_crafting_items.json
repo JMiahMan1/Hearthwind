@@ -1,0 +1,51 @@
+{
+ "replace": true,
+ "values": [
+  "minecraft:cake",
+  "minecraft:golden_apple",
+  "minecraft:golden_carrot",
+  "minecraft:bread",
+  "minecraft:cookie",
+  "minecraft:pumpkin_pie",
+  "minecraft:mushroom_stew",
+  "minecraft:beetroot_soup",
+  "minecraft:rabbit_stew",
+  "minecraft:suspicious_stew",
+  {
+   "id": "bakery:vegetable_sandwich",
+   "required": false
+  },
+  {
+   "id": "bakery:sandwich",
+   "required": false
+  },
+  {
+   "id": "bakery:bread_with_jam",
+   "required": false
+  },
+  {
+   "id": "farm_and_charm:farmers_breakfast",
+   "required": false
+  },
+  {
+   "id": "farm_and_charm:chicken_feed",
+   "required": false
+  },
+  {
+   "id": "farm_and_charm:horse_fodder",
+   "required": false
+  },
+  {
+   "id": "herbalbrews:milk_coffee",
+   "required": false
+  },
+  {
+   "id": "meadow:cheese_sandwich",
+   "required": false
+  },
+  {
+   "id": "meadow:cheese_roll",
+   "required": false
+  }
+ ]
+}

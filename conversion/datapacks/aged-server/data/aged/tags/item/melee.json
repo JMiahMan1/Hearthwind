@@ -1,0 +1,12 @@
+{
+ "values": [
+  {
+   "id": "dungeonnowloading:life_stealer",
+   "required": false
+  },
+  {
+   "id": "dungeonnowloading:spawner_sword",
+   "required": false
+  }
+ ]
+}

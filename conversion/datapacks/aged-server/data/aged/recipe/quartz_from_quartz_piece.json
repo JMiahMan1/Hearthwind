@@ -1,0 +1,14 @@
+{
+ "type": "minecraft:crafting_shaped",
+ "key": {
+  "#": "agedaddition:quartz_piece"
+ },
+ "pattern": [
+  "##",
+  "##"
+ ],
+ "result": {
+  "id": "minecraft:quartz"
+ },
+ "show_notification": true
+}

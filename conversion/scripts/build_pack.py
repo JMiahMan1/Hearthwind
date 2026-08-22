@@ -9,6 +9,7 @@ Outputs (in conversion/dist):
 Usage:
   python3 conversion/scripts/build_pack.py [--server-dir]
 """
+
 import argparse
 import hashlib
 import json
@@ -25,8 +26,11 @@ UA = {"User-Agent": "aged-server-conversion/0.1"}
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--server-dir", action="store_true",
-                    help="also materialize a plain server mods directory")
+    ap.add_argument(
+        "--server-dir",
+        action="store_true",
+        help="also materialize a plain server mods directory",
+    )
     args = ap.parse_args()
 
     conf = json.load(open(CONF))
@@ -38,16 +42,20 @@ def main():
     files = []
     for r in ready:
         f = r["picked"]["file"]
-        files.append({
-            "path": "mods/" + f["filename"],
-            "hashes": {
-                "sha1": f["hashes"]["sha1"],
-                "sha512": f["hashes"]["sha512"],
-            },
-            "env": {"client": "required", "server": "required"},
-            "downloads": list(f["url"] if isinstance(f["url"], list) else [f["url"]]),
-            "fileSize": f["size"],
-        })
+        files.append(
+            {
+                "path": "mods/" + f["filename"],
+                "hashes": {
+                    "sha1": f["hashes"]["sha1"],
+                    "sha512": f["hashes"]["sha512"],
+                },
+                "env": {"client": "required", "server": "required"},
+                "downloads": list(
+                    f["url"] if isinstance(f["url"], list) else [f["url"]]
+                ),
+                "fileSize": f["size"],
+            }
+        )
 
     index = {
         "formatVersion": 1,
@@ -67,30 +75,58 @@ def main():
     json.dump(index, open(idx_path, "w"), indent=2)
 
     import zipfile
+
     mrpack = DIST / f"AgedServer-{conf['pack']['version']}-mc{mc}.mrpack"
+
+    datapack = ROOT / "conversion" / "datapacks" / "aged-server"
+    if not (datapack / "pack.mcmeta").exists():
+        raise SystemExit(
+            "conversion/datapacks/aged-server/pack.mcmeta missing — "
+            "run conversion/scripts/migrate_datapack.py first"
+        )
+
     with zipfile.ZipFile(mrpack, "w", zipfile.ZIP_DEFLATED) as z:
         z.write(idx_path, "modrinth.index.json")
+        for p in sorted(datapack.rglob("*")):
+            if p.is_file():
+                z.write(
+                    p,
+                    "overrides/world/datapacks/aged-server/"
+                    + str(p.relative_to(datapack)),
+                )
         ov = ROOT / "conversion" / "overrides"
         if ov.exists():
             for p in ov.rglob("*"):
                 if p.is_file():
                     z.write(p, "overrides/" + str(p.relative_to(ov)))
-    print(f"Wrote {mrpack.name} ({mrpack.stat().st_size // 1024} KiB, {len(files)} mods)")
+    print(
+        f"Wrote {mrpack.name} ({mrpack.stat().st_size // 1024} KiB, {len(files)} mods)"
+    )
 
     if args.server_dir:
         sdir = DIST / "server"
         (sdir / "mods").mkdir(parents=True, exist_ok=True)
         for r in ready:
             dest = sdir / "mods" / r["picked"]["file"]["filename"]
-            if dest.exists() and hashlib.sha1(dest.read_bytes()).hexdigest() == r["picked"]["file"]["hashes"]["sha1"]:
+            if (
+                dest.exists()
+                and hashlib.sha1(dest.read_bytes()).hexdigest()
+                == r["picked"]["file"]["hashes"]["sha1"]
+            ):
                 continue
             url = r["picked"]["file"]["url"]
             if isinstance(url, list):
                 url = url[0]
             req = urllib.request.Request(url, headers=UA)
-            with urllib.request.urlopen(req, timeout=120) as resp, open(dest, "wb") as out:
+            with (
+                urllib.request.urlopen(req, timeout=120) as resp,
+                open(dest, "wb") as out,
+            ):
                 shutil.copyfileobj(resp, out)
-        print(f"Materialized {len(ready)} jars into {sdir/'mods'}")
+        wdp = sdir / "world" / "datapacks" / "aged-server"
+        shutil.rmtree(wdp, ignore_errors=True)
+        shutil.copytree(datapack, wdp)
+        print(f"Materialized {len(ready)} jars into {sdir / 'mods'} + world datapack")
 
 
 if __name__ == "__main__":

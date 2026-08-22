@@ -1,0 +1,10 @@
+{
+ "replace": false,
+ "values": [
+  "#aged:campfire_ingredient",
+  {
+   "id": "#c:wheat",
+   "required": false
+  }
+ ]
+}

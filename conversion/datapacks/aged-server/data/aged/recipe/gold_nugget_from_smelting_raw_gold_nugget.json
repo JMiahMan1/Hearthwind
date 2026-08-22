@@ -1,0 +1,7 @@
+{
+ "type": "minecraft:smelting",
+ "cookingtime": 888,
+ "experience": 0.44,
+ "ingredient": "agedaddition:raw_gold_nugget",
+ "result": "minecraft:gold_nugget"
+}

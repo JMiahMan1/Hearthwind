@@ -1,0 +1,15 @@
+{
+ "replace": true,
+ "values": [
+  {
+   "id": "#c:ores",
+   "required": false
+  },
+  "minecraft:ancient_debris",
+  "minecraft:amethyst_cluster",
+  {
+   "id": "amarite:amarite_cluster",
+   "required": false
+  }
+ ]
+}

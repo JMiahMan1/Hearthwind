@@ -1,0 +1,9 @@
+{
+ "values": [
+  "minecraft:sugar",
+  {
+   "id": "meadow:alpine_salt",
+   "required": false
+  }
+ ]
+}

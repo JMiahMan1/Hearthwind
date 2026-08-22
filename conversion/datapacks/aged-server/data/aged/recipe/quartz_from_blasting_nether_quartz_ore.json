@@ -1,0 +1,9 @@
+{
+ "type": "minecraft:blasting",
+ "category": "misc",
+ "cookingtime": 1000,
+ "experience": 5,
+ "group": "quartz",
+ "ingredient": "minecraft:nether_quartz_ore",
+ "result": "minecraft:quartz"
+}

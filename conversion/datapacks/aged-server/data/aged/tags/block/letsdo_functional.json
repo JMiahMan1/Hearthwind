@@ -1,0 +1,192 @@
+{
+ "values": [
+  {
+   "id": "vinery:grapevine_pot",
+   "required": false
+  },
+  {
+   "id": "vinery:fermentation_barrel",
+   "required": false
+  },
+  {
+   "id": "vinery:apple_press",
+   "required": false
+  },
+  {
+   "id": "nethervinery:crimson_fermentation_barrel",
+   "required": false
+  },
+  {
+   "id": "nethervinery:crimson_grapevine_pot",
+   "required": false
+  },
+  {
+   "id": "nethervinery:crimson_apple_press",
+   "required": false
+  },
+  {
+   "id": "nethervinery:warped_fermentation_barrel",
+   "required": false
+  },
+  {
+   "id": "nethervinery:warped_grapevine_pot",
+   "required": false
+  },
+  {
+   "id": "nethervinery:warped_apple_press",
+   "required": false
+  },
+  {
+   "id": "meadow:stove_tiles",
+   "required": false
+  },
+  {
+   "id": "meadow:stove_tiles_wood",
+   "required": false
+  },
+  {
+   "id": "meadow:stove_tiles_bench",
+   "required": false
+  },
+  {
+   "id": "meadow:stove_tiles_bench",
+   "required": false
+  },
+  {
+   "id": "meadow:cheese_form",
+   "required": false
+  },
+  {
+   "id": "meadow:fondue",
+   "required": false
+  },
+  {
+   "id": "meadow:cooking_cauldron",
+   "required": false
+  },
+  {
+   "id": "meadow:frame",
+   "required": false
+  },
+  {
+   "id": "meadow:woodcutter",
+   "required": false
+  },
+  {
+   "id": "meadow:wooden_cauldron",
+   "required": false
+  },
+  {
+   "id": "herbalbrews:stove",
+   "required": false
+  },
+  {
+   "id": "herbalbrews:tea_kettle",
+   "required": false
+  },
+  {
+   "id": "herbalbrews:copper_tea_kettle",
+   "required": false
+  },
+  {
+   "id": "herbalbrews:cauldron",
+   "required": false
+  },
+  {
+   "id": "candlelight:cooking_pot",
+   "required": false
+  },
+  {
+   "id": "candlelight:cooking_pan",
+   "required": false
+  },
+  {
+   "id": "brewery:wooden_brewingstation",
+   "required": false
+  },
+  {
+   "id": "brewery:copper_brewingstation",
+   "required": false
+  },
+  {
+   "id": "brewery:netherite_brewingstation",
+   "required": false
+  },
+  {
+   "id": "farm_and_charm:silo_wood",
+   "required": false
+  },
+  {
+   "id": "farm_and_charm:silo_copper",
+   "required": false
+  },
+  {
+   "id": "farm_and_charm:crafting_bowl",
+   "required": false
+  },
+  {
+   "id": "farm_and_charm:mincer",
+   "required": false
+  },
+  {
+   "id": "farm_and_charm:cooking_pot",
+   "required": false
+  },
+  {
+   "id": "farm_and_charm:roaster",
+   "required": false
+  },
+  {
+   "id": "brewery:barrel_main",
+   "required": false
+  },
+  {
+   "id": "farm_and_charm:stove",
+   "required": false
+  },
+  {
+   "id": "candlelight:cobblestone_stove",
+   "required": false
+  },
+  {
+   "id": "candlelight:sandstone_stove",
+   "required": false
+  },
+  {
+   "id": "candlelight:stone_bricks_stove",
+   "required": false
+  },
+  {
+   "id": "candlelight:deepslate_stove",
+   "required": false
+  },
+  {
+   "id": "candlelight:granite_stove",
+   "required": false
+  },
+  {
+   "id": "candlelight:end_stove",
+   "required": false
+  },
+  {
+   "id": "candlelight:mud_stove",
+   "required": false
+  },
+  {
+   "id": "candlelight:quartz_stove",
+   "required": false
+  },
+  {
+   "id": "candlelight:red_nether_bricks_stove",
+   "required": false
+  },
+  {
+   "id": "candlelight:basalt_stove",
+   "required": false
+  },
+  {
+   "id": "candlelight:bamboo_stove",
+   "required": false
+  }
+ ]
+}

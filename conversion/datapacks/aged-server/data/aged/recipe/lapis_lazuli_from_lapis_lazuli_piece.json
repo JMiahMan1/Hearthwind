@@ -1,0 +1,14 @@
+{
+ "type": "minecraft:crafting_shaped",
+ "key": {
+  "#": "agedaddition:lapis_lazuli_piece"
+ },
+ "pattern": [
+  "##",
+  "##"
+ ],
+ "result": {
+  "id": "minecraft:lapis_lazuli"
+ },
+ "show_notification": true
+}

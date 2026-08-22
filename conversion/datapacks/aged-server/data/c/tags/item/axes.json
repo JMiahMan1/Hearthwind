@@ -1,0 +1,12 @@
+{
+ "values": [
+  {
+   "id": "underground_jungle:temple_axe",
+   "required": false
+  },
+  {
+   "id": "underground_jungle:axe_of_regrowth",
+   "required": false
+  }
+ ]
+}

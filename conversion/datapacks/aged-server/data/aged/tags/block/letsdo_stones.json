@@ -1,0 +1,96 @@
+{
+ "values": [
+  {
+   "id": "meadow:limestone",
+   "required": false
+  },
+  {
+   "id": "meadow:limestone_stairs",
+   "required": false
+  },
+  {
+   "id": "meadow:limestone_slab",
+   "required": false
+  },
+  {
+   "id": "meadow:cobbled_limestone",
+   "required": false
+  },
+  {
+   "id": "meadow:cobbled_limestone_stairs",
+   "required": false
+  },
+  {
+   "id": "meadow:cobbled_limestone_slab",
+   "required": false
+  },
+  {
+   "id": "meadow:limestone_bricks",
+   "required": false
+  },
+  {
+   "id": "meadow:limestone_brick_stairs",
+   "required": false
+  },
+  {
+   "id": "meadow:limestone_brick_slab",
+   "required": false
+  },
+  {
+   "id": "meadow:mossy_cobbled_limestone",
+   "required": false
+  },
+  {
+   "id": "meadow:mossy_cobbled_limestone_stairs",
+   "required": false
+  },
+  {
+   "id": "meadow:mossy_cobbled_limestone_slab",
+   "required": false
+  },
+  {
+   "id": "meadow:mossy_limestone_bricks",
+   "required": false
+  },
+  {
+   "id": "meadow:mossy_limestone_brick_stairs",
+   "required": false
+  },
+  {
+   "id": "meadow:mossy_limestone_brick_slab",
+   "required": false
+  },
+  {
+   "id": "meadow:cracked_limestone_bricks",
+   "required": false
+  },
+  {
+   "id": "meadow:chiseled_limestone_bricks",
+   "required": false
+  },
+  {
+   "id": "meadow:polished_limestone_bricks",
+   "required": false
+  },
+  {
+   "id": "meadow:limestone_wall",
+   "required": false
+  },
+  {
+   "id": "meadow:cobbled_limestone_wall",
+   "required": false
+  },
+  {
+   "id": "meadow:limestone_brick_wall",
+   "required": false
+  },
+  {
+   "id": "meadow:mossy_cobbled_limestone_wall",
+   "required": false
+  },
+  {
+   "id": "meadow:mossy_limestone_brick_wall",
+   "required": false
+  }
+ ]
+}

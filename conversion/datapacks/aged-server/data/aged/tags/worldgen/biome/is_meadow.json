@@ -1,0 +1,13 @@
+{
+ "values": [
+  "minecraft:meadow",
+  {
+   "id": "natures_spirit:alpine_clearings",
+   "required": false
+  },
+  {
+   "id": "natures_spirit:alpine_highlands",
+   "required": false
+  }
+ ]
+}

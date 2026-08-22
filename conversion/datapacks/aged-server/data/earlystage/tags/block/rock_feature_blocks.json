@@ -1,0 +1,129 @@
+{
+ "replace": true,
+ "values": [
+  "minecraft:grass_block",
+  "minecraft:dirt",
+  "minecraft:coarse_dirt",
+  "minecraft:podzol",
+  "minecraft:rooted_dirt",
+  "minecraft:mycelium",
+  "minecraft:stone",
+  "minecraft:granite",
+  "minecraft:diorite",
+  "minecraft:andesite",
+  "minecraft:deepslate",
+  "minecraft:tuff",
+  "minecraft:gravel",
+  "minecraft:basalt",
+  "minecraft:smooth_basalt",
+  "minecraft:moss_block",
+  {
+   "id": "meadow:limestone",
+   "required": false
+  },
+  {
+   "id": "meadow:cobbled_limestone",
+   "required": false
+  },
+  {
+   "id": "meadow:mossy_cobbled_limestone",
+   "required": false
+  },
+  {
+   "id": "underground_jungle:jungle_grass",
+   "required": false
+  },
+  {
+   "id": "betterarcheology:suspicious_dirt",
+   "required": false
+  },
+  {
+   "id": "betterarcheology:fossiliferous_dirt",
+   "required": false
+  },
+  {
+   "id": "natures_spirit:sandy_soil",
+   "required": false
+  },
+  {
+   "id": "natures_spirit:chert",
+   "required": false
+  },
+  {
+   "id": "natures_spirit:kaolin",
+   "required": false
+  },
+  {
+   "id": "natures_spirit:white_kaolin",
+   "required": false
+  },
+  {
+   "id": "natures_spirit:light_gray_kaolin",
+   "required": false
+  },
+  {
+   "id": "natures_spirit:gray_kaolin",
+   "required": false
+  },
+  {
+   "id": "natures_spirit:black_kaolin",
+   "required": false
+  },
+  {
+   "id": "natures_spirit:brown_kaolin",
+   "required": false
+  },
+  {
+   "id": "natures_spirit:red_kaolin",
+   "required": false
+  },
+  {
+   "id": "natures_spirit:orange_kaolin",
+   "required": false
+  },
+  {
+   "id": "natures_spirit:yellow_kaolin",
+   "required": false
+  },
+  {
+   "id": "natures_spirit:lime_kaolin",
+   "required": false
+  },
+  {
+   "id": "natures_spirit:green_kaolin",
+   "required": false
+  },
+  {
+   "id": "natures_spirit:cyan_kaolin",
+   "required": false
+  },
+  {
+   "id": "natures_spirit:light_blue_kaolin",
+   "required": false
+  },
+  {
+   "id": "natures_spirit:blue_kaolin",
+   "required": false
+  },
+  {
+   "id": "natures_spirit:purple_kaolin",
+   "required": false
+  },
+  {
+   "id": "natures_spirit:magenta_kaolin",
+   "required": false
+  },
+  {
+   "id": "natures_spirit:pink_kaolin",
+   "required": false
+  },
+  {
+   "id": "natures_spirit:travertine",
+   "required": false
+  },
+  {
+   "id": "natures_spirit:red_moss_block",
+   "required": false
+  }
+ ]
+}

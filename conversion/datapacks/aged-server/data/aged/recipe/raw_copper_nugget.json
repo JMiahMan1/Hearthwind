@@ -1,0 +1,10 @@
+{
+ "type": "minecraft:crafting_shapeless",
+ "ingredients": [
+  "minecraft:raw_copper"
+ ],
+ "result": {
+  "id": "agedaddition:raw_copper_nugget",
+  "count": 9
+ }
+}

@@ -20,6 +20,10 @@
     "loader_version": "0.19.3",
     "notes": "Set minecraft to any release or snapshot id, e.g. 26.3-snapshot-9. resolve_deps.py reports per-mod readiness for that exact id."
   },
+  "datapack": {
+    "pack_format": 107,
+    "_source": "versions/<mc>/server-<mc>.jar -> version.json -> pack_version.data_major (26.2 = 107, minor 1). Re-verify after every MC bump: unzip -p versions/<mc>/server-<mc>.jar version.json"
+  },
   "policy": {
     "include_client_only_in_server_pack": false,
     "allow_older_builds_if_exact_missing": false,

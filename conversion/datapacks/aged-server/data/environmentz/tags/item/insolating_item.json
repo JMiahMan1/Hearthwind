@@ -1,0 +1,17 @@
+{
+ "replace": true,
+ "values": [
+  {
+   "id": "environmentz:polar_bear_fur",
+   "required": false
+  },
+  {
+   "id": "adventurez:mammoth_fur",
+   "required": false
+  },
+  {
+   "id": "naturalist:bear_fur",
+   "required": false
+  }
+ ]
+}

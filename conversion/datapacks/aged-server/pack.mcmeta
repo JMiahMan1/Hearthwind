@@ -1,0 +1,14 @@
+{
+  "pack": {
+    "pack_format": 107,
+    "min_format": [
+      107,
+      0
+    ],
+    "max_format": [
+      107,
+      0
+    ],
+    "description": "Aged server datapack (migrated from paxi bundle) for MC 26.2"
+  }
+}

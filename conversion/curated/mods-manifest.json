@@ -167,13 +167,6 @@
       "cat": "combat"
     },
     {
-      "file": "player-animation-lib",
-      "slug": "playeranimator",
-      "action": "keep",
-      "cat": "combat",
-      "note": "Required by BetterCombat"
-    },
-    {
       "file": "medievalweapons",
       "slug": "medievalweapons",
       "action": "drop",

@@ -1,0 +1,14 @@
+{
+ "replace": true,
+ "values": [
+  {
+   "id": "#levelz:farm_items",
+   "required": false
+  },
+  "minecraft:nether_wart",
+  "minecraft:brown_mushroom",
+  "minecraft:red_mushroom",
+  "minecraft:pumpkin",
+  "minecraft:melon_slice"
+ ]
+}

@@ -1,0 +1,1942 @@
+{
+ "values": [
+  "minecraft:stonecutter",
+  "minecraft:cartography_table",
+  "minecraft:fletching_table",
+  "minecraft:smithing_table",
+  "minecraft:grindstone",
+  "minecraft:loom",
+  "minecraft:furnace",
+  "minecraft:smoker",
+  "minecraft:blast_furnace",
+  "minecraft:campfire",
+  "minecraft:soul_campfire",
+  "minecraft:anvil",
+  "minecraft:chipped_anvil",
+  "minecraft:damaged_anvil",
+  "minecraft:composter",
+  "minecraft:note_block",
+  "minecraft:jukebox",
+  "minecraft:enchanting_table",
+  "minecraft:brewing_stand",
+  "minecraft:cauldron",
+  "minecraft:bell",
+  "minecraft:beacon",
+  "minecraft:bookshelf",
+  "minecraft:chiseled_bookshelf",
+  "minecraft:lectern",
+  "minecraft:respawn_anchor",
+  {
+   "id": "bakery:kitchen_sink",
+   "required": false
+  },
+  {
+   "id": "bakery:baker_station",
+   "required": false
+  },
+  {
+   "id": "bakery:brick_counter",
+   "required": false
+  },
+  {
+   "id": "bakery:drawer",
+   "required": false
+  },
+  {
+   "id": "bakery:cabinet",
+   "required": false
+  },
+  {
+   "id": "bakery:wall_cabinet",
+   "required": false
+  },
+  {
+   "id": "bakery:iron_table",
+   "required": false
+  },
+  {
+   "id": "bakery:iron_chair",
+   "required": false
+  },
+  {
+   "id": "bakery:iron_bench",
+   "required": false
+  },
+  {
+   "id": "bakery:wall_display",
+   "required": false
+  },
+  {
+   "id": "bakery:cake_display",
+   "required": false
+  },
+  {
+   "id": "bakery:cupcake_display",
+   "required": false
+  },
+  {
+   "id": "bakery:cake_stand",
+   "required": false
+  },
+  {
+   "id": "bakery:breadbox",
+   "required": false
+  },
+  {
+   "id": "bakery:tray",
+   "required": false
+  },
+  {
+   "id": "bakery:small_cooking_pot",
+   "required": false
+  },
+  {
+   "id": "betterarcheology:archeology_table",
+   "required": false
+  },
+  {
+   "id": "betterarcheology:vase",
+   "required": false
+  },
+  {
+   "id": "betterarcheology:vase_creeper",
+   "required": false
+  },
+  {
+   "id": "betterarcheology:vase_green",
+   "required": false
+  },
+  {
+   "id": "brewery:cabinet",
+   "required": false
+  },
+  {
+   "id": "brewery:drawer",
+   "required": false
+  },
+  {
+   "id": "brewery:bar_counter",
+   "required": false
+  },
+  {
+   "id": "brewery:sideboard",
+   "required": false
+  },
+  {
+   "id": "brewery:wall_cabinet",
+   "required": false
+  },
+  {
+   "id": "brewery:table",
+   "required": false
+  },
+  {
+   "id": "brewery:bench",
+   "required": false
+  },
+  {
+   "id": "brewery:barrel_main",
+   "required": false
+  },
+  {
+   "id": "brewery:wooden_brewingstation",
+   "required": false
+  },
+  {
+   "id": "brewery:copper_brewingstation",
+   "required": false
+  },
+  {
+   "id": "brewery:netherite_brewingstation",
+   "required": false
+  },
+  {
+   "id": "candlelight:cooking_pot",
+   "required": false
+  },
+  {
+   "id": "candlelight:cooking_pan",
+   "required": false
+  },
+  {
+   "id": "candlelight:glass",
+   "required": false
+  },
+  {
+   "id": "candlelight:wine_glass",
+   "required": false
+  },
+  {
+   "id": "candlelight:dinner_bell",
+   "required": false
+  },
+  {
+   "id": "candlelight:table_sign",
+   "required": false
+  },
+  {
+   "id": "candlelight:typewriter_iron",
+   "required": false
+  },
+  {
+   "id": "candlelight:typewriter_copper",
+   "required": false
+  },
+  {
+   "id": "candlelight:floorboard",
+   "required": false
+  },
+  {
+   "id": "candlelight:drawer",
+   "required": false
+  },
+  {
+   "id": "candlelight:cabinet",
+   "required": false
+  },
+  {
+   "id": "candlelight:sideboard",
+   "required": false
+  },
+  {
+   "id": "candlelight:chair",
+   "required": false
+  },
+  {
+   "id": "candlelight:sofa",
+   "required": false
+  },
+  {
+   "id": "candlelight:table",
+   "required": false
+  },
+  {
+   "id": "candlelight:lamp",
+   "required": false
+  },
+  {
+   "id": "candlelight:side_table",
+   "required": false
+  },
+  {
+   "id": "candlelight:cobblestone_stove",
+   "required": false
+  },
+  {
+   "id": "candlelight:cobblestone_kitchen_sink",
+   "required": false
+  },
+  {
+   "id": "candlelight:cobblestone_counter",
+   "required": false
+  },
+  {
+   "id": "candlelight:oak_cabinet",
+   "required": false
+  },
+  {
+   "id": "candlelight:oak_drawer",
+   "required": false
+  },
+  {
+   "id": "candlelight:oak_table",
+   "required": false
+  },
+  {
+   "id": "candlelight:oak_chair",
+   "required": false
+  },
+  {
+   "id": "candlelight:oak_shelf",
+   "required": false
+  },
+  {
+   "id": "candlelight:oak_big_table",
+   "required": false
+  },
+  {
+   "id": "candlelight:sandstone_stove",
+   "required": false
+  },
+  {
+   "id": "candlelight:sandstone_kitchen_sink",
+   "required": false
+  },
+  {
+   "id": "candlelight:sandstone_counter",
+   "required": false
+  },
+  {
+   "id": "candlelight:birch_cabinet",
+   "required": false
+  },
+  {
+   "id": "candlelight:birch_drawer",
+   "required": false
+  },
+  {
+   "id": "candlelight:birch_table",
+   "required": false
+  },
+  {
+   "id": "candlelight:birch_chair",
+   "required": false
+  },
+  {
+   "id": "candlelight:birch_shelf",
+   "required": false
+  },
+  {
+   "id": "candlelight:birch_big_table",
+   "required": false
+  },
+  {
+   "id": "candlelight:stone_bricks_stove",
+   "required": false
+  },
+  {
+   "id": "candlelight:stone_bricks_kitchen_sink",
+   "required": false
+  },
+  {
+   "id": "candlelight:stone_bricks_counter",
+   "required": false
+  },
+  {
+   "id": "candlelight:spruce_cabinet",
+   "required": false
+  },
+  {
+   "id": "candlelight:spruce_drawer",
+   "required": false
+  },
+  {
+   "id": "candlelight:spruce_table",
+   "required": false
+  },
+  {
+   "id": "candlelight:spruce_chair",
+   "required": false
+  },
+  {
+   "id": "candlelight:spruce_shelf",
+   "required": false
+  },
+  {
+   "id": "candlelight:spruce_big_table",
+   "required": false
+  },
+  {
+   "id": "candlelight:deepslate_stove",
+   "required": false
+  },
+  {
+   "id": "candlelight:deepslate_kitchen_sink",
+   "required": false
+  },
+  {
+   "id": "candlelight:deepslate_counter",
+   "required": false
+  },
+  {
+   "id": "candlelight:dark_oak_cabinet",
+   "required": false
+  },
+  {
+   "id": "candlelight:dark_oak_drawer",
+   "required": false
+  },
+  {
+   "id": "candlelight:dark_oak_table",
+   "required": false
+  },
+  {
+   "id": "candlelight:dark_oak_chair",
+   "required": false
+  },
+  {
+   "id": "candlelight:dark_oak_shelf",
+   "required": false
+  },
+  {
+   "id": "candlelight:dark_oak_big_table",
+   "required": false
+  },
+  {
+   "id": "candlelight:granite_stove",
+   "required": false
+  },
+  {
+   "id": "candlelight:granite_kitchen_sink",
+   "required": false
+  },
+  {
+   "id": "candlelight:granite_counter",
+   "required": false
+  },
+  {
+   "id": "candlelight:acacia_cabinet",
+   "required": false
+  },
+  {
+   "id": "candlelight:acacia_drawer",
+   "required": false
+  },
+  {
+   "id": "candlelight:acacia_table",
+   "required": false
+  },
+  {
+   "id": "candlelight:acacia_chair",
+   "required": false
+  },
+  {
+   "id": "candlelight:acacia_shelf",
+   "required": false
+  },
+  {
+   "id": "candlelight:acacia_big_table",
+   "required": false
+  },
+  {
+   "id": "candlelight:end_stove",
+   "required": false
+  },
+  {
+   "id": "candlelight:end_kitchen_sink",
+   "required": false
+  },
+  {
+   "id": "candlelight:end_counter",
+   "required": false
+  },
+  {
+   "id": "candlelight:jungle_cabinet",
+   "required": false
+  },
+  {
+   "id": "candlelight:jungle_drawer",
+   "required": false
+  },
+  {
+   "id": "candlelight:jungle_table",
+   "required": false
+  },
+  {
+   "id": "candlelight:jungle_chair",
+   "required": false
+  },
+  {
+   "id": "candlelight:jungle_shelf",
+   "required": false
+  },
+  {
+   "id": "candlelight:jungle_big_table",
+   "required": false
+  },
+  {
+   "id": "candlelight:mud_stove",
+   "required": false
+  },
+  {
+   "id": "candlelight:mud_kitchen_sink",
+   "required": false
+  },
+  {
+   "id": "candlelight:mud_counter",
+   "required": false
+  },
+  {
+   "id": "candlelight:mangrove_cabinet",
+   "required": false
+  },
+  {
+   "id": "candlelight:mangrove_drawer",
+   "required": false
+  },
+  {
+   "id": "candlelight:mangrove_table",
+   "required": false
+  },
+  {
+   "id": "candlelight:mangrove_chair",
+   "required": false
+  },
+  {
+   "id": "candlelight:mangrove_shelf",
+   "required": false
+  },
+  {
+   "id": "candlelight:mangrove_big_table",
+   "required": false
+  },
+  {
+   "id": "candlelight:quartz_stove",
+   "required": false
+  },
+  {
+   "id": "candlelight:quartz_kitchen_sink",
+   "required": false
+  },
+  {
+   "id": "candlelight:quartz_counter",
+   "required": false
+  },
+  {
+   "id": "candlelight:warped_cabinet",
+   "required": false
+  },
+  {
+   "id": "candlelight:warped_drawer",
+   "required": false
+  },
+  {
+   "id": "candlelight:warped_table",
+   "required": false
+  },
+  {
+   "id": "candlelight:warped_chair",
+   "required": false
+  },
+  {
+   "id": "candlelight:warped_shelf",
+   "required": false
+  },
+  {
+   "id": "candlelight:warped_big_table",
+   "required": false
+  },
+  {
+   "id": "candlelight:red_nether_bricks_stove",
+   "required": false
+  },
+  {
+   "id": "candlelight:red_nether_bricks_kitchen_sink",
+   "required": false
+  },
+  {
+   "id": "candlelight:red_nether_bricks_counter",
+   "required": false
+  },
+  {
+   "id": "candlelight:crimson_cabinet",
+   "required": false
+  },
+  {
+   "id": "candlelight:crimson_drawer",
+   "required": false
+  },
+  {
+   "id": "candlelight:crimson_table",
+   "required": false
+  },
+  {
+   "id": "candlelight:crimson_chair",
+   "required": false
+  },
+  {
+   "id": "candlelight:crimson_shelf",
+   "required": false
+  },
+  {
+   "id": "candlelight:crimson_big_table",
+   "required": false
+  },
+  {
+   "id": "candlelight:basalt_stove",
+   "required": false
+  },
+  {
+   "id": "candlelight:basalt_kitchen_sink",
+   "required": false
+  },
+  {
+   "id": "candlelight:basalt_counter",
+   "required": false
+  },
+  {
+   "id": "candlelight:cherry_cabinet",
+   "required": false
+  },
+  {
+   "id": "candlelight:cherry_drawer",
+   "required": false
+  },
+  {
+   "id": "candlelight:cherry_table",
+   "required": false
+  },
+  {
+   "id": "candlelight:cherry_chair",
+   "required": false
+  },
+  {
+   "id": "candlelight:cherry_shelf",
+   "required": false
+  },
+  {
+   "id": "candlelight:cherry_big_table",
+   "required": false
+  },
+  {
+   "id": "candlelight:bamboo_stove",
+   "required": false
+  },
+  {
+   "id": "candlelight:bamboo_kitchen_sink",
+   "required": false
+  },
+  {
+   "id": "candlelight:bamboo_counter",
+   "required": false
+  },
+  {
+   "id": "candlelight:bamboo_cabinet",
+   "required": false
+  },
+  {
+   "id": "candlelight:bamboo_drawer",
+   "required": false
+  },
+  {
+   "id": "candlelight:bamboo_table",
+   "required": false
+  },
+  {
+   "id": "candlelight:bamboo_chair",
+   "required": false
+  },
+  {
+   "id": "candlelight:bamboo_shelf",
+   "required": false
+  },
+  {
+   "id": "candlelight:bamboo_big_table",
+   "required": false
+  },
+  {
+   "id": "herbalbrews:stove",
+   "required": false
+  },
+  {
+   "id": "herbalbrews:tea_leaf_crate",
+   "required": false
+  },
+  {
+   "id": "herbalbrews:tea_kettle",
+   "required": false
+  },
+  {
+   "id": "herbalbrews:copper_tea_kettle",
+   "required": false
+  },
+  {
+   "id": "herbalbrews:cauldron",
+   "required": false
+  },
+  {
+   "id": "herbalbrews:jug",
+   "required": false
+  },
+  {
+   "id": "dehydration:campfire_cauldron",
+   "required": false
+  },
+  {
+   "id": "dehydration:copper_cauldron",
+   "required": false
+  },
+  {
+   "id": "dehydration:bamboo_pump",
+   "required": false
+  },
+  {
+   "id": "earlystage:sieve",
+   "required": false
+  },
+  {
+   "id": "earlystage:redstone_sieve",
+   "required": false
+  },
+  {
+   "id": "earlystage:steel_block",
+   "required": false
+  },
+  {
+   "id": "extended_drawers:single_drawer",
+   "required": false
+  },
+  {
+   "id": "extended_drawers:double_drawer",
+   "required": false
+  },
+  {
+   "id": "extended_drawers:quad_drawer",
+   "required": false
+  },
+  {
+   "id": "extended_drawers:connector",
+   "required": false
+  },
+  {
+   "id": "extended_drawers:shadow_drawer",
+   "required": false
+  },
+  {
+   "id": "extended_drawers:compacting_drawer",
+   "required": false
+  },
+  {
+   "id": "extended_drawers:access_point",
+   "required": false
+  },
+  {
+   "id": "meadow:stove_tiles",
+   "required": false
+  },
+  {
+   "id": "meadow:stove_tiles_wood",
+   "required": false
+  },
+  {
+   "id": "meadow:stove_tiles_lid",
+   "required": false
+  },
+  {
+   "id": "meadow:stove_tiles_bench",
+   "required": false
+  },
+  {
+   "id": "meadow:shelf",
+   "required": false
+  },
+  {
+   "id": "meadow:cheese_rack",
+   "required": false
+  },
+  {
+   "id": "meadow:chair",
+   "required": false
+  },
+  {
+   "id": "meadow:table",
+   "required": false
+  },
+  {
+   "id": "meadow:bench",
+   "required": false
+  },
+  {
+   "id": "meadow:stone_table",
+   "required": false
+  },
+  {
+   "id": "meadow:stone_bench",
+   "required": false
+  },
+  {
+   "id": "meadow:cheese_form",
+   "required": false
+  },
+  {
+   "id": "meadow:fondue",
+   "required": false
+  },
+  {
+   "id": "meadow:cooking_cauldron",
+   "required": false
+  },
+  {
+   "id": "meadow:woodcutter",
+   "required": false
+  },
+  {
+   "id": "meadow:woodcutter",
+   "required": false
+  },
+  {
+   "id": "meadow:wooden_cauldron",
+   "required": false
+  },
+  {
+   "id": "meadow:wheelbarrow",
+   "required": false
+  },
+  {
+   "id": "meadow:fire_log",
+   "required": false
+  },
+  {
+   "id": "meadow:can",
+   "required": false
+  },
+  {
+   "id": "meadow:camera",
+   "required": false
+  },
+  {
+   "id": "meadow:wooden_flower_pot_big",
+   "required": false
+  },
+  {
+   "id": "meadow:wooden_flower_pot_small",
+   "required": false
+  },
+  {
+   "id": "meadow:wooden_flower_box",
+   "required": false
+  },
+  {
+   "id": "nethervinery:crimson_fermentation_barrel",
+   "required": false
+  },
+  {
+   "id": "nethervinery:crimson_grapevine_pot",
+   "required": false
+  },
+  {
+   "id": "nethervinery:crimson_apple_press",
+   "required": false
+  },
+  {
+   "id": "nethervinery:crimson_wine_rack_big",
+   "required": false
+  },
+  {
+   "id": "nethervinery:crimson_wine_rack_mid",
+   "required": false
+  },
+  {
+   "id": "nethervinery:crimson_wine_rack_small",
+   "required": false
+  },
+  {
+   "id": "nethervinery:reinforced_crimson_planks",
+   "required": false
+  },
+  {
+   "id": "nethervinery:crested_crimson_planks",
+   "required": false
+  },
+  {
+   "id": "nethervinery:crimson_barrel",
+   "required": false
+  },
+  {
+   "id": "nethervinery:warped_fermentation_barrel",
+   "required": false
+  },
+  {
+   "id": "nethervinery:warped_grapevine_pot",
+   "required": false
+  },
+  {
+   "id": "nethervinery:warped_apple_press",
+   "required": false
+  },
+  {
+   "id": "nethervinery:warped_wine_rack_big",
+   "required": false
+  },
+  {
+   "id": "nethervinery:warped_wine_rack_mid",
+   "required": false
+  },
+  {
+   "id": "nethervinery:warped_wine_rack_small",
+   "required": false
+  },
+  {
+   "id": "nethervinery:reinforced_warped_planks",
+   "required": false
+  },
+  {
+   "id": "nethervinery:crested_warped_planks",
+   "required": false
+  },
+  {
+   "id": "nethervinery:warped_barrel",
+   "required": false
+  },
+  {
+   "id": "nethervinery:crimson_lattice",
+   "required": false
+  },
+  {
+   "id": "nethervinery:crimson_lattice",
+   "required": false
+  },
+  {
+   "id": "another_furniture:oak_chair",
+   "required": false
+  },
+  {
+   "id": "another_furniture:spruce_chair",
+   "required": false
+  },
+  {
+   "id": "another_furniture:birch_chair",
+   "required": false
+  },
+  {
+   "id": "another_furniture:jungle_chair",
+   "required": false
+  },
+  {
+   "id": "another_furniture:acacia_chair",
+   "required": false
+  },
+  {
+   "id": "another_furniture:dark_oak_chair",
+   "required": false
+  },
+  {
+   "id": "another_furniture:mangrove_chair",
+   "required": false
+  },
+  {
+   "id": "another_furniture:cherry_chair",
+   "required": false
+  },
+  {
+   "id": "another_furniture:bamboo_chair",
+   "required": false
+  },
+  {
+   "id": "another_furniture:crimson_chair",
+   "required": false
+  },
+  {
+   "id": "another_furniture:warped_chair",
+   "required": false
+  },
+  {
+   "id": "another_furniture:oak_shelf",
+   "required": false
+  },
+  {
+   "id": "another_furniture:spruce_shelf",
+   "required": false
+  },
+  {
+   "id": "another_furniture:birch_shelf",
+   "required": false
+  },
+  {
+   "id": "another_furniture:jungle_shelf",
+   "required": false
+  },
+  {
+   "id": "another_furniture:acacia_shelf",
+   "required": false
+  },
+  {
+   "id": "another_furniture:dark_oak_shelf",
+   "required": false
+  },
+  {
+   "id": "another_furniture:mangrove_shelf",
+   "required": false
+  },
+  {
+   "id": "another_furniture:cherry_shelf",
+   "required": false
+  },
+  {
+   "id": "another_furniture:bamboo_shelf",
+   "required": false
+  },
+  {
+   "id": "another_furniture:crimson_shelf",
+   "required": false
+  },
+  {
+   "id": "another_furniture:warped_shelf",
+   "required": false
+  },
+  {
+   "id": "another_furniture:oak_table",
+   "required": false
+  },
+  {
+   "id": "another_furniture:spruce_table",
+   "required": false
+  },
+  {
+   "id": "another_furniture:birch_table",
+   "required": false
+  },
+  {
+   "id": "another_furniture:jungle_table",
+   "required": false
+  },
+  {
+   "id": "another_furniture:acacia_table",
+   "required": false
+  },
+  {
+   "id": "another_furniture:dark_oak_table",
+   "required": false
+  },
+  {
+   "id": "another_furniture:mangrove_table",
+   "required": false
+  },
+  {
+   "id": "another_furniture:cherry_table",
+   "required": false
+  },
+  {
+   "id": "another_furniture:bamboo_table",
+   "required": false
+  },
+  {
+   "id": "another_furniture:crimson_table",
+   "required": false
+  },
+  {
+   "id": "another_furniture:warped_table",
+   "required": false
+  },
+  {
+   "id": "another_furniture:white_stool",
+   "required": false
+  },
+  {
+   "id": "another_furniture:orange_stool",
+   "required": false
+  },
+  {
+   "id": "another_furniture:magenta_stool",
+   "required": false
+  },
+  {
+   "id": "another_furniture:light_blue_stool",
+   "required": false
+  },
+  {
+   "id": "another_furniture:yellow_stool",
+   "required": false
+  },
+  {
+   "id": "another_furniture:lime_stool",
+   "required": false
+  },
+  {
+   "id": "another_furniture:pink_stool",
+   "required": false
+  },
+  {
+   "id": "another_furniture:gray_stool",
+   "required": false
+  },
+  {
+   "id": "another_furniture:light_gray_stool",
+   "required": false
+  },
+  {
+   "id": "another_furniture:cyan_stool",
+   "required": false
+  },
+  {
+   "id": "another_furniture:purple_stool",
+   "required": false
+  },
+  {
+   "id": "another_furniture:blue_stool",
+   "required": false
+  },
+  {
+   "id": "another_furniture:brown_stool",
+   "required": false
+  },
+  {
+   "id": "another_furniture:green_stool",
+   "required": false
+  },
+  {
+   "id": "another_furniture:red_stool",
+   "required": false
+  },
+  {
+   "id": "another_furniture:black_stool",
+   "required": false
+  },
+  {
+   "id": "another_furniture:oak_shutter",
+   "required": false
+  },
+  {
+   "id": "another_furniture:spruce_shutter",
+   "required": false
+  },
+  {
+   "id": "another_furniture:birch_shutter",
+   "required": false
+  },
+  {
+   "id": "another_furniture:jungle_shutter",
+   "required": false
+  },
+  {
+   "id": "another_furniture:acacia_shutter",
+   "required": false
+  },
+  {
+   "id": "another_furniture:dark_oak_shutter",
+   "required": false
+  },
+  {
+   "id": "another_furniture:mangrove_shutter",
+   "required": false
+  },
+  {
+   "id": "another_furniture:cherry_shutter",
+   "required": false
+  },
+  {
+   "id": "another_furniture:bamboo_shutter",
+   "required": false
+  },
+  {
+   "id": "another_furniture:crimson_shutter",
+   "required": false
+  },
+  {
+   "id": "another_furniture:warped_shutter",
+   "required": false
+  },
+  {
+   "id": "another_furniture:oak_flower_box",
+   "required": false
+  },
+  {
+   "id": "another_furniture:spruce_flower_box",
+   "required": false
+  },
+  {
+   "id": "another_furniture:birch_flower_box",
+   "required": false
+  },
+  {
+   "id": "another_furniture:jungle_flower_box",
+   "required": false
+  },
+  {
+   "id": "another_furniture:acacia_flower_box",
+   "required": false
+  },
+  {
+   "id": "another_furniture:dark_oak_flower_box",
+   "required": false
+  },
+  {
+   "id": "another_furniture:mangrove_flower_box",
+   "required": false
+  },
+  {
+   "id": "another_furniture:cherry_flower_box",
+   "required": false
+  },
+  {
+   "id": "another_furniture:bamboo_flower_box",
+   "required": false
+  },
+  {
+   "id": "another_furniture:crimson_flower_box",
+   "required": false
+  },
+  {
+   "id": "another_furniture:warped_flower_box",
+   "required": false
+  },
+  {
+   "id": "another_furniture:white_curtain",
+   "required": false
+  },
+  {
+   "id": "another_furniture:orange_curtain",
+   "required": false
+  },
+  {
+   "id": "another_furniture:magenta_curtain",
+   "required": false
+  },
+  {
+   "id": "another_furniture:light_blue_curtain",
+   "required": false
+  },
+  {
+   "id": "another_furniture:yellow_curtain",
+   "required": false
+  },
+  {
+   "id": "another_furniture:lime_curtain",
+   "required": false
+  },
+  {
+   "id": "another_furniture:pink_curtain",
+   "required": false
+  },
+  {
+   "id": "another_furniture:gray_curtain",
+   "required": false
+  },
+  {
+   "id": "another_furniture:light_gray_curtain",
+   "required": false
+  },
+  {
+   "id": "another_furniture:cyan_curtain",
+   "required": false
+  },
+  {
+   "id": "another_furniture:purple_curtain",
+   "required": false
+  },
+  {
+   "id": "another_furniture:blue_curtain",
+   "required": false
+  },
+  {
+   "id": "another_furniture:brown_curtain",
+   "required": false
+  },
+  {
+   "id": "another_furniture:green_curtain",
+   "required": false
+  },
+  {
+   "id": "another_furniture:red_curtain",
+   "required": false
+  },
+  {
+   "id": "another_furniture:black_curtain",
+   "required": false
+  },
+  {
+   "id": "another_furniture:service_bell",
+   "required": false
+  },
+  {
+   "id": "another_furniture:oak_bench",
+   "required": false
+  },
+  {
+   "id": "another_furniture:spruce_bench",
+   "required": false
+  },
+  {
+   "id": "another_furniture:birch_bench",
+   "required": false
+  },
+  {
+   "id": "another_furniture:jungle_bench",
+   "required": false
+  },
+  {
+   "id": "another_furniture:acacia_bench",
+   "required": false
+  },
+  {
+   "id": "another_furniture:dark_oak_bench",
+   "required": false
+  },
+  {
+   "id": "another_furniture:mangrove_bench",
+   "required": false
+  },
+  {
+   "id": "another_furniture:cherry_bench",
+   "required": false
+  },
+  {
+   "id": "another_furniture:bamboo_bench",
+   "required": false
+  },
+  {
+   "id": "another_furniture:crimson_bench",
+   "required": false
+  },
+  {
+   "id": "another_furniture:warped_bench",
+   "required": false
+  },
+  {
+   "id": "another_furniture:oak_drawer",
+   "required": false
+  },
+  {
+   "id": "another_furniture:spruce_drawer",
+   "required": false
+  },
+  {
+   "id": "another_furniture:birch_drawer",
+   "required": false
+  },
+  {
+   "id": "another_furniture:jungle_drawer",
+   "required": false
+  },
+  {
+   "id": "another_furniture:acacia_drawer",
+   "required": false
+  },
+  {
+   "id": "another_furniture:dark_oak_drawer",
+   "required": false
+  },
+  {
+   "id": "another_furniture:mangrove_drawer",
+   "required": false
+  },
+  {
+   "id": "another_furniture:cherry_drawer",
+   "required": false
+  },
+  {
+   "id": "another_furniture:bamboo_drawer",
+   "required": false
+  },
+  {
+   "id": "another_furniture:warped_drawer",
+   "required": false
+  },
+  {
+   "id": "another_furniture:warped_drawer",
+   "required": false
+  },
+  {
+   "id": "another_furniture:white_lamp",
+   "required": false
+  },
+  {
+   "id": "another_furniture:orange_lamp",
+   "required": false
+  },
+  {
+   "id": "another_furniture:magenta_lamp",
+   "required": false
+  },
+  {
+   "id": "another_furniture:light_blue_lamp",
+   "required": false
+  },
+  {
+   "id": "another_furniture:yellow_lamp",
+   "required": false
+  },
+  {
+   "id": "another_furniture:lime_lamp",
+   "required": false
+  },
+  {
+   "id": "another_furniture:pink_lamp",
+   "required": false
+  },
+  {
+   "id": "another_furniture:gray_lamp",
+   "required": false
+  },
+  {
+   "id": "another_furniture:light_gray_lamp",
+   "required": false
+  },
+  {
+   "id": "another_furniture:cyan_lamp",
+   "required": false
+  },
+  {
+   "id": "another_furniture:purple_lamp",
+   "required": false
+  },
+  {
+   "id": "another_furniture:blue_lamp",
+   "required": false
+  },
+  {
+   "id": "another_furniture:brown_lamp",
+   "required": false
+  },
+  {
+   "id": "another_furniture:green_lamp",
+   "required": false
+  },
+  {
+   "id": "another_furniture:red_lamp",
+   "required": false
+  },
+  {
+   "id": "another_furniture:black_lamp",
+   "required": false
+  },
+  {
+   "id": "another_furniture:white_sofa",
+   "required": false
+  },
+  {
+   "id": "another_furniture:orange_sofa",
+   "required": false
+  },
+  {
+   "id": "another_furniture:magenta_sofa",
+   "required": false
+  },
+  {
+   "id": "another_furniture:light_blue_sofa",
+   "required": false
+  },
+  {
+   "id": "another_furniture:yellow_sofa",
+   "required": false
+  },
+  {
+   "id": "another_furniture:lime_sofa",
+   "required": false
+  },
+  {
+   "id": "another_furniture:pink_sofa",
+   "required": false
+  },
+  {
+   "id": "another_furniture:gray_sofa",
+   "required": false
+  },
+  {
+   "id": "another_furniture:light_gray_sofa",
+   "required": false
+  },
+  {
+   "id": "another_furniture:cyan_sofa",
+   "required": false
+  },
+  {
+   "id": "another_furniture:purple_sofa",
+   "required": false
+  },
+  {
+   "id": "another_furniture:blue_sofa",
+   "required": false
+  },
+  {
+   "id": "another_furniture:brown_sofa",
+   "required": false
+  },
+  {
+   "id": "another_furniture:green_sofa",
+   "required": false
+  },
+  {
+   "id": "another_furniture:red_sofa",
+   "required": false
+  },
+  {
+   "id": "another_furniture:black_sofa",
+   "required": false
+  },
+  {
+   "id": "another_furniture:white_tall_stool",
+   "required": false
+  },
+  {
+   "id": "another_furniture:orange_tall_stool",
+   "required": false
+  },
+  {
+   "id": "another_furniture:magenta_tall_stool",
+   "required": false
+  },
+  {
+   "id": "another_furniture:light_blue_tall_stool",
+   "required": false
+  },
+  {
+   "id": "another_furniture:yellow_tall_stool",
+   "required": false
+  },
+  {
+   "id": "another_furniture:lime_tall_stool",
+   "required": false
+  },
+  {
+   "id": "another_furniture:pink_tall_stool",
+   "required": false
+  },
+  {
+   "id": "another_furniture:gray_tall_stool",
+   "required": false
+  },
+  {
+   "id": "another_furniture:light_gray_tall_stool",
+   "required": false
+  },
+  {
+   "id": "another_furniture:cyan_tall_stool",
+   "required": false
+  },
+  {
+   "id": "another_furniture:purple_tall_stool",
+   "required": false
+  },
+  {
+   "id": "another_furniture:brown_tall_stool",
+   "required": false
+  },
+  {
+   "id": "another_furniture:green_tall_stool",
+   "required": false
+  },
+  {
+   "id": "another_furniture:brown_tall_stool",
+   "required": false
+  },
+  {
+   "id": "another_furniture:red_tall_stool",
+   "required": false
+  },
+  {
+   "id": "another_furniture:black_tall_stool",
+   "required": false
+  },
+  {
+   "id": "vinery:grapevine_pot",
+   "required": false
+  },
+  {
+   "id": "vinery:fermentation_barrel",
+   "required": false
+  },
+  {
+   "id": "vinery:apple_press",
+   "required": false
+  },
+  {
+   "id": "vinery:dark_cherry_chair",
+   "required": false
+  },
+  {
+   "id": "vinery:dark_cherry_table",
+   "required": false
+  },
+  {
+   "id": "vinery:dark_cherry_wine_rack_small",
+   "required": false
+  },
+  {
+   "id": "vinery:dark_cherry_wine_rack_big",
+   "required": false
+  },
+  {
+   "id": "vinery:dark_cherry_wine_rack_mid",
+   "required": false
+  },
+  {
+   "id": "vinery:dark_cherry_drawer",
+   "required": false
+  },
+  {
+   "id": "vinery:dark_cherry_cabinet",
+   "required": false
+  },
+  {
+   "id": "vinery:grapevine_stem",
+   "required": false
+  },
+  {
+   "id": "vinery:storage_pot",
+   "required": false
+  },
+  {
+   "id": "vinery:flower_box",
+   "required": false
+  },
+  {
+   "id": "vinery:flower_pot_big",
+   "required": false
+  },
+  {
+   "id": "vinery:wine_box",
+   "required": false
+  },
+  {
+   "id": "vinery:dark_cherry_shelf",
+   "required": false
+  },
+  {
+   "id": "vinery:dark_cherry_big_table",
+   "required": false
+  },
+  {
+   "id": "vinery:stackable_log",
+   "required": false
+  },
+  {
+   "id": "vinery:oak_wine_rack_small",
+   "required": false
+  },
+  {
+   "id": "vinery:oak_wine_rack_big",
+   "required": false
+  },
+  {
+   "id": "vinery:oak_wine_rack_mid",
+   "required": false
+  },
+  {
+   "id": "vinery:spruce_wine_rack_small",
+   "required": false
+  },
+  {
+   "id": "vinery:spruce_wine_rack_big",
+   "required": false
+  },
+  {
+   "id": "vinery:spruce_wine_rack_mid",
+   "required": false
+  },
+  {
+   "id": "vinery:birch_wine_rack_small",
+   "required": false
+  },
+  {
+   "id": "vinery:birch_wine_rack_big",
+   "required": false
+  },
+  {
+   "id": "vinery:birch_wine_rack_mid",
+   "required": false
+  },
+  {
+   "id": "vinery:jungle_wine_rack_small",
+   "required": false
+  },
+  {
+   "id": "vinery:jungle_wine_rack_big",
+   "required": false
+  },
+  {
+   "id": "vinery:jungle_wine_rack_mid",
+   "required": false
+  },
+  {
+   "id": "vinery:acacia_wine_rack_small",
+   "required": false
+  },
+  {
+   "id": "vinery:acacia_wine_rack_big",
+   "required": false
+  },
+  {
+   "id": "vinery:acacia_wine_rack_mid",
+   "required": false
+  },
+  {
+   "id": "vinery:dark_oak_wine_rack_small",
+   "required": false
+  },
+  {
+   "id": "vinery:dark_oak_wine_rack_big",
+   "required": false
+  },
+  {
+   "id": "vinery:dark_oak_wine_rack_mid",
+   "required": false
+  },
+  {
+   "id": "vinery:mangrove_wine_rack_small",
+   "required": false
+  },
+  {
+   "id": "vinery:mangrove_wine_rack_big",
+   "required": false
+  },
+  {
+   "id": "vinery:mangrove_wine_rack_mid",
+   "required": false
+  },
+  {
+   "id": "vinery:bamboo_wine_rack_small",
+   "required": false
+  },
+  {
+   "id": "vinery:bamboo_wine_rack_big",
+   "required": false
+  },
+  {
+   "id": "vinery:bamboo_wine_rack_mid",
+   "required": false
+  },
+  {
+   "id": "vinery:cherry_wine_rack_small",
+   "required": false
+  },
+  {
+   "id": "vinery:cherry_wine_rack_big",
+   "required": false
+  },
+  {
+   "id": "vinery:cherry_wine_rack_mid",
+   "required": false
+  },
+  {
+   "id": "vinery:oak_lattice",
+   "required": false
+  },
+  {
+   "id": "vinery:spruce_lattice",
+   "required": false
+  },
+  {
+   "id": "vinery:birch_lattice",
+   "required": false
+  },
+  {
+   "id": "vinery:jungle_lattice",
+   "required": false
+  },
+  {
+   "id": "vinery:acacia_lattice",
+   "required": false
+  },
+  {
+   "id": "vinery:dark_oak_lattice",
+   "required": false
+  },
+  {
+   "id": "vinery:mangrove_lattice",
+   "required": false
+  },
+  {
+   "id": "vinery:bamboo_lattice",
+   "required": false
+  },
+  {
+   "id": "vinery:cherry_lattice",
+   "required": false
+  },
+  {
+   "id": "natures_spirit:paper_block",
+   "required": false
+  },
+  {
+   "id": "natures_spirit:paper_panel",
+   "required": false
+  },
+  {
+   "id": "natures_spirit:paper_door",
+   "required": false
+  },
+  {
+   "id": "natures_spirit:paper_trapdoor",
+   "required": false
+  },
+  {
+   "id": "natures_spirit:framed_paper_block",
+   "required": false
+  },
+  {
+   "id": "natures_spirit:framed_paper_panel",
+   "required": false
+  },
+  {
+   "id": "natures_spirit:framed_paper_door",
+   "required": false
+  },
+  {
+   "id": "natures_spirit:framed_paper_trapdoor",
+   "required": false
+  },
+  {
+   "id": "natures_spirit:blooming_paper_block",
+   "required": false
+  },
+  {
+   "id": "natures_spirit:blooming_paper_panel",
+   "required": false
+  },
+  {
+   "id": "natures_spirit:blooming_paper_door",
+   "required": false
+  },
+  {
+   "id": "natures_spirit:blooming_paper_trapdoor",
+   "required": false
+  },
+  {
+   "id": "natures_spirit:paper_sign",
+   "required": false
+  },
+  {
+   "id": "natures_spirit:paper_hanging_sign",
+   "required": false
+  },
+  {
+   "id": "natures_spirit:paper_lantern",
+   "required": false
+  },
+  {
+   "id": "natures_spirit:white_paper_lantern",
+   "required": false
+  },
+  {
+   "id": "natures_spirit:light_gray_paper_lantern",
+   "required": false
+  },
+  {
+   "id": "natures_spirit:gray_paper_lantern",
+   "required": false
+  },
+  {
+   "id": "natures_spirit:black_paper_lantern",
+   "required": false
+  },
+  {
+   "id": "natures_spirit:brown_paper_lantern",
+   "required": false
+  },
+  {
+   "id": "natures_spirit:red_paper_lantern",
+   "required": false
+  },
+  {
+   "id": "natures_spirit:orange_paper_lantern",
+   "required": false
+  },
+  {
+   "id": "natures_spirit:yellow_paper_lantern",
+   "required": false
+  },
+  {
+   "id": "natures_spirit:lime_paper_lantern",
+   "required": false
+  },
+  {
+   "id": "natures_spirit:green_paper_lantern",
+   "required": false
+  },
+  {
+   "id": "natures_spirit:blue_paper_lantern",
+   "required": false
+  },
+  {
+   "id": "natures_spirit:light_blue_paper_lantern",
+   "required": false
+  },
+  {
+   "id": "natures_spirit:cyan_paper_lantern",
+   "required": false
+  },
+  {
+   "id": "natures_spirit:purple_paper_lantern",
+   "required": false
+  },
+  {
+   "id": "natures_spirit:magenta_paper_lantern",
+   "required": false
+  },
+  {
+   "id": "natures_spirit:pink_paper_lantern",
+   "required": false
+  },
+  {
+   "id": "farm_and_charm:lettuce_bag",
+   "required": false
+  },
+  {
+   "id": "farm_and_charm:tomato_bag",
+   "required": false
+  },
+  {
+   "id": "farm_and_charm:carrot_bag",
+   "required": false
+  },
+  {
+   "id": "farm_and_charm:potato_bag",
+   "required": false
+  },
+  {
+   "id": "farm_and_charm:onion_bag",
+   "required": false
+  },
+  {
+   "id": "farm_and_charm:beetroot_bag",
+   "required": false
+  },
+  {
+   "id": "farm_and_charm:corn_bag",
+   "required": false
+  },
+  {
+   "id": "farm_and_charm:strawberry_bag",
+   "required": false
+  },
+  {
+   "id": "farm_and_charm:flour_bag",
+   "required": false
+  },
+  {
+   "id": "farm_and_charm:oat_ball",
+   "required": false
+  },
+  {
+   "id": "farm_and_charm:barley_ball",
+   "required": false
+  },
+  {
+   "id": "farm_and_charm:fertilized_soil",
+   "required": false
+  },
+  {
+   "id": "farm_and_charm:fertilized_farmland",
+   "required": false
+  },
+  {
+   "id": "farm_and_charm:stove",
+   "required": false
+  },
+  {
+   "id": "farm_and_charm:feeding_trough",
+   "required": false
+  },
+  {
+   "id": "farm_and_charm:water_sprinkler",
+   "required": false
+  },
+  {
+   "id": "farm_and_charm:silo_wood",
+   "required": false
+  },
+  {
+   "id": "farm_and_charm:silo_copper",
+   "required": false
+  },
+  {
+   "id": "farm_and_charm:window_sill",
+   "required": false
+  },
+  {
+   "id": "farm_and_charm:tool_rack",
+   "required": false
+  },
+  {
+   "id": "farm_and_charm:crafting_bowl",
+   "required": false
+  },
+  {
+   "id": "farm_and_charm:mincer",
+   "required": false
+  },
+  {
+   "id": "farm_and_charm:cooking_pot",
+   "required": false
+  },
+  {
+   "id": "farm_and_charm:roaster",
+   "required": false
+  },
+  {
+   "id": "farm_and_charm:scarecrow",
+   "required": false
+  }
+ ]
+}

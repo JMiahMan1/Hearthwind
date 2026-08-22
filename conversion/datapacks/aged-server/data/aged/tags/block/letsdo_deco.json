@@ -1,0 +1,692 @@
+{
+ "values": [
+  {
+   "id": "farm_and_charm:lettuce_bag",
+   "required": false
+  },
+  {
+   "id": "farm_and_charm:tomato_bag",
+   "required": false
+  },
+  {
+   "id": "farm_and_charm:carrot_bag",
+   "required": false
+  },
+  {
+   "id": "farm_and_charm:potato_bag",
+   "required": false
+  },
+  {
+   "id": "farm_and_charm:onion_bag",
+   "required": false
+  },
+  {
+   "id": "farm_and_charm:beetroot_bag",
+   "required": false
+  },
+  {
+   "id": "farm_and_charm:corn_bag",
+   "required": false
+  },
+  {
+   "id": "farm_and_charm:strawberry_bag",
+   "required": false
+  },
+  {
+   "id": "farm_and_charm:flour_bag",
+   "required": false
+  },
+  {
+   "id": "vinery:dark_cherry_chair",
+   "required": false
+  },
+  {
+   "id": "vinery:dark_cherry_table",
+   "required": false
+  },
+  {
+   "id": "vinery:dark_cherry_wine_rack_small",
+   "required": false
+  },
+  {
+   "id": "vinery:dark_cherry_wine_rack_big",
+   "required": false
+  },
+  {
+   "id": "vinery:dark_cherry_wine_rack_mid",
+   "required": false
+  },
+  {
+   "id": "vinery:dark_cherry_drawer",
+   "required": false
+  },
+  {
+   "id": "vinery:dark_cherry_cabinet",
+   "required": false
+  },
+  {
+   "id": "vinery:dark_cherry_beam",
+   "required": false
+  },
+  {
+   "id": "vinery:dark_cherry_floorboard",
+   "required": false
+  },
+  {
+   "id": "vinery:window",
+   "required": false
+  },
+  {
+   "id": "vinery:loam",
+   "required": false
+  },
+  {
+   "id": "vinery:loam_stairs",
+   "required": false
+  },
+  {
+   "id": "vinery:loam_slab",
+   "required": false
+  },
+  {
+   "id": "vinery:coarse_dirt_slab",
+   "required": false
+  },
+  {
+   "id": "vinery:dirt_slab",
+   "required": false
+  },
+  {
+   "id": "vinery:grass_slab",
+   "required": false
+  },
+  {
+   "id": "vinery:oak_wine_rack_small",
+   "required": false
+  },
+  {
+   "id": "vinery:oak_wine_rack_big",
+   "required": false
+  },
+  {
+   "id": "vinery:oak_wine_rack_mid",
+   "required": false
+  },
+  {
+   "id": "vinery:spruce_wine_rack_small",
+   "required": false
+  },
+  {
+   "id": "vinery:spruce_wine_rack_big",
+   "required": false
+  },
+  {
+   "id": "vinery:spruce_wine_rack_mid",
+   "required": false
+  },
+  {
+   "id": "vinery:birch_wine_rack_small",
+   "required": false
+  },
+  {
+   "id": "vinery:birch_wine_rack_big",
+   "required": false
+  },
+  {
+   "id": "vinery:birch_wine_rack_mid",
+   "required": false
+  },
+  {
+   "id": "vinery:jungle_wine_rack_small",
+   "required": false
+  },
+  {
+   "id": "vinery:jungle_wine_rack_big",
+   "required": false
+  },
+  {
+   "id": "vinery:jungle_wine_rack_mid",
+   "required": false
+  },
+  {
+   "id": "vinery:acacia_wine_rack_small",
+   "required": false
+  },
+  {
+   "id": "vinery:acacia_wine_rack_big",
+   "required": false
+  },
+  {
+   "id": "vinery:acacia_wine_rack_mid",
+   "required": false
+  },
+  {
+   "id": "vinery:dark_oak_wine_rack_small",
+   "required": false
+  },
+  {
+   "id": "vinery:dark_oak_wine_rack_big",
+   "required": false
+  },
+  {
+   "id": "vinery:dark_oak_wine_rack_mid",
+   "required": false
+  },
+  {
+   "id": "vinery:mangrove_wine_rack_small",
+   "required": false
+  },
+  {
+   "id": "vinery:mangrove_wine_rack_big",
+   "required": false
+  },
+  {
+   "id": "vinery:mangrove_wine_rack_mid",
+   "required": false
+  },
+  {
+   "id": "vinery:bamboo_wine_rack_small",
+   "required": false
+  },
+  {
+   "id": "vinery:bamboo_wine_rack_big",
+   "required": false
+  },
+  {
+   "id": "vinery:bamboo_wine_rack_mid",
+   "required": false
+  },
+  {
+   "id": "vinery:cherry_wine_rack_small",
+   "required": false
+  },
+  {
+   "id": "vinery:cherry_wine_rack_big",
+   "required": false
+  },
+  {
+   "id": "vinery:cherry_wine_rack_mid",
+   "required": false
+  },
+  {
+   "id": "vinery:oak_lattice",
+   "required": false
+  },
+  {
+   "id": "vinery:spruce_lattice",
+   "required": false
+  },
+  {
+   "id": "vinery:birch_lattice",
+   "required": false
+  },
+  {
+   "id": "vinery:jungle_lattice",
+   "required": false
+  },
+  {
+   "id": "vinery:acacia_lattice",
+   "required": false
+  },
+  {
+   "id": "vinery:dark_oak_lattice",
+   "required": false
+  },
+  {
+   "id": "vinery:mangrove_lattice",
+   "required": false
+  },
+  {
+   "id": "vinery:bamboo_lattice",
+   "required": false
+  },
+  {
+   "id": "vinery:cherry_lattice",
+   "required": false
+  },
+  {
+   "id": "vinery:grapevine_stem",
+   "required": false
+  },
+  {
+   "id": "vinery:storage_pot",
+   "required": false
+  },
+  {
+   "id": "vinery:flower_box",
+   "required": false
+  },
+  {
+   "id": "vinery:flower_pot_big",
+   "required": false
+  },
+  {
+   "id": "vinery:wine_box",
+   "required": false
+  },
+  {
+   "id": "vinery:dark_cherry_shelf",
+   "required": false
+  },
+  {
+   "id": "vinery:dark_cherry_big_table",
+   "required": false
+  },
+  {
+   "id": "vinery:white_grape_bag",
+   "required": false
+  },
+  {
+   "id": "vinery:red_grape_bag",
+   "required": false
+  },
+  {
+   "id": "vinery:cherry_bag",
+   "required": false
+  },
+  {
+   "id": "vinery:apple_bag",
+   "required": false
+  },
+  {
+   "id": "nethervinery:crimson_grape_crate",
+   "required": false
+  },
+  {
+   "id": "nethervinery:warped_grape_crate",
+   "required": false
+  },
+  {
+   "id": "nethervinery:crimson_wine_rack_big",
+   "required": false
+  },
+  {
+   "id": "nethervinery:crimson_wine_rack_mid",
+   "required": false
+  },
+  {
+   "id": "nethervinery:crimson_wine_rack_small",
+   "required": false
+  },
+  {
+   "id": "nethervinery:reinforced_crimson_planks",
+   "required": false
+  },
+  {
+   "id": "nethervinery:crested_crimson_planks",
+   "required": false
+  },
+  {
+   "id": "nethervinery:crimson_barrel",
+   "required": false
+  },
+  {
+   "id": "nethervinery:warped_wine_rack_big",
+   "required": false
+  },
+  {
+   "id": "nethervinery:warped_wine_rack_mid",
+   "required": false
+  },
+  {
+   "id": "nethervinery:warped_wine_rack_small",
+   "required": false
+  },
+  {
+   "id": "nethervinery:reinforced_warped_planks",
+   "required": false
+  },
+  {
+   "id": "nethervinery:crested_warped_planks",
+   "required": false
+  },
+  {
+   "id": "nethervinery:warped_barrel",
+   "required": false
+  },
+  {
+   "id": "nethervinery:warped_lattice",
+   "required": false
+  },
+  {
+   "id": "nethervinery:crimson_lattice",
+   "required": false
+  },
+  {
+   "id": "meadow:pine_beam",
+   "required": false
+  },
+  {
+   "id": "meadow:pine_railing",
+   "required": false
+  },
+  {
+   "id": "meadow:shutter_block",
+   "required": false
+  },
+  {
+   "id": "meadow:shelf",
+   "required": false
+  },
+  {
+   "id": "meadow:cheese_rack",
+   "required": false
+  },
+  {
+   "id": "meadow:chair",
+   "required": false
+  },
+  {
+   "id": "meadow:table",
+   "required": false
+  },
+  {
+   "id": "meadow:bench",
+   "required": false
+  },
+  {
+   "id": "meadow:stone_table",
+   "required": false
+  },
+  {
+   "id": "meadow:stone_bench",
+   "required": false
+  },
+  {
+   "id": "meadow:heart_patterned_window",
+   "required": false
+  },
+  {
+   "id": "meadow:sun_patterned_window",
+   "required": false
+  },
+  {
+   "id": "meadow:pine_window",
+   "required": false
+  },
+  {
+   "id": "meadow:flecked_wool",
+   "required": false
+  },
+  {
+   "id": "meadow:flecked_carpet",
+   "required": false
+  },
+  {
+   "id": "meadow:flecked_bed",
+   "required": false
+  },
+  {
+   "id": "meadow:highland_wool",
+   "required": false
+  },
+  {
+   "id": "meadow:highland_carpet",
+   "required": false
+  },
+  {
+   "id": "meadow:highland_bed",
+   "required": false
+  },
+  {
+   "id": "meadow:patched_wool",
+   "required": false
+  },
+  {
+   "id": "meadow:patched_carpet",
+   "required": false
+  },
+  {
+   "id": "meadow:patched_bed",
+   "required": false
+  },
+  {
+   "id": "meadow:rocky_wool",
+   "required": false
+  },
+  {
+   "id": "meadow:rocky_carpet",
+   "required": false
+  },
+  {
+   "id": "meadow:rocky_bed",
+   "required": false
+  },
+  {
+   "id": "meadow:umbra_wool",
+   "required": false
+  },
+  {
+   "id": "meadow:umbra_carpet",
+   "required": false
+  },
+  {
+   "id": "meadow:umbra_bed",
+   "required": false
+  },
+  {
+   "id": "meadow:inky_wool",
+   "required": false
+  },
+  {
+   "id": "meadow:inky_carpet",
+   "required": false
+  },
+  {
+   "id": "meadow:inky_bed",
+   "required": false
+  },
+  {
+   "id": "meadow:warped_wool",
+   "required": false
+  },
+  {
+   "id": "meadow:warped_carpet",
+   "required": false
+  },
+  {
+   "id": "meadow:warped_bed",
+   "required": false
+  },
+  {
+   "id": "meadow:straw_bed",
+   "required": false
+  },
+  {
+   "id": "meadow:wheelbarrow",
+   "required": false
+  },
+  {
+   "id": "meadow:fire_log",
+   "required": false
+  },
+  {
+   "id": "meadow:can",
+   "required": false
+  },
+  {
+   "id": "meadow:oil_lantern",
+   "required": false
+  },
+  {
+   "id": "meadow:camera",
+   "required": false
+  },
+  {
+   "id": "meadow:doormat",
+   "required": false
+  },
+  {
+   "id": "meadow:wooden_flower_pot_big",
+   "required": false
+  },
+  {
+   "id": "meadow:wooden_flower_pot_small",
+   "required": false
+  },
+  {
+   "id": "meadow:wooden_flower_box",
+   "required": false
+  },
+  {
+   "id": "herbalbrews:tea_leaf_crate",
+   "required": false
+  },
+  {
+   "id": "herbalbrews:green_tea_leaf_block",
+   "required": false
+  },
+  {
+   "id": "herbalbrews:dried_green_tea_leaf_block",
+   "required": false
+  },
+  {
+   "id": "herbalbrews:black_tea_leaf_block",
+   "required": false
+  },
+  {
+   "id": "herbalbrews:mixed_tea_leaf_block",
+   "required": false
+  },
+  {
+   "id": "herbalbrews:oolong_tea_leaf_block",
+   "required": false
+  },
+  {
+   "id": "candlelight:table_set",
+   "required": false
+  },
+  {
+   "id": "candlelight:glass",
+   "required": false
+  },
+  {
+   "id": "candlelight:jewelry_box",
+   "required": false
+  },
+  {
+   "id": "candlelight:painting",
+   "required": false
+  },
+  {
+   "id": "candlelight:hearth",
+   "required": false
+  },
+  {
+   "id": "candlelight:rose",
+   "required": false
+  },
+  {
+   "id": "candlelight:chocolate_box",
+   "required": false
+  },
+  {
+   "id": "candlelight:table_sign",
+   "required": false
+  },
+  {
+   "id": "candlelight:typewriter_iron",
+   "required": false
+  },
+  {
+   "id": "candlelight:typewriter_copper",
+   "required": false
+  },
+  {
+   "id": "brewery:bench",
+   "required": false
+  },
+  {
+   "id": "brewery:table",
+   "required": false
+  },
+  {
+   "id": "brewery:patterned_wool",
+   "required": false
+  },
+  {
+   "id": "brewery:cabinet",
+   "required": false
+  },
+  {
+   "id": "brewery:drawer",
+   "required": false
+  },
+  {
+   "id": "brewery:bar_counter",
+   "required": false
+  },
+  {
+   "id": "brewery:sideboard",
+   "required": false
+  },
+  {
+   "id": "brewery:wall_cabinet",
+   "required": false
+  },
+  {
+   "id": "bakery:kitchen_sink",
+   "required": false
+  },
+  {
+   "id": "bakery:brick_counter",
+   "required": false
+  },
+  {
+   "id": "bakery:drawer",
+   "required": false
+  },
+  {
+   "id": "bakery:cabinet",
+   "required": false
+  },
+  {
+   "id": "bakery:wall_cabinet",
+   "required": false
+  },
+  {
+   "id": "bakery:iron_table",
+   "required": false
+  },
+  {
+   "id": "bakery:iron_chair",
+   "required": false
+  },
+  {
+   "id": "bakery:street_sign",
+   "required": false
+  },
+  {
+   "id": "bakery:cake_stand",
+   "required": false
+  },
+  {
+   "id": "bakery:cake_display",
+   "required": false
+  },
+  {
+   "id": "bakery:cupcake_display",
+   "required": false
+  },
+  {
+   "id": "bakery:wall_display",
+   "required": false
+  },
+  {
+   "id": "bakery:breadbox",
+   "required": false
+  },
+  {
+   "id": "bakery:tray",
+   "required": false
+  },
+  {
+   "id": "bakery:bread_crate",
+   "required": false
+  },
+  {
+   "id": "bakery:chocolate_box",
+   "required": false
+  }
+ ]
+}

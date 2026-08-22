@@ -1,0 +1,283 @@
+{
+ "files": 817,
+ "recipe_fixed": 72,
+ "loot_fixed": 0,
+ "skipped_ns": [
+  "brewery/seasons/crop/hops_crop.json",
+  "chalk/recipes/crafting_table/black_chalk.json",
+  "chalk/recipes/crafting_table/black_chalk_from_block.json",
+  "chalk/recipes/crafting_table/black_glow_chalk.json",
+  "chalk/recipes/crafting_table/black_glow_chalk_from_block.json",
+  "chalk/recipes/crafting_table/blue_chalk.json",
+  "chalk/recipes/crafting_table/blue_chalk_from_block.json",
+  "chalk/recipes/crafting_table/blue_glow_chalk.json",
+  "chalk/recipes/crafting_table/blue_glow_chalk_from_block.json",
+  "chalk/recipes/crafting_table/brown_chalk.json",
+  "chalk/recipes/crafting_table/brown_chalk_from_block.json",
+  "chalk/recipes/crafting_table/brown_glow_chalk.json",
+  "chalk/recipes/crafting_table/brown_glow_chalk_from_block.json",
+  "chalk/recipes/crafting_table/cyan_chalk.json",
+  "chalk/recipes/crafting_table/cyan_chalk_from_block.json",
+  "chalk/recipes/crafting_table/cyan_glow_chalk.json",
+  "chalk/recipes/crafting_table/cyan_glow_chalk_from_block.json",
+  "chalk/recipes/crafting_table/gray_chalk.json",
+  "chalk/recipes/crafting_table/gray_chalk_from_block.json",
+  "chalk/recipes/crafting_table/gray_glow_chalk.json",
+  "chalk/recipes/crafting_table/gray_glow_chalk_from_block.json",
+  "chalk/recipes/crafting_table/green_chalk.json",
+  "chalk/recipes/crafting_table/green_chalk_from_block.json",
+  "chalk/recipes/crafting_table/green_glow_chalk.json",
+  "chalk/recipes/crafting_table/green_glow_chalk_from_block.json",
+  "chalk/recipes/crafting_table/light_blue_chalk.json",
+  "chalk/recipes/crafting_table/light_blue_chalk_from_block.json",
+  "chalk/recipes/crafting_table/light_blue_glow_chalk.json",
+  "chalk/recipes/crafting_table/light_blue_glow_chalk_from_block.json",
+  "chalk/recipes/crafting_table/light_gray_chalk.json",
+  "chalk/recipes/crafting_table/light_gray_chalk_from_block.json",
+  "chalk/recipes/crafting_table/light_gray_glow_chalk.json",
+  "chalk/recipes/crafting_table/light_gray_glow_chalk_from_block.json",
+  "chalk/recipes/crafting_table/lime_chalk.json",
+  "chalk/recipes/crafting_table/lime_chalk_from_block.json",
+  "chalk/recipes/crafting_table/lime_glow_chalk.json",
+  "chalk/recipes/crafting_table/lime_glow_chalk_from_block.json",
+  "chalk/recipes/crafting_table/magenta_chalk.json",
+  "chalk/recipes/crafting_table/magenta_chalk_from_block.json",
+  "chalk/recipes/crafting_table/magenta_glow_chalk.json",
+  "chalk/recipes/crafting_table/magenta_glow_chalk_from_block.json",
+  "chalk/recipes/crafting_table/orange_chalk.json",
+  "chalk/recipes/crafting_table/orange_chalk_from_block.json",
+  "chalk/recipes/crafting_table/orange_glow_chalk.json",
+  "chalk/recipes/crafting_table/orange_glow_chalk_from_block.json",
+  "chalk/recipes/crafting_table/pink_chalk.json",
+  "chalk/recipes/crafting_table/pink_chalk_from_block.json",
+  "chalk/recipes/crafting_table/pink_glow_chalk.json",
+  "chalk/recipes/crafting_table/pink_glow_chalk_from_block.json",
+  "chalk/recipes/crafting_table/purple_chalk.json",
+  "chalk/recipes/crafting_table/purple_chalk_from_block.json",
+  "chalk/recipes/crafting_table/purple_glow_chalk.json",
+  "chalk/recipes/crafting_table/purple_glow_chalk_from_block.json",
+  "chalk/recipes/crafting_table/red_chalk.json",
+  "chalk/recipes/crafting_table/red_chalk_from_block.json",
+  "chalk/recipes/crafting_table/red_glow_chalk.json",
+  "chalk/recipes/crafting_table/red_glow_chalk_from_block.json",
+  "chalk/recipes/crafting_table/white_chalk.json",
+  "chalk/recipes/crafting_table/white_chalk_from_block.json",
+  "chalk/recipes/crafting_table/white_glow_chalk.json",
+  "chalk/recipes/crafting_table/white_glow_chalk_from_block.json",
+  "chalk/recipes/crafting_table/yellow_chalk.json",
+  "chalk/recipes/crafting_table/yellow_chalk_from_block.json",
+  "chalk/recipes/crafting_table/yellow_glow_chalk.json",
+  "chalk/recipes/crafting_table/yellow_glow_chalk_from_block.json",
+  "dungeonnowloading/recipes/wooden_wall_platform.json",
+  "farm_and_charm/seasons/crop/barley_crop.json",
+  "farm_and_charm/seasons/crop/corn_crop.json",
+  "farm_and_charm/seasons/crop/lettuce_crop.json",
+  "farm_and_charm/seasons/crop/oat_crop.json",
+  "farm_and_charm/seasons/crop/onion_crop.json",
+  "farm_and_charm/seasons/crop/strawberry_crop.json",
+  "farm_and_charm/seasons/crop/tomato_crop.json",
+  "fishingreal/fishing/alligator.json",
+  "fishingreal/fishing/drowned.json",
+  "fishingreal/fishing/ocean_creeper.json",
+  "fishingreal/fishing/silverfish.json",
+  "fleshz/rack_items/prepared_hide.json",
+  "fleshz/rack_items/rotten_leather.json",
+  "fleshz/recipes/prepared_hide.json",
+  "fleshz/recipes/rotten_leather.json",
+  "fleshz/recipes/wood_rack.json",
+  "herbalbrews/seasons/crop/coffee_plant.json",
+  "herbalbrews/seasons/crop/rooibos_plant.json",
+  "herbalbrews/seasons/crop/tea_plant.json",
+  "herbalbrews/seasons/crop/yerba_mate_plant.json",
+  "meadow/loot_tables/blocks/alpine_coal_ore.json",
+  "meadow/loot_tables/blocks/alpine_copper_ore.json",
+  "meadow/loot_tables/blocks/alpine_diamond_ore.json",
+  "meadow/loot_tables/blocks/alpine_emerald_ore.json",
+  "meadow/loot_tables/blocks/alpine_gold_ore.json",
+  "meadow/loot_tables/blocks/alpine_iron_ore.json",
+  "meadow/loot_tables/blocks/alpine_lapis_ore.json",
+  "meadow/loot_tables/blocks/alpine_redstone_ore.json",
+  "meadow/loot_tables/blocks/alpine_salt_ore.json",
+  "meadow/recipes/bench.json",
+  "meadow/recipes/doormat.json",
+  "meadow/recipes/pine_beam.json",
+  "meadow/seasons/crop/pine_sapling.json",
+  "moreculling/tags/blocks/dont_cull.json",
+  "natures_spirit/seasons/crop/aspen_sapling.json",
+  "natures_spirit/seasons/crop/blue_wisteria_sapling.json",
+  "natures_spirit/seasons/crop/cedar_sapling.json",
+  "natures_spirit/seasons/crop/coconut_sprout.json",
+  "natures_spirit/seasons/crop/cypress_sapling.json",
+  "natures_spirit/seasons/crop/desert_turnip_stem.json",
+  "natures_spirit/seasons/crop/fir_sapling.json",
+  "natures_spirit/seasons/crop/ghaf_sapling.json",
+  "natures_spirit/seasons/crop/joshua_sapling.json",
+  "natures_spirit/seasons/crop/larch_sapling.json",
+  "natures_spirit/seasons/crop/mahogany_sapling.json",
+  "natures_spirit/seasons/crop/olive_sapling.json",
+  "natures_spirit/seasons/crop/orange_maple_sapling.json",
+  "natures_spirit/seasons/crop/palo_verde_sapling.json",
+  "natures_spirit/seasons/crop/pink_wisteria_sapling.json",
+  "natures_spirit/seasons/crop/purple_wisteria_sapling.json",
+  "natures_spirit/seasons/crop/red_maple_sapling.json",
+  "natures_spirit/seasons/crop/redwood_sapling.json",
+  "natures_spirit/seasons/crop/saxaul_sapling.json",
+  "natures_spirit/seasons/crop/sugi_sapling.json",
+  "natures_spirit/seasons/crop/white_wisteria_sapling.json",
+  "natures_spirit/seasons/crop/willow_sapling.json",
+  "natures_spirit/seasons/crop/yellow_larch_sapling.json",
+  "natures_spirit/seasons/crop/yellow_maple_sapling.json",
+  "smitherz/gem_drops/default_drops.json",
+  "vinery/seasons/crop/apple_tree_sapling.json",
+  "vinery/seasons/crop/dark_cherry_sapling.json",
+  "vinery/seasons/crop/jungle_grape_bush_red.json",
+  "vinery/seasons/crop/jungle_grape_bush_white.json",
+  "vinery/seasons/crop/red_grape_bush.json",
+  "vinery/seasons/crop/savanna_grape_bush_red.json",
+  "vinery/seasons/crop/savanna_grape_bush_white.json",
+  "vinery/seasons/crop/taiga_grape_bush_red.json",
+  "vinery/seasons/crop/taiga_grape_bush_white.json",
+  "vinery/seasons/crop/white_grape_bush.json"
+ ],
+ "warnings": [],
+ "tag_refs_made_optional": 990,
+ "tag_files_scrubbed": 31,
+ "worldgen_dropped": [
+  {
+   "file": "minecraft/worldgen/configured_feature/ore_coal.json",
+   "refs": [
+    "meadow:alpine_coal_ore",
+    "meadow:limestone",
+    "natures_spirit:chert",
+    "natures_spirit:chert_coal_ore"
+   ]
+  },
+  {
+   "file": "minecraft/worldgen/configured_feature/ore_coal_buried.json",
+   "refs": [
+    "meadow:alpine_coal_ore",
+    "meadow:limestone",
+    "natures_spirit:chert",
+    "natures_spirit:chert_coal_ore"
+   ]
+  },
+  {
+   "file": "minecraft/worldgen/configured_feature/ore_copper_large.json",
+   "refs": [
+    "meadow:alpine_copper_ore",
+    "meadow:limestone",
+    "natures_spirit:chert",
+    "natures_spirit:chert_copper_ore"
+   ]
+  },
+  {
+   "file": "minecraft/worldgen/configured_feature/ore_copper_small.json",
+   "refs": [
+    "meadow:alpine_copper_ore",
+    "meadow:limestone",
+    "natures_spirit:chert",
+    "natures_spirit:chert_copper_ore"
+   ]
+  },
+  {
+   "file": "minecraft/worldgen/configured_feature/ore_diamond_buried.json",
+   "refs": [
+    "meadow:alpine_diamond_ore",
+    "meadow:limestone",
+    "natures_spirit:chert",
+    "natures_spirit:chert_diamond_ore"
+   ]
+  },
+  {
+   "file": "minecraft/worldgen/configured_feature/ore_diamond_large.json",
+   "refs": [
+    "meadow:alpine_diamond_ore",
+    "meadow:limestone",
+    "natures_spirit:chert",
+    "natures_spirit:chert_diamond_ore"
+   ]
+  },
+  {
+   "file": "minecraft/worldgen/configured_feature/ore_diamond_small.json",
+   "refs": [
+    "meadow:alpine_diamond_ore",
+    "meadow:limestone",
+    "natures_spirit:chert",
+    "natures_spirit:chert_diamond_ore"
+   ]
+  },
+  {
+   "file": "minecraft/worldgen/configured_feature/ore_emerald.json",
+   "refs": [
+    "meadow:alpine_emerald_ore",
+    "meadow:limestone",
+    "natures_spirit:chert",
+    "natures_spirit:chert_emerald_ore"
+   ]
+  },
+  {
+   "file": "minecraft/worldgen/configured_feature/ore_gold.json",
+   "refs": [
+    "meadow:alpine_gold_ore",
+    "meadow:limestone",
+    "natures_spirit:chert",
+    "natures_spirit:chert_gold_ore"
+   ]
+  },
+  {
+   "file": "minecraft/worldgen/configured_feature/ore_gold_buried.json",
+   "refs": [
+    "meadow:alpine_gold_ore",
+    "meadow:limestone",
+    "natures_spirit:chert",
+    "natures_spirit:chert_gold_ore"
+   ]
+  },
+  {
+   "file": "minecraft/worldgen/configured_feature/ore_iron.json",
+   "refs": [
+    "meadow:alpine_iron_ore",
+    "meadow:limestone",
+    "natures_spirit:chert",
+    "natures_spirit:chert_iron_ore"
+   ]
+  },
+  {
+   "file": "minecraft/worldgen/configured_feature/ore_iron_small.json",
+   "refs": [
+    "meadow:alpine_iron_ore",
+    "meadow:limestone",
+    "natures_spirit:chert",
+    "natures_spirit:chert_iron_ore"
+   ]
+  },
+  {
+   "file": "minecraft/worldgen/configured_feature/ore_lapis.json",
+   "refs": [
+    "meadow:alpine_lapis_ore",
+    "meadow:limestone",
+    "natures_spirit:chert",
+    "natures_spirit:chert_lapis_ore"
+   ]
+  },
+  {
+   "file": "minecraft/worldgen/configured_feature/ore_lapis_buried.json",
+   "refs": [
+    "meadow:alpine_lapis_ore",
+    "meadow:limestone",
+    "natures_spirit:chert",
+    "natures_spirit:chert_lapis_ore"
+   ]
+  },
+  {
+   "file": "minecraft/worldgen/configured_feature/ore_redstone.json",
+   "refs": [
+    "meadow:alpine_redstone_ore",
+    "meadow:limestone",
+    "natures_spirit:chert",
+    "natures_spirit:chert_redstone_ore"
+   ]
+  }
+ ],
+ "uniform_fixed": 1
+}
