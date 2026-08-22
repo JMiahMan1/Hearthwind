@@ -1,0 +1,5 @@
+conversion/build/
+.gradle/
+build/
+run/
+*.log

@@ -1,0 +1,978 @@
+{
+  "_doc": "Curated mod manifest for the 26.x server conversion. Every mod from Aged 3.1.2 (212 files) is classified: action = keep | rebuild | drop | client-optional. 'slug' is the Modrinth project used by resolve_deps.py. Reasons document WHY, so future maintainers can re-evaluate.",
+  "generated_from": "Aged.mrpack v3.1.2 (MC 1.20.1) + Modrinth support scan on 2026-08-22",
+  "rebuild_groups": [
+    {
+      "name": "aged-survival",
+      "replaces": [
+        "dehydration",
+        "environmentz",
+        "nutritionz",
+        "spoiledz"
+      ],
+      "scope": "Thirst (dirty-water risk), body temperature, food spoilage, vitamin/mineral diet. Server-authoritative, data-driven values mirroring upstream configs."
+    },
+    {
+      "name": "aged-skills",
+      "replaces": [
+        "levelz",
+        "jobsaddon",
+        "partyaddon",
+        "rpgdifficulty"
+      ],
+      "scope": "Level/skill progression to 30 with attribute bonuses (health/movement/attack/defense/luck/stamina), job perks optional later, distance-based mob scaling."
+    },
+    {
+      "name": "aged-primitive",
+      "replaces": [
+        "earlystage",
+        "tiered",
+        "reciperemover",
+        "autotag"
+      ],
+      "scope": "Knapping/flint primitive start, beginner death penalty, recipe gating & ore-piece recipes via built-in datapack instead of separate mods."
+    },
+    {
+      "name": "aged-world",
+      "replaces": [
+        "fabric-seasons",
+        "seasonhud",
+        "time-and-wind",
+        "crop_growth_modifier"
+      ],
+      "scope": "Seasons-lite: crop growth modifiers, temperature offset per season; server-side with lightweight client HUD via vanilla bossbar/text alternatives."
+    }
+  ],
+  "mods": [
+    {
+      "file": "fabric-api",
+      "slug": "fabric-api",
+      "action": "keep",
+      "note": "Loader foundation"
+    },
+    {
+      "file": "cloth-config",
+      "slug": "cloth-config",
+      "action": "keep"
+    },
+    {
+      "file": "architectury",
+      "slug": "architectury-api",
+      "action": "keep"
+    },
+    {
+      "file": "forgeconfigapiport",
+      "slug": "forge-config-api-port",
+      "action": "keep",
+      "note": "Config API used by several kept mods"
+    },
+    {
+      "file": "owo-lib",
+      "slug": "owo-lib",
+      "action": "keep"
+    },
+    {
+      "file": "fzzy_config",
+      "slug": "fzzy-config",
+      "action": "keep"
+    },
+    {
+      "file": "lithium",
+      "slug": "lithium",
+      "action": "keep",
+      "cat": "perf"
+    },
+    {
+      "file": "ferritecore",
+      "slug": "ferrite-core",
+      "action": "keep",
+      "cat": "perf"
+    },
+    {
+      "file": "letmedespawn",
+      "slug": "lmd",
+      "action": "keep",
+      "cat": "perf"
+    },
+    {
+      "file": "log-begone",
+      "slug": "log-begone",
+      "action": "keep",
+      "cat": "perf"
+    },
+    {
+      "file": "c2me",
+      "slug": "c2me-fabric",
+      "action": "add",
+      "cat": "perf",
+      "note": "Modern multithreaded worldgen; standard for servers"
+    },
+    {
+      "file": "appleskin",
+      "slug": "appleskin",
+      "action": "keep"
+    },
+    {
+      "file": "emi",
+      "slug": "emi",
+      "action": "client-optional",
+      "note": "Recipe viewer is client-side"
+    },
+    {
+      "file": "emi_loot",
+      "slug": "emi-loot",
+      "action": "client-optional"
+    },
+    {
+      "file": "emi_ores",
+      "slug": "emi-ores",
+      "action": "client-optional"
+    },
+    {
+      "file": "emi_enchanting",
+      "slug": "emi-enchanting",
+      "action": "client-optional"
+    },
+    {
+      "file": "emiffect",
+      "slug": "emiffect",
+      "action": "client-optional"
+    },
+    {
+      "file": "emitrades",
+      "slug": "emitrades",
+      "action": "client-optional"
+    },
+    {
+      "file": "modmenu",
+      "slug": "modmenu",
+      "action": "client-optional"
+    },
+    {
+      "file": "bettercombat",
+      "slug": "better-combat",
+      "action": "keep",
+      "cat": "combat"
+    },
+    {
+      "file": "combatroll",
+      "slug": "combat-roll",
+      "action": "keep",
+      "cat": "combat"
+    },
+    {
+      "file": "immersive_armors",
+      "slug": "immersive-armors",
+      "action": "keep",
+      "cat": "combat"
+    },
+    {
+      "file": "player-animation-lib",
+      "slug": "playeranimator",
+      "action": "keep",
+      "cat": "combat",
+      "note": "Required by BetterCombat"
+    },
+    {
+      "file": "medievalweapons",
+      "slug": "medievalweapons",
+      "action": "drop",
+      "reason": "Stuck pre-1.21.2; core moves into aged-primitive weapon tiers later"
+    },
+    {
+      "file": "amarite",
+      "slug": "amarite",
+      "action": "drop",
+      "reason": "Stuck 1.20.1; niche single sword"
+    },
+    {
+      "file": "tiered",
+      "slug": "tiered",
+      "action": "rebuild",
+      "group": "aged-primitive"
+    },
+    {
+      "file": "inmis",
+      "slug": "inmis",
+      "action": "drop",
+      "reason": "Backpack slots stuck; use vanilla bundle rework in 26.x"
+    },
+    {
+      "file": "inmisaddon",
+      "slug": "inmisaddon",
+      "action": "drop",
+      "reason": "Depends on Inmis"
+    },
+    {
+      "file": "backslot",
+      "slug": "backslot",
+      "action": "drop",
+      "reason": "Stuck; cosmetic slot"
+    },
+    {
+      "file": "backslotaddon",
+      "slug": "backslotaddon",
+      "action": "drop",
+      "reason": "Depends on backslot"
+    },
+    {
+      "file": "trinkets",
+      "slug": "trinkets",
+      "action": "drop",
+      "reason": "Accessory API stalled at 1.21.1 ecosystem; no kept mod requires it after trims"
+    },
+    {
+      "file": "revive",
+      "slug": "revive",
+      "action": "drop",
+      "reason": "Stuck; revisit if co-op demand emerges"
+    },
+    {
+      "file": "rpgdifficulty",
+      "slug": "rpg-difficulty",
+      "action": "rebuild",
+      "group": "aged-skills",
+      "reason": "Simple distance-scaling rule, trivially rebuilt server-side"
+    },
+    {
+      "file": "herdspanic",
+      "slug": "herdspanic",
+      "action": "keep",
+      "cat": "world-flavor"
+    },
+    {
+      "file": "earlystage",
+      "slug": "earlystage",
+      "action": "rebuild",
+      "group": "aged-primitive",
+      "reason": "CORE identity: knapping start"
+    },
+    {
+      "file": "dehydration",
+      "slug": "dehydration",
+      "action": "rebuild",
+      "group": "aged-survival",
+      "reason": "CORE identity: thirst"
+    },
+    {
+      "file": "environmentz",
+      "slug": "environmentz",
+      "action": "rebuild",
+      "group": "aged-survival",
+      "reason": "CORE identity: temperature"
+    },
+    {
+      "file": "nutritionz",
+      "slug": "nutritionz",
+      "action": "rebuild",
+      "group": "aged-survival",
+      "reason": "CORE identity: diet"
+    },
+    {
+      "file": "spoiledz",
+      "slug": "spoiledz",
+      "action": "rebuild",
+      "group": "aged-survival",
+      "reason": "CORE identity: spoilage"
+    },
+    {
+      "file": "levelz",
+      "slug": "levelz",
+      "action": "rebuild",
+      "group": "aged-skills",
+      "reason": "CORE identity: skills/attributes"
+    },
+    {
+      "file": "jobsaddon",
+      "slug": "jobs-addon",
+      "action": "rebuild",
+      "group": "aged-skills",
+      "reason": "Phase 2 of aged-skills"
+    },
+    {
+      "file": "partyaddon",
+      "slug": "party-addon",
+      "action": "rebuild",
+      "group": "aged-skills",
+      "reason": "Phase 2 of aged-skills"
+    },
+    {
+      "file": "smitherz",
+      "slug": "smitherz",
+      "action": "drop",
+      "reason": "Nice-to-have; fold upgrade concept into aged-primitive"
+    },
+    {
+      "file": "travelerz",
+      "slug": "travelerz",
+      "action": "drop",
+      "reason": "Map pins; vanilla 26.x locator bar covers most"
+    },
+    {
+      "file": "libz",
+      "slug": "libz",
+      "action": "drop",
+      "reason": "Library for z-series mods being replaced"
+    },
+    {
+      "file": "fabric-seasons",
+      "slug": "fabric-seasons",
+      "action": "rebuild",
+      "group": "aged-world"
+    },
+    {
+      "file": "seasonhud",
+      "slug": "seasonhud-fabric",
+      "action": "rebuild",
+      "group": "aged-world"
+    },
+    {
+      "file": "time-and-wind",
+      "slug": "time-and-wind",
+      "action": "drop",
+      "reason": "Day-length tuning; not mission-critical"
+    },
+    {
+      "file": "crop_growth_modifier",
+      "slug": "crop-growth-modifier",
+      "action": "rebuild",
+      "group": "aged-world"
+    },
+    {
+      "file": "terrablender",
+      "slug": "terrablender",
+      "action": "keep",
+      "cat": "worldgen-lib",
+      "note": "Only if a kept worldgen mod needs it; drop otherwise"
+    },
+    {
+      "file": "naturespirit",
+      "slug": "natures-spirit",
+      "action": "drop",
+      "reason": "Biome ambience stuck at 1.21.1; heavy worldgen churn risk across snapshots"
+    },
+    {
+      "file": "gardens-of-the-dead",
+      "slug": "gardens-of-the-dead",
+      "action": "drop",
+      "reason": "Ambience biomes"
+    },
+    {
+      "file": "naturalist",
+      "slug": "naturalist",
+      "action": "drop",
+      "reason": "Ambience animals"
+    },
+    {
+      "file": "creeperoverhaul",
+      "slug": "creeper-overhaul",
+      "action": "drop",
+      "reason": "Cosmetic variants"
+    },
+    {
+      "file": "endermanoverhaul",
+      "slug": "enderman-overhaul",
+      "action": "drop",
+      "reason": "Cosmetic variants"
+    },
+    {
+      "file": "Boids",
+      "slug": "boids",
+      "action": "drop",
+      "reason": "Bird flock engine; ambience"
+    },
+    {
+      "file": "birdsboids",
+      "slug": "birds-boids-addon",
+      "action": "drop",
+      "reason": "Addon for Boids"
+    },
+    {
+      "file": "adventurez",
+      "slug": "adventurez",
+      "action": "drop",
+      "reason": "Boss/mob pack stuck; off core loop"
+    },
+    {
+      "file": "astrocraft",
+      "slug": "astrocraft",
+      "action": "drop",
+      "reason": "Aliens; tonally off-mission"
+    },
+    {
+      "file": "fleshz",
+      "slug": "fleshz",
+      "action": "drop",
+      "reason": "Mob pack stuck"
+    },
+    {
+      "file": "YungsApi",
+      "slug": "yungs-api",
+      "action": "keep",
+      "cat": "structures"
+    },
+    {
+      "file": "YungsBetterDesertTemples",
+      "slug": "yungs-better-desert-temples",
+      "action": "keep",
+      "cat": "structures"
+    },
+    {
+      "file": "YungsBetterEndIsland",
+      "slug": "yungs-better-end-island",
+      "action": "keep",
+      "cat": "structures"
+    },
+    {
+      "file": "YungsBetterJungleTemples",
+      "slug": "yungs-better-jungle-temples",
+      "action": "keep",
+      "cat": "structures"
+    },
+    {
+      "file": "YungsBetterNetherFortresses",
+      "slug": "yungs-better-nether-fortresses",
+      "action": "keep",
+      "cat": "structures"
+    },
+    {
+      "file": "YungsBetterOceanMonuments",
+      "slug": "yungs-better-ocean-monuments",
+      "action": "keep",
+      "cat": "structures"
+    },
+    {
+      "file": "HopoBetterMineshaft",
+      "slug": "hopo-better-mineshaft",
+      "action": "keep",
+      "cat": "structures"
+    },
+    {
+      "file": "HopoBetterUnderwaterRuins",
+      "slug": "hopo-better-underwater-ruins",
+      "action": "keep",
+      "cat": "structures"
+    },
+    {
+      "file": "formations",
+      "slug": "formations",
+      "action": "keep",
+      "cat": "structures"
+    },
+    {
+      "file": "formationsoverworld",
+      "slug": "formations-overworld",
+      "action": "keep",
+      "cat": "structures"
+    },
+    {
+      "file": "formationsnether",
+      "slug": "formations-nether",
+      "action": "keep",
+      "cat": "structures"
+    },
+    {
+      "file": "dungeons-and-taverns",
+      "slug": "dungeons-and-taverns",
+      "action": "keep",
+      "cat": "structures"
+    },
+    {
+      "file": "dungeons-and-taverns-ancient-city-overhaul",
+      "slug": "dungeons-and-taverns-ancient-city-overhaul",
+      "action": "keep",
+      "cat": "structures"
+    },
+    {
+      "file": "dungeons-and-taverns-pillager-outpost-rework",
+      "slug": "dungeons-and-taverns-pillager-outpost-overhaul",
+      "action": "keep",
+      "cat": "structures"
+    },
+    {
+      "file": "dungeons-and-taverns-stronghold-rework",
+      "slug": "dungeons-and-taverns-stronghold-overhaul",
+      "action": "keep",
+      "cat": "structures"
+    },
+    {
+      "file": "sparsestructures",
+      "slug": "sparsestructures",
+      "action": "keep",
+      "cat": "structures",
+      "note": "Thins vanilla spam; matches Aged pacing"
+    },
+    {
+      "file": "tlc",
+      "slug": "the-lost-castle",
+      "action": "keep",
+      "cat": "structures"
+    },
+    {
+      "file": "medieval_buildings",
+      "slug": "medieval-buildings",
+      "action": "keep",
+      "cat": "structures"
+    },
+    {
+      "file": "Dungeon Now Loading",
+      "slug": "dungeon-now-loading",
+      "action": "drop",
+      "reason": "Stuck 1.20.1; overlap with kept structure set"
+    },
+    {
+      "file": "dungeons+-1.8.4b",
+      "slug": "dungeons-plus",
+      "action": "drop",
+      "reason": "Overlap; verify status before reconsidering"
+    },
+    {
+      "file": "desert-dungeon",
+      "slug": "desert-dungeon",
+      "action": "drop",
+      "reason": "Small niche dungeon"
+    },
+    {
+      "file": "dungeonz",
+      "slug": "dungeonz",
+      "action": "drop",
+      "reason": "Small niche dungeon"
+    },
+    {
+      "file": "u_desert",
+      "slug": "u-desert",
+      "action": "drop",
+      "reason": "Niche desert structures"
+    },
+    {
+      "file": "underground-jungle",
+      "slug": "underground-jungle",
+      "action": "drop",
+      "reason": "Stuck 1.20.1; big worldgen risk"
+    },
+    {
+      "file": "spirder-caves",
+      "slug": "spider-caves",
+      "action": "drop",
+      "reason": "Unresolved/niche"
+    },
+    {
+      "file": "tru.e-ending",
+      "slug": "true-ending",
+      "action": "drop",
+      "reason": "End overhaul niche"
+    },
+    {
+      "file": "betterendcitiesvanilla",
+      "slug": "vanilla-end-city-overhaul",
+      "action": "drop",
+      "reason": "Tiny tweak datapack-style"
+    },
+    {
+      "file": "profundis",
+      "slug": "profundis",
+      "action": "drop",
+      "reason": "Cave biomes stuck; snapshot worldgen churn"
+    },
+    {
+      "file": "lukis-grand-capitals",
+      "slug": "lukis-grand-capitals",
+      "action": "drop",
+      "reason": "Structure pack stuck"
+    },
+    {
+      "file": "villagesandpillages",
+      "slug": "villages-and-pillages",
+      "action": "drop",
+      "reason": "Unresolved status; village variety not core"
+    },
+    {
+      "file": "mns",
+      "slug": "mns",
+      "action": "drop",
+      "reason": "Large structure pack overlap"
+    },
+    {
+      "file": "mes",
+      "slug": "moogs-endless-structures",
+      "action": "drop",
+      "reason": "Overlap"
+    },
+    {
+      "file": "endrem",
+      "slug": "endrem",
+      "action": "keep",
+      "cat": "progression",
+      "note": "Eyes quest gives early-game direction; ready 26.1"
+    },
+    {
+      "file": "lootr",
+      "slug": "lootr",
+      "action": "keep",
+      "cat": "structures",
+      "note": "Per-player loot; server staple"
+    },
+    {
+      "file": "paxi",
+      "slug": "paxi",
+      "action": "drop",
+      "reason": "Ship aged datapack natively in world/datapacks instead"
+    },
+    {
+      "file": "letsdo-API",
+      "slug": "do-api",
+      "action": "drop",
+      "reason": "Whole LetsDo family stuck (~1.21.1); food ambience not core loop; revisit when updated"
+    },
+    {
+      "file": "letsdo-bakery",
+      "slug": "lets-do-bakery",
+      "action": "drop",
+      "reason": "LetsDo family"
+    },
+    {
+      "file": "letsdo-brewery",
+      "slug": "lets-do-brewery",
+      "action": "drop",
+      "reason": "LetsDo family"
+    },
+    {
+      "file": "letsdo-candlelight",
+      "slug": "lets-do-candlelight",
+      "action": "drop",
+      "reason": "LetsDo family"
+    },
+    {
+      "file": "letsdo-farm_and_charm",
+      "slug": "lets-do-farm-charm",
+      "action": "drop",
+      "reason": "LetsDo family"
+    },
+    {
+      "file": "letsdo-meadow",
+      "slug": "lets-do-meadow",
+      "action": "drop",
+      "reason": "LetsDo family"
+    },
+    {
+      "file": "letsdo-vinery",
+      "slug": "lets-do-vinery",
+      "action": "drop",
+      "reason": "LetsDo family"
+    },
+    {
+      "file": "letsdo-nethervinery",
+      "slug": "create-nether-vinery",
+      "action": "drop",
+      "reason": "LetsDo family"
+    },
+    {
+      "file": "letsdo-herbalbrews",
+      "slug": "herbal-brews",
+      "action": "drop",
+      "reason": "LetsDo family"
+    },
+    {
+      "file": "emi-letsdo-compat",
+      "slug": "emi-letsdo-compat",
+      "action": "drop",
+      "reason": "Depends on LetsDo"
+    },
+    {
+      "file": "sushi_bar",
+      "slug": "sushi-bar",
+      "action": "drop",
+      "reason": "Food ambience niche"
+    },
+    {
+      "file": "another_furniture",
+      "slug": "another-furniture",
+      "action": "drop",
+      "reason": "Decor; stuck 1.21.1"
+    },
+    {
+      "file": "chipped",
+      "slug": "chipped",
+      "action": "drop",
+      "reason": "Decor variants; heavy recipe bloat"
+    },
+    {
+      "file": "bbb",
+      "slug": "barrels-bins-and-boxes",
+      "action": "drop",
+      "reason": "Decor storage"
+    },
+    {
+      "file": "chalk",
+      "slug": "chalk",
+      "action": "keep",
+      "cat": "qol-flavor",
+      "note": "Verify readiness; caving utility"
+    },
+    {
+      "file": "chalk-colorful-addon",
+      "slug": "chalk-colorful-addon",
+      "action": "drop",
+      "reason": "Addon; keep base only if ready"
+    },
+    {
+      "file": "connectiblechains",
+      "slug": "connectible-chains",
+      "action": "drop",
+      "reason": "Cosmetic physics"
+    },
+    {
+      "file": "jumpoverfences",
+      "slug": "jump-over-fences",
+      "action": "keep",
+      "cat": "qol"
+    },
+    {
+      "file": "crawl",
+      "slug": "crawl",
+      "action": "keep",
+      "cat": "qol",
+      "note": "Verify readiness"
+    },
+    {
+      "file": "villager-transportation",
+      "slug": "villager-transportation",
+      "action": "drop",
+      "reason": "QOL nicety stuck"
+    },
+    {
+      "file": "superbsteeds",
+      "slug": "superb-steeds",
+      "action": "keep",
+      "cat": "qol-flavor"
+    },
+    {
+      "file": "smallships",
+      "slug": "small-ships",
+      "action": "drop",
+      "reason": "Stuck 1.21.4; ships off core loop"
+    },
+    {
+      "file": "ships",
+      "slug": "ships",
+      "action": "drop",
+      "reason": "Big ships; same"
+    },
+    {
+      "file": "niftycarts",
+      "slug": "niftycarts",
+      "action": "drop",
+      "reason": "Carts niche; config existed but non-core"
+    },
+    {
+      "file": "immersive_aircraft",
+      "slug": "immersive-aircraft",
+      "action": "drop",
+      "reason": "Planes vs medieval realism"
+    },
+    {
+      "file": "villagerfix",
+      "slug": "villager-fix",
+      "action": "drop",
+      "reason": "Unresolved; vanilla trading fine"
+    },
+    {
+      "file": "smarterfarmers",
+      "slug": "smarter-farmers",
+      "action": "drop",
+      "reason": "Farmer AI nicety; tied to farm&charm ecosystem"
+    },
+    {
+      "file": "exposure",
+      "slug": "exposure",
+      "action": "keep",
+      "cat": "flavor",
+      "note": "Photography; verify readiness"
+    },
+    {
+      "file": "antique-atlas",
+      "slug": "antique-atlas-4",
+      "action": "keep",
+      "cat": "qol",
+      "note": "Exploration identity; verify readiness"
+    },
+    {
+      "file": "surveyor",
+      "slug": "surveyor-map-framework",
+      "action": "drop",
+      "reason": "Atlas framework lib; only if antique atlas needs it"
+    },
+    {
+      "file": "lavender",
+      "slug": "lavender",
+      "action": "drop",
+      "reason": "Guidebook lib for cut mods"
+    },
+    {
+      "file": "scholar",
+      "slug": "scholar",
+      "action": "drop",
+      "reason": "Books nicety"
+    },
+    {
+      "file": "Pockets",
+      "slug": "pockets",
+      "action": "drop",
+      "reason": "Micro-storage niche"
+    },
+    {
+      "file": "ExtendedDrawers",
+      "slug": "extended-drawers",
+      "action": "drop",
+      "reason": "Storage tech; off-mission medieval"
+    },
+    {
+      "file": "extendeddrawersaddon",
+      "slug": "extended-drawers-add-on",
+      "action": "drop",
+      "reason": "Depends on ExtendedDrawers"
+    },
+    {
+      "file": "reciperemover",
+      "slug": "recipe-remover",
+      "action": "rebuild",
+      "group": "aged-primitive",
+      "reason": "=datapack"
+    },
+    {
+      "file": "autotag",
+      "slug": "autotag",
+      "action": "rebuild",
+      "group": "aged-primitive",
+      "reason": "=datapack tags"
+    },
+    {
+      "file": "couplings",
+      "slug": "couplings",
+      "action": "drop",
+      "reason": "Double doors; vanilla parity coming"
+    },
+    {
+      "file": "async-locator",
+      "slug": "async-locator",
+      "action": "drop",
+      "reason": "Vanilla /locate fast on modern MC"
+    },
+    {
+      "file": "memoryleakfix",
+      "slug": "memoryleakfix",
+      "action": "drop",
+      "reason": "Obsolete on modern JVM/MC"
+    },
+    {
+      "file": "modernfix",
+      "slug": "modernfix",
+      "action": "keep",
+      "cat": "perf",
+      "note": "Verify actual latest support; drop if unmaintained"
+    },
+    {
+      "file": "noisium",
+      "slug": "noisium",
+      "action": "keep",
+      "cat": "perf",
+      "note": "1.21.6; watch for 26.x build"
+    },
+    {
+      "file": "DEUF_Refabricated",
+      "slug": "entity-collision-fps-fix",
+      "action": "drop",
+      "reason": "Client perf fix era; modern MC improved"
+    },
+    {
+      "file": "geckolib",
+      "slug": "geckolib",
+      "action": "keep",
+      "cat": "lib",
+      "note": "Needed by kept animated mods"
+    },
+    {
+      "file": "Kiwi",
+      "slug": "kiwi",
+      "action": "keep",
+      "cat": "lib",
+      "note": "Verify needed after trims"
+    },
+    {
+      "file": "moonlight",
+      "slug": "moonlight",
+      "action": "drop",
+      "reason": "Lib for Let's Do family"
+    },
+    {
+      "file": "resourcefullib",
+      "slug": "resourceful-lib",
+      "action": "keep",
+      "cat": "lib",
+      "note": "Needed by kept mods (e.g., exposure)"
+    },
+    {
+      "file": "resourcefulconfig",
+      "slug": "resourceful-config",
+      "action": "keep",
+      "cat": "lib"
+    },
+    {
+      "file": "athena",
+      "slug": "athena-ctm",
+      "action": "drop",
+      "reason": "CTM lib for chipped/connected textures; client decor"
+    },
+    {
+      "file": "arrp",
+      "slug": "arrp",
+      "action": "drop",
+      "reason": "Runtime resource pack gen lib for cut mods"
+    },
+    {
+      "file": "MRU",
+      "slug": "mru",
+      "action": "drop",
+      "reason": "Lib for cut structure mods"
+    },
+    {
+      "file": "OctoLib",
+      "slug": "octolib",
+      "action": "drop",
+      "reason": "Lib for cut mods"
+    },
+    {
+      "file": "tcdcommons",
+      "slug": "tcdcommons",
+      "action": "keep",
+      "cat": "lib",
+      "note": "Verify needed"
+    },
+    {
+      "file": "balm",
+      "slug": "balm",
+      "action": "keep",
+      "cat": "lib",
+      "note": "Needed by some YUNG-adjacent/QOL"
+    },
+    {
+      "file": "supermartijn642configlib",
+      "slug": "supermartijn642s-config-lib",
+      "action": "drop",
+      "reason": "For cut mods"
+    },
+    {
+      "file": "supermartijn642scorelib",
+      "slug": "supermartijn642s-core-lib",
+      "action": "drop",
+      "reason": "For cut mods"
+    },
+    {
+      "file": "Grass_Overhaul",
+      "slug": "grass-overhaul",
+      "action": "drop",
+      "reason": "Flora ambience stuck 1.21.1"
+    }
+  ],
+  "client_optional_extra_note": "All 28 client-only visual/perf mods from 3.1.2 (sodium, iris, indium, DistantHorizons, EMF/ETF, firstperson, skinlayers, presence-footsteps, sound-physics, fancymenu stack, etc.) ship as an OPTIONAL companion download, not in the server index."
+}

@@ -1,0 +1,28 @@
+{
+  "pack": {
+    "name": "Aged Server",
+    "slug": "aged-server",
+    "version": "0.1.0",
+    "summary": "Server-focused rebuild of the Aged modpack for modern Minecraft (26.x era)",
+    "license": "MIT",
+    "upstream": "https://github.com/xR4YM0ND/Aged"
+  },
+  "_readme": [
+    "Single source of truth for pack versions. To target a new release or snapshot:",
+    "  1. change targets.minecraft below",
+    "  2. run: python3 conversion/scripts/resolve_deps.py",
+    "  3. review conversion/build/readiness-report.json for missing mods",
+    "  4. run: python3 conversion/scripts/build_pack.py --server"
+  ],
+  "targets": {
+    "minecraft": "26.2",
+    "loader": "fabric-loader",
+    "loader_version": "0.19.3",
+    "notes": "Set minecraft to any release or snapshot id, e.g. 26.3-snapshot-9. resolve_deps.py reports per-mod readiness for that exact id."
+  },
+  "policy": {
+    "include_client_only_in_server_pack": false,
+    "allow_older_builds_if_exact_missing": false,
+    "strict": true
+  }
+}
