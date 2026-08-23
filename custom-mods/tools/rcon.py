@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Minimal RCON client (Source RCON protocol) for headless server testing."""
+
 import socket
 import struct
 import sys

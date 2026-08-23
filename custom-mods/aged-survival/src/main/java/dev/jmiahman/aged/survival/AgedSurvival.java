@@ -10,6 +10,9 @@ public class AgedSurvival implements ModInitializer {
 
 	@Override
 	public void onInitialize() {
-		LOGGER.info("Aged Survival initialized");
+		ThirstMobEffect.register();
+		AgedSurvivalThirst.registerTickLoop();
+		DehydrationItems.registerAll(msg -> LOGGER.info(msg));
+		LOGGER.info("Aged Survival initialized: thirst system active");
 	}
 }
