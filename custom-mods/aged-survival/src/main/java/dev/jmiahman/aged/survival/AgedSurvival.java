@@ -13,6 +13,9 @@ public class AgedSurvival implements ModInitializer {
 		ThirstMobEffect.register();
 		AgedSurvivalThirst.registerTickLoop();
 		DehydrationItems.registerAll(msg -> LOGGER.info(msg));
-		LOGGER.info("Aged Survival initialized: thirst system active");
+		EnvironmentzItems.registerAll(msg -> LOGGER.info(msg));
+		AgedSurvivalTemperature.registerTickLoop();
+		AgedSurvivalLoot.init();
+		LOGGER.info("Aged Survival initialized: thirst + temperature systems active");
 	}
 }

@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    "X X",
+    "XXX",
+    "XXX"
+  ],
+  "key": {
+    "X": "environmentz:wolf_pelt"
+  },
+  "result": {
+    "id": "environmentz:wolf_chestplate",
+    "count": 1
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "equipment",
+  "ingredients": [
+    "minecraft:snowball",
+    "minecraft:snowball",
+    "minecraft:packed_ice"
+  ],
+  "result": {
+    "id": "environmentz:ice_pack",
+    "count": 1
+  }
+}

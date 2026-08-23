@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "equipment",
+  "ingredients": [
+    "minecraft:cobblestone",
+    "minecraft:cobblestone",
+    "minecraft:coal"
+  ],
+  "result": {
+    "id": "environmentz:heating_stones",
+    "count": 1
+  }
+}

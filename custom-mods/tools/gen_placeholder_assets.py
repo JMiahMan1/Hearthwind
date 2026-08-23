@@ -43,6 +43,30 @@ MODS = {
             "water_bowl": "#3a62c4",
             "purified_water_bowl": "#7ad0f0",
         },
+        "environmentz": {
+            "wolf_pelt": "#6d5a44",
+            "polar_bear_fur": "#e8e8e2",
+            "ice_pack": "#9fd8f0",
+            "heating_stones": "#b05a28",
+            "wolf_helmet": "#5a4a38",
+            "wolf_chestplate": "#5a4a38",
+            "wolf_leggings": "#4e4030",
+            "wolf_boots": "#46382a",
+            "wanderer_helmet": "#c8b48c",
+            "wanderer_chestplate": "#c8b48c",
+            "wanderer_leggings": "#b8a47c",
+            "wanderer_boots": "#a89468",
+        },
+    },
+}
+
+# Equipment assets + entity textures (client visuals; server ignores them).
+EQUIPMENT = {
+    "aged-survival": {
+        "environmentz": {
+            "wolf": "#5a4a38",
+            "wanderer": "#c8b48c",
+        },
     },
 }
 
@@ -133,7 +157,49 @@ def main():
             json.dumps(lang, indent=2)
         )
         total += sum(len(items) for items in namespaces.values())
-    print("generated placeholder assets for", total, "items")
+
+    eq_total = 0
+    for mod, namespaces in EQUIPMENT.items():
+        res = root / mod / "src" / "main" / "resources"
+        for ns, assets in namespaces.items():
+            for name, color in assets.items():
+                eq_dir = res / "assets" / ns / "equipment"
+                eq_dir.mkdir(parents=True, exist_ok=True)
+                rgb = hex_rgb(color)
+                (eq_dir / f"{name}.json").write_text(
+                    json.dumps(
+                        {
+                            "layers": {
+                                "humanoid": [{"texture": f"{ns}:{name}"}],
+                                "humanoid_leggings": [
+                                    {"texture": f"{ns}:{name}_leggings"}
+                                ],
+                            }
+                        },
+                        indent=2,
+                    )
+                )
+                tex_dir = (
+                    res
+                    / "assets"
+                    / ns
+                    / "textures"
+                    / "entity"
+                    / "equipment"
+                    / "humanoid"
+                )
+                tex_dir.mkdir(parents=True, exist_ok=True)
+                write_png(tex_dir / f"{name}.png", rgb, size=64)
+                write_png(tex_dir / f"{name}_leggings.png", rgb, size=64)
+                eq_total += 1
+    print(
+        "generated placeholder assets for",
+        total,
+        "items",
+        "+",
+        eq_total,
+        "equipment sets",
+    )
 
 
 if __name__ == "__main__":

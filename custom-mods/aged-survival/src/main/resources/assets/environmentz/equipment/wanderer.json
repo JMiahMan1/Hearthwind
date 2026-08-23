@@ -1,0 +1,14 @@
+{
+  "layers": {
+    "humanoid": [
+      {
+        "texture": "environmentz:wanderer"
+      }
+    ],
+    "humanoid_leggings": [
+      {
+        "texture": "environmentz:wanderer_leggings"
+      }
+    ]
+  }
+}

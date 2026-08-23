@@ -1,4 +1,16 @@
 {
   "item.dehydration.water_bowl": "Water Bowl",
-  "item.dehydration.purified_water_bowl": "Purified Water Bowl"
+  "item.dehydration.purified_water_bowl": "Purified Water Bowl",
+  "item.environmentz.wolf_pelt": "Wolf Pelt",
+  "item.environmentz.polar_bear_fur": "Polar Bear Fur",
+  "item.environmentz.ice_pack": "Ice Pack",
+  "item.environmentz.heating_stones": "Heating Stones",
+  "item.environmentz.wolf_helmet": "Wolf Helmet",
+  "item.environmentz.wolf_chestplate": "Wolf Chestplate",
+  "item.environmentz.wolf_leggings": "Wolf Leggings",
+  "item.environmentz.wolf_boots": "Wolf Boots",
+  "item.environmentz.wanderer_helmet": "Wanderer Helmet",
+  "item.environmentz.wanderer_chestplate": "Wanderer Chestplate",
+  "item.environmentz.wanderer_leggings": "Wanderer Leggings",
+  "item.environmentz.wanderer_boots": "Wanderer Boots"
 }
