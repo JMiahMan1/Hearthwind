@@ -175,12 +175,17 @@ python3 ../custom-mods/tools/rcon.py 127.0.0.1 25575 agedtest "summon item ~ ~ ~
    beginner-death forgiveness (`beginnerDeathCount: 3`), steel tier
    items + recipes.
 4. **World** (`aged-world`): seasons-lite (4 seasons, crop multipliers,
-   temperature hook consumed by survival module).
+   temperature hook consumed by survival module); water motion system per
+   `ideas/rivers-and-waves.md` (river currents, ocean swell, foam, tides
+   -> later visible wave surfaces via optional client companion/shaders;
+   Tectonic/Terralith decision at next version bump).
 5. **Datapack noise shrink**: each shipped item set reduces the
    remaining non-fatal loot/recipe parse warnings; re-census via
    `grep "Couldn't parse" bootN.log`.
 6. **Watchlist**: periodically rerun `resolve_deps.py --mc <latest>`;
    YUNG suite/endrem/etc. return automatically as authors publish.
+   Water/worldgen candidates tracked in `ideas/rivers-and-waves.md`
+   (tectonic + terralith both ship 26.2 builds; adopt at next bump).
 7. **Snapshot CI probe**: nightly resolver run against newest snapshot.
 8. **Real art**: replace generated placeholder textures/models.
 9. **Cleanup discipline**: remove `.tmp-test-server/`,
