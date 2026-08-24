@@ -20,6 +20,7 @@ commit titles with "Aged"** — use plain conventional subjects
 | `custom-mods/tools/gen_placeholder_assets.py` | Placeholder models/textures/lang/equipment generator |
 | `custom-mods/tools/rcon.py` | Minimal Source-RCON client for headless verification |
 | `docs/CONVERSION.md` | Feasibility study, strategy, verified-state writeups |
+| `docs/PROJECT_DIRECTION.md` | Fork → standalone strategy: phases, asset provenance rules, borrow board |
 | `docs/INSTALL.md` | Install instructions (players/admins/devs) + packaging flow |
 | `docs/PLAYER_CHANGES.md` | Player-facing list of gameplay differences from vanilla; UPDATE WITH EVERY GAMEPLAY COMMIT |
 | `.github/workflows/build-and-test.yml` | GHA: build + headless gametests on push; optional pack boot-smoke on dispatch |
