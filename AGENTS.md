@@ -203,19 +203,22 @@ python3 ../custom-mods/tools/rcon.py 127.0.0.1 25575 agedtest "summon item ~ ~ ~
    XP hooks on block break (crops->farming, pickaxe->mining,
    shovel->stamina) and kills (melee->strength, bow/crossbow/trident->
    archery, animals->farming). All tunables in `config/aged_skills.json`.
-   - Remaining: mob scaling by distance-from-spawn (rpgdifficulty
-     parity), skill unlock gating from the migrated `data/levelz/*`
-     corpus (advancement-wrapped per ideas/genesis-comparison.md),
-     client HUD.
-3. **Primitive upgrades** (`aged-primitive`): knapping minigame,
-   sieve block using `earlystage:sieve_drops/aged_drops.json` spec,
-   beginner-death forgiveness (`beginnerDeathCount: 3`), steel tier
-   items + recipes.
-4. **World** (`aged-world`): seasons-lite (4 seasons, crop multipliers,
-   temperature hook consumed by survival module); water motion system per
-   `ideas/rivers-and-waves.md` (river currents, ocean swell, foam, tides
-   -> later visible wave surfaces via optional client companion/shaders;
-   Tectonic/Terralith decision at next version bump).
+    - Remaining vs original: crafting denial for gated items (smithing
+      tiers), entity/husbandry gates, client HUD (companion mod).
+ 3. **Primitive upgrades** (`aged-primitive`): knapping minigame,
+    sieve block using `earlystage:sieve_drops/aged_drops.json` spec,
+    beginner-death forgiveness (`beginnerDeathCount: 3`), steel tier
+    items + recipes.
+ 4. **Jobs** (`aged-jobs`, jobs-addon parity): 8 jobs (fisher/miner/
+    farmer/warrior/smither/brewer/builder/lumberjack), XP sources per
+    level + job-restricted recipes; corpus `data/jobsaddon`. Reuses the
+    skill-event infra. Full parity matrix + ordering:
+    docs/FEATURE_PARITY.md.
+ 5. **World** (`aged-world`): seasons-lite (4 seasons, crop multipliers,
+    temperature hook consumed by survival module); water motion system per
+    `ideas/rivers-and-waves.md` (river currents, ocean swell, foam, tides
+    -> later visible wave surfaces via optional client companion/shaders;
+    Tectonic/Terralith decision at next version bump).
 5. **Datapack noise shrink**: each shipped item set reduces the
    remaining non-fatal loot/recipe parse warnings; re-census via
    `grep "Couldn't parse" bootN.log`.
