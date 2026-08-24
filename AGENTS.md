@@ -186,6 +186,9 @@ python3 ../custom-mods/tools/rcon.py 127.0.0.1 25575 agedtest "summon item ~ ~ ~
    YUNG suite/endrem/etc. return automatically as authors publish.
    Water/worldgen candidates tracked in `ideas/rivers-and-waves.md`
    (tectonic + terralith both ship 26.2 builds; adopt at next bump).
+   `genesis-framework` (4 builds on 26.2, MPL-2.0) is the keep-candidate
+   for age/story progression gating — analysis + adoption plan in
+   `ideas/genesis-comparison.md`; genesis-official is reference-only.
 7. **Snapshot CI probe**: nightly resolver run against newest snapshot.
 8. **Real art**: replace generated placeholder textures/models.
 9. **Cleanup discipline**: remove `.tmp-test-server/`,
