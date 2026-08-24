@@ -1,32 +1,31 @@
-# Aged
-Aged is a challenging medieval based modpack where realism & wisdom rule your life.  
+# Hearthwind
 
-You awaken in the **Tales of Aged** wilderness.  
-You quickly realize that you need to **gather supplies** & craft some **flint tools**.  
-**Fresh water** and **body temperature** become important pretty soon.  
-Your **character** is still **weak**, so you go an adventure to **gather experience** to increase your **skills** and attributes.  
-*That's where your story begins.*  
+A challenging medieval survival pack where realism & wisdom rule your life.
+Grown from the [Aged](https://github.com/xR4YM0ND/Aged) fork — inspired by
+Aged and by [Genesis](https://github.com/marianyp/Genesis) — now finding its
+own way. Server-side only: players join with a vanilla client.
 
-### Installation
-Aged is a modpack hosted on the modrinth website and can be found [here](https://modrinth.com/modpack/aged). To install Aged, visit modrinths [documentation](https://docs.modrinth.com/docs/modpacks/playing_modpacks/) which provides instructions on using [Modrinth Launcher](https://modrinth.com/app), [ATLauncher](https://atlauncher.com/about), [MultiMC](https://multimc.org/), and [Prism Launcher](https://prismlauncher.org/).
+You awaken in a wilderness where **fresh water**, **body temperature**, a
+**balanced diet** and **spoiling food** matter. You **gather supplies** and
+craft **flint tools** before stone is even within reach, while
+**monsters grow stronger** the farther you wander from spawn. Raise your
+**twelve skills**, choose a **job**, and weather the **seasons**.
+*That's where your story begins.*
 
-### Server conversion (this fork)
-This fork rebuilds Aged as a **server-focused pack for modern Minecraft
-releases** (baseline `26.2`, snapshot-friendly). See
-[docs/CONVERSION.md](docs/CONVERSION.md) for the feasibility study, the curated
-mod manifest, and the build toolchain:
+| | |
+|---|---|
+| Status | in development (Minecraft 26.2, Fabric) |
+| Docs | `docs/INSTALL.md` · `docs/PLAYER_CHANGES.md` · `docs/FEATURE_PARITY.md` |
+| Testing | GHA build + headless gametests on every push |
 
-```bash
-python3 conversion/scripts/resolve_deps.py          # readiness report for target MC
-python3 conversion/scripts/build_pack.py --server-dir
-```
+## Credits
 
-Custom replacement mods for the core survival mechanics live in `custom-mods/`.
+- **[Aged](https://github.com/xR4YM0ND/Aged)** (xR4YM0ND & contributors) —
+  original pack; source of the tuning corpus and initial inspiration.
+- **[Genesis](https://github.com/marianyp/Genesis)** (marianyp) — design
+  inspiration for progression gating and player guidance.
 
-### Branches
-To [1.21.1 branch](https://github.com/xR4YM0ND/Aged/tree/1.21.1)
-To [1.20.1 branch](https://github.com/xR4YM0ND/Aged/tree/1.20.1)
-You can find older versions source code in the [backup branch](https://github.com/xR4YM0ND/Aged/tree/backup).
+## License
 
-### License
-Aged is licensed under [MIT](https://github.com/xR4YM0ND/Aged/tree/master/LICENSE.md).
+MIT for our code (see LICENSE.md). Upstream assets remain courtesy of
+their authors — see ATTRIBUTION.md as assets are adopted.
