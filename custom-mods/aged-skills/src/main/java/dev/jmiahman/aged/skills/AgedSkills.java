@@ -13,13 +13,16 @@ public class AgedSkills implements ModInitializer {
 	@Override
 	public void onInitialize() {
 		SkillsConfig.get(); // materialize config/aged_skills.json early
+		SkillGates.ensureLoaded();
+		SkillGates.register();
 		SkillEvents.register();
 		ServerEntityEvents.ENTITY_LOAD.register((entity, world) ->
 				MobScaling.apply(entity));
 		ServerPlayConnectionEvents.JOIN.register((handler, sender, server) ->
 				SkillAttributes.applyAll(handler.getPlayer()));
-		LOGGER.info("Aged Skills initialized: 12 skills (base {} xp/level), mob scaling {}",
+		LOGGER.info("Aged Skills initialized: 12 skills (base {} xp/level), mob scaling {}, gates {}",
 				SkillsConfig.get().levels.baseXpPerLevel,
-				SkillsConfig.get().mobScaling.enabled ? "on" : "off");
+				SkillsConfig.get().mobScaling.enabled ? "on" : "off",
+				SkillsConfig.get().gates.enabled ? "on" : "off");
 	}
 }

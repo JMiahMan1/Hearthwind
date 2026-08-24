@@ -107,4 +107,31 @@ public final class AgedSkillsGameTests {
                 "only monsters are buffable");
         helper.succeed();
     }
+
+    @GameTest
+    public void skillGatesLoadAndResolve(GameTestHelper helper) {
+        SkillGates.ensureLoaded();
+        int[] counts = SkillGates.debugCounts();
+        helper.assertTrue(counts[0] > 500, "mining break gates loaded: " + counts[0]);
+        helper.assertTrue(counts[1] > 700, "use gates loaded: " + counts[1]);
+
+        // spot checks straight from the migrated corpus
+        var stone = net.minecraft.world.level.block.Blocks.STONE.defaultBlockState();
+        var mudBricks = net.minecraft.world.level.block.Blocks.MUD_BRICKS
+                .defaultBlockState();
+        SkillGates.Gate stoneGate = SkillGates.breakGate(stone);
+        SkillGates.Gate mudGate = SkillGates.breakGate(mudBricks);
+        helper.assertTrue(stoneGate != null && stoneGate.level() == 5,
+                "minecraft:stone requires mining 5");
+        helper.assertTrue(mudGate != null && mudGate.level() == 1,
+                "mud bricks require mining 1");
+        SkillGates.Gate furnace = SkillGates.useGate(
+                net.minecraft.world.level.block.Blocks.FURNACE);
+        helper.assertTrue(furnace != null && furnace.skill() == Skill.SMITHING
+                && furnace.level() == 3, "furnace use requires smithing 3");
+        SkillGates.Gate ungated = SkillGates.useGate(
+                net.minecraft.world.level.block.Blocks.DIRT);
+        helper.assertTrue(ungated == null, "dirt is not gated");
+        helper.succeed();
+    }
 }

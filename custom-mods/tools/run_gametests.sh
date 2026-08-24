@@ -51,6 +51,15 @@ find aged-survival aged-skills aged-primitive aged-world -name "*.jar" \
 ls "$SRV"/mods/
 
 grep -q "^eula=true$" "$SRV/eula.txt" 2>/dev/null || echo "eula=true" > "$SRV/eula.txt"
+# minimal properties: gametest mode ignores most, but the file must exist
+# and empty-pause must not suspend the tick loop mid-run
+cat > "$SRV/server.properties" <<'PROPS'
+pause-when-empty-seconds=-1
+level-type=minecraft\:flat
+online-mode=false
+view-distance=2
+simulation-distance=2
+PROPS
 
 REPORT="$SRV/gametest-report.xml"
 rm -f "$REPORT"

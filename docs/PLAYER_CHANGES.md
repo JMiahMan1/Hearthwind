@@ -37,6 +37,20 @@ Twelve skills level up as you play (max level 30):
 XP costs grow each level (~30 XP per current level). Admins tune curve,
 XP rates and bonuses in `config/aged_skills.json`.
 
+### Skill gates
+
+Progression is enforced, not just cosmetic:
+
+- **Mining gates**: stone needs mining 5, mud bricks 1, deepslate 18,
+  obsidian 25, ancient debris 27 ... (full list from the original pack's
+  tuning; unknown/modded blocks simply aren't gated).
+- **Use gates**: furnace/anvil/smithing table need smithing,
+  brewing stand & cauldrons need alchemy, smoker/beehive/composter need
+  farming, cartography table agility 8, grindstone strength 15,
+  lectern/loom stamina, beacon luck 30.
+- Try anyway and you get an action-bar hint ("You need smithing level
+  3 to use this") instead of a silent failure.
+
 ## Dangerous frontier (replaces RPG Difficulty)
 
 Monsters get stronger the farther they spawn from world spawn:

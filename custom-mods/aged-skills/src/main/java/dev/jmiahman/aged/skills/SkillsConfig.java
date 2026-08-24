@@ -21,6 +21,7 @@ public final class SkillsConfig {
     public final Xp xp = new Xp();
     public final Bonuses bonuses = new Bonuses();
     public final MobScaling mobScaling = new MobScaling();
+    public final Gates gates = new Gates();
 
     /** Public no-arg ctor required so Gson keeps field-initializer defaults. */
     public SkillsConfig() {}
@@ -75,6 +76,11 @@ public final class SkillsConfig {
         public double damagePerStep = 0.5;
         /** Hard cap on total steps a mob can receive. */
         public int maxSteps = 20;
+    }
+
+    public static class Gates {
+        /** Master switch for break/use skill gates (levelz parity). */
+        public boolean enabled = true;
     }
 
     private static SkillsConfig instance;
