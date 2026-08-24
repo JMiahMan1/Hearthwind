@@ -27,6 +27,13 @@ client download.
    / your launcher of choice.
 3. Accept the EULA in the instance's `eula.txt`, start.
 
+> **Prism Launcher users**: as a PLAYER you don't need any of this —
+> create any vanilla 26.2 instance in Prism and connect to the server;
+> the whole pack runs server-side. If you want to HOST via Prism, an
+> `.mrpack` import technically loads, but Prism has no dedicated
+> dedicated-server workflow — prefer the Modrinth App, a `mrpack` CLI,
+> or Option B below for hosting.
+
 ### Option B — plain server directory
 
 1. Get the `dist/server/` directory (CI artifact or build it yourself):
