@@ -3,243 +3,68 @@
  "use": [
   {
    "blocks": [
-    ":",
-    "_",
-    "a",
-    "b",
-    "c",
-    "d",
-    "e",
-    "f",
-    "g",
-    "i",
-    "k",
-    "l",
-    "m",
-    "n",
-    "o",
-    "r",
-    "s",
-    "t",
-    "u",
-    "w"
+    "minecraft:brewing_stand",
+    "minecraft:custom_block"
    ],
    "level": 1
   },
   {
    "blocks": [
-    ":",
-    "_",
-    "a",
-    "b",
-    "c",
-    "e",
-    "f",
-    "i",
-    "k",
-    "l",
-    "m",
-    "n",
-    "o",
-    "r",
-    "s",
-    "t",
-    "u"
+    "minecraft:custom_block"
    ],
    "level": 2
   },
   {
    "blocks": [
-    ":",
-    "a",
-    "c",
-    "d",
-    "e",
-    "f",
-    "i",
-    "l",
-    "m",
-    "n",
-    "o",
-    "r",
-    "t",
-    "u"
+    "minecraft:cauldron"
    ],
    "level": 5
   },
   {
    "blocks": [
-    ":",
-    "_",
-    "a",
-    "b",
-    "c",
-    "e",
-    "f",
-    "i",
-    "k",
-    "l",
-    "m",
-    "n",
-    "o",
-    "r",
-    "s",
-    "t",
-    "u"
+    "minecraft:custom_block"
    ],
    "level": 7
   },
   {
    "blocks": [
-    ":",
-    "_",
-    "a",
-    "b",
-    "c",
-    "e",
-    "f",
-    "i",
-    "k",
-    "l",
-    "m",
-    "n",
-    "o",
-    "r",
-    "s",
-    "t",
-    "u"
+    "minecraft:custom_block"
    ],
    "level": 9
   },
   {
    "blocks": [
-    ":",
-    "_",
-    "a",
-    "b",
-    "c",
-    "e",
-    "f",
-    "i",
-    "k",
-    "l",
-    "m",
-    "n",
-    "o",
-    "r",
-    "s",
-    "t",
-    "u"
+    "minecraft:custom_block"
    ],
    "level": 11
   },
   {
    "blocks": [
-    ":",
-    "_",
-    "a",
-    "b",
-    "c",
-    "e",
-    "f",
-    "i",
-    "k",
-    "l",
-    "m",
-    "n",
-    "o",
-    "r",
-    "s",
-    "t",
-    "u"
+    "minecraft:custom_block"
    ],
    "level": 13
   },
   {
    "blocks": [
-    ":",
-    "_",
-    "a",
-    "b",
-    "c",
-    "e",
-    "f",
-    "i",
-    "k",
-    "l",
-    "m",
-    "n",
-    "o",
-    "r",
-    "s",
-    "t",
-    "u"
+    "minecraft:custom_block"
    ],
    "level": 15
   },
   {
    "blocks": [
-    ":",
-    "_",
-    "a",
-    "b",
-    "c",
-    "e",
-    "f",
-    "i",
-    "k",
-    "l",
-    "m",
-    "n",
-    "o",
-    "r",
-    "s",
-    "t",
-    "u"
+    "minecraft:custom_block"
    ],
    "level": 17
   },
   {
    "blocks": [
-    ":",
-    "_",
-    "a",
-    "b",
-    "c",
-    "e",
-    "f",
-    "i",
-    "k",
-    "l",
-    "m",
-    "n",
-    "o",
-    "r",
-    "s",
-    "t",
-    "u"
+    "minecraft:custom_block"
    ],
    "level": 24
   },
   {
    "blocks": [
-    ":",
-    "_",
-    "a",
-    "b",
-    "c",
-    "e",
-    "f",
-    "i",
-    "k",
-    "l",
-    "m",
-    "n",
-    "o",
-    "r",
-    "s",
-    "t",
-    "u"
+    "minecraft:custom_block"
    ],
    "level": 28
   }

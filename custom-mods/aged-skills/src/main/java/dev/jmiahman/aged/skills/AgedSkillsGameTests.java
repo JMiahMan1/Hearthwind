@@ -113,7 +113,9 @@ public final class AgedSkillsGameTests {
         SkillGates.ensureLoaded();
         int[] counts = SkillGates.debugCounts();
         helper.assertTrue(counts[0] > 500, "mining break gates loaded: " + counts[0]);
-        helper.assertTrue(counts[1] > 700, "use gates loaded: " + counts[1]);
+        // distinct ids after placeholder collapse: ~17 vanilla stations
+        helper.assertTrue(counts[1] >= 15 && counts[1] < 50,
+                "use gates loaded: " + counts[1]);
 
         // spot checks straight from the migrated corpus
         var stone = net.minecraft.world.level.block.Blocks.STONE.defaultBlockState();

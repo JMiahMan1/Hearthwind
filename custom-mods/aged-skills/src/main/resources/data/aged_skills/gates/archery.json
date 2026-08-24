@@ -3,45 +3,13 @@
  "use": [
   {
    "blocks": [
-    ":",
-    "_",
-    "a",
-    "b",
-    "c",
-    "e",
-    "f",
-    "i",
-    "k",
-    "l",
-    "m",
-    "n",
-    "o",
-    "r",
-    "s",
-    "t",
-    "u"
+    "minecraft:custom_block"
    ],
    "level": 10
   },
   {
    "blocks": [
-    ":",
-    "_",
-    "a",
-    "b",
-    "c",
-    "e",
-    "f",
-    "i",
-    "k",
-    "l",
-    "m",
-    "n",
-    "o",
-    "r",
-    "s",
-    "t",
-    "u"
+    "minecraft:custom_block"
    ],
    "level": 15
   }

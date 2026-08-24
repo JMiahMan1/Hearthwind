@@ -3,81 +3,26 @@
  "use": [
   {
    "blocks": [
-    ":",
-    "_",
-    "a",
-    "b",
-    "c",
-    "e",
-    "f",
-    "g",
-    "h",
-    "i",
-    "l",
-    "m",
-    "n",
-    "r",
-    "s",
-    "t",
-    "v"
+    "minecraft:anvil",
+    "minecraft:smithing_table"
    ],
    "level": 1
   },
   {
    "blocks": [
-    ":",
-    "a",
-    "c",
-    "e",
-    "f",
-    "i",
-    "m",
-    "n",
-    "r",
-    "t",
-    "u"
+    "minecraft:furnace"
    ],
    "level": 3
   },
   {
    "blocks": [
-    ":",
-    "_",
-    "a",
-    "b",
-    "c",
-    "e",
-    "f",
-    "i",
-    "k",
-    "l",
-    "m",
-    "n",
-    "o",
-    "r",
-    "s",
-    "t",
-    "u"
+    "minecraft:custom_block"
    ],
    "level": 15
   },
   {
    "blocks": [
-    ":",
-    "_",
-    "a",
-    "b",
-    "c",
-    "e",
-    "f",
-    "i",
-    "l",
-    "m",
-    "n",
-    "r",
-    "s",
-    "t",
-    "u"
+    "minecraft:blast_furnace"
    ],
    "level": 18
   }

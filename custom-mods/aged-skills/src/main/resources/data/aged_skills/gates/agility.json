@@ -3,90 +3,25 @@
  "use": [
   {
    "blocks": [
-    ":",
-    "_",
-    "a",
-    "b",
-    "c",
-    "e",
-    "f",
-    "g",
-    "h",
-    "i",
-    "l",
-    "m",
-    "n",
-    "o",
-    "p",
-    "r",
-    "t",
-    "y"
+    "minecraft:cartography_table"
    ],
    "level": 8
   },
   {
    "blocks": [
-    ":",
-    "_",
-    "a",
-    "b",
-    "c",
-    "e",
-    "f",
-    "i",
-    "k",
-    "l",
-    "m",
-    "n",
-    "o",
-    "r",
-    "s",
-    "t",
-    "u"
+    "minecraft:custom_block"
    ],
    "level": 15
   },
   {
    "blocks": [
-    ":",
-    "_",
-    "a",
-    "b",
-    "c",
-    "e",
-    "f",
-    "i",
-    "k",
-    "l",
-    "m",
-    "n",
-    "o",
-    "r",
-    "s",
-    "t",
-    "u"
+    "minecraft:custom_block"
    ],
    "level": 18
   },
   {
    "blocks": [
-    ":",
-    "_",
-    "a",
-    "b",
-    "c",
-    "e",
-    "f",
-    "i",
-    "k",
-    "l",
-    "m",
-    "n",
-    "o",
-    "r",
-    "s",
-    "t",
-    "u"
+    "minecraft:custom_block"
    ],
    "level": 25
   }

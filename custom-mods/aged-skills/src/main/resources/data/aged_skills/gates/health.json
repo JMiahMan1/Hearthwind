@@ -3,42 +3,13 @@
  "use": [
   {
    "blocks": [
-    ":",
-    "_",
-    "a",
-    "b",
-    "c",
-    "e",
-    "f",
-    "g",
-    "i",
-    "l",
-    "m",
-    "n",
-    "r",
-    "t"
+    "minecraft:crafting_table"
    ],
    "level": 3
   },
   {
    "blocks": [
-    ":",
-    "_",
-    "a",
-    "b",
-    "c",
-    "e",
-    "f",
-    "i",
-    "k",
-    "l",
-    "m",
-    "n",
-    "o",
-    "r",
-    "s",
-    "t",
-    "u"
+    "minecraft:custom_block"
    ],
    "level": 15
   }

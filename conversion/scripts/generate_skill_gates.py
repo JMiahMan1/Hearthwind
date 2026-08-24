@@ -41,6 +41,8 @@ def main() -> int:
         d = json.load(open(path))
         level = d.get("level")
         blocks = d.get("block") or []
+        if isinstance(blocks, str):  # corpus has scalar ids in places
+            blocks = [blocks]
         if not isinstance(level, int) or not blocks:
             continue
         gates["mining"]["break"][level].update(blocks)
@@ -50,6 +52,8 @@ def main() -> int:
         level = d.get("level")
         skill = d.get("skill")
         blocks = d.get("block") or []
+        if isinstance(blocks, str):
+            blocks = [blocks]
         if not isinstance(level, int) or not skill or not blocks:
             continue
         gates[skill]["use"][level].update(blocks)

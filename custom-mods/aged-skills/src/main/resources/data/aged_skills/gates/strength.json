@@ -3,20 +3,7 @@
  "use": [
   {
    "blocks": [
-    ":",
-    "a",
-    "c",
-    "d",
-    "e",
-    "f",
-    "g",
-    "i",
-    "m",
-    "n",
-    "o",
-    "r",
-    "s",
-    "t"
+    "minecraft:grindstone"
    ],
    "level": 15
   }
