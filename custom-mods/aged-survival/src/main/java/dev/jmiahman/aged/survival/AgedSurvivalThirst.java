@@ -27,17 +27,17 @@ public final class AgedSurvivalThirst {
 
     private AgedSurvivalThirst() {}
 
-    public static double hydration(ServerPlayer player) {
-        Double v = player.getAttached(HYDRATION);
+    public static double hydration(net.minecraft.world.entity.Entity entity) {
+        Double v = entity.getAttached(HYDRATION);
         return v == null ? MAX_HYDRATION : v;
     }
 
-    public static void addHydration(ServerPlayer player, double amount) {
-        setHydration(player, Math.min(MAX_HYDRATION, hydration(player) + amount));
+    public static void addHydration(net.minecraft.world.entity.Entity entity, double amount) {
+        setHydration(entity, Math.min(MAX_HYDRATION, hydration(entity) + amount));
     }
 
-    private static void setHydration(ServerPlayer player, double value) {
-        player.setAttached(HYDRATION, value);
+    private static void setHydration(net.minecraft.world.entity.Entity entity, double value) {
+        entity.setAttached(HYDRATION, value);
     }
 
     public static void registerTickLoop() {

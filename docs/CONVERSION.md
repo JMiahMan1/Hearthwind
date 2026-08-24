@@ -120,6 +120,18 @@ fabric-api 0.158.0+26.2 + aged-survival jar):
   session to exercise end-to-end; both are plain server-tick logic and
   boot-verified only so far.
 
+### Testing harness
+
+`custom-mods/tools/run_gametests.sh` boots a throwaway dedicated server
+with fabric-api's gametest harness (`-Dfabric-api.gametest=true`) and runs
+the `AgedSurvivalGameTests` suite headless — 10/10 green on 26.2 (config
+defaults, diet eat/decay/deficiency, spoilage rot/exemption, thirst
+clamp). Diet/spoilage/thirst cores were refactored to take `Entity` /
+`Container` parameters so they are testable without a client. New
+gameplay logic should ship with a gametest; the boot+RCON loop remains
+for integration checks the suite can't reach (item registration,
+datapack parse noise).
+
 ## License
 
 MIT, matching upstream. Upstream textures/configs under `resources/`,

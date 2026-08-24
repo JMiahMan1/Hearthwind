@@ -8,7 +8,8 @@
 	"license": "MIT",
 	"environment": "*",
 	"entrypoints": {
-		"main": ["dev.jmiahman.aged.survival.AgedSurvival"]
+		"main": ["dev.jmiahman.aged.survival.AgedSurvival"],
+		"fabric-gametest": ["dev.jmiahman.aged.survival.AgedSurvivalGameTests"]
 	},
 	"mixins": ["aged_survival.mixins.json"],
 	"depends": {

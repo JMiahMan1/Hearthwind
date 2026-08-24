@@ -25,6 +25,18 @@ subprojects {
 		it.options.release = 25
 	}
 
+	afterEvaluate {
+		if (name == 'aged-survival') {
+			dependencies {
+				// fabric-api aggregator POM hides module classes at compile
+				// time; pin gametest API for @GameTest compilation.
+				// loom 1.17 has no modImplementation(); modCompileClasspath
+				// gives compile + runtime presence.
+				modCompileClasspath "net.fabricmc.fabric.api:fabric-gametest-api-v1:4.0.21+4a7fa0819e"
+			}
+		}
+	}
+
 	processResources {
 		def modVersion = version
 		inputs.property 'version', modVersion

@@ -15,6 +15,7 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
@@ -55,20 +56,20 @@ public final class AgedSurvivalDiet {
                 Identifier.fromNamespaceAndPath("nutritionz", path));
     }
 
-    /** Nutrient value of one group for a player (defaults to a fed start). */
-    public static double level(ServerPlayer player, TagKey<Item> group) {
-        Map<String, Double> map = player.getAttached(NUTRIENTS);
+    /** Nutrient value of one group for an entity (defaults to a fed start). */
+    public static double level(Entity entity, TagKey<Item> group) {
+        Map<String, Double> map = entity.getAttached(NUTRIENTS);
         if (map == null || !map.containsKey(pathOf(group))) {
             return MAX_NUTRIENTS;
         }
         return map.get(pathOf(group));
     }
 
-    private static void setLevel(ServerPlayer player, TagKey<Item> group, double value) {
-        Map<String, Double> map = player.getAttachedOrElse(NUTRIENTS,
+    public static void setLevel(Entity entity, TagKey<Item> group, double value) {
+        Map<String, Double> map = entity.getAttachedOrElse(NUTRIENTS,
                 new java.util.HashMap<>());
         map.put(pathOf(group), Math.max(0.0, Math.min(MAX_NUTRIENTS, value)));
-        player.setAttached(NUTRIENTS, map);
+        entity.setAttached(NUTRIENTS, map);
     }
 
     private static String pathOf(TagKey<Item> group) {
@@ -76,7 +77,7 @@ public final class AgedSurvivalDiet {
     }
 
     /** Called from the eat mixin after a player finishes eating {@code stack}. */
-    public static void onEaten(ServerPlayer player, ItemStack stack) {
+    public static void onEaten(Entity entity, ItemStack stack) {
         float nutrition = defaultNutrition(stack);
         if (nutrition <= 0) {
             return;
@@ -84,8 +85,8 @@ public final class AgedSurvivalDiet {
         double amount = nutrition * AgedSurvivalConfig.get().diet.nutrientsPerFoodPoint;
         for (TagKey<Item> group : GROUPS) {
             if (stack.is(group)) {
-                setLevel(player, group,
-                        Math.min(MAX_NUTRIENTS, level(player, group) + amount));
+                setLevel(entity, group,
+                        Math.min(MAX_NUTRIENTS, level(entity, group) + amount));
             }
         }
     }
@@ -111,13 +112,25 @@ public final class AgedSurvivalDiet {
             return;
         }
         AgedSurvivalConfig.Diet cfg = AgedSurvivalConfig.get().diet;
+        DietState state = applyDecay(player, cfg);
+        if (state.deficient > 0) {
+            applyDeficiencyDebuffs(player);
+        } else {
+            refreshBonusHearts(player, cfg.balancedBonusHearts);
+        }
+        if (!state.allBalanced) {
+            player.removeEffect(MobEffects.ABSORPTION);
+        }
+    }
 
+    /** Decay + classification step; exposed for gametests. */
+    public static DietState applyDecay(Entity entity, AgedSurvivalConfig.Diet cfg) {
         boolean allBalanced = true;
         int deficient = 0;
         for (TagKey<Item> group : GROUPS) {
-            double v = level(player, group) - cfg.decayPerSecond * TICK_INTERVAL;
+            double v = level(entity, group) - cfg.decayPerSecond * TICK_INTERVAL;
             v = Math.max(0.0, v);
-            setLevel(player, group, v);
+            setLevel(entity, group, v);
             if (v < cfg.deficiencyThreshold) {
                 deficient++;
                 allBalanced = false;
@@ -125,16 +138,10 @@ public final class AgedSurvivalDiet {
                 allBalanced = false;
             }
         }
-
-        if (deficient > 0) {
-            applyDeficiencyDebuffs(player);
-        } else {
-            refreshBonusHearts(player, cfg.balancedBonusHearts);
-        }
-        if (!allBalanced) {
-            player.removeEffect(MobEffects.ABSORPTION);
-        }
+        return new DietState(deficient, allBalanced);
     }
+
+    public record DietState(int deficient, boolean allBalanced) {}
 
     private static void applyDeficiencyDebuffs(ServerPlayer player) {
         AgedSurvivalConfig.Diet cfg = AgedSurvivalConfig.get().diet;

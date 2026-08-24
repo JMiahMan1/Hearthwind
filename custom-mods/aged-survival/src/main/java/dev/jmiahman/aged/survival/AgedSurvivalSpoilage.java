@@ -48,29 +48,48 @@ public final class AgedSurvivalSpoilage {
             chance *= cfg.hotBiomeMultiplier;
         }
 
-        var inv = player.getInventory();
-        int slots = inv.getContainerSize();
+        // rot output goes back into the inventory; overflow drops at the player
+        spoilContainer(player.getInventory(), player.getRandom(), chance, cfg.rotsInto,
+                rotted -> {
+                    if (!player.getInventory().add(rotted)) {
+                        player.drop(rotted, false);
+                    }
+                });
+    }
+
+    /**
+     * One spoilage pass over any container (player inventory, chest, ...).
+     * Rotten output for each spoiled item is handed to {@code spill};
+     * exposed for gametests and future container support.
+     *
+     * @return number of items that rotted this pass
+     */
+    public static int spoilContainer(net.minecraft.world.Container container,
+            net.minecraft.util.RandomSource random, double chance, String rotId,
+            java.util.function.Consumer<ItemStack> spill) {
+        int rotted = 0;
+        int slots = container.getContainerSize();
+        ItemStack rot = rotStack(rotId);
         for (int i = 0; i < slots; i++) {
-            ItemStack s = inv.getItem(i);
+            ItemStack s = container.getItem(i);
             if (s.isEmpty() || !s.is(PERISHABLE) || s.is(NON_SPOILING)) {
                 continue;
             }
-            if (player.getRandom().nextDouble() >= chance) {
+            if (random.nextDouble() >= chance) {
                 continue;
             }
-            ItemStack rot = rotStack(cfg);
             s.shrink(1);
+            rotted++;
             if (!rot.isEmpty()) {
-                if (!player.getInventory().add(rot)) {
-                    player.drop(rot, false);
-                }
+                spill.accept(rot.copy());
             }
         }
+        return rotted;
     }
 
-    private static ItemStack rotStack(AgedSurvivalConfig.Spoilage cfg) {
+    private static ItemStack rotStack(String rotId) {
         Item item = net.minecraft.core.registries.BuiltInRegistries.ITEM
-                .getValue(Identifier.parse(cfg.rotsInto));
+                .getValue(Identifier.parse(rotId));
         return new ItemStack(item);
     }
 }

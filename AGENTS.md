@@ -35,6 +35,38 @@ commit titles with "Aged"** — use plain conventional subjects
 3. **Every change ships verified**: boot test + RCON checks. No "should
    work" claims.
 
+## Testing harness (gametests — preferred)
+
+`custom-mods/aged-survival` ships headless gametests
+(`AgedSurvivalGameTests`, fabric-gametest entrypoint). Run them all:
+
+```bash
+cd custom-mods && bash tools/run_gametests.sh [--keep-server]
+# -> builds, boots a throwaway 26.2 server, runs every @GameTest,
+#    prints "gametests: N/M passed", exits nonzero on failure
+```
+
+Gotchas learned the hard way:
+
+- The maven `fabric-api` jar is THIN (no nested modules) — the runner
+  fetches `fabric-gametest-api-v1` explicitly into `mods/`. Without it
+  `-Dfabric-api.gametest=true` silently does nothing.
+- fabric's v1 `@GameTest` methods are INSTANCE methods on the entrypoint
+  class, and the class needs a PUBLIC constructor; vanilla's
+  `net.minecraft.gametest.framework.GameTest` annotation is a DIFFERENT
+  annotation that will not register anything.
+- loom 1.17 removed `modImplementation`; use the `modCompileClasspath`
+  configuration. Child build.gradles can't call loom DSL at all (plugin
+  applied via root `subprojects {}`) — module deps go in the root file
+  inside `afterEvaluate`.
+- Manual equivalent: `java -Dfabric-api.gametest=true
+  -Dfabric-api.gametest.report-file=report.xml -jar fabric-server.jar
+  nogui` runs tests and exits; parse report.xml with
+  `tools/parse_gametest_report.py`.
+- New logic should land WITH a gametest: extract pure-logic cores
+  (Entity/Container params, no ServerPlayer-only APIs) so they are
+  testable without a client.
+
 ## Boot-test loop (headless)
 
 ```bash
@@ -157,6 +189,8 @@ python3 ../custom-mods/tools/rcon.py 127.0.0.1 25575 agedtest "summon item ~ ~ ~
 ## Verification checklist per feature
 
 - `./gradlew build` green (Java 25, loom 1.17-SNAPSHOT)
+- `bash tools/run_gametests.sh` all green (add tests for new logic)
 - Boot reaches `Done`; our namespaces absent from parse-error greps
 - RCON spot checks: summon item by id, apply effects, loot spawn
-- `ruff check tools/` for python tooling changes
+- `ruff check tools/` for python tooling changes (install once via
+  `sudo dnf install -y ruff`; not yet present on this host)
