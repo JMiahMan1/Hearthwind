@@ -1,0 +1,47 @@
+{
+ "replace": false,
+ "values": [
+  "minecraft:beef",
+  "minecraft:cooked_beef",
+  "minecraft:porkchop",
+  "minecraft:cooked_porkchop",
+  "minecraft:chicken",
+  "minecraft:cooked_chicken",
+  "minecraft:mutton",
+  "minecraft:cooked_mutton",
+  "minecraft:rabbit",
+  "minecraft:cooked_rabbit",
+  "minecraft:cod",
+  "minecraft:cooked_cod",
+  "minecraft:salmon",
+  "minecraft:cooked_salmon",
+  "minecraft:tropical_fish",
+  "minecraft:sweet_berries",
+  "minecraft:glow_berries",
+  "minecraft:melon_slice",
+  "minecraft:pumpkin_pie",
+  "minecraft:mushroom_stew",
+  "minecraft:rabbit_stew",
+  "minecraft:beetroot_soup",
+  "minecraft:suspicious_stew",
+  "minecraft:cake",
+  "minecraft:bread",
+  "minecraft:cookie",
+  {
+   "id": "farm_and_charm:cheese_slice",
+   "required": false
+  },
+  {
+   "id": "farm_and_charm:tomato",
+   "required": false
+  },
+  {
+   "id": "farm_and_charm:cabbage",
+   "required": false
+  },
+  {
+   "id": "vinery:apple_wine",
+   "required": false
+  }
+ ]
+}

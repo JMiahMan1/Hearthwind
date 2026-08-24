@@ -10,12 +10,15 @@ public class AgedSurvival implements ModInitializer {
 
 	@Override
 	public void onInitialize() {
+		AgedSurvivalConfig.get(); // materialize config/aged_survival.json early
 		ThirstMobEffect.register();
 		AgedSurvivalThirst.registerTickLoop();
+		AgedSurvivalDiet.registerTickLoop();
+		AgedSurvivalSpoilage.registerTickLoop();
 		DehydrationItems.registerAll(msg -> LOGGER.info(msg));
 		EnvironmentzItems.registerAll(msg -> LOGGER.info(msg));
 		AgedSurvivalTemperature.registerTickLoop();
 		AgedSurvivalLoot.init();
-		LOGGER.info("Aged Survival initialized: thirst + temperature systems active");
+		LOGGER.info("Aged Survival initialized: thirst + diet + spoilage + temperature systems active");
 	}
 }

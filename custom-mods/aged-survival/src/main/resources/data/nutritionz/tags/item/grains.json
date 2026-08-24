@@ -1,0 +1,17 @@
+{
+ "replace": false,
+ "values": [
+  "minecraft:bread",
+  "minecraft:cookie",
+  "minecraft:cake",
+  "minecraft:pumpkin_pie",
+  {
+   "id": "farm_and_charm:strawberry_cake_slice",
+   "required": false
+  },
+  {
+   "id": "brewery:oat_bread",
+   "required": false
+  }
+ ]
+}

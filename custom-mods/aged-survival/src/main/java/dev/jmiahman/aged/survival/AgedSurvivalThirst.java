@@ -12,12 +12,6 @@ import net.minecraft.world.effect.MobEffectInstance;
 
 public final class AgedSurvivalThirst {
     public static final double MAX_HYDRATION = 20.0;
-    private static final double BASE_DRAIN_PER_TICK = 0.02;
-    private static final double SPRINT_DRAIN_MULTIPLIER = 2.0;
-    private static final double THIRST_EFFECT_DRAIN_PER_TICK = 0.03;
-    private static final double REGEN_HYDRATION_FLOOR = 6.0;
-    private static final int DAMAGE_INTERVAL_TICKS = 80;
-    private static final float DAMAGE_AMOUNT = 1.0f;
     private static final int TICK_INTERVAL = 40;
 
     private static int warningLevel = -1;
@@ -62,24 +56,29 @@ public final class AgedSurvivalThirst {
                 || player.getAbilities().instabuild) {
             return;
         }
+        AgedSurvivalConfig.Thirst cfg = AgedSurvivalConfig.get().thirst;
         double h = hydration(player);
-        double drain = BASE_DRAIN_PER_TICK * TICK_INTERVAL;
+        double drain = cfg.baseDrainPerSecond * TICK_INTERVAL;
         if (player.isSprinting()) {
-            drain *= SPRINT_DRAIN_MULTIPLIER;
+            drain *= cfg.sprintMultiplier;
         }
         MobEffectInstance thirst = player.getEffect(ThirstMobEffect.HOLDER);
         if (thirst != null) {
-            drain += THIRST_EFFECT_DRAIN_PER_TICK * TICK_INTERVAL * (thirst.getAmplifier() + 1);
+            drain += cfg.thirstEffectDrainPerSecond * TICK_INTERVAL
+                    * (thirst.getAmplifier() + 1);
         }
-        boolean wasAboveRegenFloor = h > REGEN_HYDRATION_FLOOR;
+        boolean wasAboveRegenFloor = h > cfg.regenHydrationFloor;
         h = Math.max(0.0, h - drain);
         setHydration(player, h);
 
+        long damageIntervalTicks =
+                (long) (cfg.damageIntervalSeconds * TICK_INTERVAL / 2);
         if (h <= 0.0) {
             damageCounter += TICK_INTERVAL;
-            if (damageCounter >= DAMAGE_INTERVAL_TICKS) {
+            if (damageCounter >= damageIntervalTicks) {
                 damageCounter = 0;
-                player.hurt(player.damageSources().magic(), DAMAGE_AMOUNT);
+                player.hurt(player.damageSources().magic(),
+                        (float) cfg.damageAmount);
             }
         } else {
             damageCounter = 0;

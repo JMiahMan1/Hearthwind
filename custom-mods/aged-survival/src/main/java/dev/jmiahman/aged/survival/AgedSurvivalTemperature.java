@@ -28,11 +28,6 @@ import net.minecraft.world.item.ItemStack;
 public final class AgedSurvivalTemperature {
     public static final double MIN = -10.0;
     public static final double MAX = 10.0;
-    private static final double FREEZE_HURT_AT = -8.0;
-    private static final double HEAT_EXHAUST_AT = 7.0;
-    private static final double HEAT_HURT_AT = 9.0;
-    private static final double DRIFT_PER_SECOND = 0.05;
-    private static final long HURT_COOLDOWN_TICKS = 80L;
 
     public static final AttachmentType<Double> TEMPERATURE =
             AttachmentRegistry.<Double>builder()
@@ -151,28 +146,31 @@ public final class AgedSurvivalTemperature {
             target -= 1.5;
         }
 
+        AgedSurvivalConfig.Temperature cfg = AgedSurvivalConfig.get().temperature;
         double step = Math.signum(target - current)
-                * Math.min(DRIFT_PER_SECOND, Math.abs(target - current));
+                * Math.min(cfg.driftPerSecond, Math.abs(target - current));
         double next = clamp(current + step);
         player.setAttached(TEMPERATURE, next);
 
         long now = player.level().getGameTime();
-        if (next <= FREEZE_HURT_AT && cooldown(freezeCooldowns, player.getUUID(), now)) {
+        long cooldownTicks = (long) (cfg.hurtCooldownSeconds * 20);
+        if (next <= cfg.freezeHurtAt && cooldown(freezeCooldowns, player.getUUID(), now, cooldownTicks)) {
             player.hurt(player.damageSources().freeze(), 1.0f);
         }
-        if (next >= HEAT_EXHAUST_AT) {
+        if (next >= cfg.heatExhaustAt) {
             player.getFoodData().addExhaustion(0.02f);
         }
-        if (next >= HEAT_HURT_AT && cooldown(heatCooldowns, player.getUUID(), now)) {
+        if (next >= cfg.heatHurtAt && cooldown(heatCooldowns, player.getUUID(), now, cooldownTicks)) {
             player.hurt(player.damageSources().hotFloor(), 1.0f);
         }
 
         warn(player, next);
     }
 
-    private static boolean cooldown(Map<UUID, Long> map, UUID id, long now) {
+    private static boolean cooldown(Map<UUID, Long> map, UUID id, long now,
+            long cooldownTicks) {
         Long last = map.get(id);
-        if (last != null && now - last < HURT_COOLDOWN_TICKS) {
+        if (last != null && now - last < cooldownTicks) {
             return false;
         }
         map.put(id, now);

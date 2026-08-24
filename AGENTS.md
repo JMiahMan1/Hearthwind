@@ -66,6 +66,16 @@ python3 ../custom-mods/tools/rcon.py 127.0.0.1 25575 agedtest "summon item ~ ~ ~
 - Stale jars copied into `mods/` have caused false failures — after
   resource edits, REBUILD before recopying.
 - JDT/LSP phantom Java errors happen; gradle build is the authority.
+- RCON properties are the VANILLA names: `enable-rcon=true`,
+  `rcon.port`, `rcon.password`. Fabric-style `rcon.enabled` lines are
+  ignored (server rewrites server.properties and RCON stays off).
+- Servers pause after 60s with no players (`pause-when-empty-seconds`,
+  default 60; set `-1` in test servers) — tick loops and RCON stop
+  answering while paused; do RCON checks right after `Done`.
+- This build host has ~8 GB RAM with no swap and heavy baseline usage
+  (elasticsearch/clamd). Gradle daemon heap is capped at `-Xmx1G` in
+  custom-mods/gradle.properties; run builds with
+  `--no-daemon --max-workers=2`, test servers with `-Xmx768M`.
 
 ## 26.x API cheat sheet (verified on 26.2)
 
@@ -90,6 +100,15 @@ python3 ../custom-mods/tools/rcon.py 127.0.0.1 25575 agedtest "summon item ~ ~ ~
   `textures/entity/equipment/humanoid/<asset>[_leggings].png`.
 - Recipes/tags: flat strings (`"#tag"`, `"item"`); shaped-pattern key
   may NOT contain `' '` (reserved empty-cell symbol).
+- Food is the 1.21.2+ component system: there is NO `Player.eat` /
+  `FoodProperties.getNutrition` item method. `ItemStack# FOOD` data
+  component lives at `net.minecraft.core.component.DataComponents.FOOD`
+  (record `nutrition()`/`saturation()`); consumption runs through
+  `net.minecraft.world.item.component.Consumable#onConsume(Level,
+  LivingEntity, ItemStack)` — mixin THAT for "finished eating" hooks.
+- Vanilla effect holder constants: `MobEffects.MINING_FATIGUE`,
+  `MobEffects.SLOWNESS`, `MobEffects.WEAKNESS`, `MobEffects.ABSORPTION`
+  (no DIG_SLOWDOWN/MOVEMENT_SLOWNESS names in 26.x mojmap).
 - Fabric data attachments: `AttachmentRegistry.<T>builder()
   .persistent(codec).copyOnDeath().buildAndRegister(id)`; access with
   `player.getAttached(...)` / `setAttached(...)`.
@@ -99,14 +118,22 @@ python3 ../custom-mods/tools/rcon.py 127.0.0.1 25575 agedtest "summon item ~ ~ ~
 
 ## Next steps (priority order)
 
-1. **Finish survival** (`custom-mods/aged-survival`):
-   - Diet module (nutritionz parity: five food groups, deficiency
-     debuffs, balance bonus hearts) — spec in migrated datapack
-     nutritionz-related tags if present, else design free.
-   - Spoilage module (spoiledz parity: perishable foods rot through
-     stages to rotten flesh/mold; zero migrated refs = free design).
-   - Temperature polish: config file for all tunables (currently
-     constants in AgedSurvivalTemperature.java).
+1. **Finish survival** (`custom-mods/aged-survival`) — v1 SHIPPED
+   (verified boot + RCON on 26.2):
+   - Diet module DONE: five `nutritionz:` item tags (fruits, vegetables,
+     grains, proteins, sugars), nutrients attachment (0..100) with decay,
+     deficiency debuffs (fruit->mining fatigue, vegetables/proteins->
+     weakness, grains->slowness), balanced diet -> refreshed absorption
+     bonus hearts. Eat hook = mixin on `Consumable#onConsume`
+     (`ConsumableConsumeMixin`). NOT yet play-verified with a live client.
+   - Spoilage module DONE: `spoiledz:perishable_items` tag rots stack
+     items into rotten flesh on a random check interval; migrated
+     `spoiledz:non_spoiling_items` tag respected as exemption; hot biomes
+     double the chance. Inventory-only in v1 (containers TODO).
+   - Temperature/thirst polish DONE: all tunables now in
+     `config/aged_survival.json` (auto-created with defaults).
+   - Remaining: client-side HUD bars for hydration/diet, container
+     spoilage, in-game eat-hook verification.
 2. **Skills** (`aged-skills`): levelz parity XP->levels (max 30) with
    attribute bonuses (healthBase 6, +1 HP/level etc.), mob scaling by
    distance-from-spawn (rpgdifficulty parity); big reference corpus in

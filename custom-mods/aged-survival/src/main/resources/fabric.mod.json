@@ -10,6 +10,7 @@
 	"entrypoints": {
 		"main": ["dev.jmiahman.aged.survival.AgedSurvival"]
 	},
+	"mixins": ["aged_survival.mixins.json"],
 	"depends": {
 		"fabricloader": ">=0.19.3",
 		"minecraft": "~26.2",

@@ -92,8 +92,33 @@ herdspanic, log-begone) need watchlist monitoring or replacement.
 3. [x] Server datapack migration (native pack, replaces paxi)
 4. [x] Boot test: local fabric 26.2 server reaches `Done` with full mod set + datapack
 5. [x] Custom mod skeletons (`custom-mods/`) build on Java 25 / loom 1.17 and load on a dedicated 26.2 server
-6. [ ] Gameplay systems per module (thirst/temperature/diet/spoilage -> skills -> primitive -> seasons), using the migrated datapack as tuning spec
-7. [ ] Snapshot watchlist CI (nightly `--mc <latest snapshot>` probe)
+6. [~] Gameplay systems per module (thirst/temperature/diet/spoilage -> skills -> primitive -> seasons), using the migrated datapack as tuning spec
+   - [x] Thirst (dehydration parity): hydration attachment, sprint/thirst-effect drain, regen floor, zero-hydration damage; water/purified bowls
+   - [x] Temperature (environmentz parity): biome-target drift, warm/neutral armor tags, insulation/ice items, freeze/heat damage; wolf & wanderer armor sets
+   - [x] Diet v1 (nutritionz parity): five `nutritionz:*` item-group tags, decaying nutrient attachment per group, deficiency debuffs, balanced-diet absorption bonus; eat hook via `Consumable#onConsume` mixin
+   - [x] Spoilage v1 (spoiledz parity): `spoiledz:perishable_items` rot to rotten flesh on random checks, `non_spoiling_items` exempt, hot-biome acceleration; player inventory only for now
+   - [x] Config: all thirst/temperature/diet/spoilage tunables in `config/aged_survival.json` (auto-generated defaults)
+   - [ ] Client HUD bars (hydration/diet), container spoilage, live-client play verification
+7. [ ] Skills module (levelz + rpgdifficulty parity)
+8. [ ] Primitive upgrades (knapping, sieve, steel tier)
+9. [ ] Seasons-lite (aged-world) feeding the temperature hook
+10. [ ] Snapshot watchlist CI (nightly `--mc <latest snapshot>` probe)
+
+### Survival v1 verified state (26.2)
+
+Verified headless with a minimal server (fabric-loader 0.19.3 +
+fabric-api 0.158.0+26.2 + aged-survival jar):
+
+- `./gradlew :aged-survival:build` green (Java 25).
+- Boot reaches `Done`; no parse errors mentioning `nutritionz`,
+  `spoiledz`, or `aged_survival`.
+- RCON summon of `dehydration:water_bowl`, `dehydration:purified_water_bowl`,
+  `environmentz:wolf_pelt` succeeds.
+- First boot materializes `config/aged_survival.json` with documented
+  defaults.
+- Known limitation: diet eat-hook and spoilage decay need a live client
+  session to exercise end-to-end; both are plain server-tick logic and
+  boot-verified only so far.
 
 ## License
 
