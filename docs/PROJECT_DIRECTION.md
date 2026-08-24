@@ -69,6 +69,23 @@ Divergence rule of thumb: adopt *mechanics* freely (reimplemented in our
 code), adopt *assets* only with license-compatible attribution, never
 redistribute another mod's jar.
 
+## Distribution model
+
+Two artifacts from the same repo:
+
+- **Hearthwind Server** (required) — current `aged-*` modules; installs
+  on dedicated servers; vanilla clients can join.
+- **Hearthwind Client** (optional companion, Phase C) — `aged-net`
+  shared payload definitions + client rendering module: HUD bars
+  (thirst/diet/temperature/skills), visible water motion, Genesis-style
+  instruction toasts. Server broadcasts regardless; clients without it
+  simply see nothing extra.
+
+Packaging (`build_pack.py`) will emit both flavors: the Modrinth index
+format supports per-side environment flags, so one resolved dependency
+set produces `hearthwind-server.mrpack` and
+`hearthwind-client.mrpack`.
+
 ## Practical consequences for day-to-day work
 
 1. New gameplay code always lands in OUR modules — never patch upstream
