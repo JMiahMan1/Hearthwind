@@ -99,7 +99,12 @@ herdspanic, log-begone) need watchlist monitoring or replacement.
    - [x] Spoilage v1 (spoiledz parity): `spoiledz:perishable_items` rot to rotten flesh on random checks, `non_spoiling_items` exempt, hot-biome acceleration; player inventory only for now
    - [x] Config: all thirst/temperature/diet/spoilage tunables in `config/aged_survival.json` (auto-generated defaults)
    - [ ] Client HUD bars (hydration/diet), container spoilage, live-client play verification
-7. [ ] Skills module (levelz + rpgdifficulty parity)
+7. [~] Skills module (levelz + rpgdifficulty parity)
+   - [x] v1 core: 12 skills, XP attachment + triangular curve to 30,
+     transient attribute modifiers, block-break & kill XP hooks,
+     `config/aged_skills.json`; 4 gametests green
+   - [ ] mob scaling by distance-from-spawn (rpgdifficulty)
+   - [ ] unlock gating from migrated `data/levelz/*` corpus
 8. [ ] Primitive upgrades (knapping, sieve, steel tier)
 9. [ ] Seasons-lite (aged-world) feeding the temperature hook
 10. [ ] Snapshot watchlist CI (nightly `--mc <latest snapshot>` probe)

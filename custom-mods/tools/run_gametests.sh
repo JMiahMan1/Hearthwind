@@ -42,9 +42,12 @@ if [ ! -f "$SRV/mods/fabric-gametest-api-v1.jar" ]; then
     "https://maven.fabricmc.net/net/fabricmc/fabric-api/fabric-gametest-api-v1/$GAMETEST_API/fabric-gametest-api-v1-$GAMETEST_API.jar"
 fi
 
-echo "== installing fresh mod jar =="
-rm -f "$SRV"/mods/aged-survival-*.jar
-find aged-survival/build/libs -name "aged-survival-$MC+*.jar" ! -name "*-sources.jar" -exec cp {} "$SRV/mods/" \;
+echo "== installing fresh mod jars =="
+rm -f "$SRV"/mods/aged-*.jar
+# every custom module ships its plain jar so cross-module behavior is
+# exercised together (never the -sources jars)
+find aged-survival aged-skills aged-primitive aged-world -name "*.jar" \
+     -path "*build/libs/*" ! -name "*-sources.jar" -exec cp {} "$SRV/mods/" \;
 ls "$SRV"/mods/
 
 grep -q "^eula=true$" "$SRV/eula.txt" 2>/dev/null || echo "eula=true" > "$SRV/eula.txt"
@@ -55,7 +58,7 @@ rm -f "$REPORT"
 echo "== running gametests headless (${HEAP} heap) =="
 set +e
 cd "$SRV"
-timeout "${GAMETEST_TIMEOUT:-300}" java -Xmx"$HEAP" \
+timeout "${GAMETEST_TIMEOUT:-420}" java -Xmx"$HEAP" \\
      -Dfabric-api.gametest=true \
      -Dfabric-api.gametest.report-file="$REPORT" \
      -jar "$SRV/fabric-server.jar" nogui > "$SRV/gametest.log" 2>&1

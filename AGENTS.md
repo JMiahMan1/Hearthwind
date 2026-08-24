@@ -166,10 +166,19 @@ python3 ../custom-mods/tools/rcon.py 127.0.0.1 25575 agedtest "summon item ~ ~ ~
      `config/aged_survival.json` (auto-created with defaults).
    - Remaining: client-side HUD bars for hydration/diet, container
      spoilage, in-game eat-hook verification.
-2. **Skills** (`aged-skills`): levelz parity XP->levels (max 30) with
-   attribute bonuses (healthBase 6, +1 HP/level etc.), mob scaling by
-   distance-from-spawn (rpgdifficulty parity); big reference corpus in
-   `data/levelz/` (~400 files) of the migrated datapack.
+2. **Skills** (`aged-skills`) — v1 SHIPPED (14/14 gametests green):
+   12 levelz-parity skills (farming/mining/smithing/strength/agility/
+   defense/health/stamina/luck/archery/alchemy/trade), XP attachment
+   under `levelz:` namespace, triangular XP curve (baseXpPerLevel * N
+   per level, max 30), attribute bonuses as transient modifiers keyed
+   `aged_skills:<skill>` (health/strength/agility/defense/mining/luck),
+   XP hooks on block break (crops->farming, pickaxe->mining,
+   shovel->stamina) and kills (melee->strength, bow/crossbow/trident->
+   archery, animals->farming). All tunables in `config/aged_skills.json`.
+   - Remaining: mob scaling by distance-from-spawn (rpgdifficulty
+     parity), skill unlock gating from the migrated `data/levelz/*`
+     corpus (advancement-wrapped per ideas/genesis-comparison.md),
+     client HUD.
 3. **Primitive upgrades** (`aged-primitive`): knapping minigame,
    sieve block using `earlystage:sieve_drops/aged_drops.json` spec,
    beginner-death forgiveness (`beginnerDeathCount: 3`), steel tier

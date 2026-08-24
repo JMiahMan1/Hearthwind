@@ -1,6 +1,7 @@
 package dev.jmiahman.aged.skills;
 
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -10,6 +11,11 @@ public class AgedSkills implements ModInitializer {
 
 	@Override
 	public void onInitialize() {
-		LOGGER.info("Aged Skills initialized");
+		SkillsConfig.get(); // materialize config/aged_skills.json early
+		SkillEvents.register();
+		ServerPlayConnectionEvents.JOIN.register((handler, sender, server) ->
+				SkillAttributes.applyAll(handler.getPlayer()));
+		LOGGER.info("Aged Skills initialized: 12 skills, XP curve base {}",
+				SkillsConfig.get().levels.baseXpPerLevel);
 	}
 }

@@ -8,7 +8,8 @@
 	"license": "MIT",
 	"environment": "*",
 	"entrypoints": {
-		"main": ["dev.jmiahman.aged.skills.AgedSkills"]
+		"main": ["dev.jmiahman.aged.skills.AgedSkills"],
+		"fabric-gametest": ["dev.jmiahman.aged.skills.AgedSkillsGameTests"]
 	},
 	"depends": {
 		"fabricloader": ">=0.19.3",

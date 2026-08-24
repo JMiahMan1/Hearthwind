@@ -13,7 +13,9 @@ def main(path: str) -> int:
     total = failures = errors = skipped = 0
     for case in root.iter("testcase"):
         name = f"{case.get('classname', '?')}.{case.get('name', '?')}"
-        problem = case.find("failure") or case.find("error")
+        failure = case.find("failure")
+        error = case.find("error")
+        problem = failure if failure is not None else error
         if problem is not None:
             if problem.tag == "failure":
                 failures += 1
