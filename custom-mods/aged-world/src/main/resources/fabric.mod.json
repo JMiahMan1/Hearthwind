@@ -2,13 +2,17 @@
 	"schemaVersion": 1,
 	"id": "aged_world",
 	"version": "${version}",
-	"name": "Aged World",
-	"description": "seasons-lite crop growth and temperature effects (replaces fabric-seasons).",
-	"authors": ["JMiahMan1"],
+	"name": "Hearthwind: World",
+	"description": "Seasons, climate and living water. Part of Hearthwind.",
+	"authors": [
+		"JMiahMan1"
+	],
 	"license": "MIT",
 	"environment": "*",
 	"entrypoints": {
-		"main": ["dev.jmiahman.aged.world.AgedWorld"]
+		"main": [
+			"dev.jmiahman.aged.world.AgedWorld"
+		]
 	},
 	"depends": {
 		"fabricloader": ">=0.19.3",

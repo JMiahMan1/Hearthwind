@@ -2,16 +2,24 @@
 	"schemaVersion": 1,
 	"id": "aged_survival",
 	"version": "${version}",
-	"name": "Aged Survival",
-	"description": "thirst, temperature, diet, spoilage (replaces dehydration, environmentz, nutritionz, spoiledz).",
-	"authors": ["JMiahMan1"],
+	"name": "Hearthwind: Survival",
+	"description": "Thirst, body temperature, five-group diet and food spoilage. Part of Hearthwind; mechanics inspired by the Aged pack's dehydration/environmentz/nutritionz/spoiledz.",
+	"authors": [
+		"JMiahMan1"
+	],
 	"license": "MIT",
 	"environment": "*",
 	"entrypoints": {
-		"main": ["dev.jmiahman.aged.survival.AgedSurvival"],
-		"fabric-gametest": ["dev.jmiahman.aged.survival.AgedSurvivalGameTests"]
+		"main": [
+			"dev.jmiahman.aged.survival.AgedSurvival"
+		],
+		"fabric-gametest": [
+			"dev.jmiahman.aged.survival.AgedSurvivalGameTests"
+		]
 	},
-	"mixins": ["aged_survival.mixins.json"],
+	"mixins": [
+		"aged_survival.mixins.json"
+	],
 	"depends": {
 		"fabricloader": ">=0.19.3",
 		"minecraft": "~26.2",

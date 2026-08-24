@@ -1,9 +1,9 @@
 {
   "pack": {
-    "name": "Aged Server",
+    "name": "Hearthwind Server",
     "slug": "aged-server",
     "version": "0.1.0",
-    "summary": "Server-focused rebuild of the Aged modpack for modern Minecraft (26.x era)",
+    "summary": "Hearthwind - a medieval-realism survival pack for modern Minecraft (26.x era); grown from the Aged fork",
     "license": "MIT",
     "upstream": "https://github.com/xR4YM0ND/Aged"
   },

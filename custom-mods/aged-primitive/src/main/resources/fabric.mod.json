@@ -2,13 +2,17 @@
 	"schemaVersion": 1,
 	"id": "aged_primitive",
 	"version": "${version}",
-	"name": "Aged Primitive",
-	"description": "primitive-tech start and recipe gating (replaces earlystage, tiered).",
-	"authors": ["JMiahMan1"],
+	"name": "Hearthwind: Primitive",
+	"description": "Primitive-era progression: knapping, sieve, steel tier. Part of Hearthwind; inspired by the Aged pack's earlystage.",
+	"authors": [
+		"JMiahMan1"
+	],
 	"license": "MIT",
 	"environment": "*",
 	"entrypoints": {
-		"main": ["dev.jmiahman.aged.primitive.AgedPrimitive"]
+		"main": [
+			"dev.jmiahman.aged.primitive.AgedPrimitive"
+		]
 	},
 	"depends": {
 		"fabricloader": ">=0.19.3",

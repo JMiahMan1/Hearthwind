@@ -32,6 +32,16 @@ where they fit the medieval-realism identity.
 
 ### Phase B — Own identity
 
+- **Naming decision (2026-08-24): the pack is called HEARTHWIND.**
+  Display names switched immediately (`Hearthwind: Survival/Skills/
+  Primitive/World`, pack name `Hearthwind Server`); internal mod ids
+  stay `aged_*` for now and migrate to first-party ids during the
+  namespace audit below.
+- **Credits**: Hearthwind is *inspired by* the original Aged pack
+  (xR4YM0ND & contributors) and by Genesis (marianyp) — both credited
+  in every mod's metadata; Aged resources remain credited per
+  ATTRIBUTION.md if/when adopted.
+
 - **Naming/branding pass**: pick final name/logo; mod ids stay stable
   (`aged_skills` etc. can be aliased), but display names, `modmenu`
   metadata, pack description, and world flavor text switch to ours.
@@ -72,9 +82,9 @@ redistribute another mod's jar.
 
 ## Immediate backlog from this decision
 
+- [x] Naming: **Hearthwind** (display names live; ids migrate later)
 - [ ] Create `resources/ATTRIBUTION.md` skeleton + record what upstream
       assets we currently ship (audit `resources/`, `configs/`).
-- [ ] Decide candidate pack names for Phase B (non-blocking; park until
-      parity matrix is green).
-- [ ] Genesis-style client animations added to the borrow board (done
-      above) and considered when the companion client module starts.
+      *(ATTRIBUTION.md exists at repo root; audit when assets arrive.)*
+- [x] Genesis-style client animations added to the borrow board and
+      considered when the companion client module starts.

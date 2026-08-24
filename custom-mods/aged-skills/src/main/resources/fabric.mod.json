@@ -2,14 +2,20 @@
 	"schemaVersion": 1,
 	"id": "aged_skills",
 	"version": "${version}",
-	"name": "Aged Skills",
-	"description": "skill/attribute progression and mob scaling (replaces levelz + addons, rpgdifficulty).",
-	"authors": ["JMiahMan1"],
+	"name": "Hearthwind: Skills",
+	"description": "Twelve skills with XP, levels, attribute bonuses, distance-based monster danger and content gates. Part of Hearthwind; inspired by the Aged pack's levelz/rpgdifficulty.",
+	"authors": [
+		"JMiahMan1"
+	],
 	"license": "MIT",
 	"environment": "*",
 	"entrypoints": {
-		"main": ["dev.jmiahman.aged.skills.AgedSkills"],
-		"fabric-gametest": ["dev.jmiahman.aged.skills.AgedSkillsGameTests"]
+		"main": [
+			"dev.jmiahman.aged.skills.AgedSkills"
+		],
+		"fabric-gametest": [
+			"dev.jmiahman.aged.skills.AgedSkillsGameTests"
+		]
 	},
 	"depends": {
 		"fabricloader": ">=0.19.3",
