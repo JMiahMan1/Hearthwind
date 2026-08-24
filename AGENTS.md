@@ -34,11 +34,19 @@ expecting `Done`.
 How far CI can go:
 
 - Headless gametests + boot/RCON smoke tests: fully supported (current).
-- Automated CLIENT testing: possible via fabric-client-gametest-api-v1
-  (drives a real client under xvfb on runners); heavy (~4 GB, slow) —
-  adopt only when we have client-side code worth testing.
-- Interactive human playtesting: NOT a GHA fit. If needed, expose a test
-  server via a tunnel service from your own hardware instead.
+- Automated CLIENT testing: `fabric-client-gametest-api-v1` drives a REAL
+  client under xvfb on runners (movement, clicks, inventory, screenshots,
+  assertions). Heavy (~4 GB, minutes per scenario) — adopt when we ship
+  client-side code worth testing.
+- INTERACTIVE human sessions: also possible despite runners having no
+  inbound ports — everything tunnels outbound:
+  1. workflow boots pack server (and optionally a client under xvfb),
+  2. expose via playit.gg / ngrok / tailscale (outbound-only agents),
+  3. humans connect from their own machines for as long as the job lives
+     (6 h cap per job; re-dispatch to renew).
+  Guardrails if we ever enable this: gate behind workflow_dispatch +
+  environment approval, never print tunnel tokens in logs, use a
+  dedicated offline-mode test world.
 
 ## Golden workflow
 
