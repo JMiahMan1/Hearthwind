@@ -20,6 +20,25 @@ commit titles with "Aged"** — use plain conventional subjects
 | `custom-mods/tools/gen_placeholder_assets.py` | Placeholder models/textures/lang/equipment generator |
 | `custom-mods/tools/rcon.py` | Minimal Source-RCON client for headless verification |
 | `docs/CONVERSION.md` | Feasibility study, strategy, verified-state writeups |
+| `docs/PLAYER_CHANGES.md` | Player-facing list of gameplay differences from vanilla; UPDATE WITH EVERY GAMEPLAY COMMIT |
+| `.github/workflows/build-and-test.yml` | GHA: build + headless gametests on push; optional pack boot-smoke on dispatch |
+
+## CI (GitHub Actions)
+
+`build-and-test.yml` runs the full gradle build + gametest suite on GH
+ubuntu runners (7 GB — no memory gymnastics needed there, but keep
+--no-daemon). Artifacts: mod jars + JUnit XML report. A `boot-smoke`
+job (workflow_dispatch) resolves the full pack and boots a real server
+expecting `Done`.
+
+How far CI can go:
+
+- Headless gametests + boot/RCON smoke tests: fully supported (current).
+- Automated CLIENT testing: possible via fabric-client-gametest-api-v1
+  (drives a real client under xvfb on runners); heavy (~4 GB, slow) —
+  adopt only when we have client-side code worth testing.
+- Interactive human playtesting: NOT a GHA fit. If needed, expose a test
+  server via a tunnel service from your own hardware instead.
 
 ## Golden workflow
 

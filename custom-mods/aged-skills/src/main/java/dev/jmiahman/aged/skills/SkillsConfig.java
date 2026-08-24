@@ -20,6 +20,7 @@ public final class SkillsConfig {
     public final Levels levels = new Levels();
     public final Xp xp = new Xp();
     public final Bonuses bonuses = new Bonuses();
+    public final MobScaling mobScaling = new MobScaling();
 
     /** Public no-arg ctor required so Gson keeps field-initializer defaults. */
     public SkillsConfig() {}
@@ -59,6 +60,21 @@ public final class SkillsConfig {
         public double miningSpeedFractionPerLevel = 0.01;
         /** Luck points per LUCK level. */
         public double luckPerLevel = 0.1;
+    }
+
+    public static class MobScaling {
+        /** Master switch for distance-based monster scaling (rpgdifficulty parity). */
+        public boolean enabled = true;
+        /** Distance from world spawn before any scaling applies (blocks). */
+        public double graceDistance = 500.0;
+        /** One scaling step per this many blocks beyond the grace distance. */
+        public double stepBlocks = 1000.0;
+        /** Extra max health (HP) per step. */
+        public double healthPerStep = 2.0;
+        /** Extra attack damage per step. */
+        public double damagePerStep = 0.5;
+        /** Hard cap on total steps a mob can receive. */
+        public int maxSteps = 20;
     }
 
     private static SkillsConfig instance;

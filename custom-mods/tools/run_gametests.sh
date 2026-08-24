@@ -58,7 +58,7 @@ rm -f "$REPORT"
 echo "== running gametests headless (${HEAP} heap) =="
 set +e
 cd "$SRV"
-timeout "${GAMETEST_TIMEOUT:-420}" java -Xmx"$HEAP" \\
+timeout "${GAMETEST_TIMEOUT:-420}" java -Xmx"$HEAP" \
      -Dfabric-api.gametest=true \
      -Dfabric-api.gametest.report-file="$REPORT" \
      -jar "$SRV/fabric-server.jar" nogui > "$SRV/gametest.log" 2>&1

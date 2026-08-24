@@ -103,7 +103,10 @@ herdspanic, log-begone) need watchlist monitoring or replacement.
    - [x] v1 core: 12 skills, XP attachment + triangular curve to 30,
      transient attribute modifiers, block-break & kill XP hooks,
      `config/aged_skills.json`; 4 gametests green
-   - [ ] mob scaling by distance-from-spawn (rpgdifficulty)
+   - [x] mob scaling by distance-from-spawn (rpgdifficulty parity):
+     monsters gain +2 HP/+0.5 dmg per 1000 blocks past a 500-block grace
+     radius, capped at 20 steps; transient modifier, no double stacking;
+     gametests for math + application
    - [ ] unlock gating from migrated `data/levelz/*` corpus
 8. [ ] Primitive upgrades (knapping, sieve, steel tier)
 9. [ ] Seasons-lite (aged-world) feeding the temperature hook
