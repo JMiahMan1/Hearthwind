@@ -131,23 +131,29 @@ gating infra, world `Season` covers seasonal friction. Next build is
 **Sieve + Age 1 advancement chain**, then **Steel Age 3→4 wiring**, then
 **Create-gated Mechanical** — each with tests.
 
-## Distribution model
+## Distribution model — server and client are both first-class
 
-Two artifacts from the same repo:
+Hearthwind is built as **one repo, two artifacts** from the same
+dependency set. Every gameplay system enforces on the **server**; the
+**client** only presents it. This keeps vanilla join working while giving
+opt-in fidelity.
 
-- **Hearthwind Server** (required) — current `hearthwind-*` modules
-  (`survival`, `skills`, `jobs`, `primitive`, `world`); installs on
-  dedicated servers; vanilla clients can join.
-- **Hearthwind Client** (optional companion, Phase C) — `hearthwind-net`
-  shared payload definitions + client rendering module: HUD bars
-  (thirst/diet/temperature/skills/jobs), visible water motion, Genesis-style
-  instruction toasts. Server broadcasts regardless; clients without it
-  simply see nothing extra.
+| Layer | Where code lives | What it does | If you don't install it |
+|---|---|---|---|
+| **Server (required)** | `hearthwind-survival`, `hearthwind-skills`, `hearthwind-jobs`, `hearthwind-primitive`, `hearthwind-world` (`environment = "*"` on server) | Authoritative: thirst/diet/spoilage/temperature tick, skill/job XP & gates, mob scaling, primitive loot, seasons calendar, Age advancements. Writes `hearthwind_*.json` configs. Broadcasts sync payloads. | — |
+| **Sync protocol** | `hearthwind-client` (upcoming `hearthwind-net` payloads) | `ServerPlayNetworking` payloads: `hearthwind:hydration`, `hearthwind:nutrients`, `hearthwind:skills`, `hearthwind:season`. Server sends regardless; vanilla clients ignore. | Vanilla clients get chat/action-bar fallbacks (`sendOverlayMessage`) — fully playable, no HUD bars. |
+| **Client companion (optional)** | `hearthwind-client` (`environment = "client"`, `ClientModInitializer`) + optional shader/resource pack | Renders HUD bars (thirst/diet/temp/skill/job), Genesis-style instruction toasts, visible water motion preview, temperature/diet overlays. Reads sync payloads, never writes authority. | No extra download; HUD toasts fall back to action-bar. |
 
-Packaging (`build_pack.py`) will emit both flavors: the Modrinth index
-format supports per-side environment flags, so one resolved dependency
-set produces `hearthwind-server.mrpack` and
-`hearthwind-client.mrpack`.
+**Current coverage:**
+- **Server:** ✅ shippable. `custom-mods/README.md:15` 5 modules build green, 19 gametests, vanilla clients join. All features work headless.
+- **Client:** 🟡 scaffold planned → implementing. Skeleton `hearthwind-client` lands this iteration (client-only, Fabric). Phase C HUD (thirst/diet/temperature/skills/jobs), spoil-age container rendering, and instruction toasts land behind feature flags. Client gametests (`fabric-client-gametest-api-v1` + xvfb) will drive HUD verification when first bars ship.
+
+**Packaging:** `build_pack.py` emits one Modrinth index with per-side
+`env` flags, producing `hearthwind-server.mrpack` (server+world) and
+`hearthwind-client.mrpack` (client overlay) from the same `resolved.json`.
+Players who just want to **play** do nothing — vanilla 26.2 connects.
+Players who want the full HUD install the client pack via Modrinth App
+or Prism (mods folder) alongside vanilla.
 
 ## Practical consequences for day-to-day work
 

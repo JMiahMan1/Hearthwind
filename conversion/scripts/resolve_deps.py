@@ -23,7 +23,7 @@ MANIFEST = ROOT / "conversion" / "curated" / "mods-manifest.json"
 BUILD = ROOT / "conversion" / "build"
 CACHE = BUILD / ".cache"
 
-UA = {"User-Agent": "aged-server-conversion/0.1 (github.com/JMiahMan1/Aged)"}
+UA = {"User-Agent": "hearthwind/0.1 (github.com/JMiahMan1/Hearthwind)"}
 
 
 def http_json(url, tries=5):

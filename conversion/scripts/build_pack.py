@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
 """Build distributable artifacts from resolved dependency data.
 
-Outputs (in conversion/dist):
+Outputs (in conversion/dist and conversion/build/dist):
   - modrinth.index.json          Modrinth pack format index
-  - AgedServer-<ver>-mc<mc>.mrpack  installable server pack
-  - server/<mod>.jar             plain mods dir (with --server-dir)
+  - Hearthwind-<ver>-mc<mc>.mrpack        installable server pack (server required, client optional -> vanilla join)
+  - HearthwindClient-<ver>-mc<mc>.mrpack  optional client HUD pack (client required, server unsupported)
+  - server/<mod>.jar             plain server mods dir (with --server-dir)
+  - client/mods/<mod>.jar        plain client mods dir (hearthwind-client)
 
 Usage:
   python3 conversion/scripts/build_pack.py [--server-dir]
@@ -20,8 +22,10 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 CONF = ROOT / "conversion" / "build.conf.json"
 BUILD = ROOT / "conversion" / "build"
+# Legacy DIST for back-compat (conversion/dist) + canonical build/dist
 DIST = BUILD / "dist"
-UA = {"User-Agent": "aged-server-conversion/0.1"}
+DIST_LEGACY = ROOT / "conversion" / "dist"
+UA = {"User-Agent": "hearthwind/0.1 (github.com/JMiahMan1/Hearthwind)"}
 
 
 def main():
@@ -57,13 +61,17 @@ def main():
             }
         )
 
+    # Server pack: server required, client optional (vanilla join supported)
+    server_files = [{**f, "env": {"client": "optional", "server": "required"}} for f in files]
+    # Client pack will be built by layering hearthwind-client jar on top of same file set
+    # but with client required / server unsupported
     index = {
         "formatVersion": 1,
         "game": "minecraft",
         "versionId": conf["pack"]["version"],
         "name": conf["pack"]["name"],
         "summary": conf["pack"]["summary"],
-        "files": files,
+        "files": server_files,
         "dependencies": {
             "minecraft": mc,
             "fabric-loader": conf["targets"]["loader_version"],
@@ -71,12 +79,18 @@ def main():
     }
 
     DIST.mkdir(parents=True, exist_ok=True)
+    DIST_LEGACY.mkdir(parents=True, exist_ok=True)
     idx_path = DIST / "modrinth.index.json"
     json.dump(index, open(idx_path, "w"), indent=2)
+    # also mirror to legacy path so old docs/scripts keep working
+    json.dump(index, open(DIST_LEGACY / "modrinth.index.json", "w"), indent=2)
 
     import zipfile
 
-    mrpack = DIST / f"AgedServer-{conf['pack']['version']}-mc{mc}.mrpack"
+    slug = conf["pack"]["slug"]  # hearthwind
+    ver = conf["pack"]["version"]
+    mrpack = DIST / f"{slug.title()}-{ver}-mc{mc}.mrpack"  # Hearthwind-0.1.0-mc26.2.mrpack
+    mrpack_legacy = DIST / f"HearthwindServer-{ver}-mc{mc}.mrpack"  # back-compat alias
 
     datapack = ROOT / "conversion" / "datapacks" / "aged-server"
     if not (datapack / "pack.mcmeta").exists():
@@ -99,13 +113,39 @@ def main():
             for p in ov.rglob("*"):
                 if p.is_file():
                     z.write(p, "overrides/" + str(p.relative_to(ov)))
+    # legacy alias
+    shutil.copy(mrpack, mrpack_legacy)
+    # also copy to conversion/dist for legacy tooling
+    for p in [mrpack, mrpack_legacy, idx_path]:
+        shutil.copy(p, DIST_LEGACY / p.name)
     print(
-        f"Wrote {mrpack.name} ({mrpack.stat().st_size // 1024} KiB, {len(files)} mods)"
+        f"Wrote {mrpack.name} ({mrpack.stat().st_size // 1024} KiB, {len(server_files)} mods) + legacy {mrpack_legacy.name}"
     )
+
+    # ---- Client companion pack (optional HUD) ----
+    # For now the client pack is a thin overlay: same index but with client
+    # files marked required and a note to drop hearthwind-client jar.
+    # We also generate a ready-to-unzip client mods folder.
+    client_index = dict(index)
+    client_index["name"] = conf["pack"]["name"] + " Client"
+    client_index["files"] = [{**f, "env": {"client": "required", "server": "unsupported"}} for f in files]
+    client_idx_path = DIST / "modrinth.client.index.json"
+    json.dump(client_index, open(client_idx_path, "w"), indent=2)
+    client_mrpack = DIST / f"{slug.title()}Client-{ver}-mc{mc}.mrpack"
+    with zipfile.ZipFile(client_mrpack, "w", zipfile.ZIP_DEFLATED) as z:
+        # reuse server datapack as overrides — client needs same world compat
+        z.write(client_idx_path, "modrinth.index.json")
+        for p in sorted(datapack.rglob("*")):
+            if p.is_file():
+                z.write(p, "overrides/world/datapacks/aged-server/" + str(p.relative_to(datapack)))
+    shutil.copy(client_mrpack, DIST_LEGACY / client_mrpack.name)
+    print(f"Wrote {client_mrpack.name} ({client_mrpack.stat().st_size // 1024} KiB) — client companion (same files, client-required)")
 
     if args.server_dir:
         sdir = DIST / "server"
+        cdir = DIST / "client"
         (sdir / "mods").mkdir(parents=True, exist_ok=True)
+        (cdir / "mods").mkdir(parents=True, exist_ok=True)
         for r in ready:
             dest = sdir / "mods" / r["picked"]["file"]["filename"]
             if (
@@ -123,10 +163,38 @@ def main():
                 open(dest, "wb") as out,
             ):
                 shutil.copyfileobj(resp, out)
+        # Mirror server mods to client mods for now (client can install same set
+        # plus its own companion jar; actual Modrinth env filtering happens on import)
+        for p in (sdir / "mods").glob("*.jar"):
+            shutil.copy(p, cdir / "mods" / p.name)
+        # Also copy our custom jars into the plain dirs for offline installs
+        custom_jars = list((ROOT / "custom-mods").rglob("hearthwind-*/build/libs/*26.2*.jar"))
+        custom_jars = [j for j in custom_jars if "sources" not in j.name]
+        for j in custom_jars:
+            is_client = "hearthwind-client" in str(j)
+            target_dir = cdir / "mods" if is_client else sdir / "mods"
+            # server gets all but client; client gets client + shared deps
+            if is_client:
+                shutil.copy(j, cdir / "mods" / j.name)
+            else:
+                shutil.copy(j, sdir / "mods" / j.name)
+                # also copy server jars to client mods so client can run single-player
+                shutil.copy(j, cdir / "mods" / j.name)
         wdp = sdir / "world" / "datapacks" / "aged-server"
         shutil.rmtree(wdp, ignore_errors=True)
         shutil.copytree(datapack, wdp)
-        print(f"Materialized {len(ready)} jars into {sdir / 'mods'} + world datapack")
+        # client needs same datapack when hosting via client (singleplayer)
+        wdp_c = cdir / "world" / "datapacks" / "aged-server"
+        shutil.rmtree(wdp_c, ignore_errors=True)
+        shutil.copytree(datapack, wdp_c)
+        # Mirror to legacy location too
+        sdir_legacy = DIST_LEGACY / "server"
+        cdir_legacy = DIST_LEGACY / "client"
+        shutil.rmtree(sdir_legacy, ignore_errors=True)
+        shutil.rmtree(cdir_legacy, ignore_errors=True)
+        shutil.copytree(sdir, sdir_legacy)
+        shutil.copytree(cdir, cdir_legacy)
+        print(f"Materialized {len(ready)} jars + {len(custom_jars)} custom into {sdir / 'mods'} (server) and {cdir / 'mods'} (client) + world datapacks")
 
 
 if __name__ == "__main__":

@@ -45,7 +45,9 @@ fi
 echo "== installing fresh mod jars =="
 rm -f "$SRV"/mods/hearthwind-*.jar
 # every custom module ships its plain jar so cross-module behavior is
-# exercised together (never the -sources jars)
+# exercised together (never the -sources jars). hearthwind-client is
+# client-only ("environment": "client") — the dedicated server ignores it,
+# so we exclude it here; it is exercised by client-gametest runs instead.
 find hearthwind-survival hearthwind-skills hearthwind-jobs hearthwind-primitive hearthwind-world -name "*.jar" \
      -path "*build/libs/*" ! -name "*-sources.jar" -exec cp {} "$SRV/mods/" \;
 ls "$SRV"/mods/

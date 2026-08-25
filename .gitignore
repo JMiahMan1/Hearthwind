@@ -1,7 +1,9 @@
 conversion/build/
+conversion/dist/
 .gradle/
 build/
 run/
 *.log
 __pycache__/
 .tmp-test-server/
+dist/
