@@ -9,9 +9,10 @@ pluginManagement {
 	}
 }
 
-rootProject.name = 'aged-custom'
+rootProject.name = 'hearthwind-custom'
 
-include 'aged-survival'
-include 'aged-skills'
-include 'aged-primitive'
-include 'aged-world'
+include 'hearthwind-survival'
+include 'hearthwind-skills'
+include 'hearthwind-primitive'
+include 'hearthwind-world'
+include 'hearthwind-jobs'

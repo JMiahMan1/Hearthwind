@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Headless gametest runner for aged-survival.
+# Headless gametest runner for hearthwind-survival.
 #
 # Boots a throwaway dedicated 26.2 server with fabric-api's gametest
 # harness enabled (-Dfabric-api.gametest=true), which runs every @GameTest
@@ -19,8 +19,8 @@ KEEP=0
 [ "${1:-}" = "--keep-server" ] && KEEP=1
 
 cd "$DIR/.."
-echo "== building :aged-survival =="
-./gradlew :aged-survival:build --no-daemon --max-workers=2 -q
+echo "== building :hearthwind-survival =="
+./gradlew :hearthwind-survival:build --no-daemon --max-workers=2 -q
 
 mkdir -p "$SRV/mods"
 if [ ! -f "$SRV/fabric-server.jar" ]; then
@@ -43,10 +43,10 @@ if [ ! -f "$SRV/mods/fabric-gametest-api-v1.jar" ]; then
 fi
 
 echo "== installing fresh mod jars =="
-rm -f "$SRV"/mods/aged-*.jar
+rm -f "$SRV"/mods/hearthwind-*.jar
 # every custom module ships its plain jar so cross-module behavior is
 # exercised together (never the -sources jars)
-find aged-survival aged-skills aged-primitive aged-world -name "*.jar" \
+find hearthwind-survival hearthwind-skills hearthwind-primitive hearthwind-world -name "*.jar" \
      -path "*build/libs/*" ! -name "*-sources.jar" -exec cp {} "$SRV/mods/" \;
 ls "$SRV"/mods/
 

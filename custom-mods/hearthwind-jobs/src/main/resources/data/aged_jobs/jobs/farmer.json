@@ -1,0 +1,170 @@
+{
+ "job": "farmer",
+ "levels": [
+  {
+   "blocks": [],
+   "entities": [],
+   "items": [
+    "minecraft:sweet_berries",
+    "minecraft:brown_mushroom",
+    "minecraft:red_mushroom",
+    "minecraft:pumpkin",
+    "minecraft:melon_slice",
+    "minecraft:glow_berries",
+    "minecraft:chorus_fruit",
+    "minecraft:apple",
+    "vinery:red_grape",
+    "vinery:white_grape",
+    "vinery:savanna_grapes_red",
+    "vinery:savanna_grapes_white",
+    "vinery:taiga_grapes_red",
+    "vinery:taiga_grapes_white",
+    "vinery:jungle_grapes_red",
+    "vinery:jungle_grapes_white",
+    "vinery:cherry",
+    "bakery:strawberry_cake_slice",
+    "bakery:sweetberry_cake_slice",
+    "bakery:chocolate_cake_slice",
+    "bakery:chocolate_gateau_slice",
+    "bakery:bundt_cake_slice",
+    "bakery:linzer_tart_slice",
+    "bakery:apple_pie_slice",
+    "bakery:glowberry_pie_slice",
+    "bakery:chocolate_tart_slice",
+    "bakery:pudding_slice",
+    "bakery:chocolate_glazed_cookie",
+    "bakery:sweetberry_glazed_cookie",
+    "bakery:strawberry_glazed_cookie",
+    "brewery:dried_wheat",
+    "brewery:dried_barley",
+    "brewery:dried_corn",
+    "brewery:dried_oat",
+    "meadow:cheesecake_slice",
+    "meadow:cheese_tart_slice",
+    "meadow:piece_of_cheese",
+    "meadow:piece_of_sheep_cheese",
+    "meadow:piece_of_grain_cheese",
+    "meadow:piece_of_amethyst_cheese",
+    "meadow:piece_of_buffalo_cheese",
+    "meadow:piece_of_goat_cheese",
+    "meadow:piece_of_warped_cheese",
+    "natures_spirit:desert_turnip"
+   ],
+   "level": 1
+  },
+  {
+   "blocks": [],
+   "entities": [],
+   "items": [
+    "minecraft:wheat",
+    "minecraft:carrot",
+    "minecraft:potato",
+    "minecraft:beetroot",
+    "farm_and_charm:strawberry",
+    "farm_and_charm:oat",
+    "brewery:hops",
+    "farm_and_charm:barley",
+    "farm_and_charm:corn",
+    "farm_and_charm:tomato",
+    "farm_and_charm:lettuce",
+    "farm_and_charm:onion",
+    "herbalbrews:coffee_beans",
+    "vinery:rotten_cherry",
+    "bakery:apple_cupcake",
+    "bakery:sweetberry_cupcake",
+    "bakery:strawberry_cupcake"
+   ],
+   "level": 2
+  },
+  {
+   "blocks": [],
+   "entities": [],
+   "items": [
+    "minecraft:nether_wart",
+    "minecraft:poisonous_potato",
+    "herbalbrews:tea_blossom",
+    "herbalbrews:green_tea_leaf",
+    "herbalbrews:yerba_mate_leaf",
+    "herbalbrews:rooibos_leaf",
+    "nethervinery:crimson_grape",
+    "nethervinery:warped_grape"
+   ],
+   "level": 3
+  },
+  {
+   "blocks": [],
+   "entities": [],
+   "items": [],
+   "level": 4
+  },
+  {
+   "blocks": [],
+   "entities": [],
+   "items": [
+    "minecraft:honey_bottle",
+    "brewery:beer_wheat",
+    "brewery:beer_barley",
+    "brewery:beer_hops",
+    "brewery:beer_nettle",
+    "brewery:beer_oat",
+    "brewery:beer_haley"
+   ],
+   "level": 5
+  },
+  {
+   "blocks": [],
+   "entities": [],
+   "items": [
+    "bakery:strawberry_cake",
+    "bakery:sweetberry_cake",
+    "bakery:chocolate_cake",
+    "bakery:chocolate_gateau"
+   ],
+   "level": 6
+  },
+  {
+   "blocks": [],
+   "entities": [],
+   "items": [
+    "brewery:mashed_potatoes"
+   ],
+   "level": 7
+  },
+  {
+   "blocks": [],
+   "entities": [],
+   "items": [
+    "brewery:whiskey_jojannik",
+    "brewery:whiskey_lilitusinglemalt",
+    "brewery:whiskey_cristelwalker",
+    "brewery:whiskey_maggoallan",
+    "brewery:whiskey_carrasconlabel",
+    "brewery:whiskey_ak",
+    "brewery:whiskey_highland_hearth",
+    "brewery:whiskey_smokey_reverie",
+    "brewery:whiskey_jamesons_malt"
+   ],
+   "level": 8
+  },
+  {
+   "blocks": [],
+   "entities": [],
+   "items": [
+    "brewery:half_chicken"
+   ],
+   "level": 9
+  },
+  {
+   "blocks": [],
+   "entities": [],
+   "items": [],
+   "level": 10
+  },
+  {
+   "blocks": [],
+   "entities": [],
+   "items": [],
+   "level": 15
+  }
+ ]
+}

@@ -1,0 +1,65 @@
+{
+ "job": "brewer",
+ "levels": [
+  {
+   "blocks": [],
+   "entities": [],
+   "items": [],
+   "level": 1
+  },
+  {
+   "blocks": [],
+   "entities": [],
+   "items": [],
+   "level": 2
+  },
+  {
+   "blocks": [],
+   "entities": [],
+   "items": [],
+   "level": 3
+  },
+  {
+   "blocks": [],
+   "entities": [],
+   "items": [],
+   "level": 4
+  },
+  {
+   "blocks": [],
+   "entities": [],
+   "items": [],
+   "level": 5
+  },
+  {
+   "blocks": [],
+   "entities": [],
+   "items": [],
+   "level": 6
+  },
+  {
+   "blocks": [],
+   "entities": [],
+   "items": [],
+   "level": 7
+  },
+  {
+   "blocks": [],
+   "entities": [],
+   "items": [],
+   "level": 8
+  },
+  {
+   "blocks": [],
+   "entities": [],
+   "items": [],
+   "level": 9
+  },
+  {
+   "blocks": [],
+   "entities": [],
+   "items": [],
+   "level": 10
+  }
+ ]
+}

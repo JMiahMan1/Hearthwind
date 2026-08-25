@@ -1,0 +1,70 @@
+{
+ "job": "fisher",
+ "levels": [
+  {
+   "blocks": [],
+   "entities": [
+    "minecraft:cod",
+    "minecraft:salmon",
+    "minecraft:tropical_fish",
+    "minecraft:pufferfish",
+    "minecraft:glow_squid",
+    "minecraft:squid",
+    "naturalist:bass",
+    "naturalist:catfish"
+   ],
+   "items": [
+    "minecraft:cod",
+    "minecraft:salmon"
+   ],
+   "level": 1
+  },
+  {
+   "blocks": [],
+   "entities": [],
+   "items": [
+    "minecraft:tropical_fish",
+    "minecraft:pufferfish"
+   ],
+   "level": 2
+  },
+  {
+   "blocks": [],
+   "entities": [],
+   "items": [
+    "naturalist:bass",
+    "naturalist:catfish"
+   ],
+   "level": 3
+  },
+  {
+   "blocks": [],
+   "entities": [],
+   "items": [],
+   "level": 4
+  },
+  {
+   "blocks": [],
+   "entities": [],
+   "items": [],
+   "level": 5
+  },
+  {
+   "blocks": [],
+   "entities": [],
+   "items": [],
+   "level": 10
+  },
+  {
+   "blocks": [],
+   "entities": [],
+   "items": [
+    "minecraft:enchanted_book",
+    "minecraft:saddle",
+    "minecraft:nautilus_shell",
+    "minecraft:name_tag"
+   ],
+   "level": 15
+  }
+ ]
+}

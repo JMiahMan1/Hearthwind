@@ -1,0 +1,26 @@
+{
+	"schemaVersion": 1,
+	"id": "hearthwind_skills",
+	"version": "${version}",
+	"name": "Hearthwind: Skills",
+	"description": "Twelve skills with XP, levels, attribute bonuses, distance-based monster danger and content gates. Part of Hearthwind; inspired by the Hearthwind pack's levelz/rpgdifficulty.",
+	"authors": [
+		"JMiahMan1"
+	],
+	"license": "MIT",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"dev.jmiahman.hearthwind.skills.HearthwindSkills"
+		],
+		"fabric-gametest": [
+			"dev.jmiahman.hearthwind.skills.HearthwindSkillsGameTests"
+		]
+	},
+	"depends": {
+		"fabricloader": ">=0.19.3",
+		"minecraft": "~26.2",
+		"java": ">=25",
+		"fabric-api": "*"
+	}
+}
