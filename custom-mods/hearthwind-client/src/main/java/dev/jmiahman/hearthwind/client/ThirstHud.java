@@ -10,13 +10,20 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.util.RandomSource;
 
 /**
- * Vanilla-like thirst bar above hunger. Uses MIT thirst_icons.png from
- * ghen-git/Thirst-Mod (Thirst Was Taken) with attribution in ATTRIBUTION.md.
- * 10 droplets, same 8px spacing as hunger, positioned 10px above FOOD_BAR.
- * Looks and feels like original hunger bar, but blue water.
+ * Vanilla-like thirst bar above hunger. Sprite sheet is the MIT-licensed
+ * thirst_icons.png from ghen-git/Thirst-Mod (Thirst Was Taken), recorded in
+ * ATTRIBUTION.md: 25x9 px, three 9x9 droplets - empty (u 0), half (u 8),
+ * full (u 16). Rendered exactly like vanilla hunger: right-aligned above
+ * the food bar, 8px per icon, wobbles when dehydrated.
  */
 public final class ThirstHud implements HudElement {
+    private static final Identifier THIRST_ICONS =
+            Identifier.fromNamespaceAndPath("hearthwind", "textures/gui/thirst_icons.png");
     private static final RandomSource RANDOM = RandomSource.create();
+
+    // Sprite sheet geometry (px / px-width -> normalized UV)
+    private static final float TEX_W = 25.0f;
+    private static final int ICON = 9;
 
     public static final ThirstHud INSTANCE = new ThirstHud();
 
@@ -38,42 +45,35 @@ public final class ThirstHud implements HudElement {
 
         int width = graphics.guiWidth();
         int height = graphics.guiHeight();
-        int left = width / 2 + 91;
-        int top = height - 49; // 10px above hunger at height-39
+        int left = width / 2 + 91;      // same right edge as hunger
+        int top = height - 49;          // 10px above the food bar (height-39)
 
         float hydration = ClientThirstData.getHydration();
         int level = Math.round(hydration); // 0..20
-
-        int fullColor = 0xFF2A7FFF; // blue water
-        int halfColor = 0xFF6FA8FF; // lighter blue
-        int emptyColor = 0xFF3A3A3A; // dark gray background
 
         for (int i = 0; i < 10; i++) {
             int idx = i * 2 + 1;
             int x = left - i * 8 - 9;
             int y = top;
 
-            // Jiggle when low, like Thirst Was Taken
-            if (hydration <= 6.0f) {
-                int tick = mc.player.tickCount;
-                if (tick % (Math.max(1, level) * 3 + 1) == 0) {
-                    y = top + (RANDOM.nextInt(3) - 1);
-                }
+            // Dehydrated wobble, same feel as the vanilla hunger shake
+            if (hydration <= 6.0f && mc.player.tickCount % (Math.max(1, level) * 3 + 1) == 0) {
+                y = top + (RANDOM.nextInt(3) - 1);
             }
 
-            // Background
-            graphics.fill(x, y, x + 9, y + 9, emptyColor);
-            // Border
-            graphics.fill(x, y, x + 9, y + 1, 0xFF000000);
-            graphics.fill(x, y + 8, x + 9, y + 9, 0xFF000000);
-            graphics.fill(x, y, x + 1, y + 9, 0xFF000000);
-            graphics.fill(x + 8, y, x + 9, y + 9, 0xFF000000);
+            // background (empty droplet)
+            blit(graphics, x, y, 0);
 
             if (idx < level) {
-                graphics.fill(x + 1, y + 1, x + 8, y + 8, fullColor);
+                blit(graphics, x, y, 16); // full
             } else if (idx == level) {
-                graphics.fill(x + 1, y + 1, x + 5, y + 8, halfColor);
+                blit(graphics, x, y, 8);  // half
             }
         }
+    }
+
+    private static void blit(GuiGraphicsExtractor g, int x, int y, int uPx) {
+        g.blit(THIRST_ICONS, x, y, ICON, ICON,
+                uPx / TEX_W, 0.0f, (uPx + ICON) / TEX_W, 1.0f);
     }
 }

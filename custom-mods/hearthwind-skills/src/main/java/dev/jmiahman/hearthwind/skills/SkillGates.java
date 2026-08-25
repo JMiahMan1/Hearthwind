@@ -126,28 +126,32 @@ public final class SkillGates {
     }
 
     public static void register() {
+        // Gates are SERVER-authoritative. Fabric fires these events on the
+        // client thread too (singleplayer); touching server-only attachments
+        // with a LocalPlayer crashed the client (NPE in SkillXp.xp), so bail
+        // out before any gate check when the player is not a ServerPlayer.
         PlayerBlockBreakEvents.BEFORE.register((world, player, pos, state, blockEntity) -> {
+            if (!(player instanceof ServerPlayer sp)) {
+                return true;
+            }
             Gate gate = breakGate(state);
-            if (!allowed(asServer(player), gate)) {
-                deny(asServer(player), gate, "break");
+            if (!allowed(sp, gate)) {
+                deny(sp, gate, "break");
                 return false;
             }
             return true;
         });
         UseBlockCallback.EVENT.register((player, world, hand, hitResult) -> {
-            BlockState state = world.getBlockState(hitResult.getBlockPos());
-            Gate gate = useGate(state.getBlock());
-            if (gate != null && !allowed(asServer(player), gate)
-                    && player instanceof ServerPlayer sp) {
+            if (!(player instanceof ServerPlayer sp)) {
+                return InteractionResult.PASS;
+            }
+            Gate gate = useGate(world.getBlockState(hitResult.getBlockPos()).getBlock());
+            if (gate != null && !allowed(sp, gate)) {
                 deny(sp, gate, "use");
                 return InteractionResult.FAIL;
             }
             return InteractionResult.PASS;
         });
-    }
-
-    private static ServerPlayer asServer(net.minecraft.world.entity.player.Player p) {
-        return p instanceof ServerPlayer sp ? sp : null;
     }
 
     private static void deny(ServerPlayer player, Gate gate, String verb) {

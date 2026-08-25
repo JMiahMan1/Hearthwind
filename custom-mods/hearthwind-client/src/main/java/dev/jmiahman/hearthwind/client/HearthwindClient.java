@@ -2,7 +2,6 @@ package dev.jmiahman.hearthwind.client;
 
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,18 +22,21 @@ public class HearthwindClient implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
-        // Thirst sync from server (hearthwind:thirst) -> ClientThirstData for HUD above hunger bar
+        // Thirst sync from server -> ClientThirstData for HUD above hunger bar.
+        // NOTE: the payload Type is registered by hearthwind-survival's common
+        // init (which also runs client-side); do NOT register it again here or
+        // Fabric throws "already registered" and the receiver never attaches
+        // (that caused the "Unknown custom packet payload" spam).
         try {
-            PayloadTypeRegistry.clientboundPlay().register(ThirstSyncPayload.TYPE, ThirstSyncPayload.CODEC);
             ClientPlayNetworking.registerGlobalReceiver(ThirstSyncPayload.TYPE, (payload, context) -> {
                 context.client().execute(() -> ClientThirstData.setHydration(payload.hydration()));
             });
-            LOGGER.info("Hearthwind Client networking: registered {}", ThirstSyncPayload.TYPE.id());
+            LOGGER.info("Hearthwind Client networking: receiver for {}", ThirstSyncPayload.TYPE.id());
         } catch (Exception e) {
             LOGGER.warn("Failed to register thirst receiver", e);
         }
 
-        // HUD above hunger bar - vanilla-like, 10 droplets, 8px spacing, same as Thirst Was Taken (MIT)
+        // HUD above hunger bar - vanilla-like, 10 droplets, 8px spacing
         try {
             ThirstHud.register();
             LOGGER.info("Hearthwind Client initialized - thirst HUD above hunger bar active (vanilla-like)");
