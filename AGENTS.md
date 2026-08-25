@@ -180,7 +180,15 @@ python3 ../custom-mods/tools/rcon.py 127.0.0.1 25575 agedtest "summon item ~ ~ ~
   agedaddition, dehydration, environmentz, levelz, tiered, ...) so the
   ~800 migrated tuning files activate unchanged.
 
-## Next steps (priority order)
+## Overarching principles (from docs/PROJECT_DIRECTION.md North star)
+
+Every task is judged against **realism → earned unlock → harder frontier → one best → slow tech**:
+- Make it as close to reality as possible without being miserable (costs for magic, physical crafting).
+- More resources = more unlocks, but the world gets harder in lockstep (distance + aggregate power scaling, capped 20).
+- All mods must play well together — delete overlap, keep one best (single sieve, single storage, single farm system).
+- Technology arrives in Ages (Stranded → Camp → Copper → Iron/Steel → Mechanical), gated by skills/jobs/advancements, hard-fought not creative.
+
+## Next steps (priority order — slow-tech, no kludge)
 
 1. **Survival** (`custom-mods/hearthwind-survival`) — v1 SHIPPED
    (verified boot + RCON on 26.2, 8/8 gametests green):
@@ -210,26 +218,26 @@ python3 ../custom-mods/tools/rcon.py 127.0.0.1 25575 agedtest "summon item ~ ~ ~
    Skill break/use gates from merged `data/levelz` corpus are live (mining 1..27, use gates on 17 stations).
     - Remaining vs original: crafting denial for gated items (smithing
       tiers), entity/husbandry gates, client HUD (companion mod).
-3. **Jobs** (`hearthwind-jobs`, jobs-addon parity) — 🟡 partial, 4/4 gametests green (new):
+3. **Jobs** (`hearthwind-jobs`, jobs-addon parity) — 🟡 partial, 4/4 gametests green:
    8 jobs (fisher/miner/farmer/warrior/smither/brewer/builder/lumberjack), per-player job attachment `hearthwind_jobs:state`, level math `pointsPerLevel` (default 100), XP hooks on block break / entity kill via `JobState.awardIfMatch`, **`/job join/leave/info` commands** shipped; config `config/hearthwind_jobs.json`.
-   Remaining: job-restricted recipe gating (reuses gate infra), bonus rewards. Parity: docs/FEATURE_PARITY.md 🟡 partial.
-4. **Primitive** (`hearthwind-primitive`) — 🟡 partial: flint tools/rock item, stone->rock loot, ore pieces recipes, **steel ingot/nugget/block + assets** shipped; remaining: knapping minigame,
-    sieve block using `earlystage:sieve_drops/aged_drops.json` spec,
-    beginner-death forgiveness (`beginnerDeathCount: 3`), full `tiered` affix system.
-5. **World** (`hearthwind-world`) — 🟡 partial: **seasons-lite shipped** (4 seasons over `daysPerSeason` 21, `Season.fromWorldTime()`, temp offsets + crop multipliers per season, `config/hearthwind_world.json`); wiring crop growth + temperature hook next. Water motion per `ideas/rivers-and-waves.md` (river currents, ocean swell, foam, tides -> later visible wave surfaces via optional client companion/shaders; Tectonic/Terralith decision at next version bump).
-6. **Datapack noise shrink**: each shipped item set reduces the
+   Remaining: job-restricted recipe gating (reuses gate infra), bonus rewards — must respect **Age 2+** before smither/brewer unlocks.
+4. **Primitive Ages 0→3** (`hearthwind-primitive`) — 🟡 partial: flint tools/rock item, stone->rock loot, ore pieces, **steel ingot/nugget/block + assets** shipped; **next is Age 1 Sieve** (`earlystage:sieve_drops/aged_drops.json` as the ONE sieve, tanning 4 flesh→leather as datapack recipe, no duplicate Prospector Bench), then knapping minigame,
+    beginner-death forgiveness (`beginnerDeathCount: 3`), full `tiered` affix system. Steel stays gated behind `mining 7`+`smithing 14` (Iron Age).
+5. **World Ages 1→5** (`hearthwind-world`) — 🟡 partial: **seasons-lite shipped** (4 seasons over `daysPerSeason` 21, `Season.fromWorldTime()`, temp offsets + crop multipliers per season, `config/hearthwind_world.json`); next wiring crop growth + temperature hook, then **Age-gated Mechanical preview** (Create wind/water wheel after `smithing 18`/`builder 3`, full Create only at Mechanical Age). Water motion per `ideas/rivers-and-waves.md` (river currents, ocean swell, foam, tides -> later visible wave surfaces via optional client companion/shaders; Tectonic vs Terralith pick ONE).
+6. **De-kludge audit** (new): before adding any tech, dedupe overlap — `grep` `mods-manifest.json` for duplicate storage (`Sophisticated Backpacks` vs `Iron Chests` → keep best), duplicate farming (`Let's Do` vs `Farmer's Delight` → keep one), duplicate sieving (keep `earlystage:sieve`, drop Homesteads `Prospector's Bench`). Count per need must go down.
+7. **Datapack noise shrink**: each shipped item set reduces the
    remaining non-fatal loot/recipe parse warnings; re-census via
    `grep "Couldn't parse" bootN.log`.
-7. **Watchlist**: periodically rerun `resolve_deps.py --mc <latest>`;
+8. **Watchlist**: periodically rerun `resolve_deps.py --mc <latest>`;
    YUNG suite/endrem/etc. return automatically as authors publish.
    Water/worldgen candidates tracked in `ideas/rivers-and-waves.md`
-   (tectonic + terralith both ship 26.2 builds; adopt at next bump).
+   (tectonic + terralith both ship 26.2 builds; pick ONE at next bump).
    Genesis/Genesis Framework studied for design ideas only (advancement
    -wrapped gating, instruction toasts, ordered age chains) — rebuild
    in-house, see `ideas/genesis-comparison.md`; neither mod adopted.
-8. **Snapshot CI probe**: nightly resolver run against newest snapshot.
-9. **Real art**: replace generated placeholder textures/models.
-10. **Cleanup discipline**: remove `.tmp-test-server/`,
+9. **Snapshot CI probe**: nightly resolver run against newest snapshot.
+10. **Real art**: replace generated placeholder textures/models.
+11. **Cleanup discipline**: remove `.tmp-test-server/`,
     `/tmp/opencode/*` scratch at task end.
 
 ## Verification checklist per feature
