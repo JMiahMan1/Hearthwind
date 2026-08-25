@@ -35,6 +35,12 @@ subprojects {
 				modCompileClasspath "net.fabricmc.fabric.api:fabric-gametest-api-v1:4.0.21+4a7fa0819e"
 			}
 		}
+		if (name == 'hearthwind-client') {
+			dependencies {
+				// client HUD needs ThirstSyncPayload from survival
+				modCompileClasspath project(':hearthwind-survival')
+			}
+		}
 	}
 
 	processResources {

@@ -23,12 +23,12 @@ public final class HearthwindSurvivalConfig {
     public final Spoilage spoilage = new Spoilage();
 
     public static class Thirst {
-        /** Hydration points lost per second under normal activity. Scale 0..20. */
-        public double baseDrainPerSecond = 0.4;
+        /** Hydration points lost per second under normal activity. Scale 0..20. 20/0.025=800s (~13 min) to empty, similar to hunger. */
+        public double baseDrainPerSecond = 0.025;
         /** Multiplier applied while sprinting. */
         public double sprintMultiplier = 2.0;
         /** Extra drain per second per amplifier of the dehydration:thirst effect. */
-        public double thirstEffectDrainPerSecond = 0.6;
+        public double thirstEffectDrainPerSecond = 0.05;
         /** Hydration must exceed this for natural health regeneration. */
         public double regenHydrationFloor = 6.0;
         /** Seconds between starvation-style damage ticks at zero hydration. */

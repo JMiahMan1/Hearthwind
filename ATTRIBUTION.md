@@ -10,4 +10,4 @@ are adopted.
 
 | Asset path | Origin project / author | License | Replacement plan |
 |---|---|---|---|
-| - | - | - | - |
+| `custom-mods/hearthwind-client/src/main/resources/assets/hearthwind/textures/gui/thirst_icons.png` | [Thirst Was Taken](https://github.com/ghen-git/Thirst-Mod) (ghen-git) | MIT | Replace with our own droplet art in the real-art pass |

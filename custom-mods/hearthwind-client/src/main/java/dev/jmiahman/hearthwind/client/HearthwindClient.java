@@ -1,6 +1,8 @@
 package dev.jmiahman.hearthwind.client;
 
 import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,10 +23,23 @@ public class HearthwindClient implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
-        // TODO Phase C: register ClientPlayNetworking payload handlers
-        // hearthwind:hydration, hearthwind:nutrients, hearthwind:skills,
-        // hearthwind:season -> HudOverlay + ToastManager.
-        // For now skeleton proves client module compiles and loads.
-        LOGGER.info("Hearthwind Client initialized - HUD/toast hooks pending (vanilla fallback active)");
+        // Thirst sync from server (hearthwind:thirst) -> ClientThirstData for HUD above hunger bar
+        try {
+            PayloadTypeRegistry.clientboundPlay().register(ThirstSyncPayload.TYPE, ThirstSyncPayload.CODEC);
+            ClientPlayNetworking.registerGlobalReceiver(ThirstSyncPayload.TYPE, (payload, context) -> {
+                context.client().execute(() -> ClientThirstData.setHydration(payload.hydration()));
+            });
+            LOGGER.info("Hearthwind Client networking: registered {}", ThirstSyncPayload.TYPE.id());
+        } catch (Exception e) {
+            LOGGER.warn("Failed to register thirst receiver", e);
+        }
+
+        // HUD above hunger bar - vanilla-like, 10 droplets, 8px spacing, same as Thirst Was Taken (MIT)
+        try {
+            ThirstHud.register();
+            LOGGER.info("Hearthwind Client initialized - thirst HUD above hunger bar active (vanilla-like)");
+        } catch (Exception e) {
+            LOGGER.warn("Failed to register thirst HUD", e);
+        }
     }
 }

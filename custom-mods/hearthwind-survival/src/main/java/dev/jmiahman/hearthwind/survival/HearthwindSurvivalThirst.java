@@ -6,11 +6,10 @@ import net.fabricmc.fabric.api.attachment.v1.AttachmentRegistry;
 import net.fabricmc.fabric.api.attachment.v1.AttachmentType;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerBossEvent;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.BossEvent;
 import net.minecraft.world.effect.MobEffectInstance;
 
 public final class HearthwindSurvivalThirst {
@@ -20,9 +19,7 @@ public final class HearthwindSurvivalThirst {
     private static int warningLevel = -1;
     private static int damageCounter = 0;
 
-    // Thirst bar via bossbar - visible to vanilla clients without mods
-    private static final java.util.Map<java.util.UUID, ServerBossEvent> BOSSBARS =
-            new java.util.concurrent.ConcurrentHashMap<>();
+    // payload type is ThirstSyncPayload.TYPE
 
     public static final AttachmentType<Double> HYDRATION =
             AttachmentRegistry.<Double>builder()
@@ -49,16 +46,10 @@ public final class HearthwindSurvivalThirst {
     }
 
     public static void registerTickLoop() {
-        // Bossbar lifecycle - add on join, remove on leave
+        // Sync thirst to client for HUD (above hunger bar) - vanilla gets bossbar fallback via action bar
         ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
             ServerPlayer p = handler.getPlayer();
-            getBoss(p); // create and show
-            updateBoss(p, hydration(p));
-        });
-        ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> {
-            ServerPlayer p = handler.getPlayer();
-            ServerBossEvent e = BOSSBARS.remove(p.getUUID());
-            if (e != null) e.removePlayer(p);
+            syncToClient(p, hydration(p));
         });
         ServerTickEvents.END_SERVER_TICK.register(server -> {
             if (server.getTickCount() % TICK_INTERVAL != 0) {
@@ -70,46 +61,12 @@ public final class HearthwindSurvivalThirst {
         });
     }
 
-    private static ServerBossEvent getBoss(ServerPlayer player) {
-        return BOSSBARS.computeIfAbsent(player.getUUID(), id -> {
-            ServerBossEvent e = new ServerBossEvent(
-                    java.util.UUID.randomUUID(),
-                    Component.literal("Thirst 20.0/20"),
-                    BossEvent.BossBarColor.BLUE,
-                    BossEvent.BossBarOverlay.PROGRESS);
-            e.setVisible(true);
-            return e;
-        });
-    }
-
-    private static void updateBoss(ServerPlayer player, double h) {
-        ServerBossEvent e = getBoss(player);
-        // Ensure player is tracked (re-add after dimension change etc.)
-        if (!e.getPlayers().contains(player)) e.addPlayer(player);
-        float progress = (float) (h / MAX_HYDRATION);
-        e.setProgress(progress);
-        // Color and name by level
-        BossEvent.BossBarColor color;
-        String name;
-        if (h > 12) {
-            color = BossEvent.BossBarColor.BLUE;
-            name = String.format("Thirst %.1f/20", h);
-        } else if (h > 6) {
-            color = BossEvent.BossBarColor.YELLOW;
-            name = String.format("Thirst %.1f/20 - thirsty", h);
-        } else if (h > 3) {
-            color = BossEvent.BossBarColor.YELLOW;
-            name = String.format("Thirst %.1f/20 - dehydrated!", h);
-        } else if (h > 0) {
-            color = BossEvent.BossBarColor.RED;
-            name = String.format("Thirst %.1f/20 - DANGER", h);
-        } else {
-            color = BossEvent.BossBarColor.RED;
-            name = "Thirst 0/20 - DYING!";
+    private static void syncToClient(ServerPlayer player, double h) {
+        try {
+            ServerPlayNetworking.send(player, new ThirstSyncPayload((float) h));
+        } catch (Exception ignored) {
+            // Client without hearthwind-client will just ignore - fallback is overlay messages
         }
-        e.setColor(color);
-        e.setName(Component.literal(name));
-        e.setVisible(true);
     }
 
     private static void tick(ServerPlayer player) {
@@ -133,7 +90,7 @@ public final class HearthwindSurvivalThirst {
         boolean wasAboveRegenFloor = h > cfg.regenHydrationFloor;
         h = Math.max(0.0, h - drain);
         setHydration(player, h);
-        updateBoss(player, h);
+        syncToClient(player, h);
 
         long damageIntervalTicks =
                 (long) (cfg.damageIntervalSeconds * TICK_INTERVAL / 2);
