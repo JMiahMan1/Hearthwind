@@ -1,4 +1,4 @@
-# Custom Replacement Mods (Fabric, MC 26.2 — Hearthwind)
+# Custom Replacement Mods (Fabric, MC 26.2 - Hearthwind)
 
 Server-side Fabric mods that rebuild Aged's core survival identity on modern
 Minecraft. Each replaces upstream mods whose latest builds predate 26.2.
@@ -15,16 +15,16 @@ namespace audit).
 |---|---|---|---|
 | `hearthwind-survival` | `dehydration`, `environmentz`, `nutritionz`, `spoiledz` | ✅ v1 shipped | Thirst (hydration attachment, sprint/effect drain, regen floor, zero damage), temperature (biome-target drift, warm/neutral armor, insulation/ice items, freeze/heat damage), diet (5 food groups, decay, deficiency debuffs, balanced-diet absorption bonus via `Consumable#onConsume` mixin), spoilage (perishable tag rot to rotten flesh, non-spoiling exempt, hot-biome multiplier). Config `config/hearthwind_survival.json`. 8/8 gametests green. |
 | `hearthwind-skills` | `levelz` + `rpgdifficulty` | ✅ v1 shipped | 12 skills to 30 (triangular curve `baseXpPerLevel * L`, transient attribute modifiers `hearthwind_skills:<skill>`), mob scaling +2 HP/+0.5 dmg per 1000 blocks past 500 grace capped 20, break/use gates from migrated `data/levelz` corpus. Config `config/hearthwind_skills.json`. 7/7 gametests green. |
-| `hearthwind-jobs` | `jobs-addon` (8 jobs) | 🟡 partial — commands live | Job defs from `data/aged_jobs/jobs`, per-player `hearthwind_jobs:state`, level math `pointsPerLevel * L`, XP hooks on block break / kill, **`/job join/leave/info` commands** (with suggestions). Config `config/hearthwind_jobs.json`. 4/4 gametests green. Remaining: job-restricted recipe gating, bonus rewards. |
+| `hearthwind-jobs` | `jobs-addon` (8 jobs) | 🟡 partial - commands live | Job defs from `data/aged_jobs/jobs`, per-player `hearthwind_jobs:state`, level math `pointsPerLevel * L`, XP hooks on block break / kill, **`/job join/leave/info` commands** (with suggestions). Config `config/hearthwind_jobs.json`. 4/4 gametests green. Remaining: job-restricted recipe gating, bonus rewards. |
 | `hearthwind-primitive` | `earlystage`, `tiered` (part), `reciperemover`, `autotag` | 🟡 partial | Flint tools + rock, stone->rock loot, ore-piece recipes, flint tool recipes, **steel ingot/nugget/block + assets**. Remaining: knapping minigame, sieve `earlystage:sieve_drops/aged_drops.json`, beginner-death forgiveness, full `tiered` affix system. |
-| `hearthwind-world` | `fabric-seasons`, `seasonhud`, `crop_growth_modifier` | 🟡 partial — seasons-lite shipped | 4 seasons over `daysPerSeason` (21) via `Season.fromWorldTime()`, temp offsets + crop multipliers per season (config `hearthwind_world.json`). Hook into survival temperature + crop growth next. Water motion per `ideas/rivers-and-waves.md` (Phase C). |
-| `hearthwind-client` | client HUD / toasts / water preview (vs vanilla fallback) | 🟡 skeleton | **Optional companion** (`environment = "client"`). Renders HUD bars (thirst/diet/temp/skills/jobs), instruction toasts, water-motion preview from `hearthwind:*` payloads. Server authoritative; vanilla without it uses action-bar fallbacks. `ClientModInitializer` skeleton builds green — HUD wiring Phase C. |
+| `hearthwind-world` | `fabric-seasons`, `seasonhud`, `crop_growth_modifier` | 🟡 partial - seasons-lite shipped | 4 seasons over `daysPerSeason` (21) via `Season.fromWorldTime()`, temp offsets + crop multipliers per season (config `hearthwind_world.json`). Hook into survival temperature + crop growth next. Water motion per `ideas/rivers-and-waves.md` (Phase C). |
+| `hearthwind-client` | client HUD / toasts / water preview (vs vanilla fallback) | 🟡 skeleton | **Optional companion** (`environment = "client"`). Renders HUD bars (thirst/diet/temp/skills/jobs), instruction toasts, water-motion preview from `hearthwind:*` payloads. Server authoritative; vanilla without it uses action-bar fallbacks. `ClientModInitializer` skeleton builds green - HUD wiring Phase C. |
 
 ## Build system
 
 One Gradle multi-module workspace targets Fabric API for MC `26.2`. The
 `gradle.properties` `minecraft_version=` is the only place the game version
-appears — bump it in lockstep with `conversion/build.conf.json`.
+appears - bump it in lockstep with `conversion/build.conf.json`.
 
 ```bash
 cd custom-mods
@@ -36,7 +36,7 @@ bash tools/run_gametests.sh                           # headless gametests (all 
 Jars land in `<module>/build/libs/`. Drop **server** jars
 (`hearthwind-survival/skills/jobs/primitive/world`) into the dedicated
 server `mods/`; drop `hearthwind-client` into the **player's** `mods/`
-for HUD. Never the `-sources` jar — unexpanded `fabric.mod.json` poisons
+for HUD. Never the `-sources` jar - unexpanded `fabric.mod.json` poisons
 logs with `${version}` warnings.
 
 **Verified:** `hearthwind-survival`, `hearthwind-skills`, `hearthwind-jobs`,

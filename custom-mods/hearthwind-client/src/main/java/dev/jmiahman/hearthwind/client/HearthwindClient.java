@@ -5,7 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Client companion — presentation only, never authoritative.
+ * Client companion - presentation only, never authoritative.
  *
  * Server owns thirst/diet/temperature/skills/jobs/seasons and enforces gates.
  * Client just renders HUD bars, instruction toasts, and water-motion previews
@@ -25,6 +25,6 @@ public class HearthwindClient implements ClientModInitializer {
         // hearthwind:hydration, hearthwind:nutrients, hearthwind:skills,
         // hearthwind:season -> HudOverlay + ToastManager.
         // For now skeleton proves client module compiles and loads.
-        LOGGER.info("Hearthwind Client initialized — HUD/toast hooks pending (vanilla fallback active)");
+        LOGGER.info("Hearthwind Client initialized - HUD/toast hooks pending (vanilla fallback active)");
     }
 }

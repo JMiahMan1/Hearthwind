@@ -1,7 +1,7 @@
-# Genesis / Genesis Framework — comparison & idea mining
+# Genesis / Genesis Framework - comparison & idea mining
 
 Researched 2026-08-24 (Modrinth API + GitHub wiki/source). Conclusion up
-front: **do NOT add either mod to the pack** — neither ships our balance
+front: **do NOT add either mod to the pack** - neither ships our balance
 and the framework pulls in its own runtime. Instead we rebuild the good
 parts natively in `aged-skills` / `aged-primitive` / the migrated
 datapack. Ideas worth stealing are listed at the end.
@@ -15,7 +15,7 @@ datapack. Ideas worth stealing are listed at the end.
 | 26.2 builds | **7** | **4** |
 | Loader | Fabric | Fabric |
 
-(Studied for ideas only — not added to the pack; see conclusion.)
+(Studied for ideas only - not added to the pack; see conclusion.)
 
 Ages are advancement wrappers that **lock items/blocks/dimensions** until
 criteria complete (e.g. "Iron Armor" requires completing a trial spawner
@@ -29,11 +29,11 @@ with an empty file. Also: shared/co-op ages, game rules, config.
 ## Similarities with what we're building
 
 1. **Levelz parity overlap**: our migrated levelz corpus encodes exactly
-   this shape — 12 skills x levels gating items/blocks/entities (400
+   this shape - 12 skills x levels gating items/blocks/entities (400
    files). An Age is just a coarser, story-flavored gate. Same mental
    model: content locked behind earned progress.
 2. **Datapack-first tuning**: framework reads plain JSON from the world
-   datapack — identical philosophy to our "~800 migrated tuning files
+   datapack - identical philosophy to our "~800 migrated tuning files
    activate unchanged". We can GENERATE age/instruction JSONs from the
    migrated corpus with a script in `conversion/scripts/`.
 3. **Guidance**: their instruction toasts are the polished version of our
@@ -50,7 +50,7 @@ with an empty file. Also: shared/co-op ages, game rules, config.
   feature would double-penalize alongside our thirst/temperature. Skip
   the mod; mine its `generated/data/genesis/genesisframework/*` JSONs as
   syntax examples.
-- Framework covers milestone gates only — no XP curves, no numeric
+- Framework covers milestone gates only - no XP curves, no numeric
   attribute bonuses, no mob scaling. `aged-skills` (levelz parity:
   XP -> levels -> attribute modifiers, rpgdifficulty scaling) remains
   necessary and complementary.
@@ -63,13 +63,13 @@ with an empty file. Also: shared/co-op ages, game rules, config.
    persistence, UI tree, multiplayer sync, and criteria triggers
    (`inventory_changed`, `item_broken`-style via `used_item`/
    custom predicates). Our age/skill-unlock layer should wrap
-   advancements instead of inventing storage — same trick as Genesis,
+   advancements instead of inventing storage - same trick as Genesis,
    implemented in `aged-primitive` with plain vanilla advancements +
    recipe-locking via datapack (`recipe/crafting/` removal + unlock on
    grant).
 2. **Persistent instruction toasts**: vanilla "tutorial hints" style
    onboarding (find water -> gather flint -> first campfire) shown until
-   completed — replaces our ad-hoc overlay strings. Vanilla supports
+   completed - replaces our ad-hoc overlay strings. Vanilla supports
    tutorial toast steps; worst case a tiny client-optional companion or
    bossbar/actionbar sequencing server-side.
 3. **Ordered vs unordered progression**: explicit parent chains with a
@@ -78,7 +78,7 @@ with an empty file. Also: shared/co-op ages, game rules, config.
    ordered; story ages unordered.
 4. **Empty-file overwrite convention**: disabling upstream datapack
    content by overwriting with an empty file is cleaner than deletion
-   patches in our migration scripts — worth adopting in
+   patches in our migration scripts - worth adopting in
    `migrate_datapack.py` for cut-mod tuning files.
 5. **Story friction before The End**: gate End access behind a milestone
    chain (Nether -> Ocean Monument -> Ancient City -> Wither) as vanilla

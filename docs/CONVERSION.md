@@ -32,7 +32,7 @@ path to future releases and snapshots.
    - The "Let's Do" food family (10 mods, all stalled ~1.21.1) is cut for phase
      1; ambience biome/mob packs trimmed; redundant QOL replaced by vanilla
      features or datapacks.
-3. **Custom replacement mods** (Fabric, server-side, data-driven — now `hearthwind-*`):
+3. **Custom replacement mods** (Fabric, server-side, data-driven - now `hearthwind-*`):
    | Mod | Replaces | Scope |
    |---|---|---|
    | `hearthwind-survival` | dehydration, environmentz, nutritionz, spoiledz | thirst, temperature, diet, spoilage |
@@ -74,15 +74,15 @@ materialized by `build_pack.py --server-dir`). Migration passes:
 **Verified**: fabric-loader 0.19.3 + 41 resolved mods on MC 26.2 reaches
 `Done` with the migrated datapack installed. Remaining log warnings are
 non-fatal parse notices for loot/recipe files that reference dropped or
-not-yet-rebuilt mod items — vanilla fallbacks apply and the same files act as
+not-yet-rebuilt mod items - vanilla fallbacks apply and the same files act as
 the rebuild spec for `hearthwind-*`.
 
 ## Current readiness (26.2)
 
-41/57 entries resolve (including auto-resolved transitive dependencies —
+41/57 entries resolve (including auto-resolved transitive dependencies -
 the resolver walks Modrinth required-dep chains itself). Near-misses on
 26.1 / 26.1.1 (YUNG's suite, End Remastered, Medieval Buildings, ModernFix,
-Kiwi, The Lost Castle) auto-resolve as authors publish newer builds — just
+Kiwi, The Lost Castle) auto-resolve as authors publish newer builds - just
 rerun `resolve_deps.py`. Stalled-at-1.21.x entries (antique atlas, exposure,
 herdspanic, log-begone) need watchlist monitoring or replacement.
 
@@ -109,13 +109,13 @@ herdspanic, log-begone) need watchlist monitoring or replacement.
      radius, capped at 20 steps; transient modifier, no double stacking;
      gametests for math + application
    - [x] unlock gating from migrated `data/levelz/*` corpus: break gates (mining 1..27, ~600 entries) + use gates (17 stations) live via `SkillGates`
-8. [x] Jobs module (jobs-addon parity) — 4 gametests: 8 job defs from corpus, `hearthwind_jobs:state` attachment, `config/hearthwind_jobs.json`, block-break/kill hooks, **`/job join/leave/info` commands with tab-complete**
+8. [x] Jobs module (jobs-addon parity) - 4 gametests: 8 job defs from corpus, `hearthwind_jobs:state` attachment, `config/hearthwind_jobs.json`, block-break/kill hooks, **`/job join/leave/info` commands with tab-complete**
    - [ ] job-restricted recipe gating + bonus rewards
 9. [~] Primitive upgrades: flint tools/rock loot + ore pieces + **steel ingot/nugget/block** ✅, knapping/sieve + full `tiered` affixes remaining
-10. [~] Seasons-lite (hearthwind-world) — **shipped**: `Season` enum, `hearthwind_world.json` (daysPerSeason + temp offsets + crop multipliers), `HearthwindWorld.currentSeason(world)` hook ready; crop growth + temperature wiring next
+10. [~] Seasons-lite (hearthwind-world) - **shipped**: `Season` enum, `hearthwind_world.json` (daysPerSeason + temp offsets + crop multipliers), `HearthwindWorld.currentSeason(world)` hook ready; crop growth + temperature wiring next
 11. [ ] Snapshot watchlist CI (nightly `--mc <latest snapshot>` probe)
 
-### Survival v1 verified state (26.2) — update 2026-08-25
+### Survival v1 verified state (26.2) - update 2026-08-25
 
 Verified headless with a minimal server (fabric-loader 0.19.3 +
 fabric-api 0.158.0+26.2 + hearthwind-survival + hearthwind-skills + hearthwind-jobs):
@@ -134,7 +134,7 @@ fabric-api 0.158.0+26.2 + hearthwind-survival + hearthwind-skills + hearthwind-j
 
 `custom-mods/tools/run_gametests.sh` boots a throwaway dedicated server
 with fabric-api's gametest harness (`-Dfabric-api.gametest=true`) and runs
-every `@GameTest` suite headless — **19/19 green on 26.2** (8 survival
+every `@GameTest` suite headless - **19/19 green on 26.2** (8 survival
 + 7 skills + 4 jobs; config defaults, diet eat/decay/deficiency, spoilage
 rot/exemption, thirst clamp, skill XP curve + mob scaling + gates, jobs
 load + XP/level + max-cap). Diet/spoilage/thirst cores were refactored to

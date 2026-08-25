@@ -1,4 +1,4 @@
-# Flowing Rivers & Ocean Waves — feasibility for Aged (server-first 26.x)
+# Flowing Rivers & Ocean Waves - feasibility for Aged (server-first 26.x)
 
 Status: DESIGN DRAFT (2026-08-24). Nothing implemented; owner `aged-world`
 module (+ one watchlist entry). Written after checking Modrinth 26.2
@@ -6,16 +6,16 @@ availability.
 
 ## TL;DR
 
-All three layers are ON THE ROADMAP — nothing is dropped; they ship in
+All three layers are ON THE ROADMAP - nothing is dropped; they ship in
 phases ordered by what a dedicated server can do today:
 
-1. **Phase 1 – gameplay water motion** (server-side, `aged-world`):
+1. **Phase 1 - gameplay water motion** (server-side, `aged-world`):
    directional river current + ocean swell pushing boats/swimmers, foam
    wash particles, tides. Fully within our control, gametestable.
-2. **Phase 2 – terrain-quality rivers**: Tectonic / Terralith already
+2. **Phase 2 - terrain-quality rivers**: Tectonic / Terralith already
    publish 26.2 builds; adopt at the next pack version bump for deep
    carved rivers and real coastlines.
-3. **Phase 3 – visible wave surfaces**: needs client rendering. Two
+3. **Phase 3 - visible wave surfaces**: needs client rendering. Two
    supported paths, both kept open:
    - a small **client-optional companion mod** (`aged-world-client`)
      rendering animated wave crests/water distortion, built in the same
@@ -45,12 +45,12 @@ phases ordered by what a dedicated server can do today:
 
 ### Ocean swell & waves (gameplay layer)
 
-- Periodic **swell pulse** (~30–45 s cycle, phase from world seed so all
+- Periodic **swell pulse** (~30-45 s cycle, phase from world seed so all
   players see consistent timing): gentle push toward nearest shore
   (approximated by sampling heightmap gradient over a few blocks) plus a
   small vertical bob for boats/swimmers.
 - **Foam wash**: when the swell peaks near shore, send burst particles
-  (`minecraft:splash` / `minecraft:cloud`, low counts) — server-sent
+  (`minecraft:splash` / `minecraft:cloud`, low counts) - server-sent
   particles are visible to all clients without any client mod.
 - Optional later: rare **storm surge** events tied to the seasons/weather
   module (higher swell amplitude during storms).
@@ -88,7 +88,7 @@ mid-cycle.
 - **Phase 2** waits for the next pack version bump: worldgen mods change
   generation borders, so existing worlds must not be invalidated
   mid-cycle. Tectonic (10 builds on 26.2) vs Terralith (6 builds) is a
-  realism-fit decision to make then — both stay on the watchlist until
+  realism-fit decision to make then - both stay on the watchlist until
   that decision.
 - **Phase 3** is deferred only by dependency order (it tunes to Phase 1's
   swell timing); the companion client mod slots into the existing Gradle

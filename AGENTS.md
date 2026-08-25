@@ -1,9 +1,9 @@
-# AGENTS.md — Handbook for AI/human contributors
+# AGENTS.md - Handbook for AI/human contributors
 
 Modern-Minecraft (26.x) server-focused rebuild of the Aged modpack
 (fork of [xR4YM0ND/Aged](https://github.com/xR4YM0ND/Aged), MIT). Working
 branch: `server-26.2`. The project identity is its own; **do not prefix
-commit titles with "Aged"** — use plain conventional subjects
+commit titles with "Aged"** - use plain conventional subjects
 (`feat(survival): ...`, `docs: ...`).
 
 ## Repo map
@@ -28,7 +28,7 @@ commit titles with "Aged"** — use plain conventional subjects
 ## CI (GitHub Actions)
 
 `build-and-test.yml` runs the full gradle build + gametest suite on GH
-ubuntu runners (7 GB — no memory gymnastics needed there, but keep
+ubuntu runners (7 GB - no memory gymnastics needed there, but keep
 --no-daemon). Artifacts: mod jars + JUnit XML report. A `boot-smoke`
 job (workflow_dispatch) resolves the full pack and boots a real server
 expecting `Done`.
@@ -38,10 +38,10 @@ How far CI can go:
 - Headless gametests + boot/RCON smoke tests: fully supported (current).
 - Automated CLIENT testing: `fabric-client-gametest-api-v1` drives a REAL
   client under xvfb on runners (movement, clicks, inventory, screenshots,
-  assertions). Heavy (~4 GB, minutes per scenario) — adopt when we ship
+  assertions). Heavy (~4 GB, minutes per scenario) - adopt when we ship
   client-side code worth testing.
 - INTERACTIVE human sessions: also possible despite runners having no
-  inbound ports — everything tunnels outbound:
+  inbound ports - everything tunnels outbound:
   1. workflow boots pack server (and optionally a client under xvfb),
   2. expose via playit.gg / ngrok / tailscale (outbound-only agents),
   3. humans connect from their own machines for as long as the job lives
@@ -59,12 +59,12 @@ How far CI can go:
    `python3 conversion/scripts/resolve_deps.py`, review the readiness
    report, then `build_pack.py --server-dir`.
 2. **Custom mods**: `cd custom-mods && ./gradlew build`. Copy the plain
-   jar into a test server (NEVER the `-sources` jar — its unexpanded
+   jar into a test server (NEVER the `-sources` jar - its unexpanded
    fabric.mod.json poisons logs with `${version}` warnings).
 3. **Every change ships verified**: boot test + RCON checks. No "should
    work" claims.
 
-## Testing harness (gametests — preferred)
+## Testing harness (gametests - preferred)
 
 `custom-mods/hearthwind-survival`, `hearthwind-skills` and
 `hearthwind-jobs` ship headless gametests
@@ -80,7 +80,7 @@ cd custom-mods && bash tools/run_gametests.sh [--keep-server]
 
 Gotchas learned the hard way:
 
-- The maven `fabric-api` jar is THIN (no nested modules) — the runner
+- The maven `fabric-api` jar is THIN (no nested modules) - the runner
   fetches `fabric-gametest-api-v1` explicitly into `mods/`. Without it
   `-Dfabric-api.gametest=true` silently does nothing.
 - fabric's v1 `@GameTest` methods are INSTANCE methods on the entrypoint
@@ -89,7 +89,7 @@ Gotchas learned the hard way:
   annotation that will not register anything.
 - loom 1.17 removed `modImplementation`; use the `modCompileClasspath`
   configuration. Child build.gradles can't call loom DSL at all (plugin
-  applied via root `subprojects {}`) — module deps go in the root file
+  applied via root `subprojects {}`) - module deps go in the root file
   inside `afterEvaluate`.
 - Manual equivalent: `java -Dfabric-api.gametest=true
   -Dfabric-api.gametest.report-file=report.xml -jar fabric-server.jar
@@ -118,23 +118,23 @@ python3 ../custom-mods/tools/rcon.py 127.0.0.1 25575 agedtest "summon item ~ ~ ~
 
 ### Hard-won traps (do not relearn these)
 
-- `pgrep -f "fabric-server.jar"` matches its own bash command line — use
+- `pgrep -f "fabric-server.jar"` matches its own bash command line - use
   `pgrep -f "[f]abric-server.jar"`.
 - Launch with `(setsid timeout NNN java ... &)` double-fork; plain
   `nohup ... & disown` hangs the tool shell.
-- Never relaunch while a previous instance is still shutting down —
+- Never relaunch while a previous instance is still shutting down -
   `session.lock` collisions crash boot (`DirectoryLock$LockException`).
 - Summoned entities vanish instantly with no players online (modern MC
   has no spawn chunks). `/forceload add -16 -16 31 31` keeps chunks
   alive for entity/effect checks.
-- Stale jars copied into `mods/` have caused false failures — after
+- Stale jars copied into `mods/` have caused false failures - after
   resource edits, REBUILD before recopying.
 - JDT/LSP phantom Java errors happen; gradle build is the authority.
 - RCON properties are the VANILLA names: `enable-rcon=true`,
   `rcon.port`, `rcon.password`. Fabric-style `rcon.enabled` lines are
   ignored (server rewrites server.properties and RCON stays off).
 - Servers pause after 60s with no players (`pause-when-empty-seconds`,
-  default 60; set `-1` in test servers) — tick loops and RCON stop
+  default 60; set `-1` in test servers) - tick loops and RCON stop
   answering while paused; do RCON checks right after `Done`.
 - This build host has ~8 GB RAM with no swap and heavy baseline usage
   (elasticsearch/clamd). Gradle daemon heap is capped at `-Xmx1G` in
@@ -147,7 +147,7 @@ python3 ../custom-mods/tools/rcon.py 127.0.0.1 25575 agedtest "summon item ~ ~ ~
   (plural), not `EntityType`. Loot tables: entity via
   `entityType.getDefaultLootTable()` (`Optional<ResourceKey<LootTable>>`),
   blocks via `Blocks.X.getLootTable()`.
-- Tools: no PickaxeItem/SwordItem classes — plain `new Item(props)` plus
+- Tools: no PickaxeItem/SwordItem classes - plain `new Item(props)` plus
   `props.pickaxe(ToolMaterial, speed, dmg)` / axe / shovel / hoe / sword;
   `ToolMaterial` is a record; gate tiers with tags like
   `BlockTags.INCORRECT_FOR_WOODEN_TOOL`.
@@ -169,7 +169,7 @@ python3 ../custom-mods/tools/rcon.py 127.0.0.1 25575 agedtest "summon item ~ ~ ~
   component lives at `net.minecraft.core.component.DataComponents.FOOD`
   (record `nutrition()`/`saturation()`); consumption runs through
   `net.minecraft.world.item.component.Consumable#onConsume(Level,
-  LivingEntity, ItemStack)` — mixin THAT for "finished eating" hooks.
+  LivingEntity, ItemStack)` - mixin THAT for "finished eating" hooks.
 - Vanilla effect holder constants: `MobEffects.MINING_FATIGUE`,
   `MobEffects.SLOWNESS`, `MobEffects.WEAKNESS`, `MobEffects.ABSORPTION`
   (no DIG_SLOWDOWN/MOVEMENT_SLOWNESS names in 26.x mojmap).
@@ -185,12 +185,12 @@ python3 ../custom-mods/tools/rcon.py 127.0.0.1 25575 agedtest "summon item ~ ~ ~
 Every task is judged against **realism → earned unlock → harder frontier → one best → slow tech**:
 - Make it as close to reality as possible without being miserable (costs for magic, physical crafting).
 - More resources = more unlocks, but the world gets harder in lockstep (distance + aggregate power scaling, capped 20).
-- All mods must play well together — delete overlap, keep one best (single sieve, single storage, single farm system).
+- All mods must play well together - delete overlap, keep one best (single sieve, single storage, single farm system).
 - Technology arrives in Ages (Stranded → Camp → Copper → Iron/Steel → Mechanical), gated by skills/jobs/advancements, hard-fought not creative.
 
-## Next steps (priority order — slow-tech, no kludge)
+## Next steps (priority order - slow-tech, no kludge)
 
-1. **Survival** (`custom-mods/hearthwind-survival`) — v1 SHIPPED
+1. **Survival** (`custom-mods/hearthwind-survival`) - v1 SHIPPED
    (verified boot + RCON on 26.2, 8/8 gametests green):
    - Diet: five `nutritionz:` item tags (fruits, vegetables,
      grains, proteins, sugars), nutrients attachment (0..100) with decay,
@@ -206,7 +206,7 @@ Every task is judged against **realism → earned unlock → harder frontier →
      `config/hearthwind_survival.json` (auto-created with defaults).
    - Remaining: client-side HUD bars for hydration/diet, container
      spoilage, in-game eat-hook verification.
-2. **Skills** (`hearthwind-skills`) — v1 SHIPPED (7/7 gametests green):
+2. **Skills** (`hearthwind-skills`) - v1 SHIPPED (7/7 gametests green):
    12 levelz-parity skills (farming/mining/smithing/strength/agility/
    defense/health/stamina/luck/archery/alchemy/trade), XP attachment
    under `levelz:` namespace, triangular XP curve (baseXpPerLevel * N
@@ -218,13 +218,13 @@ Every task is judged against **realism → earned unlock → harder frontier →
    Skill break/use gates from merged `data/levelz` corpus are live (mining 1..27, use gates on 17 stations).
     - Remaining vs original: crafting denial for gated items (smithing
       tiers), entity/husbandry gates, client HUD (companion mod).
-3. **Jobs** (`hearthwind-jobs`, jobs-addon parity) — 🟡 partial, 4/4 gametests green:
+3. **Jobs** (`hearthwind-jobs`, jobs-addon parity) - 🟡 partial, 4/4 gametests green:
    8 jobs (fisher/miner/farmer/warrior/smither/brewer/builder/lumberjack), per-player job attachment `hearthwind_jobs:state`, level math `pointsPerLevel` (default 100), XP hooks on block break / entity kill via `JobState.awardIfMatch`, **`/job join/leave/info` commands** shipped; config `config/hearthwind_jobs.json`.
-   Remaining: job-restricted recipe gating (reuses gate infra), bonus rewards — must respect **Age 2+** before smither/brewer unlocks.
-4. **Primitive Ages 0→3** (`hearthwind-primitive`) — 🟡 partial: flint tools/rock item, stone->rock loot, ore pieces, **steel ingot/nugget/block + assets** shipped; **next is Age 1 Sieve** (`earlystage:sieve_drops/aged_drops.json` as the ONE sieve, tanning 4 flesh→leather as datapack recipe, no duplicate Prospector Bench), then knapping minigame,
+   Remaining: job-restricted recipe gating (reuses gate infra), bonus rewards - must respect **Age 2+** before smither/brewer unlocks.
+4. **Primitive Ages 0→3** (`hearthwind-primitive`) - 🟡 partial: flint tools/rock item, stone->rock loot, ore pieces, **steel ingot/nugget/block + assets** shipped; **next is Age 1 Sieve** (`earlystage:sieve_drops/aged_drops.json` as the ONE sieve, tanning 4 flesh→leather as datapack recipe, no duplicate Prospector Bench), then knapping minigame,
     beginner-death forgiveness (`beginnerDeathCount: 3`), full `tiered` affix system. Steel stays gated behind `mining 7`+`smithing 14` (Iron Age).
-5. **World Ages 1→5** (`hearthwind-world`) — 🟡 partial: **seasons-lite shipped** (4 seasons over `daysPerSeason` 21, `Season.fromWorldTime()`, temp offsets + crop multipliers per season, `config/hearthwind_world.json`); next wiring crop growth + temperature hook, then **Age-gated Mechanical preview** (Create wind/water wheel after `smithing 18`/`builder 3`, full Create only at Mechanical Age). Water motion per `ideas/rivers-and-waves.md` (river currents, ocean swell, foam, tides -> later visible wave surfaces via optional client companion/shaders; Tectonic vs Terralith pick ONE).
-6. **De-kludge audit** (new): before adding any tech, dedupe overlap — `grep` `mods-manifest.json` for duplicate storage (`Sophisticated Backpacks` vs `Iron Chests` → keep best), duplicate farming (`Let's Do` vs `Farmer's Delight` → keep one), duplicate sieving (keep `earlystage:sieve`, drop Homesteads `Prospector's Bench`). Count per need must go down.
+5. **World Ages 1→5** (`hearthwind-world`) - 🟡 partial: **seasons-lite shipped** (4 seasons over `daysPerSeason` 21, `Season.fromWorldTime()`, temp offsets + crop multipliers per season, `config/hearthwind_world.json`); next wiring crop growth + temperature hook, then **Age-gated Mechanical preview** (Create wind/water wheel after `smithing 18`/`builder 3`, full Create only at Mechanical Age). Water motion per `ideas/rivers-and-waves.md` (river currents, ocean swell, foam, tides -> later visible wave surfaces via optional client companion/shaders; Tectonic vs Terralith pick ONE).
+6. **De-kludge audit** (new): before adding any tech, dedupe overlap - `grep` `mods-manifest.json` for duplicate storage (`Sophisticated Backpacks` vs `Iron Chests` → keep best), duplicate farming (`Let's Do` vs `Farmer's Delight` → keep one), duplicate sieving (keep `earlystage:sieve`, drop Homesteads `Prospector's Bench`). Count per need must go down.
 7. **Datapack noise shrink**: each shipped item set reduces the
    remaining non-fatal loot/recipe parse warnings; re-census via
    `grep "Couldn't parse" bootN.log`.
@@ -233,7 +233,7 @@ Every task is judged against **realism → earned unlock → harder frontier →
    Water/worldgen candidates tracked in `ideas/rivers-and-waves.md`
    (tectonic + terralith both ship 26.2 builds; pick ONE at next bump).
    Genesis/Genesis Framework studied for design ideas only (advancement
-   -wrapped gating, instruction toasts, ordered age chains) — rebuild
+   -wrapped gating, instruction toasts, ordered age chains) - rebuild
    in-house, see `ideas/genesis-comparison.md`; neither mod adopted.
 9. **Snapshot CI probe**: nightly resolver run against newest snapshot.
 10. **Real art**: replace generated placeholder textures/models.

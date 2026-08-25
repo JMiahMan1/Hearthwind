@@ -4,10 +4,10 @@ Agreed direction (2026-08-24). This document governs identity decisions
 so daily work keeps serving the end state instead of deepening fork
 lock-in.
 
-## North star — Realism, earned unlocks, rising frontier, no kludge
+## North star - Realism, earned unlocks, rising frontier, no kludge
 
 Hearthwind = **as close to reality as we can make it, without being miserable.**
-Hearthwind becomes its own pack — own name, own look, own systems — while
+Hearthwind becomes its own pack - own name, own look, own systems - while
 shipping parity with Aged (`docs/FEATURE_PARITY.md`) as the floor, not the
 ceiling. Every addition is judged by four principles:
 
@@ -17,19 +17,19 @@ ceiling. Every addition is judged by four principles:
    If vanilla does it magically, we add a cost/skill/tool.
 2. **Unlock as you gather, harder as you grow.** Resources, skills, and
    jobs gate the next tier; the world pushes back. Distance mob scaling
-   (`hearthwind-skills: MobScaling`) is the first instance — future
+   (`hearthwind-skills: MobScaling`) is the first instance - future
    scaling couples to **aggregate progression** (total skill levels + best
    job level + farthest biome explored), not just coordinates. The opening
    hours near spawn are forgiving; the deep wilds and later ages are
    genuinely dangerous. Reward = access, not free power.
-3. **No kludge — one best implementation.** All mods must play well
+3. **No kludge - one best implementation.** All mods must play well
    together. Remove overlap, consolidate duplicates, keep the single best
    implementation and delete the rest. If two mods do “fancy farming,” pick
    one; if two do “sieving,” keep `earlystage:sieve_drops/aged_drops.json`
-   as canon and delete the imitator (`Prospecor's Bench` vs `Sieve` — we
+   as canon and delete the imitator (`Prospecor's Bench` vs `Sieve` - we
    keep `Sieve`). Every feature gets one home in `hearthwind-*` and one
    config.
-4. **Technology slowly, hard-fought.** Tech is not a creative menu — it
+4. **Technology slowly, hard-fought.** Tech is not a creative menu - it
    unlocks in ordered **Ages** (see § Ages below) gated by skills, jobs,
    and world exploration, each with its own resources, recipes, and
    infrastructure cost. No lightweight automation before `steel` is smelted
@@ -41,9 +41,9 @@ as design reference) and rebuild them in-house under these principles.
 
 ## Phases
 
-### Phase A — Fork with parity (now)
+### Phase A - Fork with parity (now)
 
-- Rebuild all original systems in our own code (`hearthwind-*` mods) — done/
+- Rebuild all original systems in our own code (`hearthwind-*` mods) - done/
   in progress per parity matrix (survival + skills v1 shipped, jobs scaffold live).
 - Use upstream graphics & resources where needed. Rules:
   - Track provenance: every borrowed texture/sound/model gets an entry
@@ -56,7 +56,7 @@ as design reference) and rebuild them in-house under these principles.
   - Borrow through thin wrappers, not hardwiring: assets live under
     `resources/upstream/<origin>/...` so a later swap is mechanical.
 
-### Phase B — Own identity
+### Phase B - Own identity
 
 - **Naming decision (2026-08-24): the pack is called HEARTHWIND.**
   Display names switched immediately (`Hearthwind: Survival/Skills/
@@ -66,7 +66,7 @@ as design reference) and rebuild them in-house under these principles.
   `hearthwind_world`). Attachment namespaces `levelz:`, `nutritionz:`,
   `spoiledz:` deliberately still mirror originals for corpus compatibility.
 - **Credits**: Hearthwind is *inspired by* the original Aged pack
-  (xR4YM0ND & contributors) and by Genesis (marianyp) — both credited
+  (xR4YM0ND & contributors) and by Genesis (marianyp) - both credited
   in every mod's metadata; Aged resources remain credited per
   ATTRIBUTION.md if/when adopted.
 
@@ -82,21 +82,21 @@ as design reference) and rebuild them in-house under these principles.
   (`hearthwind:*`) with a one-time world upgrade script. The pack data
   slug `aged-server` is kept for world-upgrade compatibility.
 
-### Phase C — Divergence / best-of
+### Phase C - Divergence / best-of
 
-Maintain a standing **borrow board** of features worth adopting — filtered
+Maintain a standing **borrow board** of features worth adopting - filtered
 by the four principles above (realism, earned unlock, one best, slow tech):
 
 | Idea | Source | Status | Verdict vs principles |
 |---|---|---|---|
-| Client animations & instruction toasts | Genesis | studied — rebuild in-house (ideas/genesis-comparison.md) | ✅ Keep — teaches gates without wiki, no overlap |
-| Age/story progression gating | Genesis | rebuild via advancement-wrapping | ✅ Keep — canonical way to enforce slow-tech Ages |
-| Terrain-quality rivers/coasts | Tectonic/Terralith | watchlist, next version bump | ✅ Keep — realism payoff, one worldgen choice (pick one, not both) |
-| Wave surfaces | shaders/companion mod | ideas/rivers-and-waves.md Phase 3 | 🟡 Defer — visual only, companion mod |
-| Prospector's Bench gravel→nuggets | Homesteads (VoxelForge) | noted 2026-08-25 | ➖ Drop — duplicate of `earlystage:sieve_drops` — keep **Sieve** as single best (one mechanic, one loot file) |
+| Client animations & instruction toasts | Genesis | studied - rebuild in-house (ideas/genesis-comparison.md) | ✅ Keep - teaches gates without wiki, no overlap |
+| Age/story progression gating | Genesis | rebuild via advancement-wrapping | ✅ Keep - canonical way to enforce slow-tech Ages |
+| Terrain-quality rivers/coasts | Tectonic/Terralith | watchlist, next version bump | ✅ Keep - realism payoff, one worldgen choice (pick one, not both) |
+| Wave surfaces | shaders/companion mod | ideas/rivers-and-waves.md Phase 3 | 🟡 Defer - visual only, companion mod |
+| Prospector's Bench gravel→nuggets | Homesteads (VoxelForge) | noted 2026-08-25 | ➖ Drop - duplicate of `earlystage:sieve_drops` - keep **Sieve** as single best (one mechanic, one loot file) |
 | Tanning Rack flesh→leather | Homesteads | noted | 🟡 Adopt as plain **tanning** recipe inside `hearthwind-primitive` (no new block, just 4×rotten→1 leather via datapack), avoids block overlap |
-| Honey Bottling Station | Homesteads | noted | ➖ Drop — `dehydration` water bowls + `farm_and_charm` already cover fluids; no new block |
-| Create (mechanical automation) | Homestead-modpack / Create Aeronautics | watchlist | 🟡 Defer to **Iron/Steel Age** (post-`smithing 18` + `builder 5`), gated, not starter — hard-fought tech, not cozy instant |
+| Honey Bottling Station | Homesteads | noted | ➖ Drop - `dehydration` water bowls + `farm_and_charm` already cover fluids; no new block |
+| Create (mechanical automation) | Homestead-modpack / Create Aeronautics | watchlist | 🟡 Defer to **Iron/Steel Age** (post-`smithing 18` + `builder 5`), gated, not starter - hard-fought tech, not cozy instant |
 
 Divergence rule of thumb: adopt *mechanics* freely (reimplemented in our
 code), adopt *assets* only with license-compatible attribution, never
@@ -104,7 +104,7 @@ redistribute another mod's jar. **Overlap rule:** if two mods solve the
 same survival need, delete one and keep the best; document the choice in
 `conversion/curated/mods-manifest.json` `reason`.
 
-## Ages — how slow tech is enforced
+## Ages - how slow tech is enforced
 
 Technology arrives in **ordered Ages**, each with entry requirements
 (skills + jobs + world milestones) and its own recipes/loot. You cannot
@@ -113,25 +113,25 @@ skip.
 
 | Age | Entry gate (example) | Unlocks | Frontier response |
 |---|---|---|---|
-| 0 — **Stranded** | spawn, `rock`+`flint` (no skill) | Flint tools, campfire, tanning (4 flesh→leather), thatch | Safe radius 500 blocks, mobs baseline |
-| 1 — **Camp** | `farming 3` + `mining 1` (mud bricks) | Sieve (`earlystage:sieve`), compost farmland, crude storage, first farming | Crop season multiplier starts to matter |
-| 2 — **Copper** | `mining 4` (copper ore), `smithing 3` (furnace) | Copper tools, watering can, `build:block` basics | Mobs +1 step past 1000 blocks |
-| 3 — **Bronze/Iron** | `mining 7` (iron), `smithing 14` (iron gear) | Iron, steel is gated behind iron+coal smelt (`earlystage:steel_*`), stone cutter/mason | +2 steps, wilderness begins to hurt |
-| 4 — **Steel & Craft** | `smithing 18` (blast furnace), `builder 3` (obsidian/strong blocks) | Steel tools/block, robust storage, `chipped` workbenches, `create` wind/water wheel **preview** (no full automation) | +3 steps, deep dark/outer biomes elite |
-| 5 — **Mechanical** | `smithing 20`, `builder 5` (chipped tables), `farming 15` (season-proof greenhouse) | Full `Create` automation, `Tom's Simple Storage`, powered pump for pipes upward | Frontier scales with **player power** (total skill levels/40) + distance, capped 20 |
+| 0 - **Stranded** | spawn, `rock`+`flint` (no skill) | Flint tools, campfire, tanning (4 flesh→leather), thatch | Safe radius 500 blocks, mobs baseline |
+| 1 - **Camp** | `farming 3` + `mining 1` (mud bricks) | Sieve (`earlystage:sieve`), compost farmland, crude storage, first farming | Crop season multiplier starts to matter |
+| 2 - **Copper** | `mining 4` (copper ore), `smithing 3` (furnace) | Copper tools, watering can, `build:block` basics | Mobs +1 step past 1000 blocks |
+| 3 - **Bronze/Iron** | `mining 7` (iron), `smithing 14` (iron gear) | Iron, steel is gated behind iron+coal smelt (`earlystage:steel_*`), stone cutter/mason | +2 steps, wilderness begins to hurt |
+| 4 - **Steel & Craft** | `smithing 18` (blast furnace), `builder 3` (obsidian/strong blocks) | Steel tools/block, robust storage, `chipped` workbenches, `create` wind/water wheel **preview** (no full automation) | +3 steps, deep dark/outer biomes elite |
+| 5 - **Mechanical** | `smithing 20`, `builder 5` (chipped tables), `farming 15` (season-proof greenhouse) | Full `Create` automation, `Tom's Simple Storage`, powered pump for pipes upward | Frontier scales with **player power** (total skill levels/40) + distance, capped 20 |
 
 Advancement chain enforces Ages: completing “Smelt your first steel ingot”
 unlocks the Mechanical recipe tag; breaking a steel-tier block with `mining 5`
 alone does nothing. Gating reuses `SkillGates` + future `JobGates` (same
 infra: data `aged_skills/gates` / `aged_jobs/gates`). Tech never appears
-in JEI before its Age advancement fires — instruction toasts teach, not wikis.
+in JEI before its Age advancement fires - instruction toasts teach, not wikis.
 
-**Current code maps:** survival+primitive cover Ages 0–3, jobs+skills cover
+**Current code maps:** survival+primitive cover Ages 0-3, jobs+skills cover
 gating infra, world `Season` covers seasonal friction. Next build is
 **Sieve + Age 1 advancement chain**, then **Steel Age 3→4 wiring**, then
-**Create-gated Mechanical** — each with tests.
+**Create-gated Mechanical** - each with tests.
 
-## Distribution model — server and client are both first-class
+## Distribution model - server and client are both first-class
 
 Hearthwind is built as **one repo, two artifacts** from the same
 dependency set. Every gameplay system enforces on the **server**; the
@@ -140,8 +140,8 @@ opt-in fidelity.
 
 | Layer | Where code lives | What it does | If you don't install it |
 |---|---|---|---|
-| **Server (required)** | `hearthwind-survival`, `hearthwind-skills`, `hearthwind-jobs`, `hearthwind-primitive`, `hearthwind-world` (`environment = "*"` on server) | Authoritative: thirst/diet/spoilage/temperature tick, skill/job XP & gates, mob scaling, primitive loot, seasons calendar, Age advancements. Writes `hearthwind_*.json` configs. Broadcasts sync payloads. | — |
-| **Sync protocol** | `hearthwind-client` (upcoming `hearthwind-net` payloads) | `ServerPlayNetworking` payloads: `hearthwind:hydration`, `hearthwind:nutrients`, `hearthwind:skills`, `hearthwind:season`. Server sends regardless; vanilla clients ignore. | Vanilla clients get chat/action-bar fallbacks (`sendOverlayMessage`) — fully playable, no HUD bars. |
+| **Server (required)** | `hearthwind-survival`, `hearthwind-skills`, `hearthwind-jobs`, `hearthwind-primitive`, `hearthwind-world` (`environment = "*"` on server) | Authoritative: thirst/diet/spoilage/temperature tick, skill/job XP & gates, mob scaling, primitive loot, seasons calendar, Age advancements. Writes `hearthwind_*.json` configs. Broadcasts sync payloads. | - |
+| **Sync protocol** | `hearthwind-client` (upcoming `hearthwind-net` payloads) | `ServerPlayNetworking` payloads: `hearthwind:hydration`, `hearthwind:nutrients`, `hearthwind:skills`, `hearthwind:season`. Server sends regardless; vanilla clients ignore. | Vanilla clients get chat/action-bar fallbacks (`sendOverlayMessage`) - fully playable, no HUD bars. |
 | **Client companion (optional)** | `hearthwind-client` (`environment = "client"`, `ClientModInitializer`) + optional shader/resource pack | Renders HUD bars (thirst/diet/temp/skill/job), Genesis-style instruction toasts, visible water motion preview, temperature/diet overlays. Reads sync payloads, never writes authority. | No extra download; HUD toasts fall back to action-bar. |
 
 **Current coverage:**
@@ -151,13 +151,13 @@ opt-in fidelity.
 **Packaging:** `build_pack.py` emits one Modrinth index with per-side
 `env` flags, producing `hearthwind-server.mrpack` (server+world) and
 `hearthwind-client.mrpack` (client overlay) from the same `resolved.json`.
-Players who just want to **play** do nothing — vanilla 26.2 connects.
+Players who just want to **play** do nothing - vanilla 26.2 connects.
 Players who want the full HUD install the client pack via Modrinth App
 or Prism (mods folder) alongside vanilla.
 
 ## Practical consequences for day-to-day work
 
-1. New gameplay code always lands in OUR modules — never patch upstream
+1. New gameplay code always lands in OUR modules - never patch upstream
    jars.
 2. Every asset copied from anywhere gets an ATTRIBUTION.md entry at copy
    time, not later.
@@ -166,9 +166,9 @@ or Prism (mods folder) alongside vanilla.
 4. When choosing between "exact parity" and "clearly better," prefer
    better if it stays config-tunable back to parity behavior.
 5. **One-best rule:** before adding any mod or block, check `mods-manifest.json`
-   and the borrow board — if an existing feature already covers the need,
+   and the borrow board - if an existing feature already covers the need,
    delete the duplicate instead of adding it. Count blocks/items per
-   survival need (storage, farming, sieving, metal) — the number should go
+   survival need (storage, farming, sieving, metal) - the number should go
    down, not up.
 6. **Slow-tech rule:** no new automation, transport, or storage tech ships
    without an Age gate (advancement + skill + job). If a PR adds a Create

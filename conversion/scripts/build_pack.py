@@ -95,7 +95,7 @@ def main():
     datapack = ROOT / "conversion" / "datapacks" / "aged-server"
     if not (datapack / "pack.mcmeta").exists():
         raise SystemExit(
-            "conversion/datapacks/aged-server/pack.mcmeta missing — "
+            "conversion/datapacks/aged-server/pack.mcmeta missing - "
             "run conversion/scripts/migrate_datapack.py first"
         )
 
@@ -133,13 +133,13 @@ def main():
     json.dump(client_index, open(client_idx_path, "w"), indent=2)
     client_mrpack = DIST / f"{slug.title()}Client-{ver}-mc{mc}.mrpack"
     with zipfile.ZipFile(client_mrpack, "w", zipfile.ZIP_DEFLATED) as z:
-        # reuse server datapack as overrides — client needs same world compat
+        # reuse server datapack as overrides - client needs same world compat
         z.write(client_idx_path, "modrinth.index.json")
         for p in sorted(datapack.rglob("*")):
             if p.is_file():
                 z.write(p, "overrides/world/datapacks/aged-server/" + str(p.relative_to(datapack)))
     shutil.copy(client_mrpack, DIST_LEGACY / client_mrpack.name)
-    print(f"Wrote {client_mrpack.name} ({client_mrpack.stat().st_size // 1024} KiB) — client companion (same files, client-required)")
+    print(f"Wrote {client_mrpack.name} ({client_mrpack.stat().st_size // 1024} KiB) - client companion (same files, client-required)")
 
     if args.server_dir:
         sdir = DIST / "server"

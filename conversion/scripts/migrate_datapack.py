@@ -113,7 +113,7 @@ def installed_namespaces(mods_dir: Path) -> set[str]:
     ns = {"minecraft", "aged"}
     if not mods_dir.exists():
         sys.exit(
-            f"mods dir not found: {mods_dir} — run build_pack.py --server-dir first"
+            f"mods dir not found: {mods_dir} - run build_pack.py --server-dir first"
         )
     for jar in sorted(mods_dir.glob("*.jar")):
         try:
@@ -309,7 +309,7 @@ def main():
     fmt = conf.get("datapack", {}).get("pack_format")
     if not fmt:
         sys.exit(
-            "datapack.pack_format missing in conversion/build.conf.json — "
+            "datapack.pack_format missing in conversion/build.conf.json - "
             "set it from the target server jar's version.json "
             "(pack_version.data_major)"
         )

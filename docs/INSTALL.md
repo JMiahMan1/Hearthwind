@@ -1,4 +1,4 @@
-# Installing & packaging Hearthwind — Server and Client
+# Installing & packaging Hearthwind - Server and Client
 
 Target: Minecraft **26.2**, Fabric loader 0.19.3+, Java 25. One repo builds
 **both** sides: server is required, client companion is optional (see
@@ -6,32 +6,32 @@ Target: Minecraft **26.2**, Fabric loader 0.19.3+, Java 25. One repo builds
 
 ## Players: joining a server
 
-**Server is authoritative — vanilla works.** A vanilla 26.2 client connects
+**Server is authoritative - vanilla works.** A vanilla 26.2 client connects
 like any other server with no mods:
 
     Multiplayer -> Add Server -> <host>:25565
 
 You will see survival warnings via action-bar/chat (thirst, diet,
-temperature, skill gates) — fully playable.
+temperature, skill gates) - fully playable.
 
 **Optional: install the companion client for full HUD:**
 
 - **Modrinth App:** open `HearthwindClient-<ver>-mc26.2.mrpack` → Create instance → launch. The client mod `hearthwind-client` renders HUD bars (thirst/diet/temp/skill/job), instruction toasts (Genesis-style), and water-motion preview. Server syncs via `hearthwind:*` payloads; without the client you simply see action-bar fallbacks.
 - **Prism Launcher:** create a vanilla 26.2 instance → Add mods → drop `hearthwind-client-*.jar` into `mods/` (keep Fabric API). Or import the `.mrpack` as instance.
 
-The client never grants authority — the server enforces all gates, XP,
+The client never grants authority - the server enforces all gates, XP,
 spoilage, and mob scaling. Installing or omitting the client does not
 change gameplay, only presentation.
 
 ## Server admins: installing a built pack
 
-### Option A — Modrinth pack files (recommended)
+### Option A - Modrinth pack files (recommended)
 
 Two files are published per release / CI artifact (`mod-jars` on
 [Actions](../../actions)):
 
-- `HearthwindServer-<ver>-mc26.2.mrpack` — **required** (server mods + `world/datapacks/aged-server/`)
-- `HearthwindClient-<ver>-mc26.2.mrpack` — **optional** (players who want HUD/companion visuals)
+- `HearthwindServer-<ver>-mc26.2.mrpack` - **required** (server mods + `world/datapacks/aged-server/`)
+- `HearthwindClient-<ver>-mc26.2.mrpack` - **optional** (players who want HUD/companion visuals)
 
 Server install:
 
@@ -42,23 +42,23 @@ Server install:
    [Modrinth's CLI](https://github.com/modrinth/code) / your launcher.
 3. Accept the EULA in the instance's `eula.txt`, start.
 
-Hand the `HearthwindClient-*.mrpack` link to players — they install it
+Hand the `HearthwindClient-*.mrpack` link to players - they install it
 as a separate instance (or drop the `hearthwind-client` jar into their
 Prism `mods/`). Vanilla players without it still join fine.
 
-> **Prism Launcher users**: as a PLAYER you don't need any of this —
+> **Prism Launcher users**: as a PLAYER you don't need any of this -
 > create any vanilla 26.2 instance in Prism and connect to the server;
 > the whole pack runs server-side. If you want to HOST via Prism, an
 > `.mrpack` import technically loads, but Prism has no dedicated
-> dedicated-server workflow — prefer the Modrinth App, a `mrpack` CLI,
+> dedicated-server workflow - prefer the Modrinth App, a `mrpack` CLI,
 > or Option B below for hosting.
 
-### Option B — plain server directory
+### Option B - plain server directory
 
 1. Get the `dist/server/` directory (CI artifact or build it yourself):
    contains `fabric-server.jar` (Fabric launcher), `mods/` (all resolved
    third-party mods), and `world/datapacks/aged-server/` (the migrated
-   tuning datapack — slug `aged-server` kept for world-upgrade compat).
+   tuning datapack - slug `aged-server` kept for world-upgrade compat).
 2. Copy our custom mods from the `mod-jars` artifact into `mods/`
    (`hearthwind-survival`, `hearthwind-skills`, `hearthwind-jobs`,
    `hearthwind-primitive`, `hearthwind-world`). For the client pack,
@@ -75,7 +75,7 @@ Server configs are created on first boot with sane defaults:
 `config/hearthwind_skills.json` (skills/mob scaling/gates),
 `config/hearthwind_jobs.json` (job XP curve) and
 `config/hearthwind_world.json` (seasons). The client has no server
-config — its HUD reads `hearthwind:*` sync payloads.
+config - its HUD reads `hearthwind:*` sync payloads.
 
 ## Developers: building everything from source
 
@@ -127,6 +127,6 @@ real-client tests and interactive tunnel sessions.
 - `build_pack.py` pins exact versions + sha1 hashes from
   `conversion/build/resolved.json`; rerun `resolve_deps.py` after
   editing `conversion/curated/mods-manifest.json`.
-- Our custom mods are NOT in the Modrinth index — they are built from
+- Our custom mods are NOT in the Modrinth index - they are built from
   this repo. Release flow = tag -> GHA artifacts -> attach to a GitHub
   release together with the `.mrpack`.

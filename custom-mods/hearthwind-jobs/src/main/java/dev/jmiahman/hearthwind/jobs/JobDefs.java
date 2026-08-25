@@ -18,7 +18,7 @@ import net.fabricmc.loader.api.FabricLoader;
  * Job definitions loaded from <code>data/aged_jobs/jobs/&lt;job&gt;.json</code>
  * (generated from the migrated jobs-addon corpus). Each level lists the
  * entity/block/item ids that award job XP while the player holds that
- * job. Unknown ids never match — same convention as skill gates.
+ * job. Unknown ids never match - same convention as skill gates.
  */
 public final class JobDefs {
     public record Level(int level, List<String> entities,
