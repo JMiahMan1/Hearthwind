@@ -77,6 +77,36 @@ Server configs are created on first boot with sane defaults:
 `config/hearthwind_world.json` (seasons). The client has no server
 config - its HUD reads `hearthwind:*` sync payloads.
 
+### Option C - Linux host as systemd service (long-running)
+
+For a dedicated Linux box (Ubuntu/Debian) that survives reboots:
+
+```bash
+# On the Linux host, as root:
+git clone https://github.com/JMiahMan1/Hearthwind.git /opt/Hearthwind
+cd /opt/Hearthwind
+
+# Build or download a release zip into /opt/hearthwind
+sudo bash deploy/install.sh /opt/hearthwind
+#  → creates user hearthwind, copies conversion/build/dist/server + hearthwind-* jars,
+#    fabric-server.jar, eula.txt and server.properties (edit rcon.password!)
+
+sudo systemctl start hearthwind
+sudo systemctl enable hearthwind
+sudo journalctl -u hearthwind -f   # logs
+sudo systemctl status hearthwind
+```
+
+Unit file is `deploy/systemd/hearthwind.service` (`gh`):
+
+- `User=hearthwind`, `WorkingDirectory=/opt/hearthwind`, `ExecStart=/usr/lib/jvm/java-25-openjdk-amd64/bin/java -Xmx3G -Xms1G -jar fabric-server.jar nogui`
+- `Restart=on-failure`, `RestartSec=10`, `SuccessExitStatus=0 1 143`
+- Tune heap via drop-in: `sudo systemctl edit hearthwind` → override `ExecStart` (see `deploy/systemd/override.conf.example` for 6G example)
+- Logs to journald (`SyslogIdentifier=hearthwind`), RCON same as plain dir (`custom-mods/tools/rcon.py 127.0.0.1 25575 <password> list`)
+
+Local dev equivalent (macOS, no systemd): `bash tools/run_local_server.sh` → starts `dev-server/` on `*:25565` (Prism `Hearthwind-Dev-Client` connects to `localhost:25565`), `bash custom-mods/tools/setup_prism_dev.sh` syncs Prism instance.
+
+
 ## Developers: building everything from source
 
 Prerequisites: JDK 25, Python 3.10+, ~4 GB free RAM for builds.

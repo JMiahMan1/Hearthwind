@@ -1,0 +1,8 @@
+# Example drop-in: sudo mkdir -p /etc/systemd/system/hearthwind.service.d
+# then sudo cp override.conf.example /etc/systemd/system/hearthwind.service.d/override.conf
+# sudo systemctl daemon-reload && sudo systemctl restart hearthwind
+[Service]
+# More heap for 10+ players
+Environment=HEAP=6G
+ExecStart=
+ExecStart=/usr/lib/jvm/java-25-openjdk-amd64/bin/java -Xmx6G -Xms2G -jar fabric-server.jar nogui

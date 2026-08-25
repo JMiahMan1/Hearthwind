@@ -1,0 +1,34 @@
+[Unit]
+Description=Hearthwind Minecraft Server (Fabric 26.2)
+Documentation=https://github.com/JMiahMan1/Hearthwind
+After=network.target
+
+[Service]
+# Run as dedicated user - create once: sudo useradd -r -m -d /opt/hearthwind -s /bin/bash hearthwind
+User=hearthwind
+Group=hearthwind
+WorkingDirectory=/opt/hearthwind
+# Java 25 is required (Fabric 26.2 + loom 1.17). Adjust path if your distro uses /usr/lib/jvm/java-25-openjdk or /usr/lib/jvm/temurin-25
+ExecStart=/usr/lib/jvm/java-25-openjdk-amd64/bin/java -Xmx3G -Xms1G -jar fabric-server.jar nogui
+Restart=on-failure
+RestartSec=10
+# Fabric exits 0 on /stop, 1 on crash, 143 on SIGTERM - all handled
+SuccessExitStatus=0 1 143
+
+# Hardening (uncomment as needed - tighten after first boot)
+#NoNewPrivileges=true
+#PrivateTmp=true
+#ProtectSystem=full
+#ProtectHome=true
+#ReadWritePaths=/opt/hearthwind
+
+# Logging - journald
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=hearthwind
+
+# Environment - tune heap via drop-in: sudo systemctl edit hearthwind
+Environment=JAVA_TOOL_OPTIONS=-Dsun.io.useCanonCaches=false
+
+[Install]
+WantedBy=multi-user.target
