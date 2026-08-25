@@ -127,8 +127,10 @@ public final class HearthwindSurvivalDiet {
     public static DietState applyDecay(Entity entity, HearthwindSurvivalConfig.Diet cfg) {
         boolean allBalanced = true;
         int deficient = 0;
+        // TICK_INTERVAL is ticks (20 = 1s), decay is per-second
+        double seconds = TICK_INTERVAL / 20.0;
         for (TagKey<Item> group : GROUPS) {
-            double v = level(entity, group) - cfg.decayPerSecond * TICK_INTERVAL;
+            double v = level(entity, group) - cfg.decayPerSecond * seconds;
             v = Math.max(0.0, v);
             setLevel(entity, group, v);
             if (v < cfg.deficiencyThreshold) {

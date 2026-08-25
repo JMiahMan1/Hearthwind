@@ -147,8 +147,11 @@ public final class HearthwindSurvivalTemperature {
         }
 
         HearthwindSurvivalConfig.Temperature cfg = HearthwindSurvivalConfig.get().temperature;
+        // drift is per-second, tick is 40 ticks = 2s
+        double seconds = 40 / 20.0;
+        double perTickDrift = cfg.driftPerSecond * seconds;
         double step = Math.signum(target - current)
-                * Math.min(cfg.driftPerSecond, Math.abs(target - current));
+                * Math.min(perTickDrift, Math.abs(target - current));
         double next = clamp(current + step);
         player.setAttached(TEMPERATURE, next);
 

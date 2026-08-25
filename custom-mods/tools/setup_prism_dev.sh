@@ -61,9 +61,10 @@ echo ""
 echo "== Dev server: $DST_SRV =="
 mkdir -p "$DST_SRV"
 if [ -d "$SRC_SRV/mods" ]; then
-  rm -rf "$DST_SRV/mods" "$DST_SRV/world"
+  rm -rf "$DST_SRV/mods"
+  mkdir -p "$DST_SRV/world/datapacks"
   cp -R "$SRC_SRV/mods" "$DST_SRV/"
-  cp -R "$SRC_SRV/world" "$DST_SRV/" 2>/dev/null || true
+  cp -R "$SRC_SRV/world/datapacks/aged-server" "$DST_SRV/world/datapacks/" 2>/dev/null || true
 else
   echo "No server dist — run python3 conversion/scripts/resolve_deps.py && python3 conversion/scripts/build_pack.py --server-dir && ./gradlew build"
   exit 1
