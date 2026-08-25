@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
-# Headless gametest runner for hearthwind-survival.
+# Headless gametest runner for Hearthwind (all modules).
 #
 # Boots a throwaway dedicated 26.2 server with fabric-api's gametest
 # harness enabled (-Dfabric-api.gametest=true), which runs every @GameTest
-# in the mod and writes a JUnit XML report, then parses it.
+# in every mod and writes a JUnit XML report, then parses it.
 #
 # Usage:  tools/run_gametests.sh [--keep-server]
 # Requires: java (25) on PATH. Server files are cached in .gametest-server/
@@ -19,8 +19,8 @@ KEEP=0
 [ "${1:-}" = "--keep-server" ] && KEEP=1
 
 cd "$DIR/.."
-echo "== building :hearthwind-survival =="
-./gradlew :hearthwind-survival:build --no-daemon --max-workers=2 -q
+echo "== building all hearthwind modules =="
+./gradlew build --no-daemon --max-workers=2 -q
 
 mkdir -p "$SRV/mods"
 if [ ! -f "$SRV/fabric-server.jar" ]; then
@@ -46,7 +46,7 @@ echo "== installing fresh mod jars =="
 rm -f "$SRV"/mods/hearthwind-*.jar
 # every custom module ships its plain jar so cross-module behavior is
 # exercised together (never the -sources jars)
-find hearthwind-survival hearthwind-skills hearthwind-primitive hearthwind-world -name "*.jar" \
+find hearthwind-survival hearthwind-skills hearthwind-jobs hearthwind-primitive hearthwind-world -name "*.jar" \
      -path "*build/libs/*" ! -name "*-sources.jar" -exec cp {} "$SRV/mods/" \;
 ls "$SRV"/mods/
 

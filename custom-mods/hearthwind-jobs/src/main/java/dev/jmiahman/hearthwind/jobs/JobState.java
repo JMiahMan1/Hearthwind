@@ -26,18 +26,12 @@ public final class JobState {
 
     public static final AttachmentType<Data> STATE =
             AttachmentRegistry.<Data>builder()
-                    .persistent(Codec.recordCodec(JobState::codec)
-                            .build())
+                    .persistent(codec())
                     .copyOnDeath()
                     .buildAndRegister(
                             Identifier.fromNamespaceAndPath("hearthwind_jobs", "state"));
 
     private JobState() {}
-
-    private static com.mojang.serialization.codecs.RecordCodecBuilder
-            .Instance<Map<String, String>> unusedForNow() {
-        return null;
-    }
 
     static Codec<Data> codec() {
         return com.mojang.serialization.codecs.RecordCodecBuilder.create(i ->
@@ -50,7 +44,7 @@ public final class JobState {
     }
 
     public static String jobId(Entity entity) {
-        Data d = entity.getAttachedOrDefault(STATE, NONE);
+        Data d = entity.getAttachedOrElse(STATE, NONE);
         return d.job();
     }
 
@@ -59,7 +53,7 @@ public final class JobState {
     }
 
     public static double xp(Entity entity) {
-        Data d = entity.getAttachedOrDefault(STATE, NONE);
+        Data d = entity.getAttachedOrElse(STATE, NONE);
         return d.xp();
     }
 
@@ -87,9 +81,9 @@ public final class JobState {
         player.sendSystemMessage(Component.literal("You are now unemployed."));
     }
 
-    /** Award a point if {@code id} matches the current job's current level. */
+    /** Award a point if {@code id} matches any defined level for the current job. */
     public static void awardIfMatch(Entity entity, String id) {
-        Data d = entity.getAttachedOrDefault(STATE, NONE);
+        Data d = entity.getAttachedOrElse(STATE, NONE);
         if (d.job().isEmpty()) {
             return;
         }
@@ -97,16 +91,15 @@ public final class JobState {
         if (def == null) {
             return;
         }
-        int level = level(entity);
-        JobDefs.Level spec = specAtOrBelow(def, level);
-        if (spec == null || !matches(spec, id)) {
-            return;
-        }
-        if (level >= def.maxLevel()) {
+        int lvl = level(entity);
+        if (lvl >= def.maxLevel()) {
             return; // maxed jobs stop accruing
         }
+        if (!matchesAny(def, id)) {
+            return;
+        }
         double newXp = d.xp() + HearthwindJobsConfig.get().xpPerAction;
-        int before = level;
+        int before = lvl;
         entity.setAttached(STATE, new Data(d.job(), newXp));
         int after = level(entity);
         if (entity instanceof ServerPlayer p && after > before) {
@@ -116,17 +109,12 @@ public final class JobState {
         }
     }
 
-    private static JobDefs.Level specAtOrBelow(JobDefs.JobDef def, int level) {
-        JobDefs.Level best = null;
-        for (JobDefs.Level l : def.levels()) {
-            if (l.level() <= level + 1 && (best == null || l.level() > best.level())) {
-                best = l;
+    private static boolean matchesAny(JobDefs.JobDef def, String id) {
+        for (JobDefs.Level l : def.levels) {
+            if (l.entities().contains(id) || l.blocks().contains(id) || l.items().contains(id)) {
+                return true;
             }
         }
-        return best;
-    }
-
-    private static boolean matches(JobDefs.Level spec, String id) {
-        return spec.entities().contains(id) || spec.blocks().contains(id);
+        return false;
     }
 }

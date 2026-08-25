@@ -10,6 +10,19 @@ public class HearthwindWorld implements ModInitializer {
 
 	@Override
 	public void onInitialize() {
-		LOGGER.info("Hearthwind World initialized");
+		HearthwindWorldConfig.get();
+		LOGGER.info("Hearthwind World initialized: seasons-lite {} days/season, crop x[sp {} su {} au {} wi {}] temp offsets [sp {} su {} wi {}]",
+				HearthwindWorldConfig.get().daysPerSeason,
+				HearthwindWorldConfig.get().springCropMultiplier,
+				HearthwindWorldConfig.get().summerCropMultiplier,
+				HearthwindWorldConfig.get().autumnCropMultiplier,
+				HearthwindWorldConfig.get().winterCropMultiplier,
+				HearthwindWorldConfig.get().springTempOffset,
+				HearthwindWorldConfig.get().summerTempOffset,
+				HearthwindWorldConfig.get().winterTempOffset);
+	}
+
+	public static Season currentSeason(net.minecraft.server.level.ServerLevel world) {
+		return Season.fromWorldTime(world.getGameTime(), HearthwindWorldConfig.get().daysPerSeason);
 	}
 }

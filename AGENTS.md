@@ -66,13 +66,16 @@ How far CI can go:
 
 ## Testing harness (gametests — preferred)
 
-`custom-mods/aged-survival` ships headless gametests
-(`AgedSurvivalGameTests`, fabric-gametest entrypoint). Run them all:
+`custom-mods/hearthwind-survival`, `hearthwind-skills` and
+`hearthwind-jobs` ship headless gametests
+(`HearthwindSurvivalGameTests`, `HearthwindSkillsGameTests`,
+`HearthwindJobsGameTests`, fabric-gametest entrypoints). Run them all:
 
 ```bash
 cd custom-mods && bash tools/run_gametests.sh [--keep-server]
-# -> builds, boots a throwaway 26.2 server, runs every @GameTest,
+# -> builds all modules, boots a throwaway 26.2 server, runs every @GameTest,
 #    prints "gametests: N/M passed", exits nonzero on failure
+#    (19 gametests green: 8 survival + 7 skills + 4 jobs)
 ```
 
 Gotchas learned the hard way:
@@ -179,61 +182,55 @@ python3 ../custom-mods/tools/rcon.py 127.0.0.1 25575 agedtest "summon item ~ ~ ~
 
 ## Next steps (priority order)
 
-1. **Finish survival** (`custom-mods/aged-survival`) — v1 SHIPPED
-   (verified boot + RCON on 26.2):
-   - Diet module DONE: five `nutritionz:` item tags (fruits, vegetables,
+1. **Survival** (`custom-mods/hearthwind-survival`) — v1 SHIPPED
+   (verified boot + RCON on 26.2, 8/8 gametests green):
+   - Diet: five `nutritionz:` item tags (fruits, vegetables,
      grains, proteins, sugars), nutrients attachment (0..100) with decay,
      deficiency debuffs (fruit->mining fatigue, vegetables/proteins->
      weakness, grains->slowness), balanced diet -> refreshed absorption
      bonus hearts. Eat hook = mixin on `Consumable#onConsume`
      (`ConsumableConsumeMixin`). NOT yet play-verified with a live client.
-   - Spoilage module DONE: `spoiledz:perishable_items` tag rots stack
+   - Spoilage: `spoiledz:perishable_items` tag rots stack
      items into rotten flesh on a random check interval; migrated
      `spoiledz:non_spoiling_items` tag respected as exemption; hot biomes
      double the chance. Inventory-only in v1 (containers TODO).
-   - Temperature/thirst polish DONE: all tunables now in
-     `config/aged_survival.json` (auto-created with defaults).
+   - Temperature/thirst: all tunables now in
+     `config/hearthwind_survival.json` (auto-created with defaults).
    - Remaining: client-side HUD bars for hydration/diet, container
      spoilage, in-game eat-hook verification.
-2. **Skills** (`aged-skills`) — v1 SHIPPED (14/14 gametests green):
+2. **Skills** (`hearthwind-skills`) — v1 SHIPPED (7/7 gametests green):
    12 levelz-parity skills (farming/mining/smithing/strength/agility/
    defense/health/stamina/luck/archery/alchemy/trade), XP attachment
    under `levelz:` namespace, triangular XP curve (baseXpPerLevel * N
    per level, max 30), attribute bonuses as transient modifiers keyed
-   `aged_skills:<skill>` (health/strength/agility/defense/mining/luck),
+   `hearthwind_skills:<skill>` (health/strength/agility/defense/mining/luck),
    XP hooks on block break (crops->farming, pickaxe->mining,
    shovel->stamina) and kills (melee->strength, bow/crossbow/trident->
-   archery, animals->farming). All tunables in `config/aged_skills.json`.
+   archery, animals->farming). All tunables in `config/hearthwind_skills.json`.
+   Skill break/use gates from merged `data/levelz` corpus are live (mining 1..27, use gates on 17 stations).
     - Remaining vs original: crafting denial for gated items (smithing
       tiers), entity/husbandry gates, client HUD (companion mod).
- 3. **Primitive upgrades** (`aged-primitive`): knapping minigame,
+3. **Jobs** (`hearthwind-jobs`, jobs-addon parity) — 🟡 partial, 4/4 gametests green (new):
+   8 jobs (fisher/miner/farmer/warrior/smither/brewer/builder/lumberjack), per-player job attachment `hearthwind_jobs:state`, level math `pointsPerLevel` (default 100), XP hooks on block break / entity kill via `JobState.awardIfMatch`, **`/job join/leave/info` commands** shipped; config `config/hearthwind_jobs.json`.
+   Remaining: job-restricted recipe gating (reuses gate infra), bonus rewards. Parity: docs/FEATURE_PARITY.md 🟡 partial.
+4. **Primitive** (`hearthwind-primitive`) — 🟡 partial: flint tools/rock item, stone->rock loot, ore pieces recipes, **steel ingot/nugget/block + assets** shipped; remaining: knapping minigame,
     sieve block using `earlystage:sieve_drops/aged_drops.json` spec,
-    beginner-death forgiveness (`beginnerDeathCount: 3`), steel tier
-    items + recipes.
- 4. **Jobs** (`aged-jobs`, jobs-addon parity): 8 jobs (fisher/miner/
-    farmer/warrior/smither/brewer/builder/lumberjack), XP sources per
-    level + job-restricted recipes; corpus `data/jobsaddon`. Reuses the
-    skill-event infra. Full parity matrix + ordering:
-    docs/FEATURE_PARITY.md.
- 5. **World** (`aged-world`): seasons-lite (4 seasons, crop multipliers,
-    temperature hook consumed by survival module); water motion system per
-    `ideas/rivers-and-waves.md` (river currents, ocean swell, foam, tides
-    -> later visible wave surfaces via optional client companion/shaders;
-    Tectonic/Terralith decision at next version bump).
-5. **Datapack noise shrink**: each shipped item set reduces the
+    beginner-death forgiveness (`beginnerDeathCount: 3`), full `tiered` affix system.
+5. **World** (`hearthwind-world`) — 🟡 partial: **seasons-lite shipped** (4 seasons over `daysPerSeason` 21, `Season.fromWorldTime()`, temp offsets + crop multipliers per season, `config/hearthwind_world.json`); wiring crop growth + temperature hook next. Water motion per `ideas/rivers-and-waves.md` (river currents, ocean swell, foam, tides -> later visible wave surfaces via optional client companion/shaders; Tectonic/Terralith decision at next version bump).
+6. **Datapack noise shrink**: each shipped item set reduces the
    remaining non-fatal loot/recipe parse warnings; re-census via
    `grep "Couldn't parse" bootN.log`.
-6. **Watchlist**: periodically rerun `resolve_deps.py --mc <latest>`;
+7. **Watchlist**: periodically rerun `resolve_deps.py --mc <latest>`;
    YUNG suite/endrem/etc. return automatically as authors publish.
    Water/worldgen candidates tracked in `ideas/rivers-and-waves.md`
    (tectonic + terralith both ship 26.2 builds; adopt at next bump).
    Genesis/Genesis Framework studied for design ideas only (advancement
    -wrapped gating, instruction toasts, ordered age chains) — rebuild
    in-house, see `ideas/genesis-comparison.md`; neither mod adopted.
-7. **Snapshot CI probe**: nightly resolver run against newest snapshot.
-8. **Real art**: replace generated placeholder textures/models.
-9. **Cleanup discipline**: remove `.tmp-test-server/`,
-   `/tmp/opencode/*` scratch at task end.
+8. **Snapshot CI probe**: nightly resolver run against newest snapshot.
+9. **Real art**: replace generated placeholder textures/models.
+10. **Cleanup discipline**: remove `.tmp-test-server/`,
+    `/tmp/opencode/*` scratch at task end.
 
 ## Verification checklist per feature
 

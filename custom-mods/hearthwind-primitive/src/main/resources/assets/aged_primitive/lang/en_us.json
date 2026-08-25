@@ -17,5 +17,8 @@
   "item.agedaddition.quartz_piece": "Quartz Piece",
   "item.agedaddition.raw_copper_nugget": "Raw Copper Nugget",
   "item.agedaddition.raw_gold_nugget": "Raw Gold Nugget",
-  "item.agedaddition.raw_iron_nugget": "Raw Iron Nugget"
+  "item.agedaddition.raw_iron_nugget": "Raw Iron Nugget",
+  "item.earlystage.steel_ingot": "Steel Ingot",
+  "item.earlystage.steel_nugget": "Steel Nugget",
+  "block.earlystage.steel_block": "Steel Block"
 }

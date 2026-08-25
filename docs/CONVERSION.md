@@ -32,13 +32,14 @@ path to future releases and snapshots.
    - The "Let's Do" food family (10 mods, all stalled ~1.21.1) is cut for phase
      1; ambience biome/mob packs trimmed; redundant QOL replaced by vanilla
      features or datapacks.
-3. **Custom replacement mods** (Fabric, server-side, data-driven):
+3. **Custom replacement mods** (Fabric, server-side, data-driven — now `hearthwind-*`):
    | Mod | Replaces | Scope |
    |---|---|---|
-   | `aged-survival` | dehydration, environmentz, nutritionz, spoiledz | thirst, temperature, diet, spoilage |
-   | `aged-skills` | levelz (+jobs/party later), rpgdifficulty | skills/attributes to 30, mob scaling |
-   | `aged-primitive` | earlystage, tiered, reciperemover, autotag | knapping start, recipe gating via datapack |
-   | `aged-world` | fabric-seasons, seasonhud, crop_growth_modifier | seasons-lite crop/temperature effects |
+   | `hearthwind-survival` | dehydration, environmentz, nutritionz, spoiledz | thirst, temperature, diet, spoilage |
+   | `hearthwind-skills` | levelz, rpgdifficulty | skills/attributes to 30, mob scaling, gates |
+   | `hearthwind-jobs` | jobs-addon (8 jobs) + party stub | job levels, XP tracks, per-job unlocks |
+   | `hearthwind-primitive` | earlystage, tiered (part), reciperemover, autotag | knapping start, recipe gating via datapack |
+   | `hearthwind-world` | fabric-seasons, seasonhud, crop_growth_modifier | seasons-lite crop/temperature effects |
 
 ## Toolchain
 
@@ -74,7 +75,7 @@ materialized by `build_pack.py --server-dir`). Migration passes:
 `Done` with the migrated datapack installed. Remaining log warnings are
 non-fatal parse notices for loot/recipe files that reference dropped or
 not-yet-rebuilt mod items — vanilla fallbacks apply and the same files act as
-the rebuild spec for `aged-*`.
+the rebuild spec for `hearthwind-*`.
 
 ## Current readiness (26.2)
 
@@ -92,38 +93,39 @@ herdspanic, log-begone) need watchlist monitoring or replacement.
 3. [x] Server datapack migration (native pack, replaces paxi)
 4. [x] Boot test: local fabric 26.2 server reaches `Done` with full mod set + datapack
 5. [x] Custom mod skeletons (`custom-mods/`) build on Java 25 / loom 1.17 and load on a dedicated 26.2 server
-6. [~] Gameplay systems per module (thirst/temperature/diet/spoilage -> skills -> primitive -> seasons), using the migrated datapack as tuning spec
-   - [x] Thirst (dehydration parity): hydration attachment, sprint/thirst-effect drain, regen floor, zero-hydration damage; water/purified bowls
+6. [~] Gameplay systems per module (thirst/temperature/diet/spoilage -> skills -> jobs -> primitive -> seasons), using the migrated datapack as tuning spec
+   - [x] Thirst (dehydration parity): hydration attachment `dehydration:hydration`, sprint/thirst-effect drain, regen floor, zero-hydration damage; water/purified bowls
    - [x] Temperature (environmentz parity): biome-target drift, warm/neutral armor tags, insulation/ice items, freeze/heat damage; wolf & wanderer armor sets
    - [x] Diet v1 (nutritionz parity): five `nutritionz:*` item-group tags, decaying nutrient attachment per group, deficiency debuffs, balanced-diet absorption bonus; eat hook via `Consumable#onConsume` mixin
    - [x] Spoilage v1 (spoiledz parity): `spoiledz:perishable_items` rot to rotten flesh on random checks, `non_spoiling_items` exempt, hot-biome acceleration; player inventory only for now
-   - [x] Config: all thirst/temperature/diet/spoilage tunables in `config/aged_survival.json` (auto-generated defaults)
+   - [x] Config: all thirst/temperature/diet/spoilage tunables in `config/hearthwind_survival.json` (auto-generated defaults)
    - [ ] Client HUD bars (hydration/diet), container spoilage, live-client play verification
 7. [~] Skills module (levelz + rpgdifficulty parity)
-   - [x] v1 core: 12 skills, XP attachment + triangular curve to 30,
-     transient attribute modifiers, block-break & kill XP hooks,
-     `config/aged_skills.json`; 4 gametests green
+   - [x] v1 core: 12 skills, XP attachment `levelz:xp` + triangular curve to 30,
+     transient attribute modifiers `hearthwind_skills:<skill>`, block-break & kill XP hooks,
+     `config/hearthwind_skills.json`; 7 gametests green
    - [x] mob scaling by distance-from-spawn (rpgdifficulty parity):
      monsters gain +2 HP/+0.5 dmg per 1000 blocks past a 500-block grace
      radius, capped at 20 steps; transient modifier, no double stacking;
      gametests for math + application
-   - [ ] unlock gating from migrated `data/levelz/*` corpus
-8. [ ] Primitive upgrades (knapping, sieve, steel tier)
-9. [ ] Seasons-lite (aged-world) feeding the temperature hook
-10. [ ] Snapshot watchlist CI (nightly `--mc <latest snapshot>` probe)
+   - [x] unlock gating from migrated `data/levelz/*` corpus: break gates (mining 1..27, ~600 entries) + use gates (17 stations) live via `SkillGates`
+8. [x] Jobs module (jobs-addon parity) — 4 gametests: 8 job defs from corpus, `hearthwind_jobs:state` attachment, `config/hearthwind_jobs.json`, block-break/kill hooks, **`/job join/leave/info` commands with tab-complete**
+   - [ ] job-restricted recipe gating + bonus rewards
+9. [~] Primitive upgrades: flint tools/rock loot + ore pieces + **steel ingot/nugget/block** ✅, knapping/sieve + full `tiered` affixes remaining
+10. [~] Seasons-lite (hearthwind-world) — **shipped**: `Season` enum, `hearthwind_world.json` (daysPerSeason + temp offsets + crop multipliers), `HearthwindWorld.currentSeason(world)` hook ready; crop growth + temperature wiring next
+11. [ ] Snapshot watchlist CI (nightly `--mc <latest snapshot>` probe)
 
-### Survival v1 verified state (26.2)
+### Survival v1 verified state (26.2) — update 2026-08-25
 
 Verified headless with a minimal server (fabric-loader 0.19.3 +
-fabric-api 0.158.0+26.2 + aged-survival jar):
+fabric-api 0.158.0+26.2 + hearthwind-survival + hearthwind-skills + hearthwind-jobs):
 
-- `./gradlew :aged-survival:build` green (Java 25).
+- `./gradlew build --no-daemon --max-workers=2` green (Java 25, loom 1.17.19, 5 modules).
 - Boot reaches `Done`; no parse errors mentioning `nutritionz`,
-  `spoiledz`, or `aged_survival`.
+  `spoiledz`, or `hearthwind_survival` / `hearthwind_skills` / `hearthwind_jobs`.
 - RCON summon of `dehydration:water_bowl`, `dehydration:purified_water_bowl`,
   `environmentz:wolf_pelt` succeeds.
-- First boot materializes `config/aged_survival.json` with documented
-  defaults.
+- First boot materializes `config/hearthwind_survival.json` (and skills/jobs) with documented defaults.
 - Known limitation: diet eat-hook and spoilage decay need a live client
   session to exercise end-to-end; both are plain server-tick logic and
   boot-verified only so far.
@@ -132,12 +134,13 @@ fabric-api 0.158.0+26.2 + aged-survival jar):
 
 `custom-mods/tools/run_gametests.sh` boots a throwaway dedicated server
 with fabric-api's gametest harness (`-Dfabric-api.gametest=true`) and runs
-the `AgedSurvivalGameTests` suite headless — 10/10 green on 26.2 (config
-defaults, diet eat/decay/deficiency, spoilage rot/exemption, thirst
-clamp). Diet/spoilage/thirst cores were refactored to take `Entity` /
-`Container` parameters so they are testable without a client. New
-gameplay logic should ship with a gametest; the boot+RCON loop remains
-for integration checks the suite can't reach (item registration,
+every `@GameTest` suite headless — **19/19 green on 26.2** (8 survival
++ 7 skills + 4 jobs; config defaults, diet eat/decay/deficiency, spoilage
+rot/exemption, thirst clamp, skill XP curve + mob scaling + gates, jobs
+load + XP/level + max-cap). Diet/spoilage/thirst cores were refactored to
+take `Entity` / `Container` parameters so they are testable without a
+client. New gameplay logic should ship with a gametest; the boot+RCON loop
+remains for integration checks the suite can't reach (item registration,
 datapack parse noise).
 
 ## License

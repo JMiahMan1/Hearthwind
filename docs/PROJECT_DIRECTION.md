@@ -17,11 +17,11 @@ where they fit the medieval-realism identity.
 
 ### Phase A — Fork with parity (now)
 
-- Rebuild all original systems in our own code (`aged-*` mods) — done/
-  in progress per parity matrix.
+- Rebuild all original systems in our own code (`hearthwind-*` mods) — done/
+  in progress per parity matrix (survival + skills v1 shipped, jobs scaffold live).
 - Use upstream graphics & resources where needed. Rules:
   - Track provenance: every borrowed texture/sound/model gets an entry
-    in `resources/ATTRIBUTION.md` (source project, author, license).
+    in `ATTRIBUTION.md` at repo root (source project, author, license).
   - Respect licenses: original Aged resources are "courtesy of
     xR4YM0ND and contributors" (see CONVERSION.md license note); third-
     party mods keep their licenses (e.g., Genesis: no redistribution of
@@ -34,24 +34,27 @@ where they fit the medieval-realism identity.
 
 - **Naming decision (2026-08-24): the pack is called HEARTHWIND.**
   Display names switched immediately (`Hearthwind: Survival/Skills/
-  Primitive/World`, pack name `Hearthwind Server`); internal mod ids
-  stay `aged_*` for now and migrate to first-party ids during the
-  namespace audit below.
+  Primitive/World/Jobs`, pack name `Hearthwind Server`); internal mod ids
+  migrated from `aged_*` to `hearthwind_*` on 2026-08-25 (`hearthwind_survival`,
+  `hearthwind_skills`, `hearthwind_jobs`, `hearthwind_primitive`,
+  `hearthwind_world`). Attachment namespaces `levelz:`, `nutritionz:`,
+  `spoiledz:` deliberately still mirror originals for corpus compatibility.
 - **Credits**: Hearthwind is *inspired by* the original Aged pack
   (xR4YM0ND & contributors) and by Genesis (marianyp) — both credited
   in every mod's metadata; Aged resources remain credited per
   ATTRIBUTION.md if/when adopted.
 
-- **Naming/branding pass**: pick final name/logo; mod ids stay stable
-  (`aged_skills` etc. can be aliased), but display names, `modmenu`
-  metadata, pack description, and world flavor text switch to ours.
+- **Naming/branding pass**: display names, `modmenu` metadata, pack
+  description and world flavor text are now Hearthwind. Mod ids are stable
+  as `hearthwind_*` and can be aliased if a future rename is needed.
 - **Asset replacement**: replace upstream textures starting with the
   most visible surfaces (custom items, HUD art, GUIs). ATTRIBUTION.md
   shrinks toward zero or becomes permanent credits where licenses allow.
-- **Namespace audit**: our data namespaces (`nutritionz:`, `levelz:`,
+- **Namespace audit**: our data attachment/tag namespaces (`nutritionz:`, `levelz:`,
   `spoiledz:`) intentionally mirror originals for corpus compatibility;
-  when parity is complete, migrate attachments/tags to first-party
-  namespaces (`aged:*`) with a one-time world upgrade script.
+  when parity is complete, migrate them to first-party namespaces
+  (`hearthwind:*`) with a one-time world upgrade script. The pack data
+  slug `aged-server` is kept for world-upgrade compatibility.
 
 ### Phase C — Divergence / best-of
 
@@ -73,11 +76,12 @@ redistribute another mod's jar.
 
 Two artifacts from the same repo:
 
-- **Hearthwind Server** (required) — current `aged-*` modules; installs
-  on dedicated servers; vanilla clients can join.
-- **Hearthwind Client** (optional companion, Phase C) — `aged-net`
+- **Hearthwind Server** (required) — current `hearthwind-*` modules
+  (`survival`, `skills`, `jobs`, `primitive`, `world`); installs on
+  dedicated servers; vanilla clients can join.
+- **Hearthwind Client** (optional companion, Phase C) — `hearthwind-net`
   shared payload definitions + client rendering module: HUD bars
-  (thirst/diet/temperature/skills), visible water motion, Genesis-style
+  (thirst/diet/temperature/skills/jobs), visible water motion, Genesis-style
   instruction toasts. Server broadcasts regardless; clients without it
   simply see nothing extra.
 

@@ -1,4 +1,4 @@
-# Installing & packaging Aged Server
+# Installing & packaging Hearthwind Server
 
 Three routes depending on who you are. Target: Minecraft **26.2**,
 Fabric loader 0.19.3+, Java 25.
@@ -18,7 +18,7 @@ client download.
 
 ### Option A — Modrinth pack file (recommended)
 
-1. Grab `AgedServer-<ver>-mc26.2.mrpack` from
+1. Grab `HearthwindServer-<ver>-mc26.2.mrpack` from
    [Releases](../../releases) or a CI artifact (`mod-jars` /
    pack artifacts on the [Actions tab](../../actions)).
 2. Import it into the [Modrinth App](https://modrinth.com/app)
@@ -39,9 +39,10 @@ client download.
 1. Get the `dist/server/` directory (CI artifact or build it yourself):
    contains `fabric-server.jar` (Fabric launcher), `mods/` (all resolved
    third-party mods), and `world/datapacks/aged-server/` (the migrated
-   tuning datapack).
+   tuning datapack — slug kept for world-upgrade compatibility).
 2. Copy our custom mods from the `mod-jars` artifact into `mods/`
-   (`aged-survival`, `aged-skills`, ...).
+   (`hearthwind-survival`, `hearthwind-skills`, `hearthwind-jobs`,
+   `hearthwind-primitive`, `hearthwind-world`).
 3. First-boot checklist:
    - `echo "eula=true" > eula.txt`
    - RCON if you want remote admin:
@@ -50,8 +51,9 @@ client download.
 4. `java -Xmx3G -jar fabric-server.jar nogui`
 
 Config files are created on first boot with sane defaults:
-`config/aged_survival.json` (thirst/temperature/diet/spoilage) and
-`config/aged_skills.json` (skills/mob scaling/gates).
+`config/hearthwind_survival.json` (thirst/temperature/diet/spoilage),
+`config/hearthwind_skills.json` (skills/mob scaling/gates) and
+`config/hearthwind_jobs.json` (job XP curve).
 
 ## Developers: building everything from source
 
@@ -59,6 +61,7 @@ Prerequisites: JDK 25, Python 3.10+, ~4 GB free RAM for builds.
 
 ```bash
 git clone https://github.com/JMiahMan1/Aged.git && cd Aged
+git checkout server-26.2
 
 # 1. resolve third-party mods against MC 26.2 (writes conversion/build/resolved.json)
 python3 conversion/scripts/resolve_deps.py
@@ -73,18 +76,19 @@ python3 conversion/scripts/generate_skill_gates.py
 python3 conversion/scripts/build_pack.py --server-dir
 
 # 5. build our custom mods (jars land in custom-mods/*/build/libs/)
-cd custom-mods && ./gradlew build --no-daemon
+cd custom-mods && ./gradlew build --no-daemon --max-workers=2
 ```
 
 Low-memory hosts: cap Gradle with `-Xmx512m` and use
-`--max-workers=1` (already configured here); test servers boot with
-`-Xmx768M`. Roomier machines can drop these limits.
+`--max-workers=1` (already configured in `gradle.properties`);
+test servers boot with `-Xmx768M`. Roomier machines can drop these limits.
 
 ### Testing your build
 
 ```bash
 cd custom-mods
 bash tools/run_gametests.sh          # headless gametests (fast, no client)
+# builds all modules + boots throwaway server, expect 19 tests green
 ```
 
 Pushing to GitHub runs the same suite plus artifact uploads automatically

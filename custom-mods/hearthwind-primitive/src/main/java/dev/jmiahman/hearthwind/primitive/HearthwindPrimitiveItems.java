@@ -93,6 +93,12 @@ public final class HearthwindPrimitiveItems {
     public static final Item RAW_IRON_NUGGET = new Item(new Item.Properties()
             .setId(key("agedaddition", "raw_iron_nugget")));
 
+    // earlystage steel tier (parity: earlystage steel ingot/nugget/block)
+    public static final Item STEEL_NUGGET = new Item(new Item.Properties()
+            .setId(key("earlystage", "steel_nugget")));
+    public static final Item STEEL_INGOT = new Item(new Item.Properties()
+            .setId(key("earlystage", "steel_ingot")));
+
     static {
         register("earlystage", "rock", ROCK);
         register("earlystage", "flint", FLINT_ITEM);
@@ -113,6 +119,8 @@ public final class HearthwindPrimitiveItems {
         register("agedaddition", "raw_copper_nugget", RAW_COPPER_NUGGET);
         register("agedaddition", "raw_gold_nugget", RAW_GOLD_NUGGET);
         register("agedaddition", "raw_iron_nugget", RAW_IRON_NUGGET);
+        register("earlystage", "steel_nugget", STEEL_NUGGET);
+        register("earlystage", "steel_ingot", STEEL_INGOT);
     }
 
     private static void register(String namespace, String path, Item item) {

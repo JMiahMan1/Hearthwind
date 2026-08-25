@@ -26,7 +26,7 @@ subprojects {
 	}
 
 	afterEvaluate {
-		if (name == 'hearthwind-survival') {
+		if (name == 'hearthwind-survival' || name == 'hearthwind-skills' || name == 'hearthwind-jobs') {
 			dependencies {
 				// fabric-api aggregator POM hides module classes at compile
 				// time; pin gametest API for @GameTest compilation.

@@ -10,6 +10,7 @@ public class HearthwindPrimitive implements ModInitializer {
 
 	@Override
 	public void onInitialize() {
+		HearthwindPrimitiveBlocks.init();
 		HearthwindPrimitiveItems.init();
 		HearthwindPrimitiveLoot.init();
 	}
