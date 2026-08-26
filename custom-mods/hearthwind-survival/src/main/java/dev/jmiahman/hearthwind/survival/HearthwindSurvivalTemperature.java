@@ -39,6 +39,7 @@ public final class HearthwindSurvivalTemperature {
     private static int warningLevel = 0;
     private static final Map<UUID, Long> freezeCooldowns = new ConcurrentHashMap<>();
     private static final Map<UUID, Long> heatCooldowns = new ConcurrentHashMap<>();
+    private static final Map<UUID, Long> coldWaterCooldowns = new ConcurrentHashMap<>();
 
     private HearthwindSurvivalTemperature() {}
 
@@ -52,6 +53,20 @@ public final class HearthwindSurvivalTemperature {
         double next = clamp(get(player) + delta);
         player.setAttached(TEMPERATURE, next);
         return next;
+    }
+
+    /** Drinking cold/normal water gives a timed cooling window vs overheating. */
+    public static void applyColdCooldown(ServerPlayer player, long ticks) {
+        long until = player.level().getGameTime() + ticks;
+        coldWaterCooldowns.put(player.getUUID(), until);
+        // also nudge now for immediate feedback
+        shift(player, -0.5);
+    }
+
+    public static long coldCooldownRemaining(ServerPlayer player) {
+        long until = coldWaterCooldowns.getOrDefault(player.getUUID(), 0L);
+        long now = player.level().getGameTime();
+        return Math.max(0, until - now);
     }
 
     public static void sendFeedback(ServerPlayer player, double newTemp) {
@@ -129,6 +144,16 @@ public final class HearthwindSurvivalTemperature {
         }
         if (current < 0 && hasInsulation) {
             target += 1.5;
+        }
+        // cold-water drunk cooldown - extra -1.5 target dampening for 30-60s
+        // (normal water 30s, cold 60s). Hot water does NOT grant this.
+        Long coldUntil = coldWaterCooldowns.get(player.getUUID());
+        if (coldUntil != null) {
+            if (player.level().getGameTime() < coldUntil) {
+                target -= 1.5;
+            } else {
+                coldWaterCooldowns.remove(player.getUUID());
+            }
         }
 
         // environmental modifiers

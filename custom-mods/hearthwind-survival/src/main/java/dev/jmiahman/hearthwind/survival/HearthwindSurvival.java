@@ -1,6 +1,7 @@
 package dev.jmiahman.hearthwind.survival;
 
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,6 +21,7 @@ public class HearthwindSurvival implements ModInitializer {
 		DehydrationItems.registerAll(msg -> LOGGER.info(msg));
 		EnvironmentzItems.registerAll(msg -> LOGGER.info(msg));
 		BowlWaterFillHandler.register();
+		CommandRegistrationCallback.EVENT.register((dispatcher, ctx, sel) -> HearthwindDebugCommand.register(dispatcher));
 		HearthwindSurvivalTemperature.registerTickLoop();
 		HearthwindSurvivalLoot.init();
 		LOGGER.info("Hearthwind Survival initialized: thirst + diet + spoilage + temperature systems active");

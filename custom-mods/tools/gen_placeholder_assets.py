@@ -38,10 +38,14 @@ MODS = {
             "raw_iron_nugget": "#c8b39a",
         },
     },
-    "aged-survival": {
+    "hearthwind-survival": {
         "dehydration": {
-            "water_bowl": "#3a62c4",
-            "purified_water_bowl": "#7ad0f0",
+            "water_bowl": "#5a7a3a",  # tainted swamp green
+            "purified_water_bowl": "#7ad0f0",  # clear blue
+            "hot_water_bowl": "#c45a3a",  # boiling reddish with bubbles
+            "hot_purified_water_bowl": "#f0a07a",
+            "cold_water_bowl": "#3a6a9a",  # cold blue
+            "cold_purified_water_bowl": "#8fd3f0",  # icy clear
         },
         "environmentz": {
             "wolf_pelt": "#6d5a44",
@@ -80,7 +84,7 @@ HANDHELD = {
 }
 
 
-def write_png(path: Path, rgb: tuple[int, int, int], size: int = 16):
+def write_png(path: Path, rgb: tuple[int, int, int], size: int = 16, hot: bool = False, cold: bool = False):
     def chunk(tag: bytes, data: bytes) -> bytes:
         return (
             struct.pack(">I", len(data))
@@ -96,7 +100,17 @@ def write_png(path: Path, rgb: tuple[int, int, int], size: int = 16):
         for x in range(size):
             edge = x in (0, size - 1) or y in (0, size - 1)
             shade = 0 if edge else 24
-            raw += bytes((max(r - shade, 0), max(g - shade, 0), max(b - shade, 0)))
+            pr, pg, pb = (max(r - shade, 0), max(g - shade, 0), max(b - shade, 0))
+            # Hot boiling bubbles: white specks in upper half
+            if hot and not edge:
+                if (x, y) in [(4, 4), (7, 5), (9, 7), (5, 9), (11, 6), (8, 10)]:
+                    pr, pg, pb = (255, 255, 255)
+                elif (x, y) in [(6, 6), (10, 8)]:
+                    pr, pg, pb = (255, 220, 180)  # steam tint
+            # Cold icy tint: lighter center
+            if cold and not edge and 5 <= x <= 10 and 5 <= y <= 10:
+                pr, pg, pb = (min(255, pr + 30), min(255, pg + 30), min(255, pb + 20))
+            raw += bytes((pr, pg, pb))
     ihdr = struct.pack(">IIBBBBB", size, size, 8, 2, 0, 0, 0)
     path.write_bytes(
         b"\x89PNG\r\n\x1a\n"
@@ -116,12 +130,15 @@ def main():
     for mod, namespaces in MODS.items():
         res = root / mod / "src" / "main" / "resources"
         lang = {}
-        mod_id = mod.replace("aged-", "aged_")
+        # hearthwind-survival still uses aged_survival lang namespace for compat
+        mod_id = "aged_survival" if mod == "hearthwind-survival" else mod.replace("aged-", "aged_")
         for ns, items in namespaces.items():
             for name, color in items.items():
                 tex = res / "assets" / ns / "textures" / "item" / f"{name}.png"
                 tex.parent.mkdir(parents=True, exist_ok=True)
-                write_png(tex, hex_rgb(color))
+                hot = "hot_" in name
+                cold = "cold_" in name
+                write_png(tex, hex_rgb(color), hot=hot, cold=cold)
                 model = res / "assets" / ns / "models" / "item" / f"{name}.json"
                 model.parent.mkdir(parents=True, exist_ok=True)
                 model.write_text(

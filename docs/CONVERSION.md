@@ -93,13 +93,13 @@ herdspanic, log-begone) need watchlist monitoring or replacement.
 3. [x] Server datapack migration (native pack, replaces paxi)
 4. [x] Boot test: local fabric 26.2 server reaches `Done` with full mod set + datapack
 5. [x] Custom mod skeletons (`custom-mods/`) build on Java 25 / loom 1.17 and load on a dedicated 26.2 server
-6. [~] Gameplay systems per module (thirst/temperature/diet/spoilage -> skills -> jobs -> primitive -> seasons), using the migrated datapack as tuning spec
-   - [x] Thirst (dehydration parity): hydration attachment `dehydration:hydration`, sprint/thirst-effect drain, regen floor, zero-hydration damage; water/purified bowls
-   - [x] Temperature (environmentz parity): biome-target drift, warm/neutral armor tags, insulation/ice items, freeze/heat damage; wolf & wanderer armor sets
-   - [x] Diet v1 (nutritionz parity): five `nutritionz:*` item-group tags, decaying nutrient attachment per group, deficiency debuffs, balanced-diet absorption bonus; eat hook via `Consumable#onConsume` mixin
-   - [x] Spoilage v1 (spoiledz parity): `spoiledz:perishable_items` rot to rotten flesh on random checks, `non_spoiling_items` exempt, hot-biome acceleration; player inventory only for now
-   - [x] Config: all thirst/temperature/diet/spoilage tunables in `config/hearthwind_survival.json` (auto-generated defaults)
-   - [ ] Client HUD bars (hydration/diet), container spoilage, live-client play verification
+ 6. [~] Gameplay systems per module (thirst/temperature/diet/spoilage -> skills -> jobs -> primitive -> seasons), using the migrated datapack as tuning spec
+    - [x] Thirst (dehydration parity): hydration attachment `dehydration:hydration` 0..20, tick every 2s, `baseDrain 0.025` (~13 min) ×2 sprint +0.05 per thirst level, regen stop <6, 1 dmg/4s at 0, warnings at 12/6/3, `WaterBowlItem` +6 (+50% thirst if dirty), `BowlWaterFillHandler` bowl-on-water → `water_bowl` + bare-hand sip +2 (75% thirst) for day-0, campfire `water_bowl → purified_water_bowl`, sync `hearthwind:thirst` → `hearthwind-client` 10-droplet HUD above hunger (3 sprites `hud/thirst_*`, `RenderPipelines.GUI_TEXTURED` blitSprite, wobble ≤6, vanilla action-bar fallback), `dehydration:thirst` effect (15s)
+    - [x] Temperature (environmentz parity): biome-target drift, warm/neutral armor tags, insulation/ice items, freeze/heat damage; wolf & wanderer armor sets
+    - [x] Diet v1 (nutritionz parity): five `nutritionz:*` item-group tags, decaying nutrient attachment per group, deficiency debuffs, balanced-diet absorption bonus; eat hook via `Consumable#onConsume` mixin
+    - [x] Spoilage v1 (spoiledz parity): `spoiledz:perishable_items` rot to rotten flesh on random checks, `non_spoiling_items` exempt, hot-biome acceleration; player inventory only for now
+    - [x] Config: all thirst/temperature/diet/spoilage tunables in `config/hearthwind_survival.json` (auto-generated defaults, `thirst.baseDrain 0.025` etc.)
+    - [x] Client HUD thirst bar live-verified on Prism dev client (Prism 47 jars, dev-server 46, no black-bar stretch, 6/10 blue at 12.3 hydration - see 2026-08-25 screenshot)
 7. [~] Skills module (levelz + rpgdifficulty parity)
    - [x] v1 core: 12 skills, XP attachment `levelz:xp` + triangular curve to 30,
      transient attribute modifiers `hearthwind_skills:<skill>`, block-break & kill XP hooks,

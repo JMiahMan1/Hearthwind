@@ -32,6 +32,10 @@ public final class WaterBowlItem extends Item {
                 player.addEffect(new MobEffectInstance(
                         ThirstMobEffect.HOLDER, BAD_SIP_DURATION_TICKS, 0));
             }
+            // Normal water (not hot) gives a short cooling window vs overheating
+            // (hot water is handled by HotWaterBowlItem and gives no cooling)
+            HearthwindSurvivalTemperature.applyColdCooldown(serverPlayer, 600); // 30s
+            HearthwindSurvivalTemperature.shift(serverPlayer, -0.7);
             server.playSound(null, player.blockPosition(),
                     SoundEvents.GENERIC_DRINK.value(), SoundSource.PLAYERS, 0.9f, 1.0f);
             player.awardStat(Stats.ITEM_USED.get(this));
@@ -39,8 +43,8 @@ public final class WaterBowlItem extends Item {
                 stack.shrink(1);
                 // return empty bowl like vanilla stew
                 ItemStack bowl = new ItemStack(net.minecraft.world.item.Items.BOWL);
-                if (!player.addItem(bowl)) {
-                    player.drop(bowl, false);
+                if (!serverPlayer.getInventory().add(bowl)) {
+                    serverPlayer.drop(bowl, false);
                 }
             }
             return InteractionResult.SUCCESS_SERVER;

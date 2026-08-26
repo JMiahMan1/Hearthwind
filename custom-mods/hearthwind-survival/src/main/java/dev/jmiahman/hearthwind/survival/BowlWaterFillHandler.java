@@ -24,6 +24,7 @@ import net.minecraft.world.level.material.Fluids;
  * Server-authoritative, runs on both logical sides but only mutates on server.
  */
 public final class BowlWaterFillHandler {
+    private static final org.slf4j.Logger LOGGER = org.slf4j.LoggerFactory.getLogger("hearthwind_survival/bowl");
     private static final double BARE_HAND_HYDRATION = 1.0; // tiny, vs 6 per bowl
     private static final int BARE_HAND_THIRST_DURATION = 400; // 20s, vs 15s for bowl
     private static final float BARE_HAND_THIRST_CHANCE = 0.90f;
@@ -33,25 +34,123 @@ public final class BowlWaterFillHandler {
 
     private BowlWaterFillHandler() {}
 
+    private static boolean isHeatedCauldron(Level lvl, BlockPos cauldronPos) {
+        BlockPos below = cauldronPos.below();
+        var state = lvl.getBlockState(below);
+        // lit campfire directly below is the classic 'boiling' heater
+        if (state.is(Blocks.CAMPFIRE) && state.getValue(net.minecraft.world.level.block.CampfireBlock.LIT)) {
+            return true;
+        }
+        if (state.is(Blocks.SOUL_CAMPFIRE) && state.getValue(net.minecraft.world.level.block.CampfireBlock.LIT)) {
+            return true;
+        }
+        // also consider fire/lava directly below as heated
+        return state.is(Blocks.FIRE) || state.is(Blocks.SOUL_FIRE) || state.is(Blocks.LAVA);
+    }
+
+    private static boolean isHotWaterSource(ServerPlayer sp) {
+        // Hot biome or extreme heat makes standing water warm
+        double target = HearthwindSurvivalTemperature.targetFor(sp);
+        if (target >= 7.0) return true;
+        // also check current temperature already hot
+        if (HearthwindSurvivalTemperature.get(sp) >= 7.0) return true;
+        // or if it's noon in a hot biome (simple: desert/badlands at 6000t)
+        var biome = sp.level().getBiome(sp.blockPosition()).value();
+        float base = biome.getBaseTemperature();
+        long time = sp.level().getGameTime() % 24000;
+        boolean isNoon = time > 5000 && time < 8000;
+        return base >= 1.5f && isNoon;
+    }
+
+    private static boolean isColdWaterSource(ServerPlayer sp) {
+        double target = HearthwindSurvivalTemperature.targetFor(sp);
+        if (target <= -4.0) return true;
+        if (HearthwindSurvivalTemperature.get(sp) <= -4.0) return true;
+        var biome = sp.level().getBiome(sp.blockPosition()).value();
+        float base = biome.getBaseTemperature();
+        // snowy / frozen biomes are naturally cold
+        if (base <= 0.15f) return true;
+        // carrying ice also chills the source
+        return sp.getInventory().hasAnyMatching(s -> !s.isEmpty() && s.is(EnvironmentzItems.ICE_ITEMS));
+    }
+
     public static void register() {
-        // Right-click water block with bowl/empty hand
+        // Right-click water block / water cauldron with bowl/empty hand
         UseBlockCallback.EVENT.register((player, world, hand, hitResult) -> {
             ItemStack held = player.getItemInHand(hand);
             BlockPos pos = hitResult.getBlockPos();
-            // Must target a water source (or waterlogged). Check fluid state, not block
             boolean isWater = world.getFluidState(pos).is(Fluids.WATER)
                     || world.getBlockState(pos).is(Blocks.WATER);
-            if (!isWater) {
+            boolean isCauldron = world.getBlockState(pos).is(Blocks.WATER_CAULDRON);
+            // Debug log every interaction near water
+            if (player instanceof ServerPlayer sp) {
+                LOGGER.info("UseBlock hit {} isWater={} isCauldron={} held={} player={} pos={}", pos, isWater, isCauldron, held, sp.getName().getString(), sp.blockPosition());
+            }
+
+            if (!isWater && !isCauldron) {
                 return InteractionResult.PASS;
             }
 
-            // 1) Bowl -> water_bowl (consume one bowl, give filled)
+            // Cauldron handling - bowl on cauldron
+            if (isCauldron && held.is(Items.BOWL)) {
+                if (world instanceof Level lvl && !lvl.isClientSide() && player instanceof ServerPlayer sp) {
+                    var state = lvl.getBlockState(pos);
+                    int level = state.getValue(net.minecraft.world.level.block.LayeredCauldronBlock.LEVEL);
+                    if (level <= 0) return InteractionResult.PASS;
+                    boolean heated = isHeatedCauldron(lvl, pos);
+                    boolean coldSource = !heated && isColdWaterSource(sp);
+                    ItemStack filled;
+                    if (heated) {
+                        // boiling cauldron gives hot purified (even though source was dirty, heat purifies but scalds)
+                        filled = HotWaterBowlItem.createHotStack(DehydrationItems.HOT_PURIFIED_WATER_BOWL, lvl);
+                        sp.sendOverlayMessage(net.minecraft.network.chat.Component.literal(
+                                "You scoop steaming hot purified water - let it cool!").withStyle(net.minecraft.ChatFormatting.RED));
+                        lvl.playSound(null, pos, SoundEvents.BOTTLE_FILL, SoundSource.PLAYERS, 0.7f, 1.3f);
+                    } else if (coldSource) {
+                        filled = new ItemStack(DehydrationItems.COLD_PURIFIED_WATER_BOWL);
+                        sp.sendOverlayMessage(net.minecraft.network.chat.Component.literal(
+                                "You scoop icy cold purified water!").withStyle(net.minecraft.ChatFormatting.AQUA));
+                        lvl.playSound(null, pos, SoundEvents.BOTTLE_FILL, SoundSource.PLAYERS, 0.9f, 1.3f);
+                    } else {
+                        filled = new ItemStack(DehydrationItems.PURIFIED_WATER_BOWL);
+                        lvl.playSound(null, pos, SoundEvents.BOTTLE_FILL, SoundSource.PLAYERS, 0.9f, 1.0f);
+                    }
+                    if (!sp.getAbilities().instabuild) held.shrink(1);
+                    if (!sp.getInventory().add(filled)) sp.drop(filled, false);
+                    // decrement cauldron
+                    int newLevel = level - 1;
+                    if (newLevel <= 0) {
+                        lvl.setBlock(pos, Blocks.CAULDRON.defaultBlockState(), 3);
+                    } else {
+                        lvl.setBlock(pos, state.setValue(net.minecraft.world.level.block.LayeredCauldronBlock.LEVEL, newLevel), 3);
+                    }
+                }
+                return InteractionResult.SUCCESS_SERVER;
+            }
+
+            // 1) Bowl -> water_bowl (or hot/cold variant). Check heated cauldron first,
+            // then hot/cold-biome source. Hot scalds, cold cools overheating.
             if (held.is(Items.BOWL)) {
                 if (world instanceof Level lvl && !lvl.isClientSide() && player instanceof ServerPlayer sp) {
+                    // cauldron case is handled in the isWater==false branch below
+                    // (water_cauldron is not WATER fluid), so this is source water
+                    boolean isHotSource = isHotWaterSource(sp);
+                    boolean isColdSource = !isHotSource && isColdWaterSource(sp);
+                    ItemStack filled;
+                    if (isHotSource) {
+                        filled = HotWaterBowlItem.createHotStack(DehydrationItems.HOT_WATER_BOWL, lvl);
+                        sp.sendOverlayMessage(net.minecraft.network.chat.Component.literal(
+                                "The water is warm/hot from the heat - it will need to cool!").withStyle(net.minecraft.ChatFormatting.GOLD));
+                    } else if (isColdSource) {
+                        filled = new ItemStack(DehydrationItems.COLD_WATER_BOWL);
+                        sp.sendOverlayMessage(net.minecraft.network.chat.Component.literal(
+                                "The water is icy cold - refreshing!").withStyle(net.minecraft.ChatFormatting.AQUA));
+                    } else {
+                        filled = new ItemStack(DehydrationItems.WATER_BOWL);
+                    }
                     if (!sp.getAbilities().instabuild) {
                         held.shrink(1);
                     }
-                    ItemStack filled = new ItemStack(DehydrationItems.WATER_BOWL);
                     if (!sp.getInventory().add(filled)) {
                         sp.drop(filled, false);
                     }
