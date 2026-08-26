@@ -6,24 +6,29 @@ import net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.RandomSource;
 
 /**
- * Vanilla-like thirst bar above hunger. Sprite sheet is the MIT-licensed
- * thirst_icons.png from ghen-git/Thirst-Mod (Thirst Was Taken), recorded in
- * ATTRIBUTION.md: 25x9 px, three 9x9 droplets - empty (u 0), half (u 8),
- * full (u 16). Rendered exactly like vanilla hunger: right-aligned above
- * the food bar, 8px per icon, wobbles when dehydrated.
+ * Vanilla-like thirst bar above hunger. Uses three 9x9 sprites split from the
+ * MIT-licensed 25x9 thirst_icons.png sheet (Thirst Was Taken, ghen-git).
+ * See ATTRIBUTION.md and assets/hearthwind/textures/gui/sprites/hud/.
+ * Rendered exactly like vanilla hunger: right-aligned above the food bar,
+ * 8px per icon, wobbles when dehydrated. Fix for the previous black-bar bug:
+ * earlier version used GuiGraphicsExtractor.blit with a direct texture and
+ * normalized UVs, which on 26.2's deferred GUI pipeline produced stretched
+ * black quads. Now uses blitSprite with the GUI atlas (same as vanilla food)
+ * via RenderPipelines.GUI_TEXTURED.
  */
 public final class ThirstHud implements HudElement {
-    private static final Identifier THIRST_ICONS =
-            Identifier.fromNamespaceAndPath("hearthwind", "textures/gui/thirst_icons.png");
+    private static final Identifier EMPTY =
+            Identifier.fromNamespaceAndPath("hearthwind", "hud/thirst_empty");
+    private static final Identifier HALF =
+            Identifier.fromNamespaceAndPath("hearthwind", "hud/thirst_half");
+    private static final Identifier FULL =
+            Identifier.fromNamespaceAndPath("hearthwind", "hud/thirst_full");
     private static final RandomSource RANDOM = RandomSource.create();
-
-    // Sprite sheet geometry (px / px-width -> normalized UV)
-    private static final float TEX_W = 25.0f;
-    private static final int ICON = 9;
 
     public static final ThirstHud INSTANCE = new ThirstHud();
 
@@ -56,24 +61,18 @@ public final class ThirstHud implements HudElement {
             int x = left - i * 8 - 9;
             int y = top;
 
-            // Dehydrated wobble, same feel as the vanilla hunger shake
+            // Dehydrated wobble, same feel as vanilla hunger shake
             if (hydration <= 6.0f && mc.player.tickCount % (Math.max(1, level) * 3 + 1) == 0) {
                 y = top + (RANDOM.nextInt(3) - 1);
             }
 
             // background (empty droplet)
-            blit(graphics, x, y, 0);
-
+            graphics.blitSprite(RenderPipelines.GUI_TEXTURED, EMPTY, x, y, 9, 9);
             if (idx < level) {
-                blit(graphics, x, y, 16); // full
+                graphics.blitSprite(RenderPipelines.GUI_TEXTURED, FULL, x, y, 9, 9);
             } else if (idx == level) {
-                blit(graphics, x, y, 8);  // half
+                graphics.blitSprite(RenderPipelines.GUI_TEXTURED, HALF, x, y, 9, 9);
             }
         }
-    }
-
-    private static void blit(GuiGraphicsExtractor g, int x, int y, int uPx) {
-        g.blit(THIRST_ICONS, x, y, ICON, ICON,
-                uPx / TEX_W, 0.0f, (uPx + ICON) / TEX_W, 1.0f);
     }
 }
