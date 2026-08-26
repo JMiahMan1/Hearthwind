@@ -155,29 +155,77 @@ public final class HearthwindSurvivalTemperature {
                 coldWaterCooldowns.remove(player.getUUID());
             }
         }
+        // sprinting builds heat quickly
+        if (player.isSprinting()) {
+            target += 1.8;
+        }
 
+        // day/night - heat much less at night, cold much worse at night (when outside)
+        long timeOfDay;
+        try {
+            timeOfDay = (Long) player.level().getClass().getMethod("getDayTime").invoke(player.level()) % 24000L;
+        } catch (Exception e) {
+            timeOfDay = player.level().getGameTime() % 24000L;
+        }
+        boolean isNight = timeOfDay > 13000 && timeOfDay < 23000;
+        boolean isOutside = player.level().canSeeSky(player.blockPosition());
+        if (isNight && isOutside) {
+            target -= 3.5; // desert 9 -> 5.5 at night (no longer extreme), snowy -8.5 -> -12 (worse)
+        }
         // environmental modifiers
         if (player.isOnFire()) {
             target = Math.max(target, 9.5);
         }
         if (player.isInWater()) {
-            target -= 2.0;
+            // In water, temperature quickly moves toward water-cold.
+            // For heat, this is a reset (cools you); for cold, it makes it worse (even colder when wet at night outside).
+            target -= 2.0; // water always chills
+            if (target > 0) {
+                // was hot, water resets strongly to cool
+                target = Math.min(target, -1.0);
+            }
+            // also clear heat-era cooldowns so you don't immediately reburn on exit
+            heatCooldowns.remove(player.getUUID());
+            // if was overheated, give a brief cooled window after exit
+            if (current >= 7.0) {
+                applyColdCooldown(player, 200); // 10s extra after water exit
+            }
+            // if was already freezing, water makes it worse - accelerate freeze
+            if (current <= -6.0) {
+                target -= 1.5; // extra chill when already cold and wet
+            }
         } else if (player.level().isRainingAt(player.blockPosition())) {
-            target -= 1.0;
+            // Rain cools heat and gives relief - stronger than before
+            target -= 2.0;
+            if (isNight && isOutside) target -= 1.0; // rain + night outside is extra cold
+            // rain when cold and outside also worsens (wet cold)
+            if (current <= -6.0 && isOutside) target -= 1.0;
+            else if (current >= 6.0) {
+                // rain relief for heat - brief cooled window like drinking water
+                applyColdCooldown(player, 100); // 5s relief
+            }
         }
         if (player.blockPosition().getY() > 128) {
             target += 1.0;
         } else if (player.blockPosition().getY() < 0) {
             target -= 1.5;
         }
+        // water reset: if just exited water, keep target low for a bit via cold cooldown
+        // (already applied above)
 
         HearthwindSurvivalConfig.Temperature cfg = HearthwindSurvivalConfig.get().temperature;
         // drift is per-second, tick is 40 ticks = 2s
         double seconds = 40 / 20.0;
         double perTickDrift = cfg.driftPerSecond * seconds;
-        double step = Math.signum(target - current)
-                * Math.min(perTickDrift, Math.abs(target - current));
-        double next = clamp(current + step);
+        double next;
+        if (player.isInWater()) {
+            // In water, heat is quickly washed away - reset to water target
+            next = clamp(target);
+        } else {
+            double step = Math.signum(target - current)
+                    * Math.min(perTickDrift, Math.abs(target - current));
+            next = clamp(current + step);
+        }
         player.setAttached(TEMPERATURE, next);
 
         long now = player.level().getGameTime();

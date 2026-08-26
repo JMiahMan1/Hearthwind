@@ -57,7 +57,12 @@ public final class BowlWaterFillHandler {
         // or if it's noon in a hot biome (simple: desert/badlands at 6000t)
         var biome = sp.level().getBiome(sp.blockPosition()).value();
         float base = biome.getBaseTemperature();
-        long time = sp.level().getGameTime() % 24000;
+        long time;
+        try {
+            time = (Long) sp.level().getClass().getMethod("getDayTime").invoke(sp.level()) % 24000;
+        } catch (Exception e) {
+            time = sp.level().getGameTime() % 24000;
+        }
         boolean isNoon = time > 5000 && time < 8000;
         return base >= 1.5f && isNoon;
     }
@@ -74,6 +79,20 @@ public final class BowlWaterFillHandler {
         return sp.getInventory().hasAnyMatching(s -> !s.isEmpty() && s.is(EnvironmentzItems.ICE_ITEMS));
     }
 
+    private static boolean isNearWater(Level lvl, BlockPos center, int radius) {
+        for (int dx = -radius; dx <= radius; dx++) {
+            for (int dy = -radius; dy <= radius; dy++) {
+                for (int dz = -radius; dz <= radius; dz++) {
+                    BlockPos p = center.offset(dx, dy, dz);
+                    if (lvl.getFluidState(p).is(Fluids.WATER) || lvl.getBlockState(p).is(Blocks.WATER) || lvl.getBlockState(p).is(Blocks.WATER_CAULDRON)) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
     public static void register() {
         // Right-click water block / water cauldron with bowl/empty hand
         UseBlockCallback.EVENT.register((player, world, hand, hitResult) -> {
@@ -85,6 +104,36 @@ public final class BowlWaterFillHandler {
             // Debug log every interaction near water
             if (player instanceof ServerPlayer sp) {
                 LOGGER.info("UseBlock hit {} isWater={} isCauldron={} held={} player={} pos={}", pos, isWater, isCauldron, held, sp.getName().getString(), sp.blockPosition());
+            }
+
+            // Bare-hand sip should be very forgiving: if empty hand and near water (2 blocks) or in water, allow it even if not directly hitting water
+            if (held.isEmpty() && world instanceof Level lvl) {
+                boolean nearWater = isWater || isCauldron || isNearWater(lvl, pos, 2) || isNearWater(lvl, player.blockPosition(), 2) || player.isInWater();
+                LOGGER.info("Bare-hand check nearWater={} isWater={} pos={} playerPos={} heldEmpty={}", nearWater, isWater, pos, player.blockPosition(), held.isEmpty());
+                if (nearWater) {
+                    if (!lvl.isClientSide() && player instanceof ServerPlayer sp) {
+                        long now = lvl.getGameTime();
+                        long last = bareHandCooldowns.getOrDefault(sp.getUUID(), 0L);
+                        if (now - last < BARE_HAND_COOLDOWN_TICKS) {
+                            long left = (BARE_HAND_COOLDOWN_TICKS - (now - last)) / 20 + 1;
+                            sp.sendOverlayMessage(net.minecraft.network.chat.Component.literal(
+                                    "Cupping water is slow... craft a bowl (3 planks) for a proper drink. (" + left + "s)")
+                                    .withStyle(net.minecraft.ChatFormatting.GRAY));
+                            return InteractionResult.SUCCESS_SERVER;
+                        }
+                        bareHandCooldowns.put(sp.getUUID(), now);
+                        HearthwindSurvivalThirst.addHydration(sp, BARE_HAND_HYDRATION);
+                        if (sp.getRandom().nextFloat() < BARE_HAND_THIRST_CHANCE) {
+                            sp.addEffect(new net.minecraft.world.effect.MobEffectInstance(
+                                    ThirstMobEffect.HOLDER, BARE_HAND_THIRST_DURATION, 0));
+                        }
+                        sp.getFoodData().addExhaustion(0.6f);
+                        sp.sendOverlayMessage(net.minecraft.network.chat.Component.literal(
+                                "You cup water in your hands and sip - barely helps.").withStyle(net.minecraft.ChatFormatting.BLUE));
+                        lvl.playSound(null, pos, SoundEvents.GENERIC_DRINK.value(), SoundSource.PLAYERS, 0.5f, 0.9f);
+                    }
+                    return InteractionResult.SUCCESS_SERVER;
+                }
             }
 
             if (!isWater && !isCauldron) {
@@ -159,48 +208,31 @@ public final class BowlWaterFillHandler {
                 return InteractionResult.SUCCESS_SERVER;
             }
 
-            // 2) Bare hand on water -> tiny dirty sip (no item needed, for day-0)
-            // Deliberately tedious: 1 hydration vs 6 per bowl, 90% thirst 20s,
-            // 3s cooldown, small hunger exhaustion, and a nudge toward bowls.
-            if (held.isEmpty()) {
-                if (world instanceof Level lvl && !lvl.isClientSide() && player instanceof ServerPlayer sp) {
-                    long now = lvl.getGameTime();
-                    long last = bareHandCooldowns.getOrDefault(sp.getUUID(), 0L);
-                    if (now - last < BARE_HAND_COOLDOWN_TICKS) {
-                        long left = (BARE_HAND_COOLDOWN_TICKS - (now - last)) / 20 + 1;
-                        sp.sendOverlayMessage(net.minecraft.network.chat.Component.literal(
-                                "Cupping water is slow... craft a bowl (3 planks) for a proper drink. (" + left + "s)")
-                                .withStyle(net.minecraft.ChatFormatting.GRAY));
-                        return InteractionResult.SUCCESS_SERVER;
-                    }
-                    bareHandCooldowns.put(sp.getUUID(), now);
-                    HearthwindSurvivalThirst.addHydration(sp, BARE_HAND_HYDRATION);
-                    if (sp.getRandom().nextFloat() < BARE_HAND_THIRST_CHANCE) {
-                        sp.addEffect(new net.minecraft.world.effect.MobEffectInstance(
-                                ThirstMobEffect.HOLDER, BARE_HAND_THIRST_DURATION, 0));
-                    }
-                    sp.getFoodData().addExhaustion(0.6f);
-                    sp.sendOverlayMessage(net.minecraft.network.chat.Component.literal(
-                            "You cup water in your hands and sip - barely helps.").withStyle(net.minecraft.ChatFormatting.BLUE));
-                    lvl.playSound(null, pos, SoundEvents.GENERIC_DRINK.value(), SoundSource.PLAYERS, 0.5f, 0.9f);
-                }
-                return InteractionResult.SUCCESS_SERVER;
-            }
-
             return InteractionResult.PASS;
         });
 
-        // Right-click air while in water with empty hand - same dirty sip
-        // (covers swimming case where no block is hit), also tedious
+        // Right-click air with empty hand - also allow sip if near water or in water (very forgiving)
         UseItemCallback.EVENT.register((player, world, hand) -> {
             ItemStack held = player.getItemInHand(hand);
-            if (!held.isEmpty() || !player.isInWater()) {
+            if (!held.isEmpty()) {
+                return InteractionResult.PASS;
+            }
+            boolean nearWater = false;
+            if (world instanceof Level lvl) {
+                nearWater = player.isInWater() || isNearWater(lvl, player.blockPosition(), 3);
+                LOGGER.info("UseItem bare-hand nearWater={} pos={} heldEmpty={}", nearWater, player.blockPosition(), held.isEmpty());
+            }
+            if (!nearWater) {
                 return InteractionResult.PASS;
             }
             if (world instanceof Level lvl && !lvl.isClientSide() && player instanceof ServerPlayer sp) {
                 long now = lvl.getGameTime();
                 long last = bareHandCooldowns.getOrDefault(sp.getUUID(), 0L);
                 if (now - last < BARE_HAND_COOLDOWN_TICKS) {
+                    long left = (BARE_HAND_COOLDOWN_TICKS - (now - last)) / 20 + 1;
+                    sp.sendOverlayMessage(net.minecraft.network.chat.Component.literal(
+                            "Cupping water is slow... craft a bowl (3 planks) for a proper drink. (" + left + "s)")
+                            .withStyle(net.minecraft.ChatFormatting.GRAY));
                     return InteractionResult.SUCCESS_SERVER;
                 }
                 bareHandCooldowns.put(sp.getUUID(), now);
