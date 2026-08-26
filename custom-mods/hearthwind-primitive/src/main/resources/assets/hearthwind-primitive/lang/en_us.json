@@ -1,0 +1,22 @@
+{
+  "item.hearthwind.clay_cup": "Clay Cup",
+  "item.hearthwind.clay_cup_unfired": "Clay Cup Unfired",
+  "item.hearthwind.clay_cup_water": "Clay Cup Water",
+  "item.hearthwind.clay_cup_purified": "Clay Cup Purified",
+  "item.hearthwind.clay_cup_hot_water": "Clay Cup Hot Water",
+  "item.hearthwind.clay_cup_hot_purified": "Clay Cup Hot Purified",
+  "item.hearthwind.clay_cup_cold_water": "Clay Cup Cold Water",
+  "item.hearthwind.clay_cup_cold_purified": "Clay Cup Cold Purified",
+  "item.environmentz.wolf_pelt": "Wolf Pelt",
+  "item.environmentz.polar_bear_fur": "Polar Bear Fur",
+  "item.environmentz.ice_pack": "Ice Pack",
+  "item.environmentz.heating_stones": "Heating Stones",
+  "item.environmentz.wolf_helmet": "Wolf Helmet",
+  "item.environmentz.wolf_chestplate": "Wolf Chestplate",
+  "item.environmentz.wolf_leggings": "Wolf Leggings",
+  "item.environmentz.wolf_boots": "Wolf Boots",
+  "item.environmentz.wanderer_helmet": "Wanderer Helmet",
+  "item.environmentz.wanderer_chestplate": "Wanderer Chestplate",
+  "item.environmentz.wanderer_leggings": "Wanderer Leggings",
+  "item.environmentz.wanderer_boots": "Wanderer Boots"
+}
