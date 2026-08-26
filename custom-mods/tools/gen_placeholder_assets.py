@@ -47,6 +47,18 @@ MODS = {
             "cold_water_bowl": "#3a6a9a",  # cold blue
             "cold_purified_water_bowl": "#8fd3f0",  # icy clear
         },
+    },
+    "hearthwind-primitive": {
+        "hearthwind": {
+            "clay_cup": "#b89a6a",  # fired clay cup - tan
+            "clay_cup_unfired": "#9a8a7a",  # unfired clay - grayish tan
+            "clay_cup_water": "#5a7a3a",
+            "clay_cup_purified": "#7ad0f0",
+            "clay_cup_hot_water": "#c45a3a",
+            "clay_cup_hot_purified": "#f0a07a",
+            "clay_cup_cold_water": "#3a6a9a",
+            "clay_cup_cold_purified": "#8fd3f0",
+        },
         "environmentz": {
             "wolf_pelt": "#6d5a44",
             "polar_bear_fur": "#e8e8e2",

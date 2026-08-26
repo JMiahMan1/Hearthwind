@@ -13,7 +13,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 
 public final class WaterBowlItem extends Item {
-    private static final double BAD_SIP_CHANCE = 0.5;
+    private static final double BAD_SIP_CHANCE = 0.30; // not every time
     private static final int BAD_SIP_DURATION_TICKS = 300;
     private static final double HYDRATION_PER_BOWL = 6.0;
 

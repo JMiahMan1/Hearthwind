@@ -93,6 +93,23 @@ public final class HearthwindPrimitiveItems {
     public static final Item RAW_IRON_NUGGET = new Item(new Item.Properties()
             .setId(key("agedaddition", "raw_iron_nugget")));
 
+    // hearthwind clay cups - early water without crafting table (2x2)
+    // unfired: 3 uses, breaks; fired: 32 uses, durable. Clay cup can scoop water like bowl.
+    public static final Item CLAY_CUP_UNFIRED = new Item(new Item.Properties()
+            .durability(3)
+            .setId(key("hearthwind", "clay_cup_unfired")));
+    public static final Item CLAY_CUP = new Item(new Item.Properties()
+            .durability(32)
+            .setId(key("hearthwind", "clay_cup")));
+    // filled clay cups - show proper liquid (tainted green, purified blue, hot boiling, cold icy)
+    // These are the water-holding variants; drinking returns the empty cup (unfired breaks after 3, fired after 32).
+    public static final Item CLAY_CUP_WATER = new dev.jmiahman.hearthwind.primitive.ClayCupWaterItem(new Item.Properties().setId(key("hearthwind", "clay_cup_water")), false, true);
+    public static final Item CLAY_CUP_PURIFIED = new dev.jmiahman.hearthwind.primitive.ClayCupWaterItem(new Item.Properties().setId(key("hearthwind", "clay_cup_purified")), true, true);
+    public static final Item CLAY_CUP_HOT_WATER = new dev.jmiahman.hearthwind.primitive.HotClayCupWaterItem(new Item.Properties().setId(key("hearthwind", "clay_cup_hot_water")), false);
+    public static final Item CLAY_CUP_HOT_PURIFIED = new dev.jmiahman.hearthwind.primitive.HotClayCupWaterItem(new Item.Properties().setId(key("hearthwind", "clay_cup_hot_purified")), true);
+    public static final Item CLAY_CUP_COLD_WATER = new dev.jmiahman.hearthwind.primitive.ColdClayCupWaterItem(new Item.Properties().setId(key("hearthwind", "clay_cup_cold_water")), false);
+    public static final Item CLAY_CUP_COLD_PURIFIED = new dev.jmiahman.hearthwind.primitive.ColdClayCupWaterItem(new Item.Properties().setId(key("hearthwind", "clay_cup_cold_purified")), true);
+
     // earlystage steel tier (parity: earlystage steel ingot/nugget/block)
     public static final Item STEEL_NUGGET = new Item(new Item.Properties()
             .setId(key("earlystage", "steel_nugget")));
@@ -121,6 +138,14 @@ public final class HearthwindPrimitiveItems {
         register("agedaddition", "raw_iron_nugget", RAW_IRON_NUGGET);
         register("earlystage", "steel_nugget", STEEL_NUGGET);
         register("earlystage", "steel_ingot", STEEL_INGOT);
+        register("hearthwind", "clay_cup_unfired", CLAY_CUP_UNFIRED);
+        register("hearthwind", "clay_cup", CLAY_CUP);
+        register("hearthwind", "clay_cup_water", CLAY_CUP_WATER);
+        register("hearthwind", "clay_cup_purified", CLAY_CUP_PURIFIED);
+        register("hearthwind", "clay_cup_hot_water", CLAY_CUP_HOT_WATER);
+        register("hearthwind", "clay_cup_hot_purified", CLAY_CUP_HOT_PURIFIED);
+        register("hearthwind", "clay_cup_cold_water", CLAY_CUP_COLD_WATER);
+        register("hearthwind", "clay_cup_cold_purified", CLAY_CUP_COLD_PURIFIED);
     }
 
     private static void register(String namespace, String path, Item item) {

@@ -33,6 +33,11 @@ subprojects {
 			implementation project(':hearthwind-survival')
 		}
 	}
+	if (project.name == 'hearthwind-primitive') {
+		dependencies {
+			implementation project(':hearthwind-survival')
+		}
+	}
 
 	afterEvaluate {
 		if (name == 'hearthwind-survival' || name == 'hearthwind-skills' || name == 'hearthwind-jobs') {

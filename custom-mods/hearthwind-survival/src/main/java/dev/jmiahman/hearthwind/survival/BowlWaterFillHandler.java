@@ -27,7 +27,7 @@ public final class BowlWaterFillHandler {
     private static final org.slf4j.Logger LOGGER = org.slf4j.LoggerFactory.getLogger("hearthwind_survival/bowl");
     private static final double BARE_HAND_HYDRATION = 1.0; // tiny, vs 6 per bowl
     private static final int BARE_HAND_THIRST_DURATION = 400; // 20s, vs 15s for bowl
-    private static final float BARE_HAND_THIRST_CHANCE = 0.90f;
+    private static final float BARE_HAND_THIRST_CHANCE = 0.60f; // not every time
     private static final long BARE_HAND_COOLDOWN_TICKS = 60; // 3s - spam is slow
     private static final java.util.Map<java.util.UUID, Long> bareHandCooldowns =
             new java.util.concurrent.ConcurrentHashMap<>();
@@ -140,31 +140,50 @@ public final class BowlWaterFillHandler {
                 return InteractionResult.PASS;
             }
 
-            // Cauldron handling - bowl on cauldron
-            if (isCauldron && held.is(Items.BOWL)) {
+            // Cauldron handling - bowl/clay cup on cauldron
+            var clayCupCA = net.minecraft.core.registries.BuiltInRegistries.ITEM.getValue(net.minecraft.resources.Identifier.fromNamespaceAndPath("hearthwind", "clay_cup"));
+            var clayUnfiredCA = net.minecraft.core.registries.BuiltInRegistries.ITEM.getValue(net.minecraft.resources.Identifier.fromNamespaceAndPath("hearthwind", "clay_cup_unfired"));
+            boolean isBowlForCauldron = held.is(Items.BOWL) || held.is(clayCupCA) || held.is(clayUnfiredCA);
+            if (isCauldron && isBowlForCauldron) {
                 if (world instanceof Level lvl && !lvl.isClientSide() && player instanceof ServerPlayer sp) {
                     var state = lvl.getBlockState(pos);
                     int level = state.getValue(net.minecraft.world.level.block.LayeredCauldronBlock.LEVEL);
                     if (level <= 0) return InteractionResult.PASS;
                     boolean heated = isHeatedCauldron(lvl, pos);
                     boolean coldSource = !heated && isColdWaterSource(sp);
+                    boolean isClayCA = held.is(clayCupCA) || held.is(clayUnfiredCA);
                     ItemStack filled;
                     if (heated) {
                         // boiling cauldron gives hot purified (even though source was dirty, heat purifies but scalds)
-                        filled = HotWaterBowlItem.createHotStack(DehydrationItems.HOT_PURIFIED_WATER_BOWL, lvl);
+                        if (isClayCA) {
+                            filled = HotWaterBowlItem.createHotStack(net.minecraft.core.registries.BuiltInRegistries.ITEM.getValue(net.minecraft.resources.Identifier.fromNamespaceAndPath("hearthwind", "clay_cup_hot_purified")), lvl);
+                        } else {
+                            filled = HotWaterBowlItem.createHotStack(DehydrationItems.HOT_PURIFIED_WATER_BOWL, lvl);
+                        }
                         sp.sendOverlayMessage(net.minecraft.network.chat.Component.literal(
                                 "You scoop steaming hot purified water - let it cool!").withStyle(net.minecraft.ChatFormatting.RED));
                         lvl.playSound(null, pos, SoundEvents.BOTTLE_FILL, SoundSource.PLAYERS, 0.7f, 1.3f);
                     } else if (coldSource) {
-                        filled = new ItemStack(DehydrationItems.COLD_PURIFIED_WATER_BOWL);
+                        if (isClayCA) {
+                            filled = new ItemStack(net.minecraft.core.registries.BuiltInRegistries.ITEM.getValue(net.minecraft.resources.Identifier.fromNamespaceAndPath("hearthwind", "clay_cup_cold_purified")));
+                        } else {
+                            filled = new ItemStack(DehydrationItems.COLD_PURIFIED_WATER_BOWL);
+                        }
                         sp.sendOverlayMessage(net.minecraft.network.chat.Component.literal(
                                 "You scoop icy cold purified water!").withStyle(net.minecraft.ChatFormatting.AQUA));
                         lvl.playSound(null, pos, SoundEvents.BOTTLE_FILL, SoundSource.PLAYERS, 0.9f, 1.3f);
                     } else {
-                        filled = new ItemStack(DehydrationItems.PURIFIED_WATER_BOWL);
+                        if (isClayCA) {
+                            filled = new ItemStack(net.minecraft.core.registries.BuiltInRegistries.ITEM.getValue(net.minecraft.resources.Identifier.fromNamespaceAndPath("hearthwind", "clay_cup_purified")));
+                        } else {
+                            filled = new ItemStack(DehydrationItems.PURIFIED_WATER_BOWL);
+                        }
                         lvl.playSound(null, pos, SoundEvents.BOTTLE_FILL, SoundSource.PLAYERS, 0.9f, 1.0f);
                     }
-                    if (!sp.getAbilities().instabuild) held.shrink(1);
+                    if (!sp.getAbilities().instabuild) {
+                        if (isClayCA) held.hurtAndBreak(1, sp, net.minecraft.world.entity.EquipmentSlot.MAINHAND);
+                        else held.shrink(1);
+                    }
                     if (!sp.getInventory().add(filled)) sp.drop(filled, false);
                     // decrement cauldron
                     int newLevel = level - 1;
@@ -177,28 +196,51 @@ public final class BowlWaterFillHandler {
                 return InteractionResult.SUCCESS_SERVER;
             }
 
-            // 1) Bowl -> water_bowl (or hot/cold variant). Check heated cauldron first,
+            // 1) Bowl/clay cup -> water_bowl / clay_cup_water (or hot/cold variant). Check heated cauldron first,
             // then hot/cold-biome source. Hot scalds, cold cools overheating.
-            if (held.is(Items.BOWL)) {
+            // Clay cups take durability damage instead of being consumed (unfired 3, fired 32) and give clay water.
+            var clayCupSrc = net.minecraft.core.registries.BuiltInRegistries.ITEM.getValue(net.minecraft.resources.Identifier.fromNamespaceAndPath("hearthwind", "clay_cup"));
+            var clayUnfiredSrc = net.minecraft.core.registries.BuiltInRegistries.ITEM.getValue(net.minecraft.resources.Identifier.fromNamespaceAndPath("hearthwind", "clay_cup_unfired"));
+            boolean isBowlLikeSrc = held.is(Items.BOWL) || held.is(clayCupSrc) || held.is(clayUnfiredSrc);
+            if (isBowlLikeSrc) {
                 if (world instanceof Level lvl && !lvl.isClientSide() && player instanceof ServerPlayer sp) {
                     // cauldron case is handled in the isWater==false branch below
                     // (water_cauldron is not WATER fluid), so this is source water
                     boolean isHotSource = isHotWaterSource(sp);
                     boolean isColdSource = !isHotSource && isColdWaterSource(sp);
+                    boolean isClaySrc = held.is(clayCupSrc) || held.is(clayUnfiredSrc);
                     ItemStack filled;
-                    if (isHotSource) {
-                        filled = HotWaterBowlItem.createHotStack(DehydrationItems.HOT_WATER_BOWL, lvl);
-                        sp.sendOverlayMessage(net.minecraft.network.chat.Component.literal(
-                                "The water is warm/hot from the heat - it will need to cool!").withStyle(net.minecraft.ChatFormatting.GOLD));
-                    } else if (isColdSource) {
-                        filled = new ItemStack(DehydrationItems.COLD_WATER_BOWL);
-                        sp.sendOverlayMessage(net.minecraft.network.chat.Component.literal(
-                                "The water is icy cold - refreshing!").withStyle(net.minecraft.ChatFormatting.AQUA));
+                    if (isClaySrc) {
+                        if (isHotSource) {
+                            filled = HotWaterBowlItem.createHotStack(net.minecraft.core.registries.BuiltInRegistries.ITEM.getValue(net.minecraft.resources.Identifier.fromNamespaceAndPath("hearthwind", "clay_cup_hot_water")), lvl);
+                            sp.sendOverlayMessage(net.minecraft.network.chat.Component.literal(
+                                    "The water is warm/hot - clay cup will need to cool!").withStyle(net.minecraft.ChatFormatting.GOLD));
+                        } else if (isColdSource) {
+                            filled = new ItemStack(net.minecraft.core.registries.BuiltInRegistries.ITEM.getValue(net.minecraft.resources.Identifier.fromNamespaceAndPath("hearthwind", "clay_cup_cold_water")));
+                            sp.sendOverlayMessage(net.minecraft.network.chat.Component.literal(
+                                    "Icy cold water in clay cup!").withStyle(net.minecraft.ChatFormatting.AQUA));
+                        } else {
+                            filled = new ItemStack(net.minecraft.core.registries.BuiltInRegistries.ITEM.getValue(net.minecraft.resources.Identifier.fromNamespaceAndPath("hearthwind", "clay_cup_water")));
+                        }
                     } else {
-                        filled = new ItemStack(DehydrationItems.WATER_BOWL);
+                        if (isHotSource) {
+                            filled = HotWaterBowlItem.createHotStack(DehydrationItems.HOT_WATER_BOWL, lvl);
+                            sp.sendOverlayMessage(net.minecraft.network.chat.Component.literal(
+                                    "The water is warm/hot from the heat - it will need to cool!").withStyle(net.minecraft.ChatFormatting.GOLD));
+                        } else if (isColdSource) {
+                            filled = new ItemStack(DehydrationItems.COLD_WATER_BOWL);
+                            sp.sendOverlayMessage(net.minecraft.network.chat.Component.literal(
+                                    "The water is icy cold - refreshing!").withStyle(net.minecraft.ChatFormatting.AQUA));
+                        } else {
+                            filled = new ItemStack(DehydrationItems.WATER_BOWL);
+                        }
                     }
                     if (!sp.getAbilities().instabuild) {
-                        held.shrink(1);
+                        if (isClaySrc) {
+                            held.hurtAndBreak(1, sp, net.minecraft.world.entity.EquipmentSlot.MAINHAND);
+                        } else {
+                            held.shrink(1);
+                        }
                     }
                     if (!sp.getInventory().add(filled)) {
                         sp.drop(filled, false);

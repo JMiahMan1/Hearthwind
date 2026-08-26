@@ -36,7 +36,7 @@ public final class ColdWaterBowlItem extends Item {
     private InteractionResult drink(Level level, Player player, ItemStack stack) {
         if (level instanceof ServerLevel server && player instanceof ServerPlayer sp) {
             HearthwindSurvivalThirst.addHydration(sp, HYDRATION);
-            if (!purified && sp.getRandom().nextDouble() < 0.5) {
+            if (!purified && sp.getRandom().nextDouble() < 0.30) {
                 sp.addEffect(new MobEffectInstance(ThirstMobEffect.HOLDER, 300, 0));
             }
             // Cold cooling: immediate -1.5 and 60s dampening (unless already hot)

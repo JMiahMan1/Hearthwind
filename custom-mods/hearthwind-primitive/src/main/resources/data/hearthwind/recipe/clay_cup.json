@@ -1,0 +1,8 @@
+{
+  "type": "minecraft:campfire_cooking",
+  "ingredient": "hearthwind:clay_cup_unfired",
+  "result": {
+    "id": "hearthwind:clay_cup"
+  },
+  "cookingtime": 100
+}
