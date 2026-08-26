@@ -19,6 +19,7 @@ public class HearthwindSurvival implements ModInitializer {
 		HearthwindSurvivalSpoilage.registerTickLoop();
 		DehydrationItems.registerAll(msg -> LOGGER.info(msg));
 		EnvironmentzItems.registerAll(msg -> LOGGER.info(msg));
+		BowlWaterFillHandler.register();
 		HearthwindSurvivalTemperature.registerTickLoop();
 		HearthwindSurvivalLoot.init();
 		LOGGER.info("Hearthwind Survival initialized: thirst + diet + spoilage + temperature systems active");
