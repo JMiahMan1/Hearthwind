@@ -25,6 +25,15 @@ subprojects {
 		it.options.release = 25
 	}
 
+	// hearthwind-client needs survival's ThirstSyncPayload at compile and
+	// runtime. Must be declared BEFORE loom resolves runtime classpath, so do
+	// it here, not in afterEvaluate (which is too late for implementation).
+	if (project.name == 'hearthwind-client') {
+		dependencies {
+			implementation project(':hearthwind-survival')
+		}
+	}
+
 	afterEvaluate {
 		if (name == 'hearthwind-survival' || name == 'hearthwind-skills' || name == 'hearthwind-jobs') {
 			dependencies {
@@ -33,12 +42,6 @@ subprojects {
 				// loom 1.17 has no modImplementation(); modCompileClasspath
 				// gives compile + runtime presence.
 				modCompileClasspath "net.fabricmc.fabric.api:fabric-gametest-api-v1:4.0.21+4a7fa0819e"
-			}
-		}
-		if (name == 'hearthwind-client') {
-			dependencies {
-				// client HUD needs ThirstSyncPayload from survival
-				modCompileClasspath project(':hearthwind-survival')
 			}
 		}
 	}

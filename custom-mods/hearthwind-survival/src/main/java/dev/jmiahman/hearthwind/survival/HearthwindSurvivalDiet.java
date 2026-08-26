@@ -66,8 +66,14 @@ public final class HearthwindSurvivalDiet {
     }
 
     public static void setLevel(Entity entity, TagKey<Item> group, double value) {
-        Map<String, Double> map = entity.getAttachedOrElse(NUTRIENTS,
-                new java.util.HashMap<>());
+        // Attachments decoded from disk use Codec.unboundedMap which produces
+        // an ImmutableMap - mutating it in place throws
+        // UnsupportedOperationException (crashed dev-server on first decay tick
+        // after re-join). Always copy to a mutable map before editing.
+        Map<String, Double> existing = entity.getAttached(NUTRIENTS);
+        Map<String, Double> map = existing == null
+                ? new java.util.HashMap<>()
+                : new java.util.HashMap<>(existing);
         map.put(pathOf(group), Math.max(0.0, Math.min(MAX_NUTRIENTS, value)));
         entity.setAttached(NUTRIENTS, map);
     }

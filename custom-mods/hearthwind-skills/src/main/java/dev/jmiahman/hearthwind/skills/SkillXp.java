@@ -39,8 +39,12 @@ public final class SkillXp {
         if (amount <= 0 || level(entity, skill) >= maxLevel()) {
             return;
         }
-        Map<String, Double> map = entity.getAttachedOrElse(XP,
-                new java.util.HashMap<>());
+        // Codec-unboundedMap decodes to ImmutableMap on load - must copy to
+        // mutable before mutating, otherwise merge throws UOE (see diet fix).
+        Map<String, Double> existing = entity.getAttached(XP);
+        Map<String, Double> map = existing == null
+                ? new java.util.HashMap<>()
+                : new java.util.HashMap<>(existing);
         map.merge(skill.id, amount, Double::sum);
         entity.setAttached(XP, map);
         if (entity instanceof net.minecraft.world.entity.LivingEntity living) {
