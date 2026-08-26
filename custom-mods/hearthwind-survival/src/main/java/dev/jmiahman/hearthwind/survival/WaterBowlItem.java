@@ -24,9 +24,7 @@ public final class WaterBowlItem extends Item {
         this.purified = purified;
     }
 
-    @Override
-    public InteractionResult use(Level level, Player player, InteractionHand hand) {
-        ItemStack stack = player.getItemInHand(hand);
+    private InteractionResult drink(Level level, Player player, ItemStack stack) {
         if (level instanceof ServerLevel server && player instanceof net.minecraft.server.level.ServerPlayer serverPlayer) {
             HearthwindSurvivalThirst.addHydration(serverPlayer, HYDRATION_PER_BOWL);
             if (!purified && !player.getAbilities().instabuild
@@ -39,9 +37,27 @@ public final class WaterBowlItem extends Item {
             player.awardStat(Stats.ITEM_USED.get(this));
             if (!player.getAbilities().instabuild) {
                 stack.shrink(1);
+                // return empty bowl like vanilla stew
+                ItemStack bowl = new ItemStack(net.minecraft.world.item.Items.BOWL);
+                if (!player.addItem(bowl)) {
+                    player.drop(bowl, false);
+                }
             }
             return InteractionResult.SUCCESS_SERVER;
         }
         return InteractionResult.SUCCESS;
+    }
+
+    @Override
+    public InteractionResult use(Level level, Player player, InteractionHand hand) {
+        return drink(level, player, player.getItemInHand(hand));
+    }
+
+    @Override
+    public InteractionResult useOn(net.minecraft.world.item.context.UseOnContext ctx) {
+        // Allow drinking even when looking at a block (e.g., water) - vanilla
+        // stew/bowl items only override use() for air, so right-clicking a
+        // block with a water_bowl would otherwise do nothing.
+        return drink(ctx.getLevel(), ctx.getPlayer(), ctx.getItemInHand());
     }
 }

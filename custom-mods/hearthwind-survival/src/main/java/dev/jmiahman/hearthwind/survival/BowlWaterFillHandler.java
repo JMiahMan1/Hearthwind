@@ -1,6 +1,7 @@
 package dev.jmiahman.hearthwind.survival;
 
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
+import net.fabricmc.fabric.api.event.player.UseItemCallback;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -17,16 +18,23 @@ import net.minecraft.world.level.material.Fluids;
  * to obtain {@code dehydration:water_bowl}. This mirrors the original
  * dehydration mod's bowl-filling and makes thirst solvable in the first minutes
  * without a bucket (which is iron-gated). Also allows bare-hand drinking
- * (small sip, dirty) for the truly stranded.
+ * (small sip, dirty) for the truly stranded - deliberately tedious to push
+ * players toward bowls/campfires.
  *
  * Server-authoritative, runs on both logical sides but only mutates on server.
  */
 public final class BowlWaterFillHandler {
-    private static final double BARE_HAND_HYDRATION = 2.0; // small sip
+    private static final double BARE_HAND_HYDRATION = 1.0; // tiny, vs 6 per bowl
+    private static final int BARE_HAND_THIRST_DURATION = 400; // 20s, vs 15s for bowl
+    private static final float BARE_HAND_THIRST_CHANCE = 0.90f;
+    private static final long BARE_HAND_COOLDOWN_TICKS = 60; // 3s - spam is slow
+    private static final java.util.Map<java.util.UUID, Long> bareHandCooldowns =
+            new java.util.concurrent.ConcurrentHashMap<>();
 
     private BowlWaterFillHandler() {}
 
     public static void register() {
+        // Right-click water block with bowl/empty hand
         UseBlockCallback.EVENT.register((player, world, hand, hitResult) -> {
             ItemStack held = player.getItemInHand(hand);
             BlockPos pos = hitResult.getBlockPos();
@@ -53,22 +61,61 @@ public final class BowlWaterFillHandler {
             }
 
             // 2) Bare hand on water -> tiny dirty sip (no item needed, for day-0)
+            // Deliberately tedious: 1 hydration vs 6 per bowl, 90% thirst 20s,
+            // 3s cooldown, small hunger exhaustion, and a nudge toward bowls.
             if (held.isEmpty()) {
                 if (world instanceof Level lvl && !lvl.isClientSide() && player instanceof ServerPlayer sp) {
-                    HearthwindSurvivalThirst.addHydration(sp, BARE_HAND_HYDRATION);
-                    // 75% chance of thirst effect when drinking bare-hand
-                    if (sp.getRandom().nextFloat() < 0.75f) {
-                        sp.addEffect(new net.minecraft.world.effect.MobEffectInstance(
-                                ThirstMobEffect.HOLDER, 300, 0));
+                    long now = lvl.getGameTime();
+                    long last = bareHandCooldowns.getOrDefault(sp.getUUID(), 0L);
+                    if (now - last < BARE_HAND_COOLDOWN_TICKS) {
+                        long left = (BARE_HAND_COOLDOWN_TICKS - (now - last)) / 20 + 1;
+                        sp.sendOverlayMessage(net.minecraft.network.chat.Component.literal(
+                                "Cupping water is slow... craft a bowl (3 planks) for a proper drink. (" + left + "s)")
+                                .withStyle(net.minecraft.ChatFormatting.GRAY));
+                        return InteractionResult.SUCCESS_SERVER;
                     }
+                    bareHandCooldowns.put(sp.getUUID(), now);
+                    HearthwindSurvivalThirst.addHydration(sp, BARE_HAND_HYDRATION);
+                    if (sp.getRandom().nextFloat() < BARE_HAND_THIRST_CHANCE) {
+                        sp.addEffect(new net.minecraft.world.effect.MobEffectInstance(
+                                ThirstMobEffect.HOLDER, BARE_HAND_THIRST_DURATION, 0));
+                    }
+                    sp.getFoodData().addExhaustion(0.6f);
                     sp.sendOverlayMessage(net.minecraft.network.chat.Component.literal(
-                            "You cup water in your hands and drink.").withStyle(net.minecraft.ChatFormatting.BLUE));
-                    lvl.playSound(null, pos, SoundEvents.GENERIC_DRINK.value(), SoundSource.PLAYERS, 0.8f, 1.0f);
+                            "You cup water in your hands and sip - barely helps.").withStyle(net.minecraft.ChatFormatting.BLUE));
+                    lvl.playSound(null, pos, SoundEvents.GENERIC_DRINK.value(), SoundSource.PLAYERS, 0.5f, 0.9f);
                 }
                 return InteractionResult.SUCCESS_SERVER;
             }
 
             return InteractionResult.PASS;
+        });
+
+        // Right-click air while in water with empty hand - same dirty sip
+        // (covers swimming case where no block is hit), also tedious
+        UseItemCallback.EVENT.register((player, world, hand) -> {
+            ItemStack held = player.getItemInHand(hand);
+            if (!held.isEmpty() || !player.isInWater()) {
+                return InteractionResult.PASS;
+            }
+            if (world instanceof Level lvl && !lvl.isClientSide() && player instanceof ServerPlayer sp) {
+                long now = lvl.getGameTime();
+                long last = bareHandCooldowns.getOrDefault(sp.getUUID(), 0L);
+                if (now - last < BARE_HAND_COOLDOWN_TICKS) {
+                    return InteractionResult.SUCCESS_SERVER;
+                }
+                bareHandCooldowns.put(sp.getUUID(), now);
+                HearthwindSurvivalThirst.addHydration(sp, BARE_HAND_HYDRATION);
+                if (sp.getRandom().nextFloat() < BARE_HAND_THIRST_CHANCE) {
+                    sp.addEffect(new net.minecraft.world.effect.MobEffectInstance(
+                            ThirstMobEffect.HOLDER, BARE_HAND_THIRST_DURATION, 0));
+                }
+                sp.getFoodData().addExhaustion(0.6f);
+                sp.sendOverlayMessage(net.minecraft.network.chat.Component.literal(
+                        "You cup water in your hands and sip - barely helps.").withStyle(net.minecraft.ChatFormatting.BLUE));
+                lvl.playSound(null, sp.blockPosition(), SoundEvents.GENERIC_DRINK.value(), SoundSource.PLAYERS, 0.5f, 0.9f);
+            }
+            return InteractionResult.SUCCESS_SERVER;
         });
     }
 }
