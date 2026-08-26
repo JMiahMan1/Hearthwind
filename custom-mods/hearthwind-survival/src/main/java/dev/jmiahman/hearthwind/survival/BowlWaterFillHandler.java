@@ -49,22 +49,10 @@ public final class BowlWaterFillHandler {
     }
 
     private static boolean isHotWaterSource(ServerPlayer sp) {
-        // Hot biome or extreme heat makes standing water warm
-        double target = HearthwindSurvivalTemperature.targetFor(sp);
-        if (target >= 7.0) return true;
-        // also check current temperature already hot
-        if (HearthwindSurvivalTemperature.get(sp) >= 7.0) return true;
-        // or if it's noon in a hot biome (simple: desert/badlands at 6000t)
-        var biome = sp.level().getBiome(sp.blockPosition()).value();
-        float base = biome.getBaseTemperature();
-        long time;
-        try {
-            time = (Long) sp.level().getClass().getMethod("getDayTime").invoke(sp.level()) % 24000;
-        } catch (Exception e) {
-            time = sp.level().getGameTime() % 24000;
-        }
-        boolean isNoon = time > 5000 && time < 8000;
-        return base >= 1.5f && isNoon;
+        // Hot water should ONLY come from a heated cauldron (water on fire) or a hot spring.
+        // River/lake water at noon in a desert is still just warm, not scalding - it should give normal water.
+        // Hot spring check: if the biome is a hot spring (custom) or nether, could be hot, but for now only heated cauldron.
+        return false;
     }
 
     private static boolean isColdWaterSource(ServerPlayer sp) {

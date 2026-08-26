@@ -80,7 +80,7 @@ public final class HearthwindDebugCommand {
                                     ServerPlayer p = ctx.getSource().getPlayerOrException();
                                     double before = HearthwindSurvivalThirst.hydration(p);
                                     HearthwindSurvivalThirst.addHydration(p, 1.0);
-                                    if (p.getRandom().nextFloat() < 0.90f) {
+                                    if (p.getRandom().nextFloat() < 0.60f) {
                                         p.addEffect(new net.minecraft.world.effect.MobEffectInstance(ThirstMobEffect.HOLDER, 400, 0));
                                     }
                                     p.getFoodData().addExhaustion(0.6f);
@@ -132,7 +132,7 @@ public final class HearthwindDebugCommand {
                                                         p.sendOverlayMessage(net.minecraft.network.chat.Component.literal("Test: drank hot! 2 dmg + thirst").withStyle(net.minecraft.ChatFormatting.RED));
                                                     } else if (isCold) {
                                                         HearthwindSurvivalThirst.addHydration(p, 6.0);
-                                                        if (!isPurified && p.getRandom().nextDouble() < 0.5) {
+                                                        if (!isPurified && p.getRandom().nextDouble() < 0.30) {
                                                             p.addEffect(new net.minecraft.world.effect.MobEffectInstance(ThirstMobEffect.HOLDER, 300, 0));
                                                         }
                                                         HearthwindSurvivalTemperature.shift(p, -1.5);
@@ -140,7 +140,7 @@ public final class HearthwindDebugCommand {
                                                         p.sendOverlayMessage(net.minecraft.network.chat.Component.literal("Test: drank cold! -1.5 temp, 60s cooling").withStyle(net.minecraft.ChatFormatting.AQUA));
                                                     } else {
                                                         HearthwindSurvivalThirst.addHydration(p, 6.0);
-                                                        if (!isPurified && p.getRandom().nextDouble() < 0.5) {
+                                                        if (!isPurified && p.getRandom().nextDouble() < 0.30) {
                                                             p.addEffect(new net.minecraft.world.effect.MobEffectInstance(ThirstMobEffect.HOLDER, 300, 0));
                                                         }
                                                         HearthwindSurvivalTemperature.shift(p, -0.7);
