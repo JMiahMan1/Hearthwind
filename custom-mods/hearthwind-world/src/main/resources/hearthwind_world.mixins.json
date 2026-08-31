@@ -8,7 +8,8 @@
 		"HearthwindSeasonalStemMixin",
 		"HearthwindSeasonalBerryMixin",
 		"HearthwindSeasonalCocoaMixin",
-		"HearthwindWinterBreedingMixin"
+		"HearthwindWinterBreedingMixin",
+		"FeatureSorterCycleDebugMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1
