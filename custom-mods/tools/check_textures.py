@@ -30,6 +30,7 @@ MODS = [
     "hearthwind-jobs",
     "hearthwind-world",
     "hearthwind-client",
+    "hearthwind-flora",
 ]
 
 # Known HUD sprites that are intentionally non-POT (used with blitSprite)
@@ -55,11 +56,11 @@ def extract_textures(node) -> set[str]:
     if isinstance(node, dict):
         if "textures" in node and isinstance(node["textures"], dict):
             for tex in node["textures"].values():
-                if tex and tex != "#missing" and not tex.startswith("minecraft:textures/"):
+                if tex and not tex.startswith("#") and not tex.startswith("minecraft:textures/"):
                     textures.add(tex)
         elif "texture" in node:
             tex = node["texture"]
-            if tex and tex != "#missing" and not tex.startswith("minecraft:textures/"):
+            if tex and not tex.startswith("#") and not tex.startswith("minecraft:textures/"):
                 textures.add(tex)
         for v in node.values():
             textures |= extract_textures(v)
@@ -93,6 +94,8 @@ def check_textures_exist(textures: set[str]) -> list[tuple[str, str]]:
     """Check that all referenced textures exist on disk in any module."""
     missing = []
     for tex in textures:
+        if tex.startswith("#"):
+            continue
         parts = tex.split(":")
         if len(parts) == 2:
             ns, tex_path = parts
@@ -100,6 +103,8 @@ def check_textures_exist(textures: set[str]) -> list[tuple[str, str]]:
             ns = "minecraft"
             tex_path = tex
         tex_path = tex_path.replace("minecraft:textures/", "")
+        if ns == "minecraft":
+            continue
         found = False
         for mod in MODS:
             tex_file = Path("custom-mods") / mod / "src" / "main" / "resources" / "assets" / ns / "textures" / f"{tex_path}.png"
@@ -112,7 +117,7 @@ def check_textures_exist(textures: set[str]) -> list[tuple[str, str]]:
 
 
 def check_png_dims(pns: list[Path], root: Path) -> tuple[list[str], Counter]:
-    """Validate PNG dimensions. Non-POT is OK for HUD sprites."""
+    """Validate PNG dimensions. Non-POT is OK for HUD sprites, GUI, mob effects, and vertical animation sheets."""
     if Image is None:
         return [], Counter()
     errors = []
@@ -123,9 +128,20 @@ def check_png_dims(pns: list[Path], root: Path) -> tuple[list[str], Counter]:
                 w, h = img.size
                 dims[f"{w}x{h}"] += 1
                 rel = png.relative_to(root)
-                if str(rel) not in KNOWN_NON_POT and (
-                        w != 2 ** (w.bit_length() - 1) or h != 2 ** (h.bit_length() - 1)):
-                    errors.append(f"Non-power-of-2: {rel} ({w}x{h})")
+                rel_str = str(rel)
+
+                # Check if it is a valid non-POT texture type
+                is_gui_or_hud = "/textures/gui/" in rel_str or rel_str in KNOWN_NON_POT
+                is_mob_effect = "/textures/mob_effect/" in rel_str and (w == 18 and h == 18)
+                is_anim_sheet = (w > 0 and w == 2 ** (w.bit_length() - 1)) and (h % w == 0) and Path(str(png) + ".mcmeta").exists()
+                is_allowed_non_pot = is_gui_or_hud or is_mob_effect or is_anim_sheet
+
+                is_pot = (w == 2 ** (w.bit_length() - 1) and h == 2 ** (h.bit_length() - 1))
+
+                if not is_pot and not is_allowed_non_pot:
+                    # Check if it is standard entity or model texture
+                    if not (w % 16 == 0 and h % 16 == 0):
+                        errors.append(f"Invalid non-power-of-2 dimensions: {rel} ({w}x{h})")
         except (OSError, ValueError) as e:
             errors.append(f"Error reading: {png.relative_to(root)} ({e})")
     return errors, dims

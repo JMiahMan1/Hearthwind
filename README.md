@@ -94,8 +94,8 @@ See `docs/PROJECT_DIRECTION.md#distribution-model` for payload matrix and `docs/
 **Players (no mods needed):** vanilla 26.2 → `Multiplayer → Add Server → <host>:25565`. For HUD, install optional `HearthwindClient-0.1.0-mc26.2.mrpack` via Modrinth App or drop `hearthwind-client-26.2+0.1.0.jar` into Prism `mods/` (see `docs/INSTALL.md#players-joining-a-server`).
 
 **Server admins:**
-- **Modrinth pack (recommended):** `Hearthwind-0.1.0-mc26.2.mrpack` (41 Modrinth deps + `world/datapacks/aged-server/`) → Modrinth App From file. Hand `HearthwindClient-*.mrpack` to players.
-- **Plain dir (offline):** unzip `hearthwind-server-0.1.0-mc26.2.zip` (from [Releases](https://github.com/JMiahMan1/Hearthwind/releases/tag/v0.1.0) or `conversion/build/dist/server/`) - `fabric-server.jar` deps + `world/datapacks/aged-server/` + 5× `hearthwind-*` jars → `echo "eula=true" > eula.txt` → `java -Xmx3G -jar fabric-server.jar nogui` (RCON vanilla keys). Client analog is `client/mods/` (47 jars incl. `hearthwind-client`).
+- **Modrinth pack (recommended):** `Hearthwind-0.1.0-mc26.2.mrpack` (49 Modrinth deps + `world/datapacks/hearthwind/`) → Modrinth App From file. Hand `HearthwindClient-*.mrpack` to players.
+- **Plain dir (offline):** unzip `hearthwind-server-0.1.0-mc26.2.zip` (from [Releases](https://github.com/JMiahMan1/Hearthwind/releases/tag/v0.1.0) or `conversion/build/dist/server/`) - `fabric-server.jar` deps + `world/datapacks/hearthwind/` + 5× `hearthwind-*` jars → `echo "eula=true" > eula.txt` → `java -Xmx3G -jar fabric-server.jar nogui` (RCON vanilla keys). Client analog is `client/mods/` (71 jars incl. `hearthwind-client`) plus `client/resourcepacks/FreshAnimations_v1.10.5.zip` (enable via Options > Resource Packs).
 
 **Developers:**
 ```bash

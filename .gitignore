@@ -8,5 +8,10 @@ __pycache__/
 .tmp-test-server/
 dist/
 .tmp
+.tmp/
 dev-server/
 dev-client/
+.DS_Store
+conversion/deps/
+custom-mods/.gametest-cache/
+custom-mods/.gametest-server/

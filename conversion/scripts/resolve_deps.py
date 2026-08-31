@@ -143,8 +143,8 @@ def main():
     )
 
     man = json.load(open(MANIFEST))
-    wanted = [m for m in man["mods"] if m["action"] in ("keep", "add")]
-    print(f"Resolving {len(wanted)} keep/add entries...")
+    wanted = [m for m in man["mods"] if m["action"] in ("keep", "add", "client-optional")]
+    print(f"Resolving {len(wanted)} keep/add/client-optional entries...")
 
     results = []
     lock = [0]
@@ -180,6 +180,8 @@ def main():
     def work(m):
         rec = dict(m)
         rec.update({"target_mc": mc, "status": None, "picked": None})
+        if m["action"] == "client-optional":
+            rec["client_only"] = True
         resolve_one(rec)
         return rec
 

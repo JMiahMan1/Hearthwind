@@ -2,7 +2,7 @@
 """Generate skill-gate definitions for the aged-skills mod from the
 migrated levelz corpus.
 
-Reads conversion/datapacks/aged-server/data/levelz/**.json and emits one
+Reads conversion/datapacks/hearthwind/data/levelz/**.json and emits one
 JSON file per skill into custom-mods/aged-skills resources:
 
     data/aged_skills/gates/<skill>.json
@@ -26,7 +26,7 @@ import sys
 
 # <repo>/conversion/scripts/<this file> -> <repo>
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-CORPUS = os.path.join(ROOT, "conversion/datapacks/aged-server/data/levelz")
+CORPUS = os.path.join(ROOT, "conversion/datapacks/hearthwind/data/levelz")
 OUT = os.path.join(
     ROOT,
     "custom-mods/aged-skills/src/main/resources/data/aged_skills/gates")

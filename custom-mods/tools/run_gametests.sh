@@ -30,42 +30,39 @@ python3 "$DIR/test_assets_and_drops.py"
 echo "== running static validity and attribute linter =="
 python3 "$DIR/lint_and_validate.py"
 
-mkdir -p "$SRV/mods"
-if [ ! -f "$SRV/fabric-server.jar" ]; then
+CACHE="$DIR/../.gametest-cache"
+mkdir -p "$CACHE" "$SRV"
+if [ ! -f "$CACHE/fabric-server.jar" ]; then
   echo "== fetching fabric server launcher =="
-  curl -sL -o "$SRV/fabric-server.jar" \
+  curl -sL -o "$CACHE/fabric-server.jar" \
     "https://meta.fabricmc.net/v2/versions/loader/$MC/$LOADER/1.1.0/server/jar"
 fi
+cp "$CACHE/fabric-server.jar" "$SRV/fabric-server.jar"
+
 GAMETEST_API=4.0.21+4a7fa0819e
-if [ ! -f "$SRV/mods/fabric-api.jar" ]; then
-  echo "== fetching fabric-api =="
-  curl -sL -o "$SRV/mods/fabric-api.jar" \
-    "https://maven.fabricmc.net/net/fabricmc/fabric-api/fabric-api/$FABRIC_API/fabric-api-$FABRIC_API.jar"
-fi
-# the maven fabric-api jar is THIN (no nested modules): ship the gametest
-# module explicitly, otherwise -Dfabric-api.gametest never activates
-if [ ! -f "$SRV/mods/fabric-gametest-api-v1.jar" ]; then
+if [ ! -f "$CACHE/fabric-gametest-api-v1.jar" ]; then
   echo "== fetching fabric-gametest-api-v1 =="
-  curl -sL -o "$SRV/mods/fabric-gametest-api-v1.jar" \
+  curl -sL -o "$CACHE/fabric-gametest-api-v1.jar" \
     "https://maven.fabricmc.net/net/fabricmc/fabric-api/fabric-gametest-api-v1/$GAMETEST_API/fabric-gametest-api-v1-$GAMETEST_API.jar"
 fi
 
 echo "== installing fresh mod jars =="
-rm -f "$SRV"/mods/hearthwind-*.jar
-# every custom module ships its plain jar so cross-module behavior is
-# exercised together (never the -sources jars). hearthwind-client is
-# client-only ("environment": "client") - the dedicated server ignores it,
-# so we exclude it here; it is exercised by client-gametest runs instead.
-find hearthwind-survival hearthwind-skills hearthwind-jobs hearthwind-primitive hearthwind-world hearthwind-flora -name "*.jar" \
+rm -rf "$SRV/mods" && mkdir -p "$SRV/mods"
+# Copy all resolved server dependencies and vendored jars
+cp "$DIR/../../dev-server/mods/"*.jar "$SRV/mods/" 2>/dev/null || true
+cp "$DIR/../../conversion/vendored/"*.jar "$SRV/mods/" 2>/dev/null || true
+# Ensure fresh custom builds overwrite any stale jars
+find hearthwind-survival hearthwind-skills hearthwind-jobs hearthwind-primitive hearthwind-world hearthwind-flora hearthwind-client -name "*.jar" \
      -path "*build/libs/*" ! -name "*-sources.jar" -exec cp {} "$SRV/mods/" \;
-ls "$SRV"/mods/
+# Install gametest harness
+cp "$CACHE/fabric-gametest-api-v1.jar" "$SRV/mods/"
 
 # Ship the migrated tuning corpus with the throwaway world so gametests read
 # the same data the dev server runs (world datapacks override mod resources,
 # which is exactly the override order SkillGates/SieveBlock rely on).
 mkdir -p "$SRV/world/datapacks"
-rm -rf "$SRV/world/datapacks/aged-server"
-cp -R "$DIR/../../conversion/datapacks/aged-server" "$SRV/world/datapacks/"
+rm -rf "$SRV/world/datapacks/hearthwind"
+cp -R "$DIR/../../conversion/datapacks/hearthwind" "$SRV/world/datapacks/"
 
 grep -q "^eula=true$" "$SRV/eula.txt" 2>/dev/null || echo "eula=true" > "$SRV/eula.txt"
 # minimal properties: gametest mode ignores most, but the file must exist
@@ -84,8 +81,10 @@ rm -f "$REPORT"
 echo "== running gametests headless (${HEAP} heap) =="
 set +e
 cd "$SRV"
+MERGED_JAR=$(ls "$DIR/../.gradle/loom-cache/minecraftMaven/net/minecraft/"minecraft-merged-*/26.2/minecraft-merged-*-26.2.jar 2>/dev/null | head -1 || true)
 timeout "${GAMETEST_TIMEOUT:-420}" java -Xmx"$HEAP" \
      -Dfabric-api.gametest=true \
+     -Dhearthwind.mergedJar="${MERGED_JAR}" \
      -Dfabric-api.gametest.report-file="$REPORT" \
      -jar "$SRV/fabric-server.jar" nogui > "$SRV/gametest.log" 2>&1
 STATUS=$?

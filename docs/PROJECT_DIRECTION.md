@@ -80,7 +80,7 @@ as design reference) and rebuild them in-house under these principles.
   `spoiledz:`) intentionally mirror originals for corpus compatibility;
   when parity is complete, migrate them to first-party namespaces
   (`hearthwind:*`) with a one-time world upgrade script. The pack data
-  slug `aged-server` is kept for world-upgrade compatibility.
+  slug is now `hearthwind` (renamed from `aged-server`; existing worlds must re-install the datapack under the new folder name).
 
 ### Phase C - Divergence / best-of
 

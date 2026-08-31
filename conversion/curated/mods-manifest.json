@@ -149,6 +149,18 @@
       "action": "client-optional"
     },
     {
+      "file": "emf",
+      "slug": "entity-model-features",
+      "action": "client-optional",
+      "note": "CEM model engine required by Fresh Animations resourcepack"
+    },
+    {
+      "file": "etf",
+      "slug": "entitytexturefeatures",
+      "action": "client-optional",
+      "note": "Texture features required by Fresh Animations resourcepack"
+    },
+    {
       "file": "bettercombat",
       "slug": "better-combat",
       "action": "keep",
@@ -341,14 +353,16 @@
     {
       "file": "naturespirit",
       "slug": "natures-spirit",
-      "action": "drop",
-      "reason": "Biome ambience stuck at 1.21.1; heavy worldgen churn risk across snapshots"
+      "action": "keep",
+      "cat": "worldgen",
+      "note": "60+ biomes, 18 wood sets, chalk/travertine stones, built from 26.1.2 multiloader branch for 26.2"
     },
     {
       "file": "gardens-of-the-dead",
       "slug": "gardens-of-the-dead",
-      "action": "drop",
-      "reason": "Ambience biomes"
+      "action": "keep",
+      "cat": "worldgen",
+      "note": "Nether biomes Soulblight Forest and Whistling Woods, built from contrib for 26.2"
     },
     {
       "file": "naturalist",
@@ -371,13 +385,13 @@
     {
       "file": "Boids",
       "slug": "boids",
-      "action": "drop",
+      "action": "keep",
       "reason": "Bird flock engine; ambience"
     },
     {
       "file": "birdsboids",
       "slug": "birds-boids-addon",
-      "action": "drop",
+      "action": "keep",
       "reason": "Addon for Boids"
     },
     {
@@ -552,7 +566,7 @@
     {
       "file": "tru.e-ending",
       "slug": "true-ending",
-      "action": "drop",
+      "action": "keep",
       "reason": "End overhaul niche"
     },
     {
@@ -705,7 +719,7 @@
     {
       "file": "chalk-colorful-addon",
       "slug": "chalk-colorful-addon",
-      "action": "drop",
+      "action": "keep",
       "reason": "Addon; keep base only if ready"
     },
     {
@@ -804,7 +818,7 @@
     {
       "file": "scholar",
       "slug": "scholar",
-      "action": "drop",
+      "action": "keep",
       "reason": "Books nicety"
     },
     {
@@ -816,7 +830,7 @@
     {
       "file": "ExtendedDrawers",
       "slug": "extended-drawers",
-      "action": "drop",
+      "action": "keep",
       "reason": "Storage tech; off-mission medieval"
     },
     {
@@ -951,13 +965,13 @@
     {
       "file": "supermartijn642configlib",
       "slug": "supermartijn642s-config-lib",
-      "action": "drop",
+      "action": "keep",
       "reason": "For cut mods"
     },
     {
       "file": "supermartijn642scorelib",
       "slug": "supermartijn642s-core-lib",
-      "action": "drop",
+      "action": "keep",
       "reason": "For cut mods"
     },
     {

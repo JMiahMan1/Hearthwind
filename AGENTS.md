@@ -14,7 +14,7 @@ commit titles with "Aged"** - use plain conventional subjects
 | `conversion/scripts/resolve_deps.py` | Manifest -> Modrinth resolution incl. recursive transitive deps |
 | `conversion/scripts/build_pack.py` | Builds `.mrpack` + materializes `dist/server/` (mods + world datapack) |
 | `conversion/scripts/migrate_datapack.py` | Ports original paxi datapack to native 26.x world datapack |
-| `conversion/datapacks/aged-server/` | Generated migrated datapack (committed; deterministic) |
+| `conversion/datapacks/hearthwind/` | Generated migrated datapack (committed; deterministic) |
 | `conversion/curated/mods-manifest.json` | Every upstream mod classified keep/rebuild/drop/client-optional |
 | `custom-mods/` | Gradle multi-module Fabric workspace (survival, skills, primitive, world) |
 | `custom-mods/tools/gen_placeholder_assets.py` | Placeholder models/textures/lang/equipment generator |
@@ -75,7 +75,7 @@ How far CI can go:
 cd custom-mods && bash tools/run_gametests.sh [--keep-server]
 # -> builds all modules, boots a throwaway 26.2 server, runs every @GameTest,
 #    prints "gametests: N/M passed", exits nonzero on failure
-#    (83 gametests green: survival + skills + jobs + primitive)
+#    (198 gametests green: survival + skills + jobs + primitive + world + flora + client)
 ```
 
 Gotchas learned the hard way:

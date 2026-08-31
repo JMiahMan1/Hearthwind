@@ -25,7 +25,7 @@ from pathlib import Path
 from typing import Any
 
 ROOT = Path(__file__).resolve().parents[2]
-OUT = ROOT / "conversion" / "datapacks" / "aged-server"
+OUT = ROOT / "conversion" / "datapacks" / "hearthwind"
 SRC_DEFAULT = (
     ROOT / ".tmp/aged-ref/extract/overrides/config/paxi/datapacks/aged"
 )

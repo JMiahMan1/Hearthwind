@@ -23,6 +23,13 @@ The client never grants authority - the server enforces all gates, XP,
 spoilage, and mob scaling. Installing or omitting the client does not
 change gameplay, only presentation.
 
+**Fresh Animations (client pack only):** the client `.mrpack` ships
+`FreshAnimations_v1.10.5.zip` under `resourcepacks/` plus its required
+client mods (`entity_model_features`, `entity_texture_features`). It is
+NOT auto-enabled - after launching, go to `Options > Resource Packs`
+and move Fresh Animations to the active column. Server-only players
+see vanilla mob models either way.
+
 ## Server admins: installing a built pack
 
 ### Option A - Modrinth pack files (recommended)
@@ -30,7 +37,7 @@ change gameplay, only presentation.
 Two files are published per release / CI artifact (`mod-jars` on
 [Actions](../../actions)):
 
-- `HearthwindServer-<ver>-mc26.2.mrpack` - **required** (server mods + `world/datapacks/aged-server/`)
+- `HearthwindServer-<ver>-mc26.2.mrpack` - **required** (server mods + `world/datapacks/hearthwind/`)
 - `HearthwindClient-<ver>-mc26.2.mrpack` - **optional** (players who want HUD/companion visuals)
 
 Server install:
@@ -57,8 +64,8 @@ Prism `mods/`). Vanilla players without it still join fine.
 
 1. Get the `dist/server/` directory (CI artifact or build it yourself):
    contains `fabric-server.jar` (Fabric launcher), `mods/` (all resolved
-   third-party mods), and `world/datapacks/aged-server/` (the migrated
-   tuning datapack - slug `aged-server` kept for world-upgrade compat).
+   third-party mods), and `world/datapacks/hearthwind/` (the migrated
+   tuning datapack, renamed from `aged-server` to `hearthwind`).
 2. Copy our custom mods from the `mod-jars` artifact into `mods/`
    (`hearthwind-survival`, `hearthwind-skills`, `hearthwind-jobs`,
    `hearthwind-primitive`, `hearthwind-world`). For the client pack,
