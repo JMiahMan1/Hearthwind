@@ -154,7 +154,10 @@ public class NutrientsScreen extends Screen {
 
     @Override
     public boolean keyPressed(KeyEvent event) {
-        if (event.key() == GLFW.GLFW_KEY_E || event.key() == GLFW.GLFW_KEY_N || event.key() == GLFW.GLFW_KEY_ESCAPE) {
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.options.keyInventory.matches(event)
+                || NutrientsKey.openNutrients.matches(event)
+                || event.key() == GLFW.GLFW_KEY_ESCAPE) {
             this.onClose();
             return true;
         }

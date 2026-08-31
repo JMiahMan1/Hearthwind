@@ -23,7 +23,8 @@ import net.minecraft.world.level.block.state.BlockState;
  */
 public final class TreeFelling {
     private static final int MAX_FELL_LOGS = 32;
-    private static boolean fellingActive = false;
+    // ThreadLocal prevents re-entrancy per-thread (safe for concurrent players on server tick thread)
+    private static final ThreadLocal<Boolean> fellingActive = ThreadLocal.withInitial(() -> false);
 
     private TreeFelling() {}
 
@@ -34,7 +35,7 @@ public final class TreeFelling {
     static void onBlockBroken(net.minecraft.world.level.Level world,
             net.minecraft.world.entity.player.Player player, BlockPos pos,
             BlockState state, net.minecraft.world.level.block.entity.BlockEntity blockEntity) {
-        if (fellingActive || !state.is(BlockTags.LOGS) || !(player instanceof ServerPlayer sp)
+        if (fellingActive.get() || !state.is(BlockTags.LOGS) || !(player instanceof ServerPlayer sp)
                 || sp.isCreative() || sp.isShiftKeyDown() || !(world instanceof ServerLevel serverLevel)) {
             return;
         }
@@ -51,7 +52,7 @@ public final class TreeFelling {
     }
 
     public static int fellTree(ServerLevel world, ServerPlayer player, BlockPos rootPos, ItemStack axe) {
-        fellingActive = true;
+        fellingActive.set(true);
         int felledCount = 0;
         try {
             Queue<BlockPos> queue = new ArrayDeque<>();
@@ -99,7 +100,7 @@ public final class TreeFelling {
                 }
             }
         } finally {
-            fellingActive = false;
+            fellingActive.set(false);
         }
         return felledCount;
     }

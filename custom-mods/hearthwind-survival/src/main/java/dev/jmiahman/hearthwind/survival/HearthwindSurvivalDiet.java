@@ -122,6 +122,24 @@ public final class HearthwindSurvivalDiet {
         if (state.deficient > 0) {
             applyDeficiencyDebuffs(player);
         }
+        // Balanced diet: refresh absorption hearts (NutritionZ parity)
+        if (cfg.balancedBonusHearts > 0) {
+            if (state.allBalanced) {
+                // Top absorption up to the bonus pool (never shrink existing higher absorption)
+                if (player.getAbsorptionAmount() < cfg.balancedBonusHearts) {
+                    player.setAbsorptionAmount(cfg.balancedBonusHearts);
+                }
+            } else {
+                // Lost balance — cap absorption back down to the bonus maximum so
+                // any extra hearts from golden apples etc. are preserved but the
+                // diet bonus itself drains away naturally.
+                float current = player.getAbsorptionAmount();
+                if (current > 0 && current <= cfg.balancedBonusHearts) {
+                    // Gently decay so the HUD doesn't snap; remove 0.5 per tick cycle
+                    player.setAbsorptionAmount(Math.max(0, current - 0.5f));
+                }
+            }
+        }
     }
 
     /** Decay + classification step; exposed for gametests. */

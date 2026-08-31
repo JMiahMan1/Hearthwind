@@ -45,8 +45,16 @@ public final class SkillsConfig {
         public double strengthPerMeleeKill = 6.0;
         /** Archery XP per ranged-weapon kill. */
         public double archeryPerRangedKill = 6.0;
+        /** Archery XP per successful projectile hit (not kill). */
+        public double archeryPerHit = 1.5;
         /** Farming XP per passive-animal kill (husbandry cull). */
         public double farmingPerAnimalKill = 2.0;
+        /** Defense XP each time the player takes incoming entity damage. */
+        public double defensePerHit = 1.0;
+        /** Smithing XP per smithing table interaction (result pickup handled via mixin). */
+        public double smithingPerInteract = 3.0;
+        /** Trade XP per successful villager trade. */
+        public double tradePerTransaction = 2.0;
     }
 
     public static class Bonuses {

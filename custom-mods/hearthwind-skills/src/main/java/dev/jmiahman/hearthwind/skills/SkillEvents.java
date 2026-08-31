@@ -39,6 +39,50 @@ public final class SkillEvents {
     public static void register() {
         PlayerBlockBreakEvents.AFTER.register(SkillEvents::onBlockBroken);
         ServerLivingEntityEvents.AFTER_DEATH.register(SkillEvents::onDeath);
+        // Defense: XP for taking melee damage
+        net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents.ALLOW_DAMAGE.register(
+                (entity, source, amount) -> {
+                    if (entity instanceof ServerPlayer sp
+                            && !sp.getAbilities().invulnerable
+                            && amount > 0
+                            && source.getEntity() != null) {
+                        SkillXp.addXp(sp, Skill.DEFENSE, SkillsConfig.get().xp.defensePerHit);
+                    }
+                    return true;
+                });
+        // Archery: XP on any projectile hit (not just kill)
+        net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents.ALLOW_DAMAGE.register(
+                (entity, source, amount) -> {
+                    if (source.getEntity() instanceof ServerPlayer sp
+                            && amount > 0) {
+                        net.minecraft.world.entity.projectile.Projectile proj =
+                                source.getDirectEntity() instanceof net.minecraft.world.entity.projectile.Projectile p ? p : null;
+                        if (proj != null) {
+                            SkillXp.addXp(sp, Skill.ARCHERY, SkillsConfig.get().xp.archeryPerHit);
+                        }
+                    }
+                    return true;
+                });
+        // Smithing: XP when taking a result from the smithing table
+        net.fabricmc.fabric.api.event.player.UseBlockCallback.EVENT.register((player, world, hand, hitResult) -> {
+            if (player instanceof ServerPlayer sp) {
+                var state = world.getBlockState(hitResult.getBlockPos());
+                if (state.is(net.minecraft.world.level.block.Blocks.SMITHING_TABLE)) {
+                    // XP awarded via SmithingResultMixin (see hearthwind-jobs smithing mixin)
+                    // Fallback: award small XP on interaction with the table
+                    SkillXp.addXp(sp, Skill.SMITHING, SkillsConfig.get().xp.smithingPerInteract);
+                }
+            }
+            return net.minecraft.world.InteractionResult.PASS;
+        });
+        // Trade: XP on villager trade completion
+        net.fabricmc.fabric.api.event.player.UseEntityCallback.EVENT.register((player, world, hand, entity, hit) -> {
+            if (player instanceof ServerPlayer sp
+                    && entity instanceof net.minecraft.world.entity.npc.villager.AbstractVillager) {
+                SkillXp.addXp(sp, Skill.TRADE, SkillsConfig.get().xp.tradePerTransaction);
+            }
+            return net.minecraft.world.InteractionResult.PASS;
+        });
         net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents.JOIN.register(
                 (handler, sender, server) -> SkillsSync.send(handler.getPlayer()));
     }

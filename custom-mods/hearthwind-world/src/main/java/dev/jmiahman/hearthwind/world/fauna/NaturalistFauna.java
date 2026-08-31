@@ -163,7 +163,8 @@ public final class NaturalistFauna {
     }
 
     private static void registerBiomeSpawns() {
-        for (String mob : new String[] {"deer", "duck", "butterfly", "firefly", "snail"}) {
+        // Forests & Taigas: deer, duck, butterfly, firefly, snail, bear, boar, caterpillar
+        for (String mob : new String[] {"deer", "duck", "butterfly", "firefly", "snail", "bear", "boar", "caterpillar"}) {
             EntityType<?> type = ENTITIES.get(mob);
             if (type != null) {
                 BiomeModifications.addSpawn(
@@ -172,6 +173,7 @@ public final class NaturalistFauna {
             }
         }
 
+        // Savannas & Badlands: zebra, giraffe, elephant, rhino, lion, vulture, rattlesnake
         for (String mob : new String[] {"zebra", "giraffe", "elephant", "rhino", "lion", "vulture", "rattlesnake"}) {
             EntityType<?> type = ENTITIES.get(mob);
             if (type != null) {
@@ -181,12 +183,34 @@ public final class NaturalistFauna {
             }
         }
 
-        for (String mob : new String[] {"alligator", "lizard", "snake", "coral_snake", "snail"}) {
+        // Jungles & Swamps: alligator, lizard, snake, coral_snake, snail, tortoise, hippo
+        for (String mob : new String[] {"alligator", "lizard", "snake", "coral_snake", "snail", "tortoise"}) {
             EntityType<?> type = ENTITIES.get(mob);
             if (type != null) {
                 BiomeModifications.addSpawn(
                         BiomeSelectors.tag(BiomeTags.IS_JUNGLE),
                         MobCategory.CREATURE, type, 4, 1, 2);
+            }
+        }
+
+        // Swamps (hippo needs water adjacency — spawn in jungle+swamp overlap)
+        EntityType<?> hippoType = ENTITIES.get("hippo");
+        if (hippoType != null) {
+            BiomeModifications.addSpawn(
+                    BiomeSelectors.tag(BiomeTags.IS_JUNGLE)
+                            .or(ctx -> ctx.getBiomeKey().identifier().getPath().contains("swamp")),
+                    MobCategory.CREATURE, hippoType, 2, 1, 2);
+        }
+
+        // Rivers & Lakes: bass, catfish — WATER_CREATURE so they spawn in water
+        for (String mob : new String[] {"bass", "catfish"}) {
+            EntityType<?> type = ENTITIES.get(mob);
+            if (type != null) {
+                BiomeModifications.addSpawn(
+                        BiomeSelectors.tag(BiomeTags.IS_RIVER)
+                                .or(ctx -> ctx.getBiomeKey().identifier().getPath().contains("river"))
+                                .or(ctx -> ctx.getBiomeKey().identifier().getPath().contains("ocean")),
+                        MobCategory.WATER_CREATURE, type, 5, 2, 5);
             }
         }
     }

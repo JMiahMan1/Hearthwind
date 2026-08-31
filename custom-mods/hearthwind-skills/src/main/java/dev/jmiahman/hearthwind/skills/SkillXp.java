@@ -50,7 +50,10 @@ public final class SkillXp {
                 ? new java.util.HashMap<>()
                 : new java.util.HashMap<>(existing);
         int before = level(entity, skill);
-        map.merge(skill.id, amount, Double::sum);
+        double newXp = map.getOrDefault(skill.id, 0.0) + amount;
+        // Clamp at max level XP so future maxLevel bumps don't cause instant level-ups
+        double cap = (double) xpForLevel(maxLevel());
+        map.put(skill.id, Math.min(newXp, cap));
         entity.setAttached(XP, map);
         if (entity instanceof net.minecraft.world.entity.LivingEntity living) {
             SkillAttributes.onLevelChanged(living, skill);

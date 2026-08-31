@@ -12,8 +12,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import dev.jmiahman.hearthwind.survival.DietGates;
 import dev.jmiahman.hearthwind.survival.HearthwindSurvivalDiet;
-import net.minecraft.world.item.component.Consumable;
-import net.minecraft.world.level.Level;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 

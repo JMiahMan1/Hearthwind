@@ -12,6 +12,7 @@ import net.minecraft.world.inventory.ResultSlot;
 import net.minecraft.world.item.ItemStack;
 
 import dev.jmiahman.hearthwind.jobs.JobGates;
+import dev.jmiahman.hearthwind.skills.SkillGates;
 
 @Mixin(ResultSlot.class)
 public abstract class CraftingGateMixin {
@@ -23,9 +24,22 @@ public abstract class CraftingGateMixin {
         if (!(player instanceof ServerPlayer sp)) {
             return;
         }
-        if (!JobGates.allowed(sp, self.getItem())) {
+        ItemStack result = self.getItem();
+
+        // Check job gates (jobs-addon parity)
+        if (!JobGates.allowed(sp, result)) {
             sp.sendOverlayMessage(Component.literal(
                     "You need the required job level to craft this item."));
+            cir.setReturnValue(ItemStack.EMPTY);
+            return;
+        }
+
+        // Check skill craft gates (levelz/crafting parity — CRAFT_GATES)
+        SkillGates.Gate skillGate = SkillGates.craftGate(result);
+        if (!SkillGates.allowed(sp, skillGate)) {
+            sp.sendOverlayMessage(Component.literal(
+                    "You need " + skillGate.skill().id + " level " + skillGate.level()
+                    + " to craft this."));
             cir.setReturnValue(ItemStack.EMPTY);
         }
     }

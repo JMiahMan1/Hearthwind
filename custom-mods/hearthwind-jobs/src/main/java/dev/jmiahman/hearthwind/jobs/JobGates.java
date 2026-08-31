@@ -4,7 +4,7 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.Map;
 
 import com.google.gson.JsonArray;
@@ -27,7 +27,7 @@ import net.minecraft.world.item.ItemStack;
 public final class JobGates {
     public record Gate(String jobId, int level) {}
 
-    private static final Map<Identifier, Gate> ITEM_GATES = new HashMap<>();
+    private static final Map<Identifier, Gate> ITEM_GATES = new ConcurrentHashMap<>();
     private static boolean loaded = false;
 
     private JobGates() {}

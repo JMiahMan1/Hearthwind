@@ -399,6 +399,15 @@ public final class SkillGates {
             }
             return InteractionResult.PASS;
         });
+
+        // Crafting gate: intercept result extraction.  We hook the server-side
+        // inventory slot interact (the player shift-clicks or picks up a result)
+        // using Fabric's UseItemCallback on the result item, then re-check via
+        // PlayerBlockBreakEvents won't work here - use ServerPlayerEvents for
+        // container slot pick-up via a dedicated mixin registered separately.
+        // For the broadest compatibility we fire the gate check via a Fabric
+        // ServerPlayNetworking packet intercept (registered in HearthwindSkills).
+        // The actual blocking is done in CraftingGateMixin which reads CRAFT_GATES.
     }
 
     private static void deny(ServerPlayer player, Gate gate, String verb) {

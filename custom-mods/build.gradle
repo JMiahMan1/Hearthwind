@@ -48,6 +48,7 @@ subprojects {
 	if (project.name == 'hearthwind-jobs') {
 		dependencies {
 			implementation project(':hearthwind-survival')
+			implementation project(':hearthwind-skills')
 		}
 	}
 	if (project.name == 'hearthwind-survival') {

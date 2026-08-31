@@ -120,6 +120,7 @@ public final class HearthwindSurvivalSpoilage {
             net.minecraft.util.RandomSource random, double chance, String rotId,
             java.util.function.Consumer<ItemStack> spill) {
         int rotted = 0;
+        boolean changed = false;
         int slots = container.getContainerSize();
         ItemStack rot = rotStack(rotId);
         for (int i = 0; i < slots; i++) {
@@ -131,10 +132,15 @@ public final class HearthwindSurvivalSpoilage {
                 continue;
             }
             s.shrink(1);
+            changed = true;
             rotted++;
             if (!rot.isEmpty()) {
                 spill.accept(rot.copy());
             }
+        }
+        // Mark the container dirty so the spoilage is written to disk on chunk save
+        if (changed) {
+            container.setChanged();
         }
         return rotted;
     }

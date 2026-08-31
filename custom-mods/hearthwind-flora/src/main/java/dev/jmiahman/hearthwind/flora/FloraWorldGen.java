@@ -22,11 +22,12 @@ public final class FloraWorldGen {
     public static void init() {
         // 1. Alpine Wildflowers (Meadows, Peaks, Slopes, Alpine biomes)
         Predicate<BiomeSelectionContext> alpineSelector = ctx ->
-                ctx.hasTag(BiomeTags.IS_HILL) || ctx.hasTag(BiomeTags.IS_MOUNTAIN) ||
+                ctx.hasTag(BiomeTags.IS_MOUNTAIN) ||
                 ctx.getBiomeKey().identifier().getPath().contains("meadow") ||
                 ctx.getBiomeKey().identifier().getPath().contains("peak") ||
                 ctx.getBiomeKey().identifier().getPath().contains("slope") ||
-                ctx.getBiomeKey().identifier().getPath().contains("alpine");
+                ctx.getBiomeKey().identifier().getPath().contains("alpine") ||
+                ctx.getBiomeKey().identifier().getPath().contains("hill");
 
         addFeature("wild_flowers", alpineSelector);
 
