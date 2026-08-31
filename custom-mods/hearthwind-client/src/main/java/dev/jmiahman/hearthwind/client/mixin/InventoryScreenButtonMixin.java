@@ -32,4 +32,16 @@ public abstract class InventoryScreenButtonMixin extends AbstractContainerScreen
             CallbackInfo ci) {
         TabStrip.draw(graphics, this.font, this.leftPos, this.topPos, TabStrip.Tab.INVENTORY, mouseX, mouseY);
     }
+
+    @Inject(method = "mouseClicked", at = @At("HEAD"), cancellable = true)
+    private void hearthwind$onTabClick(double mouseX, double mouseY, int button,
+            org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable<Boolean> cir) {
+        if (button == 0) {
+            TabStrip.Tab clicked = TabStrip.clicked(mouseX, mouseY, this.leftPos, this.topPos);
+            if (clicked != null && clicked != TabStrip.Tab.INVENTORY) {
+                TabStrip.open(clicked);
+                cir.setReturnValue(true);
+            }
+        }
+    }
 }
