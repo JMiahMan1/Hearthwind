@@ -1,3 +1,6 @@
 {
-  "parent": "herbalbrews:block/wild_rooibos"
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "herbalbrews:block/wild_rooibos"
+  }
 }

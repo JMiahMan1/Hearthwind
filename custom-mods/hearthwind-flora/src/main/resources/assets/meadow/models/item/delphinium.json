@@ -1,3 +1,6 @@
 {
-  "parent": "meadow:block/delphinium"
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "meadow:block/delphinium"
+  }
 }

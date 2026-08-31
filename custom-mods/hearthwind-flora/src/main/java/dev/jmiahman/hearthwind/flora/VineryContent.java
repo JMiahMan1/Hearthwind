@@ -13,6 +13,9 @@ import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.LeavesBlock;
+import net.minecraft.world.level.block.RotatedPillarBlock;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 
@@ -52,12 +55,33 @@ public final class VineryContent {
         registerBlock("grapevine_pot", SoundType.STONE, 1.0f);
         registerBlock("fermentation_barrel", SoundType.WOOD, 2.0f);
         registerBlock("apple_press", SoundType.WOOD, 2.0f);
+        registerLeaves("dark_cherry_leaves");
+        registerLeaves("apple_leaves");
+        registerLog("dark_cherry_log");
+        registerLog("apple_log");
+        registerLog("dark_cherry_wood");
+        registerLog("apple_wood");
         registerBlock("dark_cherry_planks", SoundType.WOOD, 2.0f);
-        registerBlock("dark_cherry_log", SoundType.WOOD, 2.0f);
-        registerBlock("dark_cherry_leaves", SoundType.GRASS, 0.2f);
         registerBlock("wine_box", SoundType.WOOD, 2.0f);
-        registerBlock("storage_pot", SoundType.STONE, 1.5f);
-        registerBlock("apple_leaves", SoundType.GRASS, 0.2f);
+        registerPlant("apple_tree_sapling");
+        registerPlant("dark_cherry_sapling");
+    }
+
+    private static void registerPlant(String name) {
+        ResourceKey<Block> bKey = ResourceKey.create(Registries.BLOCK, Identifier.fromNamespaceAndPath(MOD_ID, name));
+        Block block = new FloraPlantBlock(BlockBehaviour.Properties.of()
+                .setId(bKey)
+                .noCollision()
+                .instabreak()
+                .sound(SoundType.GRASS)
+                .offsetType(BlockBehaviour.OffsetType.XZ));
+        Registry.register(BuiltInRegistries.BLOCK, bKey, block);
+        BLOCKS.put(name, block);
+
+        ResourceKey<Item> iKey = ResourceKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath(MOD_ID, name));
+        BlockItem item = new BlockItem(block, new Item.Properties().setId(iKey));
+        Registry.register(BuiltInRegistries.ITEM, iKey, item);
+        ITEMS.put(name, item);
     }
 
     private static Item registerItem(String name) {
@@ -80,6 +104,30 @@ public final class VineryContent {
         ResourceKey<Block> bKey = ResourceKey.create(Registries.BLOCK, Identifier.fromNamespaceAndPath(MOD_ID, name));
         ResourceKey<Item> iKey = ResourceKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath(MOD_ID, name));
         Block block = new Block(BlockBehaviour.Properties.of().sound(sound).strength(hardness).setId(bKey));
+        Registry.register(BuiltInRegistries.BLOCK, bKey, block);
+        Item item = new BlockItem(block, new Item.Properties().setId(iKey).useBlockDescriptionPrefix());
+        Registry.register(BuiltInRegistries.ITEM, iKey, item);
+        BLOCKS.put(name, block);
+        ITEMS.put(name, item);
+        return block;
+    }
+
+    private static Block registerLog(String name) {
+        ResourceKey<Block> bKey = ResourceKey.create(Registries.BLOCK, Identifier.fromNamespaceAndPath(MOD_ID, name));
+        ResourceKey<Item> iKey = ResourceKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath(MOD_ID, name));
+        Block block = new RotatedPillarBlock(BlockBehaviour.Properties.of().sound(SoundType.WOOD).strength(2.0f).setId(bKey));
+        Registry.register(BuiltInRegistries.BLOCK, bKey, block);
+        Item item = new BlockItem(block, new Item.Properties().setId(iKey).useBlockDescriptionPrefix());
+        Registry.register(BuiltInRegistries.ITEM, iKey, item);
+        BLOCKS.put(name, block);
+        ITEMS.put(name, item);
+        return block;
+    }
+
+    private static Block registerLeaves(String name) {
+        ResourceKey<Block> bKey = ResourceKey.create(Registries.BLOCK, Identifier.fromNamespaceAndPath(MOD_ID, name));
+        ResourceKey<Item> iKey = ResourceKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath(MOD_ID, name));
+        Block block = new FloraLeavesBlock(BlockBehaviour.Properties.of().sound(SoundType.GRASS).strength(0.2f).noOcclusion().setId(bKey));
         Registry.register(BuiltInRegistries.BLOCK, bKey, block);
         Item item = new BlockItem(block, new Item.Properties().setId(iKey).useBlockDescriptionPrefix());
         Registry.register(BuiltInRegistries.ITEM, iKey, item);

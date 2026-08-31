@@ -20,7 +20,7 @@ public final class FloraWorldGen {
     private FloraWorldGen() {}
 
     public static void init() {
-        for (String feature : new String[] {"wild_flowers", "wild_herbs", "wild_crops"}) {
+        for (String feature : new String[] {"wild_flowers", "wild_herbs", "wild_crops", "apple_tree", "dark_cherry_tree"}) {
             ResourceKey<PlacedFeature> placed = ResourceKey.create(Registries.PLACED_FEATURE,
                     Identifier.fromNamespaceAndPath(HearthwindFlora.MOD_ID, feature));
             BiomeModifications.addFeature(
