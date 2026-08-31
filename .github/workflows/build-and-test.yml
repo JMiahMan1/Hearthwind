@@ -98,3 +98,47 @@ jobs:
             fi
           done
           tail -50 boot.log; exit 1
+
+  # Full pack packaging: resolve Modrinth index, materialize dist trees,
+  # and upload the .mrpack artifacts (server + client). Dispatch-only.
+  package:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '25'
+      - name: Resolve deps + build pack
+        run: |
+          python3 conversion/scripts/resolve_deps.py
+          python3 conversion/scripts/build_pack.py --server-dir
+      - name: Static feature-order cycle check
+        run: |
+          python3 custom-mods/tools/check_feature_cycles.py \
+            --mods-dir conversion/build/dist/server/mods \
+            --datapack conversion/datapacks/hearthwind \
+            --baseline custom-mods/tools/feature_cycle_baseline.txt \
+            --strict
+      - name: Verify mrpack artifacts exist
+        run: |
+          ls -lh conversion/build/dist/*.mrpack
+          python3 - <<'EOF'
+          import json, glob, sys, zipfile
+          packs = sorted(glob.glob('conversion/build/dist/*.mrpack'))
+          assert len(packs) == 3, f'expected 3 mrpacks (server + alias + client), got {packs}'
+          for p in packs:
+              with zipfile.ZipFile(p) as z:
+                  idx = json.loads(z.read('modrinth.index.json'))
+                  n_files = len(idx['files'])
+                  n_over = sum(1 for n in z.namelist() if n.startswith('overrides/'))
+                  print(f'{p}: {n_files} index files, {n_over} override entries')
+                  assert n_files > 40, 'suspiciously few index files'
+      - name: Upload mrpacks
+        uses: actions/upload-artifact@v4
+        with:
+          name: modpacks
+          path: conversion/build/dist/*.mrpack
+          retention-days: 14
