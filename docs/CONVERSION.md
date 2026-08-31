@@ -19,8 +19,11 @@ path to future releases and snapshots.
 | `hearthwind-skills` | levelz, rpgdifficulty | 12 skills, 3-heart starting progression (+0.5 heart/level), 1,087 content gates, distance mob scaling |
 | `hearthwind-jobs` | jobs-addon (8 jobs) | 8 professions, level curves, `/job` commands, Age tech gating |
 | `hearthwind-primitive` | earlystage, tiered, reciperemover | Surface rock/flint mounds, knapping start, 199 Tiered affixes & reforging |
-| `hearthwind-world` | fabric-seasons, seasonhud, crop_growth_modifier | 18-day seasons, temp/crop multipliers, winter snow layering, waterfowl & flora |
+| `hearthwind-world` | fabric-seasons, seasonhud, crop_growth_modifier, endrem, herdspanic | 18-day seasons, temp/crop multipliers, winter snow layering, waterfowl & fauna |
+| `hearthwind-flora` | let's do family (farm_and_charm, vinery, candlelight, meadow, herbalbrews, brewery) | Complete crops, foraging, tea kettles, fermentation, cheese making, cooking stations |
 | `hearthwind-client` | client HUDs, tabs, main menu | 10 droplets + flask, thermometer trio, season widget, 4-tab strip, Aged main menu |
+| `contrib/yungs/` | yungs api + 5 structure overhauls | 26.2 patched builds for Nether Fortresses, End Island, Desert/Jungle Temples, Ocean Monuments |
+| `contrib/gardens-of-the-dead/` | gardens-of-the-dead 5.0.2 | 26.2 native port with Soulblight Forest & Whistling Woods biomes and flora |
 
 ## Shipped Progression & Parity Highlights
 
@@ -34,9 +37,12 @@ path to future releases and snapshots.
    - Thermometer tube + 12×12 "F" unit box + trend chevron right of hotbar.
    - Top-left 9×9 season widget with 18-day calendar.
    - 4-tab strip (Inventory, Skills, Jobs, Nutrients) on vanilla `#C6C6C6` panels.
-4. **Water Dynamics & River Currents**:
+4. **Nether & Overworld Biome Overhauls**:
+   - Gardens of the Dead (Soulblight Forest & Whistling Woods) and Nature's Spirit 26.2.
+   - Multi-tier diet nutrition integration for all wild foods and crops.
+5. **Water Dynamics & River Currents**:
    - Balanced river drift and ocean swell with directional bubble spray particles.
-5. **Start Screen Art & Layout**:
+6. **Start Screen Art & Layout**:
    - Custom painted HearthWind dark-fantasy cabin art.
    - Left-aligned button stack with Aged hover tints (`#EEDAC3`, `#A1B8B5`, `#6AA7BA`, `#BFA8BF`, `#EB9484`).
    - Top-right icon buttons (Discord, Modrinth, Language, Accessibility).
@@ -49,7 +55,7 @@ path to future releases and snapshots.
 # Build custom mods
 cd custom-mods && ./gradlew build --no-daemon --max-workers=2
 
-# Run headless gametest suite (140/140 passed)
+# Run headless gametest suite (198/198 passed 100% green)
 bash tools/run_gametests.sh
 
 # Sync jars to Prism Launcher & live dev server

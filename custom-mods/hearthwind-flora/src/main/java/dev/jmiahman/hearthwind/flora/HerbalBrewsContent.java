@@ -47,6 +47,7 @@ public final class HerbalBrewsContent {
         registerItem("rooibos_leaf");
         registerItem("yerba_mate_leaf");
         registerItem("coffee_beans");
+        registerItem("tea_blossom");
 
         registerFood("green_tea", TEA_FOOD);
         registerFood("black_tea", TEA_FOOD);

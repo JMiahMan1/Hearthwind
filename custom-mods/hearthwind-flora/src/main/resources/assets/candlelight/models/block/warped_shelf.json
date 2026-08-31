@@ -52,7 +52,7 @@
             16,
             2
           ],
-          "texture": "#missing"
+          "texture": "#particle"
         },
         "west": {
           "uv": [

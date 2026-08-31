@@ -195,12 +195,15 @@ public final class TieredAffixes {
                                          int weight, String color,
                                          List<AffixAttribute> attributes) {
         public boolean matches(ItemStack stack) {
+            if (verifiers.isEmpty()) {
+                return false;
+            }
             for (TagKey<Item> tag : verifiers) {
-                if (!stack.is(tag)) {
-                    return false;
+                if (stack.is(tag)) {
+                    return true;
                 }
             }
-            return true;
+            return false;
         }
 
         public ItemAttributeModifiers getModifiers() {
@@ -221,9 +224,7 @@ public final class TieredAffixes {
         private static Holder<Attribute> getAttribute(String type) {
             try {
                 Identifier id = Identifier.parse(type);
-                if (BuiltInRegistries.ATTRIBUTE.containsKey(id)) {
-                    return Holder.direct(BuiltInRegistries.ATTRIBUTE.getOptional(id).orElse(null));
-                }
+                return BuiltInRegistries.ATTRIBUTE.getOptional(id).map(Holder::direct).orElse(null);
             } catch (Exception e) {
                 // custom attribute from another mod - skip
             }

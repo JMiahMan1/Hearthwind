@@ -58,8 +58,9 @@ public class HearthwindSurvival implements ModInitializer {
 		HearthwindSurvivalTemperature.registerTickLoop();
 		HearthwindSurvivalLoot.init();
 		dev.jmiahman.hearthwind.survival.revive.ReviveManager.register();
+		StarterKit.register();
 		registerSyncTick();
-		LOGGER.info("Hearthwind Survival initialized: thirst + diet + spoilage + temperature + revive systems active");
+		LOGGER.info("Hearthwind Survival initialized: thirst + diet + spoilage + temperature + revive + starter kit systems active");
 	}
 
 	static void registerSyncTick() {

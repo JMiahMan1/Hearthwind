@@ -7,6 +7,21 @@
   "minecraft:sweet_berries",
   "minecraft:glow_berries",
   "minecraft:melon_slice",
-  "minecraft:chorus_fruit"
+  "minecraft:chorus_fruit",
+  {"id": "vinery:red_grape", "required": false},
+  {"id": "vinery:white_grape", "required": false},
+  {"id": "vinery:savanna_grapes_red", "required": false},
+  {"id": "vinery:savanna_grapes_white", "required": false},
+  {"id": "vinery:taiga_grapes_red", "required": false},
+  {"id": "vinery:taiga_grapes_white", "required": false},
+  {"id": "vinery:jungle_grapes_red", "required": false},
+  {"id": "vinery:jungle_grapes_white", "required": false},
+  {"id": "vinery:cherry", "required": false},
+  {"id": "vinery:apple_mash", "required": false},
+  {"id": "vinery:apple_juice", "required": false},
+  {"id": "vinery:grape_juice", "required": false},
+  {"id": "natures_spirit:coconut", "required": false},
+  {"id": "natures_spirit:coconut_half", "required": false},
+  {"id": "natures_spirit:olives", "required": false}
  ]
 }

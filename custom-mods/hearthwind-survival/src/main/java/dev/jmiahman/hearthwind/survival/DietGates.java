@@ -48,8 +48,7 @@ public final class DietGates {
     /** Single requirement; all in a group's list must pass (AND). */
     public record Requirement(String kind, String target, int threshold) {}
 
-    @SuppressWarnings("unchecked")
-    private static final Map<TagKey<Item>, List<Requirement>> GROUP_GATES = new EnumMap<>((Class) TagKey.class);
+    private static final Map<TagKey<Item>, List<Requirement>> GROUP_GATES = new HashMap<>();
     private static final Map<Identifier, List<Requirement>> ITEM_GATES = new HashMap<>();
     private static boolean loaded = false;
 

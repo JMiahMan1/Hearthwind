@@ -44,5 +44,5 @@ logs with `${version}` warnings.
 on Java 25 / loom 1.17.19 and load on a dedicated 26.2 server (build ✅
 2026-08-25, 19 gametests green: 8 survival + 7 skills + 4 jobs; client
 skeleton + primitive steel + world seasons-lite incremental). Gameplay uses
-the migrated datapack (`conversion/datapacks/aged-server/`) as tuning spec.
+the migrated datapack (`conversion/datapacks/hearthwind/`) as tuning spec.
 See `docs/INSTALL.md` for server vs client install routes.

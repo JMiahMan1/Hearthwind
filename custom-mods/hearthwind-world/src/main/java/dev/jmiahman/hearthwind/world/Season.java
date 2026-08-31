@@ -4,6 +4,9 @@ public enum Season {
     SPRING, SUMMER, AUTUMN, WINTER;
 
     public static Season fromDay(long day, int daysPerSeason) {
+        if (daysPerSeason <= 0) {
+            return SPRING;
+        }
         long cycle = Math.floorMod(day / daysPerSeason, 4);
         return switch ((int) cycle) {
             case 0 -> SPRING;

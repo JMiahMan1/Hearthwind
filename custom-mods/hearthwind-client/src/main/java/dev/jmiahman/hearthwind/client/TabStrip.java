@@ -22,10 +22,10 @@ import net.minecraft.world.item.Items;
 public final class TabStrip {
 
     public enum Tab {
-        INVENTORY("Inventory [E]", Items.CHEST),
-        SKILLS("Skills [K]", Items.EXPERIENCE_BOTTLE),
-        JOBS("Jobs [J]", Items.WRITABLE_BOOK),
-        NUTRITION("Nutrients [N]", Items.APPLE);
+        INVENTORY("Inventory [E]", Items.BUNDLE),
+        SKILLS("Skills [K]", Items.IRON_SWORD),
+        JOBS("Jobs [J]", Items.IRON_AXE),
+        PARTY("Party [P]", Items.PLAYER_HEAD);
 
         public final String label;
         public final Item icon;
@@ -75,15 +75,17 @@ public final class TabStrip {
         }
 
         // 2. Draw active tab on top (raised, seamlessly merges into panel)
-        int activeIdx = active.ordinal();
-        int activeX = tabX(panelX, activeIdx);
-        int activeDrawY = panelY - 24;
-        Identifier activeSprite = (activeIdx == 0) ? TAB_FIRST_ACTIVE : TAB_ACTIVE;
-        graphics.blitSprite(RenderPipelines.GUI_TEXTURED, activeSprite, activeX, activeDrawY, TAB_WIDTH, 27);
-        graphics.item(new ItemStack(active.icon), activeX + 4, activeDrawY + 6);
+        if (active != null) {
+            int activeIdx = active.ordinal();
+            int activeX = tabX(panelX, activeIdx);
+            int activeDrawY = panelY - 24;
+            Identifier activeSprite = (activeIdx == 0) ? TAB_FIRST_ACTIVE : TAB_ACTIVE;
+            graphics.blitSprite(RenderPipelines.GUI_TEXTURED, activeSprite, activeX, activeDrawY, TAB_WIDTH, 27);
+            graphics.item(new ItemStack(active.icon), activeX + 4, activeDrawY + 6);
 
-        if (isOver(activeIdx, panelX, panelY, mouseX, mouseY, true)) {
-            hoveredTab = active;
+            if (isOver(activeIdx, panelX, panelY, mouseX, mouseY, true)) {
+                hoveredTab = active;
+            }
         }
 
         // 3. Tooltip on hover
@@ -124,7 +126,7 @@ public final class TabStrip {
             }
             case SKILLS -> mc.setScreenAndShow(new SurvivalInfoScreen(SurvivalInfoScreen.Kind.SKILLS));
             case JOBS -> mc.setScreenAndShow(new SurvivalInfoScreen(SurvivalInfoScreen.Kind.JOBS));
-            case NUTRITION -> mc.setScreenAndShow(new NutrientsScreen());
+            case PARTY -> mc.setScreenAndShow(new SurvivalInfoScreen(SurvivalInfoScreen.Kind.PARTY));
         }
     }
 }

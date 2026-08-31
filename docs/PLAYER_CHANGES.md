@@ -8,6 +8,11 @@ contract of what the pack does. Grown from the Aged fork; server-side only.
 
 - **Starting Health (3 Hearts / 6.0 Max HP)**:
   Players begin their journey with only **3 Hearts (6.0 HP)**. Surviving the early game requires caution and preparation.
+- **Starter Kit & Guidebook**:
+  On first world spawn, every player is automatically granted:
+  - **Hearthwind Survival Guide**: An in-game written book containing comprehensive survival rules, temperature guides, nutrient details, Age 0 rock gathering, skill gates, and job instructions. (Use `/guide` or `/guidebook` anytime to receive a replacement copy).
+  - **Glass Bottle**: For collecting water and managing early hydration.
+  - **Campfire**: For immediate shelter heating against freezing conditions and cooking raw perishables.
 - **Health Skill Scaling**:
   Leveling up the **Health** skill unlocks +0.5 heart (+1.0 HP) per level:
   - Level 0: 3 Hearts (6.0 HP)
@@ -74,6 +79,7 @@ Eight optional professions (Miner, Farmer, Fisher, Warrior, Smither, Brewer, Bui
 - **Wildlife & Fauna Dynamics (`hearthwind-world`)**:
   - **Superb Steeds**: Multi-tier steed breeds, pack mules, draft horses, donkeys, and functional carts.
   - **Waterfowl**: Ducks and waterfowl inhabit rivers, swamps, and shorelines; can be fed seeds and kelp for feathers and breeding.
+  - **Aquatic Life & Ice Spawning**: Bass and catfish spawn across all rivers, oceans, and lakes, including frozen waters directly beneath ice, frosted ice, and packed ice sheets.
   - **Herd Panic**: Attacking one animal causes nearby herd members to panic and stampede together.
   - **Villager Leashing**: Villagers can be attached to leads for organized relocation and transport.
 
@@ -98,3 +104,17 @@ Eight optional professions (Miner, Farmer, Fisher, Warrior, Smither, Brewer, Bui
   - Top-right 20×20 icon buttons (Discord, Modrinth, Language, Accessibility).
 - **Inventory Tab Strip**:
   - 4 tabs above vanilla `#C6C6C6` panels (Inventory Bag, Skills Tablet, Jobs Clipboard, Nutrients Apple) at 25 GUI px pitch.
+
+## Biomes, Nether Exploration & Overworld Frontiers
+
+- **Gardens of the Dead (Nether Overhaul)**:
+  - **Soulblight Forest**: Eerie nether forest biome dense with Soulblight stems, hyphae, blightwart blocks, soulblight sprouts, and hanging/standing glowing soul spores.
+  - **Whistling Woods**: Spooky nether bamboo forest featuring hollow whistling cane, red blistercrown blooms, and tall blistercrown stalks.
+  - **New Wood Sets & Mosaic**: Soulblight brown wood and Whistlecane crimson bamboo planks, doors, trapdoors, fences, signs, and decorative Whistlecane Mosaics.
+  - **Unique Spores & Flora**: Harvesting crops and soul spores provides brewing and composting resources.
+- **Nature's Spirit (Overworld Flora & Biomes)**:
+  - Diverse array of natural biomes, blooming canopies, and regional soil varieties (Kaolin clay).
+  - All wild fruits, vegetables, grains, and nuts from Nature's Spirit are fully integrated with the 5-group Diet & Nutrition system.
+- **YUNG's Dungeon & Fortress Overhauls**:
+  - Massive architectural overhauls for Nether Fortresses, End Islands, Desert Temples, Jungle Temples, and Ocean Monuments.
+

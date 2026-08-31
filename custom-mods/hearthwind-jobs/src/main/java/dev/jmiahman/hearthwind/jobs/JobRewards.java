@@ -22,12 +22,6 @@ public final class JobRewards {
         if (player.getAbilities().instabuild) {
             return;
         }
-        if (isAgeGated(jobId) && AgeState.get(player) < 2) {
-            player.sendSystemMessage(
-                    net.minecraft.network.chat.Component.literal(
-                            "This reward requires Copper Age (Age 2+)."));
-            return;
-        }
         JobDefs.JobDef def = JobDefs.byId(jobId);
         if (def == null) {
             return;
@@ -38,15 +32,6 @@ public final class JobRewards {
                 return;
             }
         }
-    }
-
-    static boolean isAgeGated(String jobId) {
-        for (String s : SMITHER_BREWERS) {
-            if (s.equals(jobId)) {
-                return true;
-            }
-        }
-        return false;
     }
 
     private static void grantItems(ServerPlayer player, java.util.List<String> ids) {

@@ -40,6 +40,10 @@ public class HearthwindSkills implements ModInitializer {
 				dev.jmiahman.hearthwind.skills.party.PartySync.syncTo(player);
 		});
 
+		ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> {
+				dev.jmiahman.hearthwind.skills.party.PartyManager.removePlayer(handler.getPlayer().getUUID());
+		});
+
 		// On respawn / death clone:
 		ServerPlayerEvents.COPY_FROM.register((oldPlayer, newPlayer, alive) -> {
 				SkillAttributes.applyAll(newPlayer);

@@ -12,17 +12,14 @@
   "minecraft:rabbit_stew",
   "minecraft:suspicious_stew",
   "minecraft:dried_kelp",
-  {
-   "id": "farm_and_charm:cabbage",
-   "required": false
-  },
-  {
-   "id": "farm_and_charm:tomato",
-   "required": false
-  },
-  {
-   "id": "farm_and_charm:onion",
-   "required": false
-  }
+  {"id": "farm_and_charm:cabbage", "required": false},
+  {"id": "farm_and_charm:tomato", "required": false},
+  {"id": "farm_and_charm:onion", "required": false},
+  {"id": "farm_and_charm:corn", "required": false},
+  {"id": "candlelight:lettuce", "required": false},
+  {"id": "candlelight:tomato", "required": false},
+  {"id": "candlelight:broccoli", "required": false},
+  {"id": "natures_spirit:desert_turnip", "required": false},
+  {"id": "natures_spirit:olives", "required": false}
  ]
 }

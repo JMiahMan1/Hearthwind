@@ -343,7 +343,7 @@
             8,
             1
           ],
-          "texture": "#missing"
+          "texture": "#particle"
         },
         "east": {
           "uv": [
@@ -352,7 +352,7 @@
             10,
             1
           ],
-          "texture": "#missing"
+          "texture": "#particle"
         },
         "south": {
           "uv": [
@@ -361,7 +361,7 @@
             8,
             1
           ],
-          "texture": "#missing"
+          "texture": "#particle"
         },
         "west": {
           "uv": [
@@ -370,7 +370,7 @@
             10,
             1
           ],
-          "texture": "#missing"
+          "texture": "#particle"
         },
         "up": {
           "uv": [
@@ -388,7 +388,7 @@
             8,
             10
           ],
-          "texture": "#missing"
+          "texture": "#particle"
         }
       }
     }

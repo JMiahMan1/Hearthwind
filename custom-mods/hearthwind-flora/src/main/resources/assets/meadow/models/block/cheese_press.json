@@ -1,0 +1,9 @@
+{
+  "parent": "minecraft:block/orientable",
+  "textures": {
+    "top": "meadow:block/cheese_press_top",
+    "front": "meadow:block/cheese_press_side",
+    "side": "meadow:block/cheese_press_side",
+    "particle": "meadow:block/cheese_press_top"
+  }
+}

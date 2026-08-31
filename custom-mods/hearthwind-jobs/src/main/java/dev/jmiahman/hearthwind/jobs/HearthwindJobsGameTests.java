@@ -97,39 +97,19 @@ public final class HearthwindJobsGameTests {
     }
 
     @GameTest
-    public void smitherRewardsGrantedAtAge2(GameTestHelper helper) {
+    public void smitherRewardsGrantedAtAnyAge(GameTestHelper helper) {
         JobDefs.ensureLoaded();
         var player = helper.makeMockServerPlayerInLevel();
+        player.getInventory().clearContent();
         player.getAbilities().instabuild = false;
-        // Age 2 satisfies the gate
-        AgeState.set(player, 2);
         JobState.join(player, "smither");
-        // Apply level 1 rewards directly
         JobRewards.apply(player, "smither", 1);
-        // Count non-empty inventory slots after reward
         int after = 0;
         for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
             if (!player.getInventory().getItem(i).isEmpty()) after++;
         }
         helper.assertTrue(after > 0,
-                "smither level 1 rewards must be granted at Age 2, got " + after + " items");
-        helper.succeed();
-    }
-
-    @GameTest
-    public void smitherRewardsDeniedBeforeAge2(GameTestHelper helper) {
-        JobDefs.ensureLoaded();
-        var player = helper.makeMockServerPlayerInLevel();
-        player.getAbilities().instabuild = false;
-        AgeState.set(player, 0);
-        JobState.join(player, "smither");
-        JobRewards.apply(player, "smither", 1);
-        int after = 0;
-        for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
-            if (!player.getInventory().getItem(i).isEmpty()) after++;
-        }
-        helper.assertTrue(after == 0,
-                "smither level 1 rewards must be denied at Age 0, got " + after + " items");
+                "smither level 1 rewards must be granted at any Age, got " + after + " items");
         helper.succeed();
     }
 

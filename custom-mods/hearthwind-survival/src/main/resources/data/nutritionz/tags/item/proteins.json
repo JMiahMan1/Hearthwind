@@ -16,9 +16,18 @@
   "minecraft:salmon",
   "minecraft:cooked_salmon",
   "minecraft:tropical_fish",
-  {
-   "id": "farm_and_charm:cheese_slice",
-   "required": false
-  }
+  {"id": "farm_and_charm:cheese_slice", "required": false},
+  {"id": "farm_and_charm:butter", "required": false},
+  {"id": "meadow:cheese_stick", "required": false},
+  {"id": "meadow:cheese_piece", "required": false},
+  {"id": "meadow:cheese_block", "required": false},
+  {"id": "meadow:cheesecake_slice", "required": false},
+  {"id": "candlelight:cooked_beef", "required": false},
+  {"id": "candlelight:beef_tartare", "required": false},
+  {"id": "natures_spirit:cheese_bucket", "required": false},
+  {"id": "natures_spirit:whole_pizza", "required": false},
+  {"id": "natures_spirit:three_quarters_pizza", "required": false},
+  {"id": "natures_spirit:half_pizza", "required": false},
+  {"id": "natures_spirit:quarter_pizza", "required": false}
  ]
 }

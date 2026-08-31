@@ -43,11 +43,12 @@ public final class WaterMotion {
 
                 // 2. Process boats & floating entities in loaded chunks every 2 ticks
                 if (time % 2 == 0) {
+                    java.util.Set<Entity> processed = new java.util.HashSet<>();
                     for (ServerPlayer player : level.players()) {
                         BlockPos pPos = player.blockPosition();
                         net.minecraft.world.phys.AABB box = new net.minecraft.world.phys.AABB(pPos).inflate(32.0);
                         for (Entity entity : level.getEntities((Entity) null, box, e -> (e instanceof AbstractBoat || e instanceof ItemEntity || (e instanceof LivingEntity && !(e instanceof ServerPlayer))))) {
-                            if (entity.isInWater() || isSubmerged(entity, level)) {
+                            if (processed.add(entity) && (entity.isInWater() || isSubmerged(entity, level))) {
                                 applyWaterMotion(entity, level, time);
                             }
                         }
@@ -126,8 +127,17 @@ public final class WaterMotion {
             double speedSq = motion.x * motion.x + motion.z * motion.z;
 
             if (entity instanceof AbstractBoat) {
-                // Boats drift with realistic river momentum
-                entity.setDeltaMovement(motion.x + flowX * 1.8, motion.y, motion.z + flowZ * 1.8);
+                // Boats drift with realistic river momentum, capped to avoid velocity runaway
+                double newBx = motion.x + flowX * 1.2;
+                double newBz = motion.z + flowZ * 1.2;
+                double maxBoatSpeed = 0.5;
+                double bSpeed = Math.sqrt(newBx * newBx + newBz * newBz);
+                if (bSpeed > maxBoatSpeed) {
+                    double scale = maxBoatSpeed / bSpeed;
+                    newBx *= scale;
+                    newBz *= scale;
+                }
+                entity.setDeltaMovement(newBx, motion.y, newBz);
             } else if (entity instanceof ItemEntity) {
                 // Items float downstream
                 entity.setDeltaMovement(motion.x * 0.9 + flowX * 1.5, motion.y, motion.z * 0.9 + flowZ * 1.5);
@@ -136,13 +146,21 @@ public final class WaterMotion {
                 double dot = motion.x * flowX + motion.z * flowZ;
 
                 if (dot < 0) {
-                    // Moving AGAINST current: apply drag (~25% speed penalty)
-                    double drag = 0.76;
+                    // Moving AGAINST current: apply drag (~15% speed penalty)
+                    double drag = 0.85;
                     entity.setDeltaMovement(motion.x * drag, motion.y, motion.z * drag);
                 } else {
-                    // Moving WITH current: apply gentle boost (~15% bonus speed)
-                    double boost = 1.15;
-                    entity.setDeltaMovement(motion.x * boost, motion.y, motion.z * boost);
+                    // Moving WITH current: apply gentle additive flow push (capped)
+                    double newMx = motion.x + flowX * 0.5;
+                    double newMz = motion.z + flowZ * 0.5;
+                    double maxSpeed = 0.35;
+                    double currentSpeed = Math.sqrt(newMx * newMx + newMz * newMz);
+                    if (currentSpeed > maxSpeed) {
+                        double scale = maxSpeed / currentSpeed;
+                        newMx *= scale;
+                        newMz *= scale;
+                    }
+                    entity.setDeltaMovement(newMx, motion.y, newMz);
                 }
             } else {
                 // Entity is idling / floating: apply gentle passive drift

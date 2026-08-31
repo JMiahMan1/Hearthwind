@@ -78,18 +78,19 @@ public class NutrientsScreen extends Screen {
 
         // Draw vanilla-grey panel background + 4 tab strip
         graphics.blitSprite(RenderPipelines.GUI_TEXTURED, PANEL, this.x, this.y, 176, 166);
-        TabStrip.draw(graphics, font, this.x, this.y, TabStrip.Tab.NUTRITION, mouseX, mouseY);
+        TabStrip.draw(graphics, font, this.x, this.y, null, mouseX, mouseY);
 
         String title = this.title.getString();
         graphics.text(font, title, this.x + 88 - font.width(title) / 2, this.y + 6, TITLE, false);
 
         boolean allBalanced = true;
+        String hoveredTooltip = null;
         for (int i = 0; i < 5; i++) {
             // Row pitch: 24 GUI px
             int rowRelY = 18 + i * 24;
             int rowY = this.y + rowRelY;
             int level = Math.round(ClientDietData.get(i));
-            if (level < 80) {
+            if (level < 50) {
                 allBalanced = false;
             }
 
@@ -111,6 +112,19 @@ public class NutrientsScreen extends Screen {
             // Numeric indicator "level/100"
             String valStr = level + "/100";
             graphics.text(font, valStr, this.x + 168 - font.width(valStr), rowY + 1, VALUE, false);
+
+            // Row hover tooltip
+            boolean rowHover = mouseX >= this.x + 8 && mouseX < this.x + 168 && mouseY >= rowY && mouseY < rowY + 22;
+            if (rowHover) {
+                hoveredTooltip = switch (i) {
+                    case 0 -> "Fruits (Deficiency: Mining Fatigue)";
+                    case 1 -> "Vegetables (Deficiency: Weakness)";
+                    case 2 -> "Grains (Deficiency: Slowness)";
+                    case 3 -> "Proteins (Deficiency: Weakness)";
+                    case 4 -> "Sugars (Energy & Saturation)";
+                    default -> null;
+                };
+            }
         }
 
         // Status banner
@@ -121,9 +135,16 @@ public class NutrientsScreen extends Screen {
         String statusText = status.getString();
         graphics.text(font, statusText, this.x + 88 - font.width(statusText) / 2, this.y + 148, statusColor, false);
 
-        // Back-arrow in top-left of panel
-        boolean arrowHovered = mouseX >= this.x + 5 && mouseX < this.x + 19 && mouseY >= this.y + 5 && mouseY < this.y + 19;
-        graphics.blitSprite(RenderPipelines.GUI_TEXTURED, arrowHovered ? ARROW_HOVER : ARROW, this.x + 5, this.y + 5, 14, 14);
+        // Back-arrow in top-left of panel (11x10 native sprite)
+        boolean arrowHovered = mouseX >= this.x + 5 && mouseX < this.x + 16 && mouseY >= this.y + 5 && mouseY < this.y + 15;
+        graphics.blitSprite(RenderPipelines.GUI_TEXTURED, arrowHovered ? ARROW_HOVER : ARROW, this.x + 5, this.y + 5, 11, 10);
+        if (arrowHovered) {
+            hoveredTooltip = "Back to Inventory [E]";
+        }
+
+        if (hoveredTooltip != null) {
+            graphics.setTooltipForNextFrame(Component.literal(hoveredTooltip), mouseX, mouseY);
+        }
     }
 
     @Override
@@ -140,8 +161,8 @@ public class NutrientsScreen extends Screen {
                 return true;
             }
 
-            // Back-arrow click
-            if (mx >= this.x + 5 && mx < this.x + 19 && my >= this.y + 5 && my < this.y + 19) {
+            // Back-arrow click (11x10 hitbox)
+            if (mx >= this.x + 5 && mx < this.x + 16 && my >= this.y + 5 && my < this.y + 15) {
                 Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0f));
                 if (this.minecraft != null && this.minecraft.player != null) {
                     this.minecraft.setScreenAndShow(new InventoryScreen(this.minecraft.player));
@@ -155,6 +176,18 @@ public class NutrientsScreen extends Screen {
     @Override
     public boolean keyPressed(KeyEvent event) {
         Minecraft mc = Minecraft.getInstance();
+        if (NutrientsKey.openSkills.matches(event)) {
+            TabStrip.open(TabStrip.Tab.SKILLS);
+            return true;
+        }
+        if (NutrientsKey.openJobs.matches(event)) {
+            TabStrip.open(TabStrip.Tab.JOBS);
+            return true;
+        }
+        if (NutrientsKey.openParty.matches(event)) {
+            mc.setScreenAndShow(new SurvivalInfoScreen(SurvivalInfoScreen.Kind.PARTY));
+            return true;
+        }
         if (mc.options.keyInventory.matches(event)
                 || NutrientsKey.openNutrients.matches(event)
                 || event.key() == GLFW.GLFW_KEY_ESCAPE) {

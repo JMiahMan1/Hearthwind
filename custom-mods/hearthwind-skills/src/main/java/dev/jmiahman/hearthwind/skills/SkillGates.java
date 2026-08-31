@@ -47,7 +47,7 @@ import net.minecraft.world.phys.EntityHitResult;
  * - <code>levelz/brewing/NN.json</code> -> brewing-stand inputs (ALCHEMY);
  * - <code>levelz/entity/*.json</code>   -> entities that cannot be interacted with.
  *
- * The corpus ships in <code>conversion/datapacks/aged-server</code>, which the
+ * The corpus ships in <code>conversion/datapacks/hearthwind</code>, which the
  * dev world installs; when it is absent we fall back to the bundled
  * <code>data/aged_skills/gates/*.json</code> digest so gates never silently
  * disappear. Ids that do not resolve in the running registries are skipped,

@@ -10,10 +10,10 @@ hand** are intentional deviations — everything else targets parity.
 
 ## 1. Can the Aged datapack be ported to 26.2? — YES (one silent bug fixed)
 
-`conversion/datapacks/aged-server/` is the migrated corpus: **802 files,
+`conversion/datapacks/hearthwind/` is the migrated corpus: **802 files,
 pack_format 107**. Status verified live on the dev server:
 
-- Loads as `file/aged-server (world)` — **zero parse errors** on boot.
+- Loads as `file/hearthwind (world)` — **zero parse errors** on boot.
 - Ore→piece economy verified end-to-end via RCON `loot ... mine`:
   `iron_ore → agedaddition:raw_iron_nugget ×6`, `coal_ore → coal_piece`,
   `diamond_ore → diamond_piece ×3`, `copper_ore → raw_copper_nugget ×21`;
@@ -22,7 +22,7 @@ pack_format 107**. Status verified live on the dev server:
 ### The bug that made it look unportable
 
 The dev world had **no datapack installed** (`Missing data pack
-file/aged-server`) — the whole corpus was inert during every earlier test.
+file/hearthwind`) — the whole corpus was inert during every earlier test.
 After installing it, one real 26.2 incompatibility surfaced:
 
 1.20.1 item predicates carried enchantments inline; 26.x moved them behind
@@ -249,9 +249,9 @@ docs/PATCH_PORT_STUDY.md.
 ```bash
 # regenerate + install the corpus
 python3 conversion/scripts/migrate_datapack.py         # defaults to .tmp/aged-ref/...
-cp -R conversion/datapacks/aged-server dev-server/world/datapacks/
+cp -R conversion/datapacks/hearthwind dev-server/world/datapacks/
 # restart dev server (Popen start_new_session pattern), then:
-python3 custom-mods/tools/rcon.py 127.0.0.1 25575 agedtest "datapack list"   # must show file/aged-server
+python3 custom-mods/tools/rcon.py 127.0.0.1 25575 agedtest "datapack list"   # must show file/hearthwind
 python3 custom-mods/tools/rcon.py 127.0.0.1 25575 agedtest \
   "loot spawn 9 72 9 mine 9 70 9 minecraft:diamond_pickaxe"   # -> raw_iron_nugget (with iron_ore placed)
 ```

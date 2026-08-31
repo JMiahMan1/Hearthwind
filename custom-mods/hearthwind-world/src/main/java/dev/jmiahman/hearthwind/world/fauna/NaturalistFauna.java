@@ -176,11 +176,25 @@ public final class NaturalistFauna {
         net.minecraft.world.entity.SpawnPlacements.register(type,
                 net.minecraft.world.entity.SpawnPlacementTypes.IN_WATER,
                 net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
-                (entityType, levelAccessor, spawnType, blockPos, randomSource) ->
-                        levelAccessor.getFluidState(blockPos).is(net.minecraft.tags.FluidTags.WATER)
-                        && levelAccessor.getBlockState(blockPos).is(net.minecraft.world.level.block.Blocks.WATER)
-                        && !levelAccessor.getBlockState(blockPos).is(net.minecraft.world.level.block.Blocks.ICE)
-                        && !levelAccessor.getBlockState(blockPos.above()).is(net.minecraft.world.level.block.Blocks.ICE));
+                NaturalistFauna::checkFishSpawnRules);
+    }
+
+    public static boolean checkFishSpawnRules(EntityType<? extends net.minecraft.world.entity.animal.fish.AbstractFish> entityType,
+            net.minecraft.world.level.LevelAccessor levelAccessor,
+            net.minecraft.world.entity.EntitySpawnReason spawnType,
+            BlockPos blockPos,
+            net.minecraft.util.RandomSource randomSource) {
+        if (!levelAccessor.getFluidState(blockPos).is(net.minecraft.tags.FluidTags.WATER)
+                || !levelAccessor.getBlockState(blockPos).is(net.minecraft.world.level.block.Blocks.WATER)) {
+            return false;
+        }
+        var aboveState = levelAccessor.getBlockState(blockPos.above());
+        return aboveState.is(net.minecraft.world.level.block.Blocks.WATER)
+                || aboveState.is(net.minecraft.world.level.block.Blocks.ICE)
+                || aboveState.is(net.minecraft.world.level.block.Blocks.FROSTED_ICE)
+                || aboveState.is(net.minecraft.world.level.block.Blocks.PACKED_ICE)
+                || aboveState.is(net.minecraft.world.level.block.Blocks.BLUE_ICE)
+                || aboveState.isAir();
     }
 
     private static void registerBiomeSpawns() {
@@ -223,7 +237,7 @@ public final class NaturalistFauna {
                     MobCategory.CREATURE, hippoType, 2, 1, 2);
         }
 
-        // Rivers & Oceans: bass, catfish — WATER_CREATURE, strictly in non-frozen water
+        // Rivers & Oceans: bass, catfish — WATER_CREATURE in all water bodies (including frozen rivers/oceans)
         for (String mob : new String[] {"bass", "catfish"}) {
             EntityType<?> type = ENTITIES.get(mob);
             if (type != null) {
@@ -231,9 +245,8 @@ public final class NaturalistFauna {
                         ctx -> {
                             var key = ctx.getBiomeKey().identifier();
                             String path = key.getPath();
-                            return (ctx.hasTag(BiomeTags.IS_RIVER) || ctx.hasTag(BiomeTags.IS_OCEAN)
-                                    || path.contains("river") || path.contains("ocean"))
-                                    && !path.contains("frozen") && !path.contains("ice");
+                            return ctx.hasTag(BiomeTags.IS_RIVER) || ctx.hasTag(BiomeTags.IS_OCEAN)
+                                    || path.contains("river") || path.contains("ocean");
                         },
                         MobCategory.WATER_CREATURE, type, 5, 2, 5);
             }

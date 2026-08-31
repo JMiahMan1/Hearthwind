@@ -162,4 +162,118 @@ public final class HearthwindWorldGameTests {
                 "animals must not breed in winter by default");
         helper.succeed();
     }
+
+    @GameTest
+    public void naturesSpiritBlocksAndItemsRegistered(GameTestHelper helper) {
+        String[] nsBlocks = {
+            "redwood_log", "redwood_planks", "aspen_log", "aspen_planks",
+            "cypress_log", "cypress_planks", "sugi_log", "sugi_planks",
+            "fir_log", "fir_planks", "maple_log", "maple_planks",
+            "wisteria_log", "wisteria_planks", "willow_log", "willow_planks",
+            "coconut_log", "coconut_planks", "olive_log", "olive_planks",
+            "travertine", "chert", "white_chalk"
+        };
+        for (String b : nsBlocks) {
+            helper.assertTrue(BuiltInRegistries.ITEM.containsKey(Identifier.fromNamespaceAndPath("natures_spirit", b)),
+                    "natures_spirit:" + b + " item must be registered");
+            helper.assertTrue(BuiltInRegistries.BLOCK.containsKey(Identifier.fromNamespaceAndPath("natures_spirit", b)),
+                    "natures_spirit:" + b + " block must be registered");
+        }
+        helper.assertTrue(BuiltInRegistries.ITEM.containsKey(Identifier.fromNamespaceAndPath("natures_spirit", "chalk_powder")),
+                "natures_spirit:chalk_powder item must be registered");
+        helper.succeed();
+    }
+
+    @GameTest
+    public void yungsStructureProcessorsRegistered(GameTestHelper helper) {
+        String[][] yungsProcessors = {
+            {"betterfortresses", "pillar_processor"},
+            {"betterfortresses", "stair_pillar_processor"},
+            {"betteroceanmonuments", "waterlog_processor"},
+            {"betterendisland", "obsidian_processor"}
+        };
+        for (String[] st : yungsProcessors) {
+            helper.assertTrue(BuiltInRegistries.STRUCTURE_PROCESSOR.containsKey(Identifier.fromNamespaceAndPath(st[0], st[1])),
+                    st[0] + ":" + st[1] + " structure processor type must be registered");
+        }
+        helper.succeed();
+    }
+
+    @GameTest
+    public void gardensOfTheDeadContentRegistered(GameTestHelper helper) {
+        String[] blocks = {
+            "soulblight_sprouts", "soulblight_fungus", "blistercrown",
+            "whistlecane", "soul_spore", "glowing_soul_spore",
+            "soulblight_stem", "soulblight_planks", "soulblight_hyphae"
+        };
+        for (String b : blocks) {
+            helper.assertTrue(BuiltInRegistries.BLOCK.containsKey(Identifier.fromNamespaceAndPath("gardens_of_the_dead", b)),
+                    "gardens_of_the_dead:" + b + " block must be registered");
+        }
+        helper.assertTrue(BuiltInRegistries.ITEM.containsKey(Identifier.fromNamespaceAndPath("gardens_of_the_dead", "soulblight_spores")),
+                "gardens_of_the_dead:soulblight_spores item must be registered");
+        helper.succeed();
+    }
+
+    @GameTest
+    public void additional26xModsContentRegistered(GameTestHelper helper) {
+        // TLC structures
+        helper.assertTrue(BuiltInRegistries.STRUCTURE_TYPE.containsKey(Identifier.fromNamespaceAndPath("tlc", "lost_castle")),
+                "tlc:lost_castle structure type must be registered");
+        helper.assertTrue(BuiltInRegistries.STRUCTURE_PROCESSOR.containsKey(Identifier.fromNamespaceAndPath("tlc", "foundation_processor")),
+                "tlc:foundation_processor structure processor must be registered");
+
+        // Birds Boids
+        helper.assertTrue(BuiltInRegistries.ENTITY_TYPE.containsKey(Identifier.fromNamespaceAndPath("birdsboids", "bird")),
+                "birdsboids:bird entity type must be registered");
+        helper.assertTrue(BuiltInRegistries.ITEM.containsKey(Identifier.fromNamespaceAndPath("birdsboids", "bird_spawn_egg")),
+                "birdsboids:bird_spawn_egg item must be registered");
+
+        // Extended Drawers
+        helper.assertTrue(BuiltInRegistries.BLOCK.containsKey(Identifier.fromNamespaceAndPath("extended_drawers", "single_drawer")),
+                "extended_drawers:single_drawer block must be registered");
+
+        // Chalk
+        helper.assertTrue(BuiltInRegistries.ITEM.containsKey(Identifier.fromNamespaceAndPath("chalk", "white_chalk")),
+                "chalk:white_chalk item must be registered");
+
+        helper.succeed();
+    }
+
+    @GameTest
+    public void fishSpawnInWaterAndUnderIce(GameTestHelper helper) {
+        var waterPos = new net.minecraft.core.BlockPos(2, 2, 2);
+        var abovePos = waterPos.above();
+
+        // 1. In open water: water at pos, water above pos
+        helper.setBlock(waterPos, net.minecraft.world.level.block.Blocks.WATER.defaultBlockState());
+        helper.setBlock(abovePos, net.minecraft.world.level.block.Blocks.WATER.defaultBlockState());
+        boolean openWater = dev.jmiahman.hearthwind.world.fauna.NaturalistFauna.checkFishSpawnRules(
+                null, helper.getLevel(), net.minecraft.world.entity.EntitySpawnReason.NATURAL,
+                helper.absolutePos(waterPos), net.minecraft.util.RandomSource.create());
+        helper.assertTrue(openWater, "Fish must spawn in open water");
+
+        // 2. Under ice: water at pos, ice above pos
+        helper.setBlock(abovePos, net.minecraft.world.level.block.Blocks.ICE.defaultBlockState());
+        boolean underIce = dev.jmiahman.hearthwind.world.fauna.NaturalistFauna.checkFishSpawnRules(
+                null, helper.getLevel(), net.minecraft.world.entity.EntitySpawnReason.NATURAL,
+                helper.absolutePos(waterPos), net.minecraft.util.RandomSource.create());
+        helper.assertTrue(underIce, "Fish must spawn under ice");
+
+        // 3. Under frosted ice / packed ice
+        helper.setBlock(abovePos, net.minecraft.world.level.block.Blocks.PACKED_ICE.defaultBlockState());
+        boolean underPackedIce = dev.jmiahman.hearthwind.world.fauna.NaturalistFauna.checkFishSpawnRules(
+                null, helper.getLevel(), net.minecraft.world.entity.EntitySpawnReason.NATURAL,
+                helper.absolutePos(waterPos), net.minecraft.util.RandomSource.create());
+        helper.assertTrue(underPackedIce, "Fish must spawn under packed ice");
+
+        // 4. Solid opaque non-ice block above (e.g. stone roof with no water / no air) should reject
+        helper.setBlock(abovePos, net.minecraft.world.level.block.Blocks.STONE.defaultBlockState());
+        boolean underStone = dev.jmiahman.hearthwind.world.fauna.NaturalistFauna.checkFishSpawnRules(
+                null, helper.getLevel(), net.minecraft.world.entity.EntitySpawnReason.NATURAL,
+                helper.absolutePos(waterPos), net.minecraft.util.RandomSource.create());
+        helper.assertTrue(!underStone, "Fish must not spawn under solid stone roof");
+
+        helper.succeed();
+    }
 }

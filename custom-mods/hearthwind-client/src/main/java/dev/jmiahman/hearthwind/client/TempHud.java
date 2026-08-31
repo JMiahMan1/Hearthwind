@@ -68,14 +68,14 @@ public final class TempHud implements HudElement {
         int boxY = height - 17;
         graphics.blitSprite(RenderPipelines.GUI_TEXTURED, UNIT_BOX_F, boxX, boxY, 12, 12);
 
-        // 3. Trend Arrow: x = width/2 + 124, y = height - 18 (~15x15 chevron)
-        int arrowX = width / 2 + 124;
-        int arrowY = height - 18;
+        // 3. Trend Arrow: x = width/2 + 126, y = height - 16 (7x9 native sprite)
+        int arrowX = width / 2 + 126;
+        int arrowY = height - 16;
         int trend = ClientTempData.trendDirection();
         if (trend != 0) {
             graphics.blitSprite(RenderPipelines.GUI_TEXTURED,
                     trend > 0 ? ARROW_UP : ARROW_DOWN,
-                    arrowX, arrowY, 15, 15);
+                    arrowX, arrowY, 7, 9);
         }
     }
 }

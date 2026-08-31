@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_all",
+  "textures": {
+    "all": "farm_and_charm:block/butter_churn",
+    "particle": "farm_and_charm:block/butter_churn"
+  }
+}

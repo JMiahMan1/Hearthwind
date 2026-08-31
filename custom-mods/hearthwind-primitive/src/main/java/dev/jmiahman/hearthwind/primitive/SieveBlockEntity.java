@@ -69,6 +69,9 @@ public class SieveBlockEntity extends BlockEntity implements Container {
     }
 
     private void update() {
+        if (this.level == null) {
+            return;
+        }
         if (!this.isEmpty() && this.level.hasNeighborSignal(this.worldPosition)) {
             this.tick++;
             if (this.tick >= HearthwindPrimitiveConfig.get().redstoneSieveTicks) {
@@ -89,6 +92,9 @@ public class SieveBlockEntity extends BlockEntity implements Container {
     }
 
     public void sieve() {
+        if (this.level == null) {
+            return;
+        }
         this.sieveCount++;
         if (this.sieveCount > 3) {
             if (!this.level.isClientSide()) {

@@ -809,4 +809,38 @@ public final class HearthwindSurvivalGameTests {
         helper.assertTrue(quench == expected,
                 BuiltInRegistries.ITEM.getKey(item) + " must quench " + expected + " (got " + quench + ")");
     }
+
+    @GameTest
+    public void starterKitContainsGuidebookBottleAndCampfire(GameTestHelper helper) {
+        ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        player.getInventory().clearContent();
+
+        StarterKit.grantStarterKit(player);
+
+        // Verify Guidebook
+        boolean hasBook = false;
+        boolean hasBottle = false;
+        boolean hasCampfire = false;
+
+        for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
+            ItemStack stack = player.getInventory().getItem(i);
+            if (stack.is(Items.WRITTEN_BOOK)) {
+                var content = stack.get(DataComponents.WRITTEN_BOOK_CONTENT);
+                if (content != null && content.title().raw().contains("Hearthwind Survival Guide")
+                        && content.pages().size() >= 5) {
+                    hasBook = true;
+                }
+            } else if (stack.is(Items.GLASS_BOTTLE)) {
+                hasBottle = true;
+            } else if (stack.is(Items.CAMPFIRE)) {
+                hasCampfire = true;
+            }
+        }
+
+        helper.assertTrue(hasBook, "Player must receive a valid Survival Guidebook with pages");
+        helper.assertTrue(hasBottle, "Player must receive a Glass Bottle");
+        helper.assertTrue(hasCampfire, "Player must receive a Campfire");
+
+        helper.succeed();
+    }
 }

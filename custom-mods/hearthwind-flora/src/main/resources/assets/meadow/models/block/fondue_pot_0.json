@@ -77,7 +77,7 @@
             10,
             1
           ],
-          "texture": "#missing"
+          "texture": "#particle"
         },
         "down": {
           "uv": [
@@ -154,7 +154,7 @@
             10,
             1
           ],
-          "texture": "#missing"
+          "texture": "#particle"
         },
         "down": {
           "uv": [

@@ -68,6 +68,9 @@ public class FruitLeavesBlock extends LeavesBlock implements BonemealableBlock {
     @Override
     protected void randomTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
         super.randomTick(state, level, pos, random);
+        if (!level.getBlockState(pos).is(this)) {
+            return;
+        }
         int age = state.getValue(AGE);
         if (age < 3 && level.getRawBrightness(pos.above(), 0) >= 9 && random.nextInt(5) == 0) {
             BlockState next = state.setValue(AGE, age + 1);
@@ -81,13 +84,16 @@ public class FruitLeavesBlock extends LeavesBlock implements BonemealableBlock {
             Player player, InteractionHand hand, BlockHitResult hitResult) {
         int age = state.getValue(AGE);
         if (age == 3) {
+            if (level.isClientSide()) {
+                return InteractionResult.SUCCESS;
+            }
             int count = 1 + level.getRandom().nextInt(2);
             popResource(level, pos, new ItemStack(this.fruitSupplier.get(), count));
             level.playSound(null, pos, SoundEvents.SWEET_BERRY_BUSH_PICK_BERRIES, SoundSource.BLOCKS, 1.0F, 0.8F + level.getRandom().nextFloat() * 0.4F);
             BlockState resetState = state.setValue(AGE, 0);
             level.setBlock(pos, resetState, Block.UPDATE_ALL);
             level.gameEvent(GameEvent.BLOCK_CHANGE, pos, GameEvent.Context.of(player, resetState));
-            return InteractionResult.SUCCESS;
+            return InteractionResult.SUCCESS_SERVER;
         }
         return super.useItemOn(stack, state, level, pos, player, hand, hitResult);
     }

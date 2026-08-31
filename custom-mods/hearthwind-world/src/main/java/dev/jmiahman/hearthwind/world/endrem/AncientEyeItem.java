@@ -77,6 +77,6 @@ public class AncientEyeItem extends Item {
                 return InteractionResult.SUCCESS_SERVER;
             }
         }
-        return InteractionResult.CONSUME;
+        return InteractionResult.FAIL;
     }
 }

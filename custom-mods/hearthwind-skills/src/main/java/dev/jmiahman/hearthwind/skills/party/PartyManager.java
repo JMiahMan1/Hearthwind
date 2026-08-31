@@ -15,6 +15,7 @@ public final class PartyManager {
     private static final Map<UUID, Party> partiesById = new ConcurrentHashMap<>();
     private static final Map<UUID, UUID> playerToParty = new ConcurrentHashMap<>();
     private static final Map<UUID, Invite> pendingInvites = new ConcurrentHashMap<>();
+    private static final Map<UUID, ServerPlayer> activePlayers = new ConcurrentHashMap<>();
 
     public record Invite(UUID partyId, UUID fromPlayer, long timestamp) {}
 
@@ -31,6 +32,13 @@ public final class PartyManager {
         return partyId == null ? null : partiesById.get(partyId);
     }
 
+    public static void reset() {
+        partiesById.clear();
+        playerToParty.clear();
+        pendingInvites.clear();
+        activePlayers.clear();
+    }
+
     public static boolean areInSameParty(UUID playerA, UUID playerB) {
         if (playerA == null || playerB == null || playerA.equals(playerB)) return false;
         UUID partyA = playerToParty.get(playerA);
@@ -39,6 +47,8 @@ public final class PartyManager {
     }
 
     public static Party createParty(ServerPlayer leader, String name) {
+        if (leader == null) return null;
+        activePlayers.put(leader.getUUID(), leader);
         if (getPartyByPlayer(leader.getUUID()) != null) {
             leader.sendSystemMessage(Component.literal("You are already in a party! Leave it first.").withStyle(ChatFormatting.RED));
             return null;
@@ -54,7 +64,18 @@ public final class PartyManager {
         return party;
     }
 
+    public static void removePlayer(UUID uuid) {
+        if (uuid != null) {
+            activePlayers.remove(uuid);
+        }
+    }
+
     public static boolean invitePlayer(ServerPlayer leader, ServerPlayer target) {
+        if (leader == null || target == null) {
+            return false;
+        }
+        activePlayers.put(leader.getUUID(), leader);
+        activePlayers.put(target.getUUID(), target);
         Party party = getPartyByPlayer(leader.getUUID());
         if (party == null) {
             leader.sendSystemMessage(Component.literal("You are not in a party! Create one with /party create").withStyle(ChatFormatting.RED));
@@ -76,6 +97,7 @@ public final class PartyManager {
     }
 
     public static boolean acceptInvite(ServerPlayer player) {
+        if (player != null) activePlayers.put(player.getUUID(), player);
         Invite invite = pendingInvites.remove(player.getUUID());
         if (invite == null || System.currentTimeMillis() - invite.timestamp() > 60000) {
             player.sendSystemMessage(Component.literal("You have no pending party invitations (or it expired).").withStyle(ChatFormatting.RED));
@@ -191,7 +213,7 @@ public final class PartyManager {
 
         int dimensionMembers = 0;
         for (UUID memberId : party.getMembers()) {
-            ServerPlayer member = server.getPlayerList().getPlayer(memberId);
+            ServerPlayer member = findMember(memberId, source, server);
             if (member != null && member.level() == source.level()) {
                 dimensionMembers++;
             }
@@ -203,17 +225,36 @@ public final class PartyManager {
 
         for (UUID memberId : party.getMembers()) {
             if (memberId.equals(source.getUUID())) continue;
-            ServerPlayer member = server.getPlayerList().getPlayer(memberId);
+            ServerPlayer member = findMember(memberId, source, server);
             if (member != null && member.level() == source.level() && member.distanceToSqr(source) <= 32 * 32) {
                 SkillXp.award(member, skill, sharedPoints);
             }
         }
     }
 
+    private static ServerPlayer findMember(UUID memberId, ServerPlayer source, MinecraftServer server) {
+        ServerPlayer cached = activePlayers.get(memberId);
+        if (cached != null) return cached;
+        if (server != null) {
+            ServerPlayer sp = server.getPlayerList().getPlayer(memberId);
+            if (sp != null) return sp;
+        }
+        if (source != null && source.level() instanceof net.minecraft.server.level.ServerLevel sl) {
+            net.minecraft.world.entity.Entity e = sl.getEntity(memberId);
+            if (e instanceof ServerPlayer sp) return sp;
+            for (var p : sl.players()) {
+                if (p instanceof ServerPlayer sp && sp.getUUID().equals(memberId)) {
+                    return sp;
+                }
+            }
+        }
+        return null;
+    }
+
     private static void broadcast(Party party, MinecraftServer server, Component msg) {
         if (server == null) return;
         for (UUID member : party.getMembers()) {
-            ServerPlayer sp = server.getPlayerList().getPlayer(member);
+            ServerPlayer sp = findMember(member, null, server);
             if (sp != null) {
                 sp.sendSystemMessage(msg);
             }
@@ -222,7 +263,7 @@ public final class PartyManager {
 
     private static String getPlayerName(UUID uuid, MinecraftServer server) {
         if (server == null) return "Unknown";
-        ServerPlayer sp = server.getPlayerList().getPlayer(uuid);
+        ServerPlayer sp = findMember(uuid, null, server);
         return sp == null ? "Unknown" : sp.getName().getString();
     }
 }

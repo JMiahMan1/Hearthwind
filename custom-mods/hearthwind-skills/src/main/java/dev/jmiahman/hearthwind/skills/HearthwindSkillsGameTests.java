@@ -411,6 +411,7 @@ public final class HearthwindSkillsGameTests {
 
     @GameTest
     public void partySharedXpAwardsNearbyMembers(GameTestHelper helper) {
+        dev.jmiahman.hearthwind.skills.party.PartyManager.reset();
         var leader = helper.makeMockServerPlayerInLevel();
         var member = helper.makeMockServerPlayerInLevel();
 

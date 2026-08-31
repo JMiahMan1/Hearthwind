@@ -5,13 +5,22 @@
   "minecraft:cookie",
   "minecraft:cake",
   "minecraft:pumpkin_pie",
-  {
-   "id": "farm_and_charm:strawberry_cake_slice",
-   "required": false
-  },
-  {
-   "id": "brewery:oat_bread",
-   "required": false
-  }
+  {"id": "farm_and_charm:strawberry_cake_slice", "required": false},
+  {"id": "farm_and_charm:dough", "required": false},
+  {"id": "farm_and_charm:flour", "required": false},
+  {"id": "farm_and_charm:pasta_raw", "required": false},
+  {"id": "farm_and_charm:pasta_cooked", "required": false},
+  {"id": "brewery:oat_bread", "required": false},
+  {"id": "bakery:bread", "required": false},
+  {"id": "bakery:baguette", "required": false},
+  {"id": "bakery:bun", "required": false},
+  {"id": "bakery:toast", "required": false},
+  {"id": "bakery:croissant", "required": false},
+  {"id": "bakery:crusty_bread", "required": false},
+  {"id": "bakery:braided_bread", "required": false},
+  {"id": "natures_spirit:whole_pizza", "required": false},
+  {"id": "natures_spirit:three_quarters_pizza", "required": false},
+  {"id": "natures_spirit:half_pizza", "required": false},
+  {"id": "natures_spirit:quarter_pizza", "required": false}
  ]
 }

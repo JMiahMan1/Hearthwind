@@ -1,8 +1,18 @@
 package dev.jmiahman.hearthwind.primitive;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.fabricmc.fabric.api.gametest.v1.GameTest;
+import org.objectweb.asm.AnnotationVisitor;
+import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.Type;
+import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.FieldVisitor;
+import org.objectweb.asm.MethodVisitor;
+import org.objectweb.asm.Opcodes;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
@@ -516,6 +526,8 @@ public final class HearthwindPrimitiveGameTests {
     @GameTest
     public void redstoneSieveTakesStackOutWithEmptyHand(GameTestHelper helper) {
         ServerPlayer mockPlayer = helper.makeMockServerPlayerInLevel();
+        mockPlayer.getInventory().clearContent();
+        mockPlayer.setItemInHand(InteractionHand.MAIN_HAND, ItemStack.EMPTY);
         net.minecraft.core.BlockPos rel = new net.minecraft.core.BlockPos(2, 1, 3);
         helper.setBlock(rel, HearthwindPrimitiveBlocks.REDSTONE_SIEVE.defaultBlockState());
         var abs = helper.absolutePos(rel);
@@ -1095,4 +1107,295 @@ public final class HearthwindPrimitiveGameTests {
                         net.minecraft.resources.Identifier.parse(id)))
                 .isPresent();
     }
+
+    /**
+     * Client-mixin boot audit (headless). Client-only mixins never apply on a
+     * dedicated server, so a broken client mixin (e.g. {@code @Shadow} of a
+     * member inherited from the target's superclass) used to reach every real
+     * client boot untested and crash {@code MenuScreens.<clinit>}. This audit
+     * parses every hearthwind mixins.json (server AND client arrays) straight
+     * out of the mod jars and asserts each {@code @Shadow} member is DECLARED
+     * in its {@code @Mixin} target class - mixin shadow validation only
+     * resolves members declared in the target class itself.
+     */
+    @GameTest
+    public void everyMixinShadowResolvesInItsTarget(GameTestHelper helper) throws Exception {
+        int audited = 0;
+        for (String module : new String[] { "hearthwind_survival", "hearthwind_skills",
+                "hearthwind_jobs", "hearthwind_primitive", "hearthwind_world", "hearthwind_client" }) {
+            audited += auditMixinModule(helper, module);
+        }
+        helper.assertTrue(audited >= 28, "audit must cover every mixin class, got " + audited);
+        helper.succeed();
+    }
+
+    private static int auditMixinModule(GameTestHelper helper, String module) throws Exception {
+        JsonElement json = mixinConfigJson(module);
+        if (json == null || !json.isJsonObject()) {
+            return 0;
+        }
+        JsonObject cfg = json.getAsJsonObject();
+        String pkg = cfg.get("package").getAsString().replace('.', '/');
+        int count = 0;
+        for (String array : new String[] { "mixins", "client", "server" }) {
+            if (!cfg.has(array) || !cfg.get(array).isJsonArray()) {
+                continue;
+            }
+            for (JsonElement e : cfg.getAsJsonArray(array)) {
+                String name = e.getAsString();
+                String classPath = pkg + '/' + name.replace('.', '/') + ".class";
+                byte[] mixinBytes = modResourceBytes(module, classPath);
+                helper.assertTrue(mixinBytes != null,
+                        module + " mixin class missing from its jar: " + classPath);
+                auditShadowClass(helper, module, name, mixinBytes);
+                count++;
+            }
+        }
+        return count;
+    }
+
+    private static void auditShadowClass(GameTestHelper helper, String module, String mixinName,
+            byte[] mixinBytes) throws Exception {
+        String[] target = { null };
+        java.util.List<String> shadowFields = new java.util.ArrayList<>();
+        java.util.List<String> shadowMethods = new java.util.ArrayList<>();
+        java.util.List<String> injectionSelectors = new java.util.ArrayList<>();
+        new ClassReader(mixinBytes).accept(new ClassVisitor(Opcodes.ASM9) {
+            @Override
+            public AnnotationVisitor visitAnnotation(String desc, boolean visible) {
+                if (!"Lorg/spongepowered/asm/mixin/Mixin;".equals(desc)) {
+                    return null;
+                }
+                return new AnnotationVisitor(Opcodes.ASM9) {
+                    private void acceptTarget(Object v) {
+                        if (v instanceof Type t) {
+                            target[0] = t.getInternalName();
+                        } else if (v instanceof String s) {
+                            // @Mixin.targets is String[] and may be dotted or
+                            // L-form internal; nested classes keep their $.
+                            target[0] = s.startsWith("L") && s.endsWith(";")
+                                    ? s.substring(1, s.length() - 1)
+                                    : s.replace('.', '/');
+                        }
+                    }
+
+                    @Override
+                    public AnnotationVisitor visitArray(String key) {
+                        if (!"value".equals(key) && !"targets".equals(key)) {
+                            return null;
+                        }
+                        return new AnnotationVisitor(Opcodes.ASM9) {
+                            @Override
+                            public void visit(String n, Object v) {
+                                acceptTarget(v);
+                            }
+                        };
+                    }
+
+                    @Override
+                    public void visit(String key, Object value) {
+                        if ("targets".equals(key)) {
+                            acceptTarget(value);
+                        }
+                    }
+                };
+            }
+
+            @Override
+            public FieldVisitor visitField(int access, String fname, String desc, String sig, Object value) {
+                return new FieldVisitor(Opcodes.ASM9) {
+                    @Override
+                    public AnnotationVisitor visitAnnotation(String d, boolean v) {
+                        if ("Lorg/spongepowered/asm/mixin/Shadow;".equals(d)) {
+                            shadowFields.add(fname);
+                        }
+                        return null;
+                    }
+                };
+            }
+
+            @Override
+            public MethodVisitor visitMethod(int access, String mname, String desc, String sig, String[] ex) {
+                return new MethodVisitor(Opcodes.ASM9) {
+                    @Override
+                    public AnnotationVisitor visitAnnotation(String d, boolean v) {
+                        if ("Lorg/spongepowered/asm/mixin/Shadow;".equals(d)) {
+                            shadowMethods.add(mname);
+                            return null;
+                        }
+                        // Crash class: an injection selector naming a method
+                        // the TARGET class does not declare (e.g. inherited
+                        // from a superclass) only fails when a real client or
+                        // server loads the mixin - validate it here.
+                        for (String inj : INJECTION_ANNOTATIONS) {
+                            if (inj.equals(d)) {
+                                return new AnnotationVisitor(Opcodes.ASM9) {
+                                    private void addSelector(Object sel) {
+                                        if (sel instanceof String str) {
+                                            injectionSelectors.add(str);
+                                        }
+                                    }
+
+                                    @Override
+                                    public void visit(String k, Object val) {
+                                        if ("method".equals(k)) {
+                                            addSelector(val);
+                                        }
+                                    }
+
+                                    @Override
+                                    public AnnotationVisitor visitArray(String k) {
+                                        if (!"method".equals(k)) {
+                                            return null;
+                                        }
+                                        return new AnnotationVisitor(Opcodes.ASM9) {
+                                            @Override
+                                            public void visit(String n, Object val) {
+                                                addSelector(val);
+                                            }
+                                        };
+                                    }
+                                };
+                            }
+                        }
+                        return null;
+                    }
+                };
+            }
+        }, 0);
+
+        // Caveat fix: EVERY mixin's target must resolve, not only mixins with
+        // shadows - a renamed or missing target class otherwise only fails when
+        // a real client or server loads the mixin, which headless server
+        // gametests never do for client mixins.
+        helper.assertTrue(target[0] != null,
+                module + ":" + mixinName + " has no resolvable @Mixin target");
+        byte[] targetBytes = classBytes(target[0]);
+        for (String selector : injectionSelectors) {
+            String name = selector.contains("(") ? selector.substring(0, selector.indexOf('(')) : selector;
+            if (name.isEmpty() || name.indexOf('*') >= 0 || name.indexOf('?') >= 0) {
+                continue; // wildcard / regex selectors cannot be name-checked
+            }
+            boolean ok = declaredMethods(targetBytes, name);
+            helper.assertTrue(ok, module + ":" + mixinName + " injects into '" + selector
+                    + "' which is NOT declared in target class " + target[0]
+                    + " (injection into inherited methods must retarget the declaring class)");
+        }
+        if (shadowFields.isEmpty() && shadowMethods.isEmpty()) {
+            return;
+        }
+        java.util.Set<String> declared = new java.util.HashSet<>();
+        new ClassReader(targetBytes).accept(new ClassVisitor(Opcodes.ASM9) {
+            @Override
+            public FieldVisitor visitField(int a, String n, String d, String s, Object v) {
+                declared.add(n);
+                return null;
+            }
+
+            @Override
+            public MethodVisitor visitMethod(int a, String n, String d, String s, String[] ex) {
+                declared.add(n);
+                return null;
+            }
+        }, 0);
+        for (String field : shadowFields) {
+            helper.assertTrue(declared.contains(field), module + ":" + mixinName
+                    + " shadows field '" + field + "' which is NOT declared in target " + target[0]
+                    + " (inherited members must be reached by extending the superclass, not @Shadow)");
+        }
+        for (String method : shadowMethods) {
+            helper.assertTrue(declared.contains(method), module + ":" + mixinName
+                    + " shadows method '" + method + "' which is NOT declared in target " + target[0]);
+        }
+    }
+
+    private static final String[] INJECTION_ANNOTATIONS = {
+            "Lorg/spongepowered/asm/mixin/injection/Inject;",
+            "Lorg/spongepowered/asm/mixin/injection/Redirect;",
+            "Lorg/spongepowered/asm/mixin/injection/ModifyVariable;",
+            "Lorg/spongepowered/asm/mixin/injection/ModifyArg;",
+            "Lorg/spongepowered/asm/mixin/injection/ModifyArgs;",
+            "Lorg/spongepowered/asm/mixin/injection/ModifyConstant;" };
+
+    private static boolean declaredMethods(byte[] targetBytes, String name) throws Exception {
+        boolean[] found = { false };
+        new ClassReader(targetBytes).accept(new ClassVisitor(Opcodes.ASM9) {
+            @Override
+            public MethodVisitor visitMethod(int a, String n, String d, String s, String[] ex) {
+                if (n.equals(name)) {
+                    found[0] = true;
+                }
+                return null;
+            }
+        }, 0);
+        return found[0];
+    }
+
+    private static JsonElement mixinConfigJson(String module) throws Exception {
+        byte[] bytes = modResourceBytes(module, module + ".mixins.json");
+        return bytes == null ? null : JsonParser.parseString(new String(bytes, java.nio.charset.StandardCharsets.UTF_8));
+    }
+
+    /**
+     * Reads a resource out of the named module. Mod containers cover every
+     * module the loader loads on a dedicated server; hearthwind_client is
+     * environment=client so it has no container here and is read straight
+     * from its jar in the server's mods directory.
+     */
+    private static byte[] modResourceBytes(String module, String path) throws Exception {
+        var container = net.fabricmc.loader.api.FabricLoader.getInstance().getModContainer(module);
+        if (container.isPresent()) {
+            var opt = container.get().findPath(path);
+            if (opt.isPresent()) {
+                try (var in = java.nio.file.Files.newInputStream(opt.get())) {
+                    return in.readAllBytes();
+                }
+            }
+            return null;
+        }
+        java.io.File mods = java.nio.file.Path.of("mods").toFile();
+        String jarPrefix = module.replace('_', '-') + "-";
+        if (mods.isDirectory()) {
+            for (java.io.File f : mods.listFiles()) {
+                if (f.getName().startsWith(jarPrefix) && f.getName().endsWith(".jar")) {
+                    try (java.util.zip.ZipFile zip = new java.util.zip.ZipFile(f)) {
+                        java.util.zip.ZipEntry entry = zip.getEntry(path);
+                        if (entry == null) {
+                            return null;
+                        }
+                        try (var in = zip.getInputStream(entry)) {
+                            return in.readAllBytes();
+                        }
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Target-class bytes. Server classes come off the runtime classloader;
+     * CLIENT classes do not exist in a dedicated-server jar, so they are
+     * read from the loom merged jar (path supplied by run_gametests.sh).
+     */
+    private static byte[] classBytes(String internalName) throws Exception {
+        String path = internalName + ".class";
+        var in = net.minecraft.world.level.Level.class.getClassLoader().getResourceAsStream(path);
+        if (in != null) {
+            try (in) {
+                return in.readAllBytes();
+            }
+        }
+        String merged = System.getProperty("hearthwind.mergedJar", "");
+        helperAssert(!merged.isBlank(),
+                "client target " + internalName + " needs -Dhearthwind.mergedJar (run_gametests.sh sets it)");
+        try (java.util.zip.ZipFile zip = new java.util.zip.ZipFile(merged)) {
+            java.util.zip.ZipEntry entry = zip.getEntry(path);
+            helperAssert(entry != null, "merged jar lacks " + path);
+            try (var zin = zip.getInputStream(entry)) {
+                return zin.readAllBytes();
+            }
+        }
+    }
+
 }

@@ -59,6 +59,7 @@ public final class JobCommands {
                         return 1;
                     }))
                 .then(Commands.literal("age")
+                    .requires(source -> Commands.LEVEL_MODERATORS.check(source.permissions()))
                     .then(Commands.argument("age", com.mojang.brigadier.arguments.IntegerArgumentType.integer(0, 5))
                         .executes(ctx -> {
                             ServerPlayer p = ctx.getSource().getPlayerOrException();

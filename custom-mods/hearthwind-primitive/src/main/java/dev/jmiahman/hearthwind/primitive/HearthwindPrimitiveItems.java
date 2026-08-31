@@ -17,7 +17,7 @@ import net.minecraft.world.item.ToolMaterial;
 /**
  * Items for the primitive-start progression, registered under the ORIGINAL
  * earlystage:/agedaddition: namespaces so the migrated server datapack
- * (conversion/datapacks/aged-server) resolves its ~170 references unchanged.
+ * (conversion/datapacks/hearthwind) resolves its ~170 references unchanged.
  *
  * Progression intent (parity with earlystage + agedaddition):
  *  - stone is not hand-mineable; punch/break loose "rock" items instead

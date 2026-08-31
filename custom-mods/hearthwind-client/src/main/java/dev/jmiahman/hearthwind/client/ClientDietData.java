@@ -30,7 +30,7 @@ public final class ClientDietData {
 
     public static boolean isBalanced() {
         for (float v : nutrients) {
-            if (v < 15f) return false;
+            if (v < 50f) return false;
         }
         return true;
     }

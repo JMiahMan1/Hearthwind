@@ -111,7 +111,9 @@ public class SurvivalInfoScreen extends Screen {
     private TabStrip.Tab tab() {
         return switch (this.kind) {
             case JOBS -> TabStrip.Tab.JOBS;
-            default -> TabStrip.Tab.SKILLS;
+            case SKILLS -> TabStrip.Tab.SKILLS;
+            case PARTY -> TabStrip.Tab.PARTY;
+            default -> null;
         };
     }
 
@@ -193,7 +195,11 @@ public class SurvivalInfoScreen extends Screen {
                 graphics.text(font, "+", btnX + 3, btnY + 2, 0xFFFFFFFF, true);
                 if (btnHover) {
                     hoveredTooltip = "+1 Level (1 Point)";
+                } else if (hover) {
+                    hoveredTooltip = cap + " (Lv." + lvl + "/30): " + SKILL_PERKS[i];
                 }
+            } else if (hover) {
+                hoveredTooltip = cap + " (Lv." + lvl + "/30): " + SKILL_PERKS[i];
             }
         }
 
@@ -204,6 +210,7 @@ public class SurvivalInfoScreen extends Screen {
 
     private void drawJobs(GuiGraphicsExtractor graphics, Font font, int mouseX, int mouseY) {
         String current = ClientJobData.hasJob() ? ClientJobData.jobId() : "";
+        String hoveredTooltip = null;
 
         for (int i = 0; i < JOB_IDS.length; i++) {
             String job = JOB_IDS[i];
@@ -246,10 +253,18 @@ public class SurvivalInfoScreen extends Screen {
             } else {
                 graphics.text(font, "Join Job", cx + 20, cy + 13, hover ? 0xFF1565C0 : HINT, false);
             }
+
+            if (hover) {
+                hoveredTooltip = cap + (isCurrent ? " (Lv." + ClientJobData.level() + "): " : ": ") + JOB_DESCS[i];
+            }
         }
 
         String footer = "Click a job to join or leave";
         graphics.text(font, footer, this.x + 88 - font.width(footer) / 2, this.y + 130, HINT, false);
+
+        if (hoveredTooltip != null) {
+            graphics.setTooltipForNextFrame(Component.literal(hoveredTooltip), mouseX, mouseY);
+        }
     }
 
     private void drawParty(GuiGraphicsExtractor graphics, Font font, int mouseX, int mouseY) {
@@ -590,8 +605,7 @@ public class SurvivalInfoScreen extends Screen {
             int btnW = 12;
             int btnH = 12;
             boolean clickedPlus = mx >= btnX && mx < btnX + btnW && my >= btnY && my < btnY + btnH;
-            boolean clickedCard = mx >= cx && mx < cx + 80 && my >= cy && my < cy + 18;
-            if (clickedPlus || clickedCard) {
+            if (clickedPlus) {
                 int lvl = levels.getOrDefault(SKILL_IDS[i], 0);
                 if (lvl < 30) {
                     mc.getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
@@ -636,11 +650,35 @@ public class SurvivalInfoScreen extends Screen {
 
     @Override
     public boolean keyPressed(KeyEvent event) {
-        if (Minecraft.getInstance().options.keyInventory.matches(event)
-                || NutrientsKey.openNutrients.matches(event)
-                || NutrientsKey.openSkills.matches(event)
-                || NutrientsKey.openJobs.matches(event)
-                || NutrientsKey.openParty.matches(event)) {
+        if (NutrientsKey.openNutrients.matches(event)) {
+            Minecraft.getInstance().setScreenAndShow(new NutrientsScreen());
+            return true;
+        }
+        if (NutrientsKey.openSkills.matches(event)) {
+            if (this.kind != Kind.SKILLS) {
+                TabStrip.open(TabStrip.Tab.SKILLS);
+                return true;
+            }
+            this.onClose();
+            return true;
+        }
+        if (NutrientsKey.openJobs.matches(event)) {
+            if (this.kind != Kind.JOBS) {
+                TabStrip.open(TabStrip.Tab.JOBS);
+                return true;
+            }
+            this.onClose();
+            return true;
+        }
+        if (NutrientsKey.openParty.matches(event)) {
+            if (this.kind != Kind.PARTY) {
+                Minecraft.getInstance().setScreenAndShow(new SurvivalInfoScreen(Kind.PARTY));
+                return true;
+            }
+            this.onClose();
+            return true;
+        }
+        if (Minecraft.getInstance().options.keyInventory.matches(event)) {
             this.onClose();
             return true;
         }

@@ -48,8 +48,8 @@ public final class ReviveManager {
         }
 
         MinecraftServer server = player.level() != null ? player.level().getServer() : null;
-        // If in singleplayer or no other players are online to revive, allow instant normal death
-        if (server == null || server.getPlayerList().getPlayerCount() <= 1) {
+        // If in singleplayer with no other potential revivers, allow instant normal death
+        if (server != null && server.isSingleplayer() && player.level().players().size() <= 1) {
             return true;
         }
 

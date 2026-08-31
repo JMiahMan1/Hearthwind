@@ -40,6 +40,16 @@ public abstract class AbstractContainerScreenClickMixin {
                         .play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
                 TabStrip.open(tab);
                 cir.setReturnValue(true);
+                return;
+            }
+
+            // Nutrition drumstick button on top-right of inventory
+            if (event.x() >= this.leftPos + 152 && event.x() < this.leftPos + 170
+                    && event.y() >= this.topPos + 4 && event.y() < this.topPos + 22) {
+                Minecraft.getInstance().getSoundManager()
+                        .play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
+                Minecraft.getInstance().setScreenAndShow(new dev.jmiahman.hearthwind.client.NutrientsScreen());
+                cir.setReturnValue(true);
             }
         }
     }

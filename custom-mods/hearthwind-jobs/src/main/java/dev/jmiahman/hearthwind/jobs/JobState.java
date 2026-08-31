@@ -70,16 +70,6 @@ public final class JobState {
         if (JobDefs.byId(id) == null) {
             return false;
         }
-        // Smither and brewer are Iron Age jobs — require Age 2+ (Iron/Steel Age)
-        if ("smither".equals(id) || "brewer".equals(id)) {
-            int age = AgeState.get(player);
-            if (age < 2) {
-                player.sendSystemMessage(Component.literal(
-                        "You must reach the Iron Age (Age 2) before joining the "
-                        + id + " job."));
-                return false;
-            }
-        }
         player.setAttached(STATE, new Data(id, 0.0));
         player.sendSystemMessage(Component.literal(
                 "Joined the " + id + " job. Good luck out there."));

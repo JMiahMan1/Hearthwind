@@ -179,7 +179,8 @@ public final class SkillEvents {
     }
 
     private static boolean isRanged(ItemStack weapon) {
-        return !weapon.isEmpty()
+        return weapon != null
+                && !weapon.isEmpty()
                 && (weapon.getItem() instanceof BowItem
                         || weapon.getItem() instanceof CrossbowItem
                         || weapon.getItem() instanceof TridentItem);

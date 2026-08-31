@@ -106,10 +106,9 @@ public class CraftingRockBlock extends Block implements EntityBlock {
             BlockPos pos, net.minecraft.world.entity.player.Player player,
             InteractionHand hand, BlockHitResult hit) {
         BlockEntity be = level.getBlockEntity(pos);
-        if (be == null) {
+        if (!(be instanceof CraftingRockBlockEntity rock)) {
             return InteractionResult.PASS;
         }
-        CraftingRockBlockEntity rock = (CraftingRockBlockEntity) be;
 
         double yFrac = Math.abs(hit.getLocation().y % 1.0);
         if (!(yFrac > 0.495 && yFrac < 0.505)) {
@@ -183,16 +182,16 @@ public class CraftingRockBlock extends Block implements EntityBlock {
     }
 
     private void tryCraftItem(Level level, Player player, CraftingRockBlockEntity rock) {
-        if (!level.isClientSide()) {
+        if (level instanceof net.minecraft.server.level.ServerLevel serverLevel) {
             CraftingInput craftingInput = null;
-            Optional<RecipeHolder<CraftingRecipe>> optional = null;
+            Optional<RecipeHolder<CraftingRecipe>> optional = Optional.empty();
             for (int i = 0; i < 4; i++) {
                 List<ItemStack> mapped = new ArrayList<>(9);
                 for (int s = 0; s < 9; s++) {
                     mapped.add(rock.getItem(getVariantSlot(i, s)).copy());
                 }
                 craftingInput = CraftingInput.of(3, 3, mapped);
-                optional = ((net.minecraft.server.level.ServerLevel) level).recipeAccess()
+                optional = serverLevel.recipeAccess()
                         .getRecipeFor(RecipeType.CRAFTING, craftingInput, level);
                 if (optional.isPresent()) {
                     break;

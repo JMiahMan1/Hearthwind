@@ -13,9 +13,9 @@ import net.minecraft.resources.Identifier;
 public final class DownedHud implements HudElement {
     public static final DownedHud INSTANCE = new DownedHud();
 
-    private static boolean isDowned = false;
-    private static int remainingSeconds = 0;
-    private static int progressPercent = 0;
+    private static volatile boolean isDowned = false;
+    private static volatile int remainingSeconds = 0;
+    private static volatile int progressPercent = 0;
 
     private DownedHud() {}
 
