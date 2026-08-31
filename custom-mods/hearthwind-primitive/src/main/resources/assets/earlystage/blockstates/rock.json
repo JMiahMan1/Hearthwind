@@ -1,68 +1,124 @@
 {
   "variants": {
-    "type=extra_large,facing=east": {
+    "facing=east,snowy=false,type=extra_large": {
       "model": "earlystage:block/rock_extra_large",
       "y": 90
     },
-    "type=extra_large,facing=north": {
+    "facing=north,snowy=false,type=extra_large": {
       "model": "earlystage:block/rock_extra_large"
     },
-    "type=extra_large,facing=south": {
+    "facing=south,snowy=false,type=extra_large": {
       "model": "earlystage:block/rock_extra_large",
       "y": 180
     },
-    "type=extra_large,facing=west": {
+    "facing=west,snowy=false,type=extra_large": {
       "model": "earlystage:block/rock_extra_large",
       "y": 270
     },
-    "type=large,facing=east": {
+    "facing=east,snowy=true,type=extra_large": {
+      "model": "earlystage:block/rock_extra_large_snowy",
+      "y": 90
+    },
+    "facing=north,snowy=true,type=extra_large": {
+      "model": "earlystage:block/rock_extra_large_snowy"
+    },
+    "facing=south,snowy=true,type=extra_large": {
+      "model": "earlystage:block/rock_extra_large_snowy",
+      "y": 180
+    },
+    "facing=west,snowy=true,type=extra_large": {
+      "model": "earlystage:block/rock_extra_large_snowy",
+      "y": 270
+    },
+    "facing=east,snowy=false,type=large": {
       "model": "earlystage:block/rock_large",
       "y": 90
     },
-    "type=large,facing=north": {
+    "facing=north,snowy=false,type=large": {
       "model": "earlystage:block/rock_large"
     },
-    "type=large,facing=south": {
+    "facing=south,snowy=false,type=large": {
       "model": "earlystage:block/rock_large",
       "y": 180
     },
-    "type=large,facing=west": {
+    "facing=west,snowy=false,type=large": {
       "model": "earlystage:block/rock_large",
       "y": 270
     },
-    "type=medium,facing=east": {
+    "facing=east,snowy=true,type=large": {
+      "model": "earlystage:block/rock_large_snowy",
+      "y": 90
+    },
+    "facing=north,snowy=true,type=large": {
+      "model": "earlystage:block/rock_large_snowy"
+    },
+    "facing=south,snowy=true,type=large": {
+      "model": "earlystage:block/rock_large_snowy",
+      "y": 180
+    },
+    "facing=west,snowy=true,type=large": {
+      "model": "earlystage:block/rock_large_snowy",
+      "y": 270
+    },
+    "facing=east,snowy=false,type=medium": {
       "model": "earlystage:block/rock_medium",
       "y": 90
     },
-    "type=medium,facing=north": {
+    "facing=north,snowy=false,type=medium": {
       "model": "earlystage:block/rock_medium"
     },
-    "type=medium,facing=south": {
+    "facing=south,snowy=false,type=medium": {
       "model": "earlystage:block/rock_medium",
       "y": 180
     },
-    "type=medium,facing=west": {
+    "facing=west,snowy=false,type=medium": {
       "model": "earlystage:block/rock_medium",
       "y": 270
     },
-    "type=small,facing=east": {
+    "facing=east,snowy=true,type=medium": {
+      "model": "earlystage:block/rock_medium_snowy",
+      "y": 90
+    },
+    "facing=north,snowy=true,type=medium": {
+      "model": "earlystage:block/rock_medium_snowy"
+    },
+    "facing=south,snowy=true,type=medium": {
+      "model": "earlystage:block/rock_medium_snowy",
+      "y": 180
+    },
+    "facing=west,snowy=true,type=medium": {
+      "model": "earlystage:block/rock_medium_snowy",
+      "y": 270
+    },
+    "facing=east,snowy=false,type=small": {
       "model": "earlystage:block/rock_small",
       "y": 90
     },
-    "type=small,facing=north": {
+    "facing=north,snowy=false,type=small": {
       "model": "earlystage:block/rock_small"
     },
-    "type=small,facing=south": {
+    "facing=south,snowy=false,type=small": {
       "model": "earlystage:block/rock_small",
       "y": 180
     },
-    "type=small,facing=west": {
+    "facing=west,snowy=false,type=small": {
       "model": "earlystage:block/rock_small",
       "y": 270
     },
-    "": {
-      "model": "earlystage:block/rock_extra_large",
+    "facing=east,snowy=true,type=small": {
+      "model": "earlystage:block/rock_small_snowy",
       "y": 90
+    },
+    "facing=north,snowy=true,type=small": {
+      "model": "earlystage:block/rock_small_snowy"
+    },
+    "facing=south,snowy=true,type=small": {
+      "model": "earlystage:block/rock_small_snowy",
+      "y": 180
+    },
+    "facing=west,snowy=true,type=small": {
+      "model": "earlystage:block/rock_small_snowy",
+      "y": 270
     }
   }
 }

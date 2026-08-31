@@ -479,13 +479,50 @@ public final class NaturalistEntities {
     }
 
     // ==========================================
-    // 5. ATTRIBUTE SUPPLIERS
+    // 5. AQUATIC FISH FAUNA
+    // ==========================================
+    public static class AquaticFish extends net.minecraft.world.entity.animal.fish.AbstractFish {
+        public final String mobType;
+
+        public AquaticFish(EntityType<? extends net.minecraft.world.entity.animal.fish.AbstractFish> type, Level level, String mobType) {
+            super(type, level);
+            this.mobType = mobType;
+        }
+
+        @Override
+        public ItemStack getBucketItemStack() {
+            Item bucket = NaturalistFauna.ITEMS.get(this.mobType + "_bucket");
+            return new ItemStack(bucket != null ? bucket : Items.WATER_BUCKET);
+        }
+
+        @Override
+        protected net.minecraft.sounds.SoundEvent getFlopSound() {
+            return SoundEvents.SALMON_FLOP;
+        }
+
+        @Override
+        public void dropCustomDeathLoot(ServerLevel level, DamageSource source, boolean recentlyHit) {
+            super.dropCustomDeathLoot(level, source, recentlyHit);
+            Item dropItem = NaturalistFauna.ITEMS.get(this.isOnFire() ? ("cooked_" + this.mobType) : this.mobType);
+            if (dropItem != null) {
+                this.spawnAtLocation(level, new ItemStack(dropItem, 1 + this.getRandom().nextInt(2)));
+            }
+        }
+    }
+
+    // ==========================================
+    // 6. ATTRIBUTE SUPPLIERS
     // ==========================================
     public static AttributeSupplier.Builder createHerbivoreAttributes(double maxHealth, double speed) {
         return Animal.createAnimalAttributes()
                 .add(Attributes.MAX_HEALTH, maxHealth)
                 .add(Attributes.MOVEMENT_SPEED, speed)
                 .add(Attributes.TEMPT_RANGE, 10.0);
+    }
+
+    public static AttributeSupplier.Builder createFishAttributes(double maxHealth) {
+        return net.minecraft.world.entity.animal.fish.AbstractFish.createAttributes()
+                .add(Attributes.MAX_HEALTH, maxHealth);
     }
 
     public static AttributeSupplier.Builder createPredatorAttributes(double maxHealth, double speed, double attackDmg) {

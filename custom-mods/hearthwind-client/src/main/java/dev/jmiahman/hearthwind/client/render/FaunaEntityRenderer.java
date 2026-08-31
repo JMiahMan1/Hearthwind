@@ -185,6 +185,19 @@ public final class FaunaEntityRenderer {
         public SalmonRenderState createRenderState() {
             return new SalmonRenderState();
         }
+
+        @Override
+        public void extractRenderState(T entity, SalmonRenderState state, float partialTick) {
+            super.extractRenderState(entity, state, partialTick);
+            float f = 1.0F;
+            float f1 = 1.0F;
+            if (!entity.isInWater()) {
+                f = 1.3F;
+                f1 = 1.7F;
+            }
+            float f2 = f * 4.3F * net.minecraft.util.Mth.sin(f1 * 0.6F * (entity.tickCount + partialTick));
+            state.bodyRot = entity.isInWater() ? f2 : (float) Math.sin((entity.tickCount + partialTick) * 0.4f) * 15.0f;
+        }
     }
 
     // --- Reptile / Amphibian (Tortoise, Alligator) ---

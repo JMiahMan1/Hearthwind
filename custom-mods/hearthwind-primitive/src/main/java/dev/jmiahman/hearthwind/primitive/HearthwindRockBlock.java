@@ -49,6 +49,7 @@ public class HearthwindRockBlock extends Block {
 
     public static final EnumProperty<RockVariant> ROCK_TYPE = EnumProperty.create("type", RockVariant.class);
     public static final EnumProperty<Direction> FACING_PROPERTY = BlockStateProperties.HORIZONTAL_FACING;
+    public static final net.minecraft.world.level.block.state.properties.BooleanProperty SNOWY = BlockStateProperties.SNOWY;
     private static final VoxelShape SHAPE = Block.box(3.0, 0.0, 3.0, 13.0, 5.0, 13.0);
     private static final List<Item> SHOVELS = List.of(Items.WOODEN_SHOVEL, Items.STONE_SHOVEL, Items.IRON_SHOVEL,
             Items.GOLDEN_SHOVEL, Items.DIAMOND_SHOVEL, Items.NETHERITE_SHOVEL);
@@ -57,7 +58,17 @@ public class HearthwindRockBlock extends Block {
         super(props);
         registerDefaultState(this.stateDefinition.any()
                 .setValue(FACING_PROPERTY, Direction.NORTH)
-                .setValue(ROCK_TYPE, RockVariant.LARGE));
+                .setValue(ROCK_TYPE, RockVariant.LARGE)
+                .setValue(SNOWY, false));
+    }
+
+    @Override
+    public BlockState getStateForPlacement(net.minecraft.world.item.context.BlockPlaceContext context) {
+        Direction facing = context.getHorizontalDirection().getOpposite();
+        BlockPos pos = context.getClickedPos();
+        Level level = context.getLevel();
+        boolean snowy = isSnowy(level, pos);
+        return this.defaultBlockState().setValue(FACING_PROPERTY, facing).setValue(SNOWY, snowy);
     }
 
     @Override
@@ -71,7 +82,27 @@ public class HearthwindRockBlock extends Block {
         if (!state.canSurvive(level, pos)) {
             return Blocks.AIR.defaultBlockState();
         }
+        if (direction == Direction.UP || direction.getAxis().isHorizontal()) {
+            boolean snowy = isSnowy(level, pos);
+            if (state.getValue(SNOWY) != snowy) {
+                state = state.setValue(SNOWY, snowy);
+            }
+        }
         return super.updateShape(state, level, tickAccess, pos, direction, neighborPos, neighborState, random);
+    }
+
+    private static boolean isSnowy(LevelReader level, BlockPos pos) {
+        BlockState above = level.getBlockState(pos.above());
+        if (above.is(Blocks.SNOW) || above.is(Blocks.SNOW_BLOCK) || above.is(Blocks.POWDER_SNOW)) {
+            return true;
+        }
+        for (Direction dir : Direction.Plane.HORIZONTAL) {
+            BlockState side = level.getBlockState(pos.relative(dir));
+            if (side.is(Blocks.SNOW) || side.is(Blocks.SNOW_BLOCK) || side.is(Blocks.POWDER_SNOW)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
@@ -96,7 +127,7 @@ public class HearthwindRockBlock extends Block {
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        builder.add(FACING_PROPERTY, ROCK_TYPE);
+        builder.add(FACING_PROPERTY, ROCK_TYPE, SNOWY);
     }
 
     @Override

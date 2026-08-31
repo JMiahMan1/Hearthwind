@@ -78,8 +78,8 @@ public final class NaturalistFauna {
         registerHerbivore("hippo", 1.8f, 1.4f, 45.0, 0.24);
 
         // 5. Water & River Creatures
-        registerHerbivore("bass", 0.5f, 0.4f, 6.0, 0.25);
-        registerHerbivore("catfish", 0.6f, 0.4f, 8.0, 0.22);
+        registerFish("bass", 0.5f, 0.4f, 6.0, 0.25);
+        registerFish("catfish", 0.6f, 0.4f, 8.0, 0.22);
 
         // 6. Food, Meat & Item Drops
         registerFood("venison", MEAT_FOOD);
@@ -162,9 +162,30 @@ public final class NaturalistFauna {
         registerItem(name + "_spawn_egg");
     }
 
+    private static void registerFish(String name, float width, float height, double health, double speed) {
+        ResourceKey<EntityType<?>> eKey = ResourceKey.create(Registries.ENTITY_TYPE, Identifier.fromNamespaceAndPath(MOD_ID, name));
+        EntityType<NaturalistEntities.AquaticFish> type = EntityType.Builder.<NaturalistEntities.AquaticFish>of(
+                (t, l) -> new NaturalistEntities.AquaticFish(t, l, name), MobCategory.WATER_CREATURE)
+                .sized(width, height)
+                .build(eKey);
+        Registry.register(BuiltInRegistries.ENTITY_TYPE, eKey, type);
+        FabricDefaultAttributeRegistry.register(type, NaturalistEntities.createFishAttributes(health));
+        ENTITIES.put(name, type);
+        registerItem(name + "_spawn_egg");
+
+        net.minecraft.world.entity.SpawnPlacements.register(type,
+                net.minecraft.world.entity.SpawnPlacementTypes.IN_WATER,
+                net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
+                (entityType, levelAccessor, spawnType, blockPos, randomSource) ->
+                        levelAccessor.getFluidState(blockPos).is(net.minecraft.tags.FluidTags.WATER)
+                        && levelAccessor.getBlockState(blockPos).is(net.minecraft.world.level.block.Blocks.WATER)
+                        && !levelAccessor.getBlockState(blockPos).is(net.minecraft.world.level.block.Blocks.ICE)
+                        && !levelAccessor.getBlockState(blockPos.above()).is(net.minecraft.world.level.block.Blocks.ICE));
+    }
+
     private static void registerBiomeSpawns() {
-        // Forests & Taigas: deer, duck, butterfly, firefly, snail, bear, boar, caterpillar
-        for (String mob : new String[] {"deer", "duck", "butterfly", "firefly", "snail", "bear", "boar", "caterpillar"}) {
+        // Temperate & Taiga: deer, duck, butterfly, firefly, bear, boar
+        for (String mob : new String[] {"deer", "duck", "butterfly", "firefly", "bear", "boar"}) {
             EntityType<?> type = ENTITIES.get(mob);
             if (type != null) {
                 BiomeModifications.addSpawn(
@@ -202,14 +223,18 @@ public final class NaturalistFauna {
                     MobCategory.CREATURE, hippoType, 2, 1, 2);
         }
 
-        // Rivers & Lakes: bass, catfish — WATER_CREATURE so they spawn in water
+        // Rivers & Oceans: bass, catfish — WATER_CREATURE, strictly in non-frozen water
         for (String mob : new String[] {"bass", "catfish"}) {
             EntityType<?> type = ENTITIES.get(mob);
             if (type != null) {
                 BiomeModifications.addSpawn(
-                        BiomeSelectors.tag(BiomeTags.IS_RIVER)
-                                .or(ctx -> ctx.getBiomeKey().identifier().getPath().contains("river"))
-                                .or(ctx -> ctx.getBiomeKey().identifier().getPath().contains("ocean")),
+                        ctx -> {
+                            var key = ctx.getBiomeKey().identifier();
+                            String path = key.getPath();
+                            return (ctx.hasTag(BiomeTags.IS_RIVER) || ctx.hasTag(BiomeTags.IS_OCEAN)
+                                    || path.contains("river") || path.contains("ocean"))
+                                    && !path.contains("frozen") && !path.contains("ice");
+                        },
                         MobCategory.WATER_CREATURE, type, 5, 2, 5);
             }
         }

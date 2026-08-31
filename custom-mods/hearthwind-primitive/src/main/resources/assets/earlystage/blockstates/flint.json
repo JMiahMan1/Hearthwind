@@ -1,38 +1,64 @@
 {
   "variants": {
-    "type=medium,facing=east": {
+    "facing=east,snowy=false,type=medium": {
       "model": "earlystage:block/flint_medium",
       "y": 90
     },
-    "type=medium,facing=north": {
+    "facing=north,snowy=false,type=medium": {
       "model": "earlystage:block/flint_medium"
     },
-    "type=medium,facing=south": {
+    "facing=south,snowy=false,type=medium": {
       "model": "earlystage:block/flint_medium",
       "y": 180
     },
-    "type=medium,facing=west": {
+    "facing=west,snowy=false,type=medium": {
       "model": "earlystage:block/flint_medium",
       "y": 270
     },
-    "type=small,facing=east": {
+    "facing=east,snowy=true,type=medium": {
+      "model": "earlystage:block/flint_medium_snowy",
+      "y": 90
+    },
+    "facing=north,snowy=true,type=medium": {
+      "model": "earlystage:block/flint_medium_snowy"
+    },
+    "facing=south,snowy=true,type=medium": {
+      "model": "earlystage:block/flint_medium_snowy",
+      "y": 180
+    },
+    "facing=west,snowy=true,type=medium": {
+      "model": "earlystage:block/flint_medium_snowy",
+      "y": 270
+    },
+    "facing=east,snowy=false,type=small": {
       "model": "earlystage:block/flint_small",
       "y": 90
     },
-    "type=small,facing=north": {
+    "facing=north,snowy=false,type=small": {
       "model": "earlystage:block/flint_small"
     },
-    "type=small,facing=south": {
+    "facing=south,snowy=false,type=small": {
       "model": "earlystage:block/flint_small",
       "y": 180
     },
-    "type=small,facing=west": {
+    "facing=west,snowy=false,type=small": {
       "model": "earlystage:block/flint_small",
       "y": 270
     },
-    "": {
-      "model": "earlystage:block/flint_medium",
+    "facing=east,snowy=true,type=small": {
+      "model": "earlystage:block/flint_small_snowy",
       "y": 90
+    },
+    "facing=north,snowy=true,type=small": {
+      "model": "earlystage:block/flint_small_snowy"
+    },
+    "facing=south,snowy=true,type=small": {
+      "model": "earlystage:block/flint_small_snowy",
+      "y": 180
+    },
+    "facing=west,snowy=true,type=small": {
+      "model": "earlystage:block/flint_small_snowy",
+      "y": 270
     }
   }
 }

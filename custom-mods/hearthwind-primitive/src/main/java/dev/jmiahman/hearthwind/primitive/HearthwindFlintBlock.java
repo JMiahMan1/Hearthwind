@@ -48,6 +48,7 @@ public class HearthwindFlintBlock extends Block {
 
     public static final EnumProperty<FlintVariant> FLINT_TYPE = EnumProperty.create("type", FlintVariant.class);
     public static final EnumProperty<Direction> FACING_PROPERTY = BlockStateProperties.HORIZONTAL_FACING;
+    public static final net.minecraft.world.level.block.state.properties.BooleanProperty SNOWY = BlockStateProperties.SNOWY;
     private static final VoxelShape SHAPE = Block.box(4.0, 0.0, 4.0, 12.0, 3.0, 12.0);
     private static final List<Item> SHOVELS = List.of(Items.WOODEN_SHOVEL, Items.STONE_SHOVEL, Items.IRON_SHOVEL,
             Items.GOLDEN_SHOVEL, Items.DIAMOND_SHOVEL, Items.NETHERITE_SHOVEL);
@@ -56,7 +57,17 @@ public class HearthwindFlintBlock extends Block {
         super(props);
         registerDefaultState(this.stateDefinition.any()
                 .setValue(FACING_PROPERTY, Direction.NORTH)
-                .setValue(FLINT_TYPE, FlintVariant.MEDIUM));
+                .setValue(FLINT_TYPE, FlintVariant.MEDIUM)
+                .setValue(SNOWY, false));
+    }
+
+    @Override
+    public BlockState getStateForPlacement(net.minecraft.world.item.context.BlockPlaceContext context) {
+        Direction facing = context.getHorizontalDirection().getOpposite();
+        BlockPos pos = context.getClickedPos();
+        Level level = context.getLevel();
+        boolean snowy = isSnowy(level, pos);
+        return this.defaultBlockState().setValue(FACING_PROPERTY, facing).setValue(SNOWY, snowy);
     }
 
     @Override
@@ -70,7 +81,31 @@ public class HearthwindFlintBlock extends Block {
         if (!state.canSurvive(level, pos)) {
             return net.minecraft.world.level.block.Blocks.AIR.defaultBlockState();
         }
+        if (direction == Direction.UP || direction.getAxis().isHorizontal()) {
+            boolean snowy = isSnowy(level, pos);
+            if (state.getValue(SNOWY) != snowy) {
+                state = state.setValue(SNOWY, snowy);
+            }
+        }
         return super.updateShape(state, level, tickAccess, pos, direction, neighborPos, neighborState, random);
+    }
+
+    private static boolean isSnowy(LevelReader level, BlockPos pos) {
+        BlockState above = level.getBlockState(pos.above());
+        if (above.is(net.minecraft.world.level.block.Blocks.SNOW)
+                || above.is(net.minecraft.world.level.block.Blocks.SNOW_BLOCK)
+                || above.is(net.minecraft.world.level.block.Blocks.POWDER_SNOW)) {
+            return true;
+        }
+        for (Direction dir : Direction.Plane.HORIZONTAL) {
+            BlockState side = level.getBlockState(pos.relative(dir));
+            if (side.is(net.minecraft.world.level.block.Blocks.SNOW)
+                    || side.is(net.minecraft.world.level.block.Blocks.SNOW_BLOCK)
+                    || side.is(net.minecraft.world.level.block.Blocks.POWDER_SNOW)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
@@ -95,7 +130,7 @@ public class HearthwindFlintBlock extends Block {
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        builder.add(FACING_PROPERTY, FLINT_TYPE);
+        builder.add(FACING_PROPERTY, FLINT_TYPE, SNOWY);
     }
 
     @Override
