@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ded",
+    "eee",
+    "ded"
+  ],
+  "key": {
+    "d": "#minecraft:planks",
+    "e": "minecraft:string"
+  },
+  "result": {
+    "id": "earlystage:sieve",
+    "count": 1
+  }
+}

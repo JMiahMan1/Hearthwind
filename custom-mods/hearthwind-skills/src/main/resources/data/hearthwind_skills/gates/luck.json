@@ -1,0 +1,72 @@
+{
+  "item": [
+    {
+      "entries": [
+        "minecraft:custom_item"
+      ],
+      "level": 4
+    },
+    {
+      "entries": [
+        "minecraft:custom_item"
+      ],
+      "level": 8
+    },
+    {
+      "entries": [
+        "minecraft:custom_item"
+      ],
+      "level": 14
+    },
+    {
+      "entries": [
+        "minecraft:armor"
+      ],
+      "level": 20
+    },
+    {
+      "entries": [
+        "minecraft:armor"
+      ],
+      "level": 22
+    },
+    {
+      "entries": [
+        "minecraft:custom_item"
+      ],
+      "level": 24
+    },
+    {
+      "entries": [
+        "minecraft:armor"
+      ],
+      "level": 26
+    },
+    {
+      "entries": [
+        "minecraft:custom_item"
+      ],
+      "level": 30
+    }
+  ],
+  "use": [
+    {
+      "entries": [
+        "minecraft:custom_block"
+      ],
+      "level": 10
+    },
+    {
+      "entries": [
+        "minecraft:custom_block"
+      ],
+      "level": 15
+    },
+    {
+      "entries": [
+        "minecraft:beacon"
+      ],
+      "level": 30
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:smelting",
+  "category": "misc",
+  "cookingtime": 200,
+  "experience": 0.3,
+  "ingredient": "earlystage:clay_bucket",
+  "result": {
+    "id": "earlystage:brick_bucket",
+    "count": 1
+  }
+}

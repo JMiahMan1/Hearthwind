@@ -33,7 +33,7 @@ public final class SkillAttributes {
         SkillsConfig.Bonuses b = SkillsConfig.get().bonuses;
         int level = SkillXp.level(entity, skill);
         return switch (skill) {
-            case HEALTH -> level * b.healthHpPerLevel;
+            case HEALTH -> (b.baseStartingHealth - 20.0) + (level * b.healthHpPerLevel);
             case STRENGTH -> level * b.strengthDamagePerLevel;
             case AGILITY -> level * b.agilitySpeedFractionPerLevel;
             case DEFENSE -> level * b.defenseArmorPerLevel;
@@ -78,6 +78,9 @@ public final class SkillAttributes {
                 instance.addTransientModifier(
                         new AttributeModifier(id(skill), bonus, operation(skill)));
             }
+        }
+        if (player.getHealth() > player.getMaxHealth()) {
+            player.setHealth(player.getMaxHealth());
         }
     }
 

@@ -1,0 +1,7 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": ["XXX", " # ", " # "],
+  "key": { "X": "earlystage:steel_ingot", "#": "minecraft:stick" },
+  "result": { "id": "earlystage:steel_pickaxe", "count": 1 }
+}

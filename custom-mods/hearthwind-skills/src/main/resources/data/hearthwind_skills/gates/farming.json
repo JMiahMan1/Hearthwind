@@ -1,0 +1,203 @@
+{
+  "entity": [
+    {
+      "entries": [
+        "minecraft:allay",
+        "minecraft:axolotl",
+        "minecraft:cow",
+        "minecraft:custom_entity",
+        "minecraft:goat",
+        "minecraft:mooshroom",
+        "minecraft:sheep",
+        "minecraft:snow_golem",
+        "minecraft:tadpole"
+      ],
+      "level": 0
+    },
+    {
+      "entries": [
+        "minecraft:breeding"
+      ],
+      "level": 6
+    }
+  ],
+  "item": [
+    {
+      "entries": [
+        "minecraft:axe",
+        "minecraft:hoe"
+      ],
+      "level": 4
+    },
+    {
+      "entries": [
+        "minecraft:custom_item"
+      ],
+      "level": 5
+    },
+    {
+      "entries": [
+        "minecraft:axe",
+        "minecraft:hoe"
+      ],
+      "level": 7
+    },
+    {
+      "entries": [
+        "minecraft:axe",
+        "minecraft:hoe"
+      ],
+      "level": 8
+    },
+    {
+      "entries": [
+        "minecraft:armor"
+      ],
+      "level": 12
+    },
+    {
+      "entries": [
+        "minecraft:axe",
+        "minecraft:bucket",
+        "minecraft:custom_item",
+        "minecraft:hoe",
+        "minecraft:milk_bucket",
+        "minecraft:powder_snow_bucket",
+        "minecraft:shears"
+      ],
+      "level": 14
+    },
+    {
+      "entries": [
+        "minecraft:axe",
+        "minecraft:hoe"
+      ],
+      "level": 18
+    },
+    {
+      "entries": [
+        "minecraft:custom_item"
+      ],
+      "level": 20
+    },
+    {
+      "entries": [
+        "minecraft:axe",
+        "minecraft:hoe"
+      ],
+      "level": 24
+    },
+    {
+      "entries": [
+        "minecraft:custom_item"
+      ],
+      "level": 26
+    },
+    {
+      "entries": [
+        "minecraft:axe",
+        "minecraft:hoe"
+      ],
+      "level": 30
+    }
+  ],
+  "use": [
+    {
+      "entries": [
+        "minecraft:custom_block"
+      ],
+      "level": 5
+    },
+    {
+      "entries": [
+        "minecraft:custom_block"
+      ],
+      "level": 6
+    },
+    {
+      "entries": [
+        "minecraft:custom_block"
+      ],
+      "level": 7
+    },
+    {
+      "entries": [
+        "minecraft:custom_block"
+      ],
+      "level": 8
+    },
+    {
+      "entries": [
+        "minecraft:custom_block",
+        "minecraft:smoker"
+      ],
+      "level": 10
+    },
+    {
+      "entries": [
+        "minecraft:beehive"
+      ],
+      "level": 12
+    },
+    {
+      "entries": [
+        "minecraft:custom_block"
+      ],
+      "level": 13
+    },
+    {
+      "entries": [
+        "minecraft:custom_block"
+      ],
+      "level": 14
+    },
+    {
+      "entries": [
+        "minecraft:custom_block"
+      ],
+      "level": 15
+    },
+    {
+      "entries": [
+        "minecraft:custom_block"
+      ],
+      "level": 16
+    },
+    {
+      "entries": [
+        "minecraft:custom_block"
+      ],
+      "level": 18
+    },
+    {
+      "entries": [
+        "minecraft:custom_block"
+      ],
+      "level": 19
+    },
+    {
+      "entries": [
+        "minecraft:custom_block"
+      ],
+      "level": 22
+    },
+    {
+      "entries": [
+        "minecraft:custom_block"
+      ],
+      "level": 24
+    },
+    {
+      "entries": [
+        "minecraft:custom_block"
+      ],
+      "level": 26
+    },
+    {
+      "entries": [
+        "minecraft:composter"
+      ],
+      "level": 31
+    }
+  ]
+}

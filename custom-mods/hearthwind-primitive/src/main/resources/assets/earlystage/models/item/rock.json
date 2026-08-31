@@ -1,6 +1,6 @@
 {
-  "parent": "minecraft:item/generated",
-  "textures": {
-    "layer0": "earlystage:item/rock"
-  }
+    "parent": "item/generated",
+    "textures": {
+        "layer0": "earlystage:item/rock"
+    }
 }

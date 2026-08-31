@@ -15,6 +15,13 @@ public final class HearthwindJobsConfig {
 
     public int pointsPerLevel = 100;
     public int xpPerAction = 10;
+    /**
+     * Block crafting of items that a job ladder lists unless the player holds
+     * that job at the required level. Off by default: the reference model lets
+     * anybody craft, and gate crafting through SKILL levels instead (jobs
+     * reward work, they do not unlock recipes).
+     */
+    public boolean jobCraftGating = false;
 
     private static HearthwindJobsConfig instance;
 

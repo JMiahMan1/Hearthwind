@@ -1,0 +1,23 @@
+{
+	"credit": "Made by Satisfy",
+	"textures": {
+		"2": "bakery:block/cabinet_front_open",
+		"3": "bakery:block/wall_cabinet_side",
+		"4": "bakery:block/cabinet_top",
+		"particle": "bakery:block/cabinet_front_open"
+	},
+	"elements": [
+		{
+			"from": [0, 0, 4],
+			"to": [16, 16, 16],
+			"faces": {
+				"north": {"uv": [0, 0, 16, 16], "texture": "#2"},
+				"east": {"uv": [2, 0, 14, 16], "texture": "#3"},
+				"south": {"uv": [0, 0, 16, 16], "texture": "#4"},
+				"west": {"uv": [2, 0, 14, 16], "texture": "#3"},
+				"up": {"uv": [2, 0, 14, 16], "rotation": 90, "texture": "#3"},
+				"down": {"uv": [2, 0, 14, 16], "rotation": 90, "texture": "#3"}
+			}
+		}
+	]
+}

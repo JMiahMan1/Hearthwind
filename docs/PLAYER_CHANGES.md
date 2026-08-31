@@ -4,102 +4,97 @@ Player-facing summary of everything Hearthwind changes or adds on top of
 vanilla. **Keep this updated with every gameplay commit** - it is the
 contract of what the pack does. Grown from the Aged fork; server-side only.
 
-## Survival needs (replaces Dehydration + Environmentz)
+## Progression & Starting Health (replaces LevelZ Health progression)
+
+- **Starting Health (3 Hearts / 6.0 Max HP)**:
+  Players begin their journey with only **3 Hearts (6.0 HP)**. Surviving the early game requires caution and preparation.
+- **Health Skill Scaling**:
+  Leveling up the **Health** skill unlocks +0.5 heart (+1.0 HP) per level:
+  - Level 0: 3 Hearts (6.0 HP)
+  - Level 14: 10 Hearts (20.0 HP - vanilla standard)
+  - Level 30: 18 Hearts (36.0 HP - end-game powerhouse)
+- **Attribute Modifiers**:
+  Transient modifiers keyed `hearthwind_skills:<skill>` for Strength (attack damage), Agility (speed), Defense (armor), Mining (dig speed), and Luck.
+
+## Survival needs (replaces Dehydration + EnvironmentZ + NutritionZ)
 
 Vanilla Minecraft only tracks hunger. Hearthwind adds:
 
 | System | What you see | Rules |
 |---|---|---|
-| **Thirst** | 10 blue droplets above hunger (client HUD) or overlay warnings on vanilla | **Scale** `dehydration:hydration` 0..20, `dehydration:hydration` not `copyOnDeath`. **Tick** 2s (`TICK_INTERVAL 40`). **Drain** `baseDrain 0.025` (~13m empty) ×2 sprint +0.05 per `thirst` amp. **Warnings** 12 yellow, 6 gold, 3 red; **regen** stops <6, **damage** 1/4s at 0. **Drink** `water_bowl` +6 (50% thirst 15s, green tainted swamp texture) / `purified` +6 clean (clear blue) / `hot_water_bowl` & `hot_purified` (boiling red bubbles, `CustomData hot_until` 30s, red name + "Steaming hot!" tooltip) scalds if drunk hot: 2 dmg +1s fire + thirst, only +3; wait 30s to cool (no burn). **Cold** `cold_water_bowl`/`cold_purified` (aqua icy, from snowy ≤0.15 base / winter / with `ice_pack`) gives -1.5 temp +60s "cooled" dampening (-1.5 target) vs normal -0.7 +30s; hot gives none. **Obtain** bowl on water source → `water_bowl` / `hot` (desert noon/target≥7, gold hint) / `cold` (snowy/winter/ice, aqua hint); bowl on `water_cauldron` → `purified` or `hot_purified` (if over lit campfire) or `cold_purified` (if snowy) and drains 1 level; empty-hand on water → +1 dirty sip (90% thirst 20s, 0.6 exhaustion, 3s cooldown, "barely helps" - tedious). **Purify** `water_bowl` → `purified` via campfire. All in `config/hearthwind_survival.json:thirst`; HUD wobbles ≤6. |
-| **Body temperature** | "You feel very cold/hot", "Extreme temperature!" overlay, freeze/heat damage | Scale -10..10, `environmentz:temperature` drifts 0.05/s (0.1 per 2s) toward `targetFor(biome)` = `(base-0.6)*6.5` (-9..9; plains 1.3, desert 9, frozen -8.5). `warm` armor +1.2/piece, `non_affecting` -8%/piece, `ice_pack`/`insolating` ±1.5, rain -1, water -2, fire 9.5, Y>128 +1, Y<0 -1.5. **Cold** water drunk (-1.5 +60s "cooled" -1.5 target) and normal (-0.7 +30s) dampens heat; hot gives none and scalds. At **-8** freeze 1 dmg/4s, **+7** exhaustion 0.02/2s, **+9** burn 1 dmg/4s (4s cooldown). Warnings 6 "very cold/hot", 9 "Extreme temperature!". Desert noon hits 9 in ~90s from 0, so midday forces shade/cold water/ice. |
-| **Diet** | Deficiency debuffs / bonus hearts | Five food groups (fruit, vegetables, grains, proteins, sugars) tracked separately; each decays over hours. Neglect a group and you suffer its debuff (e.g., no grains = slowness). Keep ALL groups above half for bonus absorption hearts. |
-| **Food spoilage** | Food slowly rots in your inventory | Perishable meats/fish/produce randomly rot into rotten flesh over time - faster in hot biomes. Honey, teas and wines never spoil. Cooked food still spoils; plan expeditions accordingly. |
+| **Thirst** | 10 blue teardrops (`#1AAFE7`/`#0E86CA`) in the 9-px band immediately above hunger, right-aligned to hotbar right edge, with a 13×13 glass flask icon on the left | **Scale** `dehydration:hydration` 0..20. **Drain** `baseDrain 0.025` (~13m empty) ×2 sprint +0.05 per `thirst` amp. **Drink** the leather flask (+4 per sip), and **eating or drinking any catalogued food now rehydrates you**: melon slice +1, glow berries and chorus fruit +2, stews +3, apple +4, golden apple +6, milk bucket +8 - 38 foods and drinks are catalogued across 12 tiers (`config/hearthwind_survival.json`: `thirst.useHydrationCorpus`, `hydrationCorpusScale`). Empty-hand on water gives +0.5 dirty sip with a 3s cooldown. |
+| **Body temperature** | Bottom-anchored 7×27 vertical thermometer to the right of hotbar + 12×12 "F" unit box + trend chevron | Scale -10..10. Drifts toward a biome + season target, then the environment adds: **lit** campfires, furnaces, blast furnaces, smokers and magma blocks warm you (+3 adjacent, +2 one block away, +1 two blocks), snow and ice cool you (ice -3 adjacent); at most two of any one source count. **Shelter pays** - a fire in an enclosed room gets a +50% bonus, while standing under a roof costs -1 (shade). Altitude, wetness (soaked -6 / rain -3), worn armor (+1, insulated +3, iced -4) and day/night all come from the same tuning tables. At **-8** freeze damage, at **+9** heat exhaustion & burn damage. |
+| **Diet & Nutrition** | 5 nutrient groups (Fruits `#E54016`, Vegetables `#F1910C`, Grains `#F0DE1A`, Proteins `#64CA0C`, Sugars `#99916E`) in a 176×166 vanilla-grey panel (`N` key or tab) | Five segmented 140×5 bars at 24 GUI px pitch. Each group decays over time. Neglecting a group inflicts deficiency debuffs (no fruits = mining fatigue, no grains = slowness, no proteins/vegetables = weakness). Balanced diet grants regeneration & healing saturation. |
+| **Food Spoilage** | Food slowly rots in inventory & containers | Perishable meats, fish, and produce rot into rotten flesh over time - twice as fast in hot biomes. Sealed teas, alcohol, and honey never spoil. |
+| **Downed & Revive** | 60s bleedout state upon lethal damage | Downed players crawl and call for help; teammates can channel for 3s to revive them at 3 hearts. |
 
-All numbers live in `config/hearthwind_survival.json` - server admins can retune
-everything without updates (diet groups themselves are datapack tags under `nutritionz:`).
+## Skills & Content Gates (LevelZ corpus, read from the datapack)
 
-### Thirst - first day and first week
+Gates are loaded from the migrated LevelZ corpus in the world datapack
+(`data/levelz/**`) at server start, so the tuning is editable without a
+rebuild. **676 gates are active**: 303 mining, 162 smithing, 148 crafting, 23 brewing, 16 block-use, 12 item-use, 12 entity.
 
-**First 10 minutes (Day 0):** Spawn 20/20, drain ~1/40s (13m) so time to learn. Punch 2-3 trees → 12 planks → 3-4 `minecraft:bowl` (4 bowls per craft). Find water. Bowl on source → `water_bowl` (green tainted, `BOTTLE_FILL`) or `hot` (desert noon, gold hint) or `cold` (snowy/winter/ice, aqua hint). No bowl? Empty-hand on water → +1 dirty sip (90% thirst 20s, 0.6 exhaustion, 3s cooldown, "barely helps" - deliberately tedious, craft a bowl). Drink bowl +6 (50% thirst if dirty, clean if purified). Stay >6 for regen.
+- **Mining Gates**: Mud Bricks (1), Sandstone (2), Bricks (3), **Stone and Cobblestone (5)**, Diorite (6), Andesite (8), Granite (10), Terracotta (11), **Iron Ore (13)**, Deepslate (18), **Diamond (21)**, Obsidian (25), Netherite (27). Breaking a gated block shows the skill and level you need.
+- **Earning your first Mining levels**: every pickaxe-mineable block is gated, so the loose **surface rocks and flint** you pick up are the tier-0 mining activity — breaking them is what raises Mining from 0. You also start with 2 skill points to spend as soon as you join.
+- **Use Gates**: Furnaces, Anvils, Smithing Tables (Smithing), Brewing Stands & Cauldrons (Alchemy), Smokers & Beehives (Farming), Grindstones (Strength), Cartography Tables (Agility).
+- **Item & Entity Gates**: Certain items need a skill level to use, and breeding/taming livestock is gated behind Farming and Agility.
 
-**First campfire (Day 0-1):** Gather 3 sticks + 3 logs + 1 coal (or charcoal: smelt a log). Place `minecraft:campfire` → put `water_bowl` on it (campfire_cooking) → `purified_water_bowl` (+6 clean, no effect). Make 6-8 purified and keep them in your hotbar; campfire re-lights easily.
+### Skill capstones (LevelZ procs)
 
-**First week (Days 1-7):** Keep a water source next to your base (dig a 1×1 pit, fill with bucket later, but bowls work without a bucket). Never sprint when below 6 unless you must - sprint drains ×2. Diet starts decaying (0.02/s per group, ~14 h to empty) and spoilage starts rolling (0.002 per 10s, ×2 in hot biomes) so you also start hunting diverse food and cooking in batches. Thirst stays a daily chore until you have a well and a stack of purified bowls - it never goes away, just gets routine.
+Mastering a skill past the level curve unlocks a passive perk. Chances and bonuses are configurable in `config/hearthwind_skills.json` (`procs.*`); unlocked at the maximum skill level (30):
 
-HUD: 10 blue droplets above hunger (8px apart, 10px above food, wobbles when ≤6). Vanilla clients see the same warnings as yellow/gold/red action-bar text. `BowlWaterFillHandler` and `WaterBowlItem` are server-authoritative; payload `hearthwind:thirst` syncs to `hearthwind-client` for the HUD, vanilla ignores it.
-
-## Skills (replaces LevelZ)
-
-Twelve skills level up as you play (max level 30):
-
-- **Mining** - mine stone-type blocks. Levels raise mining speed.
-- **Farming** - harvest crops, cull livestock.
-- **Stamina** - dig dirt/sand-type blocks.
-- **Strength** - melee kills. Levels add attack damage.
-- **Archery** - bow/crossbow/trident kills.
-- **Health** - passive levels add max HP.
-- **Defense** - levels add armor points.
-- **Agility** - levels add movement speed.
-- **Luck** - levels add luck.
-- **Smithing / Alchemy / Trade** - unlock-based crafting tiers (see the
-  skill unlock lists in-game; e.g., iron gear needs smithing 14).
-
-XP costs grow each level (~30 XP per current level). Admins tune curve,
-XP rates and bonuses in `config/hearthwind_skills.json`.
-
-### Skill gates
-
-Progression is enforced, not just cosmetic:
-
-- **Mining gates**: stone needs mining 5, mud bricks 1, deepslate 18,
-  obsidian 25, ancient debris 27 ... (full list from the original pack's
-  tuning; unknown/modded blocks simply aren't gated).
-- **Use gates**: furnace/anvil/smithing table need smithing,
-  brewing stand & cauldrons need alchemy, smoker/beehive/composter need
-  farming, cartography table agility 8, grindstone strength 15,
-  lectern/loom stamina, beacon luck 30.
-- Try anyway and you get an action-bar hint ("You need smithing level
-  3 to use this") instead of a silent failure.
+- **Luck — Critical strikes**: every luck level adds 1% crit chance; a crit deals +20% damage.
+- **Strength — Double damage**: at max level, 3% of melee hits deal double.
+- **Agility — Evasion**: at max level, 10% of incoming attacks miss entirely. Agility also soaks 0.25 fall damage per level.
+- **Defense — Retribution**: at max level, 5% of hits reflect their damage back at whatever attacked you.
+- **Luck — Cheat death**: at max level, 50% of otherwise-lethal hits leave you on 1 HP with Regeneration and Absorption instead.
+- **Farming — Twins**: at max level, 20% of animal breedings produce two babies instead of one.
 
 ## Jobs (replaces jobs-addon)
 
-Eight optional professions - miner, farmer, fisher, warrior, smither,
-brewer, builder, lumberjack. Join one at a time; level it by doing its
-work (mining the right ores, placing the right blocks, catching fish …).
-XP curve is `pointsPerLevel * L` per level (default 100, tuned in
-`config/hearthwind_jobs.json`). Each job's level tracks unlock its corpus
-actions (e.g., smither: iron at lower levels, netherite at high). Leaving
-a job clears progress. Job-restricted recipes and bonus rewards are next
-(see `docs/FEATURE_PARITY.md`).
+Eight optional professions (Miner, Farmer, Fisher, Warrior, Smither, Brewer, Builder, Lumberjack):
+- Join and manage via `/job join <job>`, `/job leave`, `/job info`.
+- Earn XP by performing trade-specific tasks following the job ladder.
+- Crafting is gated by **skill** levels, not jobs.
+- Respects Age technology gating (e.g., Smither & Brewer unlock in Iron Age+).
 
-## Dangerous frontier (replaces RPG Difficulty)
+## Flora, Crops, Agriculture & Wildlife (Complete Aged Parity)
 
-Monsters get stronger the farther they spawn from world spawn:
-+2 HP and +0.5 damage every 1000 blocks past a 500-block safe radius,
-capped after 20 steps. The wilds are genuinely dangerous; early bases
-near spawn are meaningfully safer. Configurable under `mobScaling` in
-`config/hearthwind_skills.json`.
+- **Wild Crops & Farming (`hearthwind-flora` & Let's Do Family)**:
+  - **Farm & Charm**: Wild Barley, Wild Corn, Wild Strawberries, Wild Onions, Wild Garlic scattered in Overworld biomes. Harvesting yields seeds and produce for flour, dough, oatmeal, ribs, and soup. Crafting stations (Silo, Roaster, Butter Churn, Plow, Supply Cart).
+  - **Vinery**: Grape varieties (Red, White, Taiga, Savanna, Jungle) and seeds for wine making. Fermentation Barrels, Grapevine Pots, Apple Press, and Dark Cherry wood.
+  - **Candlelight**: Tomatoes, Lettuce, Broccoli, and seeds. Cooking Pan and Pot for multi-ingredient meals (pasta, lasagna, beef tartare).
+  - **Meadow**: High-altitude alpine wildflowers (Edelweiss, Alpine Poppy, Gentian, Delphinium, Fire Lily, Saxifrage, Eriophorum). Cheese making with Wooden Cauldrons, Cheese Forms, and Aging Racks.
+  - **HerbalBrews**: Wild Herbs (Lavender, Wild Coffee, Wild Yerba Mate, Wild Rooibos, Hibiscus) and tea leaves for brewed hot and cold beverages in Tea Kettles.
+  - **Brewery**: Wild Hops, Hops Seeds, and grains brewed into beers, whiskey, and vodka in Brew Kettles and Beer Barrels.
+  - **Nether Vinery**: Crimson and Warped nether grapes and ghast wine brewing.
+- **Leaves & Early-Game Stick Foraging**:
+  - Punching or right-clicking leaves with an empty hand forages sticks (60% chance with 1s cooldown).
+  - Breaking leaves with bare hands or tools drops sticks reliably (50% drop rate).
+- **Wildlife & Fauna Dynamics (`hearthwind-world`)**:
+  - **Superb Steeds**: Multi-tier steed breeds, pack mules, draft horses, donkeys, and functional carts.
+  - **Waterfowl**: Ducks and waterfowl inhabit rivers, swamps, and shorelines; can be fed seeds and kelp for feathers and breeding.
+  - **Herd Panic**: Attacking one animal causes nearby herd members to panic and stampede together.
+  - **Villager Leashing**: Villagers can be attached to leads for organized relocation and transport.
 
-## Primitive start (replaces EarlyStage)
+## World, Seasons & Water Dynamics
 
-You punch stone for **rocks** (not cobblestone), knap **flint tools**
-before any wood tier is viable, and use ore-piece recipes (9 pieces ↔ 1
-ingot). Flint tool repairs use `flint_tool_repair` tag. **Steel** is the
-next tier (steel ingot/nugget/block, crafted from iron + coal per the
-migrated recipes). Sieve, knapping minigame and beginner-death forgiveness
-remain planned (`hearthwind-primitive` - partial, see FEATURE_PARITY).
+- **18-Day Seasons (SeasonHUD parity)**:
+  - Season duration set to **18 days** (`daysPerSeason = 18`).
+  - Top-left HUD widget at GUI `(2, 2)` displaying 9×9 season icon + single-line formatted text: `"[Icon] Season, Day N/18"`.
+  - Season text tinting: Spring `#FFA3BB`, Summer `#FEE92A`, Autumn `#BC5E27`, Winter `#E0FCFC`.
+  - Per-crop seasonal growth multipliers (15 crop types loaded from `seasons/crop/*.json`).
+- **River Currents & Ocean Swell**:
+  - Gentle downhill river flow and oceanic tidal wave swell.
+  - Directional splash, surface bubbles, and bubble pops (`ParticleTypes.SPLASH` / `ParticleTypes.BUBBLE_POP` / `ParticleTypes.BUBBLE`) visibly stream in the direction of the water current.
+- **Winter Snow Layering**:
+  - Gradual multi-layer snow accumulation during winter on ground and leaves.
 
-## Seasons (replaces fabric-seasons)
+## Visual Inventory & UI Look & Feel
 
-Four seasons rotate every `daysPerSeason` (21) MC days: **spring, summer,
-autumn, winter**. Each applies a temperature drift offset and a crop growth
-multiplier (tuned in `config/hearthwind_world.json`). Hook into thirst/
-temperature and crop growth is wiring next; for now `Season.fromWorldTime()`
-is the source of truth (`hearthwind-world` - partial).
-
-## Coming next
-
-- Job-restricted recipe gating + bonus rewards (commands already live via `/job`)
-- Primitive: sieve (`earlystage:sieve_drops/aged_drops.json`), full tiered affixes
-- Wire seasons into crops & survival temperature; river currents & ocean swells (`ideas/rivers-and-waves.md`)
-- Client companion mod: HUD bars for thirst/diet/temperature/skills/jobs
+- **Main Menu (Aged 3.1.2 Parity)**:
+  - Custom HearthWind panoramic start screen with cabin and autumnal breeze.
+  - Left-aligned button stack at `x = width / 9` with authentic hover tints (`#EEDAC3`, `#A1B8B5`, `#6AA7BA`, `#BFA8BF`, `#EB9484`).
+  - Top-right 20×20 icon buttons (Discord, Modrinth, Language, Accessibility).
+- **Inventory Tab Strip**:
+  - 4 tabs above vanilla `#C6C6C6` panels (Inventory Bag, Skills Tablet, Jobs Clipboard, Nutrients Apple) at 25 GUI px pitch.

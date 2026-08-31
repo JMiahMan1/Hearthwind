@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:smithing_transform",
+  "template": "minecraft:netherite_upgrade_smithing_template",
+  "base": "dehydration:diamond_leather_flask",
+  "addition": "minecraft:netherite_ingot",
+  "result": {
+    "id": "dehydration:netherite_leather_flask",
+    "count": 1
+  }
+}

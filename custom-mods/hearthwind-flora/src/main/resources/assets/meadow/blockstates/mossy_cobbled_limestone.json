@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "": [
+      {
+        "model": "meadow:block/mossy_cobbled_limestone",
+        "weight": 1
+      }
+    ]
+  }
+}

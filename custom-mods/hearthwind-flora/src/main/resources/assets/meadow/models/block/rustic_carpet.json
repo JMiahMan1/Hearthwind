@@ -1,0 +1,8 @@
+{
+	"parent": "meadow:block/template_fray_carpet",
+	"textures": {
+		"1": "meadow:block/pine_sofa_rustic_back",
+		"2": "meadow:block/rustic_wool",
+		"particle": "meadow:block/rustic_wool"
+	}
+}

@@ -13,6 +13,7 @@ import net.minecraft.world.item.CrossbowItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TridentItem;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 
@@ -21,14 +22,28 @@ import net.minecraft.world.level.block.state.BlockState;
  * skills from kills. All amounts come from SkillsConfig.
  */
 public final class SkillEvents {
+    /**
+     * Blocks whose mining counts toward the MINING skill even though they are
+     * broken by hand. The levelz ladder gates every pickaxe-mineable block
+     * (sandstone 2, stone and cobblestone 5, andesite 8...), so without the
+     * surface rocks - the Age-0 activity - a fresh player could never earn the
+     * first mining level and progression would deadlock.
+     */
+    private static final net.minecraft.tags.TagKey<net.minecraft.world.level.block.Block> ROCK_BLOCKS =
+            net.minecraft.tags.TagKey.create(net.minecraft.core.registries.Registries.BLOCK,
+                    net.minecraft.resources.Identifier.fromNamespaceAndPath(
+                            "earlystage", "rock_blocks"));
+
     private SkillEvents() {}
 
     public static void register() {
         PlayerBlockBreakEvents.AFTER.register(SkillEvents::onBlockBroken);
         ServerLivingEntityEvents.AFTER_DEATH.register(SkillEvents::onDeath);
+        net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents.JOIN.register(
+                (handler, sender, server) -> SkillsSync.send(handler.getPlayer()));
     }
 
-    private static void onBlockBroken(Level world, net.minecraft.world.entity.player.Player player, BlockPos pos,
+    public static void onBlockBroken(Level world, net.minecraft.world.entity.player.Player player, BlockPos pos,
             BlockState state, BlockEntity blockEntity) {
         if (!(player instanceof ServerPlayer sp)
                 || sp.getAbilities().instabuild
@@ -36,8 +51,10 @@ public final class SkillEvents {
             return;
         }
         SkillsConfig.Xp cfg = SkillsConfig.get().xp;
-        if (state.is(BlockTags.CROPS)) {
+        if (isFarmingBlock(state)) {
             SkillXp.addXp(sp, Skill.FARMING, cfg.farmingPerCrop);
+        } else if (state.is(ROCK_BLOCKS)) {
+            SkillXp.addXp(sp, Skill.MINING, cfg.miningPerBlock);
         } else if (state.is(BlockTags.MINEABLE_WITH_PICKAXE)) {
             SkillXp.addXp(sp, Skill.MINING, cfg.miningPerBlock);
         } else if (state.is(BlockTags.MINEABLE_WITH_SHOVEL)) {
@@ -45,7 +62,23 @@ public final class SkillEvents {
         }
     }
 
-    private static void onDeath(LivingEntity entity, DamageSource source) {
+    private static boolean isFarmingBlock(BlockState state) {
+        if (state.is(BlockTags.CROPS)
+                || state.is(BlockTags.FLOWERS)
+                || state.is(BlockTags.BEE_GROWABLES)
+                || state.is(Blocks.SUGAR_CANE)
+                || state.is(Blocks.PUMPKIN)
+                || state.is(Blocks.MELON)
+                || state.is(Blocks.COCOA)
+                || state.is(Blocks.SWEET_BERRY_BUSH)
+                || state.is(Blocks.NETHER_WART)) {
+            return true;
+        }
+        String ns = net.minecraft.core.registries.BuiltInRegistries.BLOCK.getKey(state.getBlock()).getNamespace();
+        return "vinery".equals(ns) || "candlelight".equals(ns) || "meadow".equals(ns) || "herbalbrews".equals(ns) || "bakery".equals(ns);
+    }
+
+    public static void onDeath(LivingEntity entity, DamageSource source) {
         if (!(source.getEntity() instanceof ServerPlayer sp)) {
             return;
         }

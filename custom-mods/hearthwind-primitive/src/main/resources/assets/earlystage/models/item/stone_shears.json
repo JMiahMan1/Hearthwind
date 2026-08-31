@@ -1,6 +1,6 @@
 {
-  "parent": "minecraft:item/handheld",
-  "textures": {
-    "layer0": "earlystage:item/stone_shears"
-  }
+    "parent": "minecraft:item/generated",
+    "textures": {
+        "layer0": "earlystage:item/stone_shears"
+    }
 }

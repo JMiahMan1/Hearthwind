@@ -1,0 +1,55 @@
+{
+  "item": [
+    {
+      "entries": [
+        "minecraft:armor"
+      ],
+      "level": 5
+    },
+    {
+      "entries": [
+        "minecraft:crossbow"
+      ],
+      "level": 8
+    },
+    {
+      "entries": [
+        "minecraft:bow"
+      ],
+      "level": 12
+    },
+    {
+      "entries": [
+        "minecraft:custom_item"
+      ],
+      "level": 18
+    },
+    {
+      "entries": [
+        "minecraft:custom_item"
+      ],
+      "level": 24
+    },
+    {
+      "entries": [
+        "minecraft:custom_item",
+        "minecraft:trident"
+      ],
+      "level": 30
+    }
+  ],
+  "use": [
+    {
+      "entries": [
+        "minecraft:custom_block"
+      ],
+      "level": 10
+    },
+    {
+      "entries": [
+        "minecraft:custom_block"
+      ],
+      "level": 15
+    }
+  ]
+}

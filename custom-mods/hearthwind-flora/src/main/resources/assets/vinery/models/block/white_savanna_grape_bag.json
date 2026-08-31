@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/cube_all",
+  "textures": {
+    "all": "vinery:block/white_savanna_grape_bag"
+  }
+}

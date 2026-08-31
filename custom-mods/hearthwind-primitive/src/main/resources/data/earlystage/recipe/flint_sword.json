@@ -1,16 +1,16 @@
 {
   "type": "minecraft:crafting_shaped",
-  "category": "equipment",
   "pattern": [
-    "F",
-    "F",
-    "S"
+    "d",
+    "d",
+    "e"
   ],
   "key": {
-    "F": "earlystage:flint",
-    "S": "minecraft:stick"
+    "d": "minecraft:flint",
+    "e": "minecraft:stick"
   },
   "result": {
-    "id": "earlystage:flint_sword"
+    "id": "earlystage:flint_sword",
+    "count": 1
   }
 }

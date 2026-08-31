@@ -31,22 +31,54 @@ subprojects {
 	if (project.name == 'hearthwind-client') {
 		dependencies {
 			implementation project(':hearthwind-survival')
+			implementation project(':hearthwind-world')
 		}
 	}
 	if (project.name == 'hearthwind-primitive') {
 		dependencies {
 			implementation project(':hearthwind-survival')
+			implementation project(':hearthwind-world')
+		}
+	}
+	if (project.name == 'hearthwind-skills') {
+		dependencies {
+			implementation project(':hearthwind-survival')
+		}
+	}
+	if (project.name == 'hearthwind-jobs') {
+		dependencies {
+			implementation project(':hearthwind-survival')
+		}
+	}
+	if (project.name == 'hearthwind-survival') {
+		dependencies {
+			implementation project(':hearthwind-world')
 		}
 	}
 
 	afterEvaluate {
-		if (name == 'hearthwind-survival' || name == 'hearthwind-skills' || name == 'hearthwind-jobs') {
+		if (name == 'hearthwind-client') {
+			dependencies {
+				// keymapping API is one of the modules the aggregator hides
+				// at compile time; pin it for NutrientsKey (renamed from
+				// key-binding in the 26.2 fabric-api generation).
+				modCompileClasspath "net.fabricmc.fabric.api:fabric-key-mapping-api-v1:2.0.5+e2bdee789e"
+			}
+		}
+		if (name == 'hearthwind-survival' || name == 'hearthwind-skills' || name == 'hearthwind-jobs' || name == 'hearthwind-world') {
 			dependencies {
 				// fabric-api aggregator POM hides module classes at compile
 				// time; pin gametest API for @GameTest compilation.
 				// loom 1.17 has no modImplementation(); modCompileClasspath
 				// gives compile + runtime presence.
 				modCompileClasspath "net.fabricmc.fabric.api:fabric-gametest-api-v1:4.0.21+4a7fa0819e"
+			}
+		}
+		if (name == 'hearthwind-primitive') {
+			dependencies {
+				modCompileClasspath "net.fabricmc.fabric.api:fabric-gametest-api-v1:4.0.21+4a7fa0819e"
+				// leaves-stick loot hook uses the v3 loot API
+				modCompileClasspath "net.fabricmc.fabric.api:fabric-loot-api-v3:3.0.17+06488ac19e"
 			}
 		}
 	}

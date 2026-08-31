@@ -1,0 +1,22 @@
+{
+  "variants": {
+    "": {
+      "model": "farm_and_charm:block/plow"
+    },
+    "facing=north": {
+      "model": "farm_and_charm:block/plow"
+    },
+    "facing=south": {
+      "model": "farm_and_charm:block/plow",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "farm_and_charm:block/plow",
+      "y": 270
+    },
+    "facing=east": {
+      "model": "farm_and_charm:block/plow",
+      "y": 90
+    }
+  }
+}

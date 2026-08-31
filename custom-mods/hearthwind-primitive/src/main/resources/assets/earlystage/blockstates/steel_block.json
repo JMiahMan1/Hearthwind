@@ -1,7 +1,7 @@
 {
-  "variants": {
-    "": {
-      "model": "earlystage:block/steel_block"
+    "variants": {
+        "": {
+            "model": "earlystage:block/steel_block"
+        }
     }
-  }
 }

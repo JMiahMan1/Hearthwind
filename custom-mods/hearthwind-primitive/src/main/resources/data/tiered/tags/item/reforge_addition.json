@@ -1,0 +1,23 @@
+{
+ "replace": false,
+ "values": [
+  "minecraft:echo_shard",
+  "minecraft:amethyst_shard",
+  {
+   "id": "adventurez:gilded_blackstone_shard",
+   "required": false
+  },
+  {
+   "id": "betterarcheology:artifact_shards",
+   "required": false
+  },
+  {
+   "id": "natures_spirit:calcite_shard",
+   "required": false
+  },
+  {
+   "id": "amarite:amarite_shard",
+   "required": false
+  }
+ ]
+}

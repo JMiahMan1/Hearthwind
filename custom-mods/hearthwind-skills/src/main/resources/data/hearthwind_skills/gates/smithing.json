@@ -1,0 +1,486 @@
+{
+  "crafting": [
+    {
+      "entries": [
+        "earlystage:flint_axe",
+        "earlystage:flint_hoe",
+        "earlystage:flint_pickaxe",
+        "earlystage:flint_shovel",
+        "earlystage:flint_sword",
+        "environmentz:wanderer_boots",
+        "environmentz:wanderer_chestplate",
+        "environmentz:wanderer_helmet",
+        "environmentz:wanderer_leggings",
+        "minecraft:flint"
+      ],
+      "level": 1
+    },
+    {
+      "entries": [
+        "minecraft:scute",
+        "minecraft:turtle_helmet"
+      ],
+      "level": 2
+    },
+    {
+      "entries": [
+        "brewery:brewfest_blouse",
+        "brewery:brewfest_boots",
+        "brewery:brewfest_dress",
+        "brewery:brewfest_hat",
+        "brewery:brewfest_hat_red",
+        "brewery:brewfest_regalia",
+        "brewery:brewfest_shoes",
+        "brewery:brewfest_trousers",
+        "brewery:patterned_wool",
+        "immersive_armors:robe_boots",
+        "immersive_armors:robe_chestplate",
+        "immersive_armors:robe_helmet",
+        "immersive_armors:robe_leggings",
+        "meadow:flecked_wool",
+        "meadow:highland_wool",
+        "meadow:inky_wool",
+        "meadow:patched_wool",
+        "meadow:rocky_wool",
+        "meadow:umbra_wool",
+        "meadow:warped_wool",
+        "minecraft:black_wool",
+        "minecraft:blue_wool",
+        "minecraft:brown_wool",
+        "minecraft:cyan_wool",
+        "minecraft:gray_wool",
+        "minecraft:green_wool",
+        "minecraft:light_blue_wool",
+        "minecraft:light_gray_wool",
+        "minecraft:lime_wool",
+        "minecraft:magenta_wool",
+        "minecraft:orange_wool",
+        "minecraft:pink_wool",
+        "minecraft:purple_wool",
+        "minecraft:red_wool",
+        "minecraft:white_wool",
+        "minecraft:yellow_wool",
+        "vinery:straw_hat",
+        "vinery:winemaker_apron",
+        "vinery:winemaker_boots",
+        "vinery:winemaker_leggings"
+      ],
+      "level": 3
+    },
+    {
+      "entries": [
+        "bakery:rolling_pin",
+        "brewery:wooden_brewingstation",
+        "earlystage:wooden_shield",
+        "immersive_armors:wooden_boots",
+        "immersive_armors:wooden_chestplate",
+        "immersive_armors:wooden_helmet",
+        "immersive_armors:wooden_leggings",
+        "meadow:watering_can",
+        "medievalweapons:wooden_big_axe",
+        "medievalweapons:wooden_dagger",
+        "medievalweapons:wooden_francisca",
+        "medievalweapons:wooden_healing_staff",
+        "medievalweapons:wooden_javelin",
+        "medievalweapons:wooden_lance",
+        "medievalweapons:wooden_long_sword",
+        "medievalweapons:wooden_mace",
+        "medievalweapons:wooden_ninjato",
+        "medievalweapons:wooden_rapier",
+        "medievalweapons:wooden_sickle",
+        "medievalweapons:wooden_small_axe",
+        "minecraft:fishing_rod",
+        "minecraft:wooden_axe",
+        "minecraft:wooden_hoe",
+        "minecraft:wooden_pickaxe",
+        "minecraft:wooden_shovel",
+        "minecraft:wooden_sword"
+      ],
+      "level": 4
+    },
+    {
+      "entries": [
+        "immersive_armors:bone_boots",
+        "immersive_armors:bone_chestplate",
+        "immersive_armors:bone_helmet",
+        "immersive_armors:bone_leggings",
+        "minecraft:bone"
+      ],
+      "level": 5
+    },
+    {
+      "entries": [
+        "candlelight:chefs_boots",
+        "candlelight:chefs_jacket",
+        "candlelight:chefs_pants",
+        "candlelight:cooking_hat",
+        "endermanoverhaul:badlands_hood",
+        "endermanoverhaul:savanna_hood",
+        "endermanoverhaul:snowy_hood",
+        "environmentz:ice_pack",
+        "environmentz:wolf_boots",
+        "environmentz:wolf_chestplate",
+        "environmentz:wolf_helmet",
+        "environmentz:wolf_leggings",
+        "environmentz:wolf_pelt",
+        "herbalbrews:top_hat",
+        "herbalbrews:witch_hat",
+        "meadow:fur_boots",
+        "meadow:fur_chestplate",
+        "meadow:fur_helmet",
+        "meadow:fur_leggings",
+        "minecraft:leather",
+        "minecraft:leather_boots",
+        "minecraft:leather_chestplate",
+        "minecraft:leather_helmet",
+        "minecraft:leather_leggings",
+        "minecraft:rabbit_hide"
+      ],
+      "level": 6
+    },
+    {
+      "entries": [
+        "earlystage:stone_shears",
+        "environmentz:heating_stones",
+        "medievalweapons:stone_big_axe",
+        "medievalweapons:stone_dagger",
+        "medievalweapons:stone_francisca",
+        "medievalweapons:stone_healing_staff",
+        "medievalweapons:stone_javelin",
+        "medievalweapons:stone_lance",
+        "medievalweapons:stone_long_sword",
+        "medievalweapons:stone_mace",
+        "medievalweapons:stone_ninjato",
+        "medievalweapons:stone_rapier",
+        "medievalweapons:stone_sickle",
+        "medievalweapons:stone_small_axe",
+        "minecraft:stone_axe",
+        "minecraft:stone_hoe",
+        "minecraft:stone_pickaxe",
+        "minecraft:stone_shovel",
+        "minecraft:stone_sword"
+      ],
+      "level": 7
+    },
+    {
+      "entries": [
+        "candlelight:gold_ring",
+        "medievalweapons:golden_big_axe",
+        "medievalweapons:golden_dagger",
+        "medievalweapons:golden_francisca",
+        "medievalweapons:golden_healing_staff",
+        "medievalweapons:golden_javelin",
+        "medievalweapons:golden_lance",
+        "medievalweapons:golden_long_sword",
+        "medievalweapons:golden_mace",
+        "medievalweapons:golden_ninjato",
+        "medievalweapons:golden_rapier",
+        "medievalweapons:golden_sickle",
+        "medievalweapons:golden_small_axe",
+        "minecraft:gold_ingot",
+        "minecraft:golden_axe",
+        "minecraft:golden_boots",
+        "minecraft:golden_chestplate",
+        "minecraft:golden_helmet",
+        "minecraft:golden_hoe",
+        "minecraft:golden_leggings",
+        "minecraft:golden_pickaxe",
+        "minecraft:golden_shovel",
+        "minecraft:golden_sword"
+      ],
+      "level": 8
+    },
+    {
+      "entries": [
+        "minecraft:bow",
+        "spider_caves:spider_boots",
+        "spider_caves:spider_chestplate",
+        "spider_caves:spider_helmet",
+        "spider_caves:spider_leggings"
+      ],
+      "level": 9
+    },
+    {
+      "entries": [
+        "bbb:hammer",
+        "brewery:copper_brewingstation",
+        "candlelight:cooking_pan",
+        "farm_and_charm:silo_copper",
+        "minecraft:brush",
+        "minecraft:copper_ingot",
+        "minecraft:spyglass"
+      ],
+      "level": 10
+    },
+    {
+      "entries": [
+        "minecraft:chainmail_boots",
+        "minecraft:chainmail_chestplate",
+        "minecraft:chainmail_helmet",
+        "minecraft:chainmail_leggings"
+      ],
+      "level": 12
+    },
+    {
+      "entries": [
+        "bakery:bread_knife",
+        "bakery:small_cooking_pot",
+        "betterarcheology:iron_brush",
+        "medievalweapons:iron_big_axe",
+        "medievalweapons:iron_dagger",
+        "medievalweapons:iron_francisca",
+        "medievalweapons:iron_healing_staff",
+        "medievalweapons:iron_javelin",
+        "medievalweapons:iron_lance",
+        "medievalweapons:iron_long_sword",
+        "medievalweapons:iron_mace",
+        "medievalweapons:iron_ninjato",
+        "medievalweapons:iron_rapier",
+        "medievalweapons:iron_sickle",
+        "medievalweapons:iron_small_axe",
+        "minecraft:crossbow",
+        "minecraft:iron_axe",
+        "minecraft:iron_boots",
+        "minecraft:iron_chestplate",
+        "minecraft:iron_helmet",
+        "minecraft:iron_hoe",
+        "minecraft:iron_ingot",
+        "minecraft:iron_leggings",
+        "minecraft:iron_pickaxe",
+        "minecraft:iron_shovel",
+        "minecraft:iron_sword",
+        "minecraft:shears",
+        "minecraft:shield"
+      ],
+      "level": 14
+    },
+    {
+      "entries": [
+        "endermanoverhaul:corrupted_blade",
+        "endermanoverhaul:corrupted_shield",
+        "immersive_armors:warrior_boots",
+        "immersive_armors:warrior_chestplate",
+        "immersive_armors:warrior_helmet",
+        "immersive_armors:warrior_leggings"
+      ],
+      "level": 15
+    },
+    {
+      "entries": [
+        "immersive_armors:divine_boots",
+        "immersive_armors:divine_chestplate",
+        "immersive_armors:divine_helmet",
+        "immersive_armors:divine_leggings"
+      ],
+      "level": 16
+    },
+    {
+      "entries": [
+        "immersive_armors:wither_boots",
+        "immersive_armors:wither_chestplate",
+        "immersive_armors:wither_helmet",
+        "immersive_armors:wither_leggings",
+        "medievalweapons:recurve_bow"
+      ],
+      "level": 17
+    },
+    {
+      "entries": [
+        "earlystage:steel_axe",
+        "earlystage:steel_boots",
+        "earlystage:steel_chestplate",
+        "earlystage:steel_helmet",
+        "earlystage:steel_hoe",
+        "earlystage:steel_ingot",
+        "earlystage:steel_leggings",
+        "earlystage:steel_pickaxe",
+        "earlystage:steel_shovel",
+        "earlystage:steel_sword",
+        "immersive_armors:heavy_boots",
+        "immersive_armors:heavy_chestplate",
+        "immersive_armors:heavy_helmet",
+        "immersive_armors:heavy_leggings",
+        "minecraft:flint_and_steel"
+      ],
+      "level": 18
+    },
+    {
+      "entries": [
+        "immersive_armors:prismarine_boots",
+        "immersive_armors:prismarine_chestplate",
+        "immersive_armors:prismarine_helmet",
+        "immersive_armors:prismarine_leggings",
+        "immersive_armors:slime_boots",
+        "immersive_armors:slime_chestplate",
+        "immersive_armors:slime_helmet",
+        "immersive_armors:slime_leggings",
+        "minecraft:prismarine_crystals",
+        "minecraft:slime_ball"
+      ],
+      "level": 19
+    },
+    {
+      "entries": [
+        "underground_jungle:temple_axe",
+        "underground_jungle:temple_hoe",
+        "underground_jungle:temple_pickaxe",
+        "underground_jungle:temple_shovel",
+        "underground_jungle:temple_sword"
+      ],
+      "level": 20
+    },
+    {
+      "entries": [
+        "medievalweapons:long_bow"
+      ],
+      "level": 22
+    },
+    {
+      "entries": [
+        "betterarcheology:diamond_brush",
+        "medievalweapons:diamond_big_axe",
+        "medievalweapons:diamond_dagger",
+        "medievalweapons:diamond_francisca",
+        "medievalweapons:diamond_healing_staff",
+        "medievalweapons:diamond_javelin",
+        "medievalweapons:diamond_lance",
+        "medievalweapons:diamond_long_sword",
+        "medievalweapons:diamond_mace",
+        "medievalweapons:diamond_ninjato",
+        "medievalweapons:diamond_rapier",
+        "medievalweapons:diamond_sickle",
+        "medievalweapons:diamond_small_axe",
+        "medievalweapons:thalleous_sword",
+        "minecraft:diamond",
+        "minecraft:diamond_axe",
+        "minecraft:diamond_boots",
+        "minecraft:diamond_chestplate",
+        "minecraft:diamond_helmet",
+        "minecraft:diamond_hoe",
+        "minecraft:diamond_leggings",
+        "minecraft:diamond_pickaxe",
+        "minecraft:diamond_shovel",
+        "minecraft:diamond_sword"
+      ],
+      "level": 24
+    },
+    {
+      "entries": [
+        "immersive_armors:steampunk_boots",
+        "immersive_armors:steampunk_chestplate",
+        "immersive_armors:steampunk_helmet",
+        "immersive_armors:steampunk_leggings"
+      ],
+      "level": 25
+    },
+    {
+      "entries": [
+        "underground_jungle:axe_of_regrowth",
+        "underground_jungle:blade_of_the_jungle"
+      ],
+      "level": 26
+    },
+    {
+      "entries": [
+        "brewery:netherite_brewingstation",
+        "dehydration:netherite_leather_flask",
+        "medievalweapons:netherite_big_axe",
+        "medievalweapons:netherite_dagger",
+        "medievalweapons:netherite_francisca",
+        "medievalweapons:netherite_healing_staff",
+        "medievalweapons:netherite_javelin",
+        "medievalweapons:netherite_lance",
+        "medievalweapons:netherite_long_sword",
+        "medievalweapons:netherite_mace",
+        "medievalweapons:netherite_ninjato",
+        "medievalweapons:netherite_rapier",
+        "medievalweapons:netherite_sickle",
+        "medievalweapons:netherite_small_axe",
+        "minecraft:netherite_axe",
+        "minecraft:netherite_boots",
+        "minecraft:netherite_chestplate",
+        "minecraft:netherite_helmet",
+        "minecraft:netherite_hoe",
+        "minecraft:netherite_ingot",
+        "minecraft:netherite_leggings",
+        "minecraft:netherite_pickaxe",
+        "minecraft:netherite_shovel",
+        "minecraft:netherite_sword"
+      ],
+      "level": 28
+    },
+    {
+      "entries": [
+        "adventurez:ender_flute",
+        "adventurez:prime_eye",
+        "betterarcheology:soul_totem",
+        "betterarcheology:torrent_totem",
+        "minecraft:elytra",
+        "minecraft:trident"
+      ],
+      "level": 29
+    },
+    {
+      "entries": [
+        "adventurez:blackstone_golem_arm",
+        "adventurez:gilded_netherite_boots",
+        "adventurez:gilded_netherite_chestplate",
+        "adventurez:gilded_netherite_fragment",
+        "adventurez:gilded_netherite_helmet",
+        "adventurez:gilded_netherite_leggings",
+        "dungeonnowloading:life_stealer",
+        "dungeonnowloading:scepter_of_sealed_chaos",
+        "dungeonnowloading:skull_of_chaos",
+        "dungeonnowloading:spawner_boots",
+        "dungeonnowloading:spawner_chestplate",
+        "dungeonnowloading:spawner_helmet",
+        "dungeonnowloading:spawner_leggings",
+        "dungeonnowloading:spawner_sword"
+      ],
+      "level": 30
+    }
+  ],
+  "entity": [
+    {
+      "entries": [
+        "minecraft:custom_entity"
+      ],
+      "level": 8
+    }
+  ],
+  "item": [
+    {
+      "entries": [
+        "minecraft:flint_and_steel"
+      ],
+      "level": 18
+    }
+  ],
+  "use": [
+    {
+      "entries": [
+        "minecraft:anvil",
+        "minecraft:smithing_table"
+      ],
+      "level": 1
+    },
+    {
+      "entries": [
+        "minecraft:furnace"
+      ],
+      "level": 3
+    },
+    {
+      "entries": [
+        "minecraft:custom_block"
+      ],
+      "level": 15
+    },
+    {
+      "entries": [
+        "minecraft:blast_furnace"
+      ],
+      "level": 18
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "d d",
+    " d "
+  ],
+  "key": {
+    "d": "#c:stripped_logs"
+  },
+  "result": {
+    "id": "earlystage:wooden_bucket",
+    "count": 1
+  }
+}

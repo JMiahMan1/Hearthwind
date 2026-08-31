@@ -1,0 +1,43 @@
+{
+  "entity": [
+    {
+      "entries": [
+        "minecraft:villager"
+      ],
+      "level": 5
+    },
+    {
+      "entries": [
+        "minecraft:custom_entity",
+        "minecraft:wandering_trader"
+      ],
+      "level": 10
+    },
+    {
+      "entries": [
+        "minecraft:piglin"
+      ],
+      "level": 17
+    }
+  ],
+  "item": [
+    {
+      "entries": [
+        "minecraft:armor"
+      ],
+      "level": 8
+    },
+    {
+      "entries": [
+        "minecraft:custom_item"
+      ],
+      "level": 12
+    },
+    {
+      "entries": [
+        "minecraft:armor"
+      ],
+      "level": 30
+    }
+  ]
+}

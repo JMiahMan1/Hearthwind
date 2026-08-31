@@ -1,0 +1,10 @@
+[
+  { "rcon": "clear TestPlayer" },
+  { "rcon": "item replace entity TestPlayer hotbar.0 with endrem:blacksmith_eye 1" },
+  { "rcon": "item replace entity TestPlayer hotbar.1 with endrem:nether_eye 1" },
+  { "rcon": "item replace entity TestPlayer hotbar.2 with endrem:desert_eye 1" },
+  { "rcon": "item replace entity TestPlayer hotbar.3 with endrem:ocean_eye 1" },
+  { "rcon": "item replace entity TestPlayer hotbar.4 with endrem:guardian_eye 1" },
+  { "rcon": "item replace entity TestPlayer hotbar.5 with minecraft:lead 1" },
+  { "shot": "live_endrem_hotbar_items" }
+]

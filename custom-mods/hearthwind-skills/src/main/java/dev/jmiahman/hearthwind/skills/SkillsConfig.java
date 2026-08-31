@@ -22,6 +22,7 @@ public final class SkillsConfig {
     public final Bonuses bonuses = new Bonuses();
     public final MobScaling mobScaling = new MobScaling();
     public final Gates gates = new Gates();
+    public final Procs procs = new Procs();
 
     /** Public no-arg ctor required so Gson keeps field-initializer defaults. */
     public SkillsConfig() {}
@@ -49,8 +50,10 @@ public final class SkillsConfig {
     }
 
     public static class Bonuses {
-        /** Bonus max health (HP) per HEALTH level. */
-        public double healthHpPerLevel = 0.5;
+        /** Base starting player health in HP (6.0 = 3 hearts, authentic Aged / LevelZ progression). */
+        public double baseStartingHealth = 6.0;
+        /** Bonus max health (HP) per HEALTH level (+1 HP per level = +0.5 heart). */
+        public double healthHpPerLevel = 1.0;
         /** Bonus attack damage per STRENGTH level. */
         public double strengthDamagePerLevel = 0.25;
         /** Fractional movement speed bonus per AGILITY level (0.005 = 0.5%). */
@@ -66,21 +69,53 @@ public final class SkillsConfig {
     public static class MobScaling {
         /** Master switch for distance-based monster scaling (rpgdifficulty parity). */
         public boolean enabled = true;
-        /** Distance from world spawn before any scaling applies (blocks). */
-        public double graceDistance = 500.0;
-        /** One scaling step per this many blocks beyond the grace distance. */
-        public double stepBlocks = 1000.0;
-        /** Extra max health (HP) per step. */
-        public double healthPerStep = 2.0;
-        /** Extra attack damage per step. */
-        public double damagePerStep = 0.5;
-        /** Hard cap on total steps a mob can receive. */
-        public int maxSteps = 20;
+        /** Distance from world spawn before any scaling applies (blocks) - rpgdifficulty: startingDistance 300. */
+        public double graceDistance = 300.0;
+        /** One scaling step per this many blocks beyond the grace distance - rpgdifficulty: increasingDistance 200. */
+        public double stepBlocks = 200.0;
+        /** Extra max health (HP) per step (5% of 20 base = 1.0 HP). */
+        public double healthPerStep = 1.0;
+        /** Extra attack damage per step (5% of 6 base = 0.3 dmg). */
+        public double damagePerStep = 0.3;
+        /** Hard cap on total steps a mob can receive - rpgdifficulty: maxFactorHealth 4.0 (60 steps). */
+        public int maxSteps = 60;
     }
 
     public static class Gates {
         /** Master switch for break/use skill gates (levelz parity). */
         public boolean enabled = true;
+    }
+
+    /**
+     * Combat and husbandry proc chances; defaults are the tuning values the
+     * pack ships. Except for crits and fall protection - which scale with the
+     * skill level - every proc is a capstone that only fires at max level,
+     * exactly like the reference progression mod.
+     */
+    public static class Procs {
+        /** Master switch for every proc below. */
+        public boolean enabled = true;
+        /** Crit chance per LUCK level (level 30 = 30% at the default). */
+        public double critChancePerLuckLevel = 0.01;
+        /** Extra damage fraction applied on a crit (0.2 = +20%). */
+        public double critDamageBonus = 0.2;
+        /** Chance a melee hit deals double damage. */
+        public double meleeDoubleDamageChance = 0.03;
+        /** Chance to take no damage from an attack at all. */
+        public double missChance = 0.1;
+        /** Chance to reflect the damage back at the attacker. */
+        public double reflectChance = 0.05;
+        /** Chance to survive a lethal hit at 1 HP. */
+        public double surviveChance = 0.5;
+        /** Chance that breeding produces a second baby. */
+        public double twinBabyChance = 0.2;
+        /** Fall damage reduced by this much per AGILITY level. */
+        public double fallProtectionPerAgilityLevel = 0.25;
+        /**
+         * Whether the capstone procs (double damage, miss, reflect, survive,
+         * twins) need the skill at maximum level before they can roll.
+         */
+        public boolean capstonesRequireMaxLevel = true;
     }
 
     private static SkillsConfig instance;

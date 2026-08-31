@@ -1,0 +1,6 @@
+{
+  "death.attack.hearthwind.dehydration": "%1$s died of thirst",
+  "death.attack.hearthwind.dehydration.player": "%1$s died of thirst while trying to escape %2$s",
+  "death.attack.hearthwind.heatstroke": "%1$s succumbed to the heat",
+  "death.attack.hearthwind.heatstroke.player": "%1$s succumbed to the heat while trying to escape %2$s"
+}

@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ded",
+    "ddd",
+    " d "
+  ],
+  "key": {
+    "d": "#minecraft:planks",
+    "e": "#minecraft:logs"
+  },
+  "result": {
+    "id": "earlystage:wooden_shield",
+    "count": 1
+  }
+}

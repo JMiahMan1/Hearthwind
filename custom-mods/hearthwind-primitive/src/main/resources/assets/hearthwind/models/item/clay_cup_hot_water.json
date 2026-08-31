@@ -1,6 +1,0 @@
-{
-  "parent": "minecraft:item/generated",
-  "textures": {
-    "layer0": "hearthwind:item/clay_cup_hot_water"
-  }
-}

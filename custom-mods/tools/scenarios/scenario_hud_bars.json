@@ -1,0 +1,5 @@
+[
+  { "rcon": "hearthwind hydration set 14" },
+  { "rcon": "hearthwind temp set 1.5" },
+  { "shot": "live_hud_bars_check" }
+]

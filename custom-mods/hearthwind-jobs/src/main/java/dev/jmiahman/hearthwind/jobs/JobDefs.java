@@ -15,7 +15,7 @@ import com.google.gson.JsonParser;
 import net.fabricmc.loader.api.FabricLoader;
 
 /**
- * Job definitions loaded from <code>data/aged_jobs/jobs/&lt;job&gt;.json</code>
+ * Job definitions loaded from <code>data/hearthwind_jobs/jobs/&lt;job&gt;.json</code>
  * (generated from the migrated jobs-addon corpus). Each level lists the
  * entity/block/item ids that award job XP while the player holds that
  * job. Unknown ids never match - same convention as skill gates.
@@ -52,7 +52,7 @@ public final class JobDefs {
         loaded = true;
         try {
             Path dir = FabricLoader.getInstance().getModContainer("hearthwind_jobs")
-                    .flatMap(c -> c.findPath("data/aged_jobs/jobs"))
+                    .flatMap(c -> c.findPath("data/hearthwind_jobs/jobs"))
                     .orElseThrow();
             try (var stream = Files.walk(dir)) {
                 stream.filter(p -> p.getFileName().toString().endsWith(".json"))

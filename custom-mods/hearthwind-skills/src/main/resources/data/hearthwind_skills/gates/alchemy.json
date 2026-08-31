@@ -1,0 +1,226 @@
+{
+  "entity": [
+    {
+      "entries": [
+        "minecraft:custom_entity"
+      ],
+      "level": 15
+    }
+  ],
+  "item": [
+    {
+      "entries": [
+        "minecraft:nether_wart"
+      ],
+      "level": 1
+    },
+    {
+      "entries": [
+        "minecraft:kelp",
+        "minecraft:sugar"
+      ],
+      "level": 2
+    },
+    {
+      "entries": [
+        "minecraft:spider_eye"
+      ],
+      "level": 3
+    },
+    {
+      "entries": [
+        "adventurez:orc_skin",
+        "minecraft:rabbit_foot"
+      ],
+      "level": 4
+    },
+    {
+      "entries": [
+        "minecraft:charcoal",
+        "minecraft:fire_charge",
+        "minecraft:snowball"
+      ],
+      "level": 5
+    },
+    {
+      "entries": [
+        "minecraft:custom_item",
+        "minecraft:glistering_melon_slice"
+      ],
+      "level": 6
+    },
+    {
+      "entries": [
+        "minecraft:blaze_powder"
+      ],
+      "level": 7
+    },
+    {
+      "entries": [
+        "minecraft:custom_item",
+        "minecraft:turtle_helmet"
+      ],
+      "level": 8
+    },
+    {
+      "entries": [
+        "minecraft:ghast_tear"
+      ],
+      "level": 9
+    },
+    {
+      "entries": [
+        "minecraft:armor",
+        "minecraft:fermented_spider_eye"
+      ],
+      "level": 10
+    },
+    {
+      "entries": [
+        "adventurez:ender_whale_skin",
+        "minecraft:glowstone_dust"
+      ],
+      "level": 11
+    },
+    {
+      "entries": [
+        "minecraft:phantom_membrane"
+      ],
+      "level": 12
+    },
+    {
+      "entries": [
+        "minecraft:magma_cream"
+      ],
+      "level": 13
+    },
+    {
+      "entries": [
+        "minecraft:pufferfish"
+      ],
+      "level": 14
+    },
+    {
+      "entries": [
+        "minecraft:custom_item",
+        "minecraft:golden_carrot"
+      ],
+      "level": 15
+    },
+    {
+      "entries": [
+        "minecraft:redstone"
+      ],
+      "level": 16
+    },
+    {
+      "entries": [
+        "minecraft:armor",
+        "minecraft:golden_apple"
+      ],
+      "level": 17
+    },
+    {
+      "entries": [
+        "minecraft:custom_item",
+        "minecraft:gunpowder"
+      ],
+      "level": 18
+    },
+    {
+      "entries": [
+        "minecraft:dragon_breath"
+      ],
+      "level": 19
+    },
+    {
+      "entries": [
+        "minecraft:nether_star",
+        "revive:revival_star"
+      ],
+      "level": 20
+    },
+    {
+      "entries": [
+        "minecraft:armor"
+      ],
+      "level": 22
+    },
+    {
+      "entries": [
+        "minecraft:armor",
+        "minecraft:custom_item"
+      ],
+      "level": 30
+    }
+  ],
+  "use": [
+    {
+      "entries": [
+        "minecraft:brewing_stand",
+        "minecraft:custom_block"
+      ],
+      "level": 1
+    },
+    {
+      "entries": [
+        "minecraft:custom_block"
+      ],
+      "level": 2
+    },
+    {
+      "entries": [
+        "minecraft:cauldron"
+      ],
+      "level": 5
+    },
+    {
+      "entries": [
+        "minecraft:custom_block"
+      ],
+      "level": 7
+    },
+    {
+      "entries": [
+        "minecraft:custom_block"
+      ],
+      "level": 9
+    },
+    {
+      "entries": [
+        "minecraft:custom_block"
+      ],
+      "level": 11
+    },
+    {
+      "entries": [
+        "minecraft:custom_block"
+      ],
+      "level": 13
+    },
+    {
+      "entries": [
+        "minecraft:custom_block"
+      ],
+      "level": 15
+    },
+    {
+      "entries": [
+        "minecraft:custom_block"
+      ],
+      "level": 17
+    },
+    {
+      "entries": [
+        "minecraft:custom_block"
+      ],
+      "level": 24
+    },
+    {
+      "entries": [
+        "minecraft:custom_block"
+      ],
+      "level": 28
+    }
+  ]
+}

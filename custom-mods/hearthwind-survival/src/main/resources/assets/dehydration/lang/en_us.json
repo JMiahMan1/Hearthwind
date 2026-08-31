@@ -1,0 +1,8 @@
+{
+  "effect.dehydration.thirst": "Dehydrated",
+  "item.dehydration.leather_leather_flask": "Leather Leather Flask",
+  "item.dehydration.iron_leather_flask": "Iron Leather Flask",
+  "item.dehydration.golden_leather_flask": "Golden Leather Flask",
+  "item.dehydration.diamond_leather_flask": "Diamond Leather Flask",
+  "item.dehydration.netherite_leather_flask": "Netherite Leather Flask"
+}

@@ -1,0 +1,59 @@
+{
+  "woodcutter": {
+    "subtitle": "subtitles.meadow.woodcutter",
+    "sounds": [
+      "meadow:woodcutter"
+    ]
+  },
+  "click_camera": {
+    "subtitle": "subtitles.meadow.click_camera",
+    "sounds": [
+      "meadow:click_camera1",
+      "meadow:click_camera2"
+
+    ]
+  },
+  "fur": {
+    "subtitle": "subtitles.meadow.fur_armor_equip",
+    "sounds": [
+      "meadow:fur_armor_equip"
+    ]
+  },
+  "buffalo_ambient": {
+    "subtitle": "subtitles.meadow.buffalo_ambient",
+    "sounds": [
+      "meadow:water_buffalo_ambient1",
+      "meadow:water_buffalo_ambient2"
+    ]
+  },
+  "buffalo_hurt": {
+    "subtitle": "subtitles.meadow.buffalo_hurt",
+    "sounds": [
+      "meadow:water_buffalo_hurt"
+    ]
+  },
+  "buffalo_death": {
+    "subtitle": "subtitles.meadow.buffalo_death",
+    "sounds": [
+      "meadow:water_buffalo_death"
+    ]
+  },
+  "cooking_pot_boiling": {
+    "subtitle": "subtitles.meadow.cooking_pot_boiling",
+    "sounds": [
+      "meadow:cooking_pot_boiling"
+    ]
+  },
+  "cabinet_open": {
+    "subtitle": "subtitles.meadow.cabinet_open",
+    "sounds": [
+      "meadow:cabinet_open"
+    ]
+  },
+  "cabinet_close": {
+    "subtitle": "subtitles.meadow.cabinet_close",
+    "sounds": [
+      "meadow:cabinet_close"
+    ]
+  }
+}

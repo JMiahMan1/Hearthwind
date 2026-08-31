@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 # Headless gametest runner for Hearthwind (all modules).
+export JAVA_HOME="${JAVA_HOME:-/usr/local/Cellar/openjdk/26.0.2.1/libexec/openjdk.jdk/Contents/Home}"
+export PATH="$JAVA_HOME/bin:$PATH"
 #
 # Boots a throwaway dedicated 26.2 server with fabric-api's gametest
 # harness enabled (-Dfabric-api.gametest=true), which runs every @GameTest
@@ -21,6 +23,9 @@ KEEP=0
 cd "$DIR/.."
 echo "== building all hearthwind modules =="
 ./gradlew build --no-daemon --max-workers=2 -q
+
+echo "== running asset and drop integrity tests =="
+python3 "$DIR/test_assets_and_drops.py"
 
 mkdir -p "$SRV/mods"
 if [ ! -f "$SRV/fabric-server.jar" ]; then
@@ -48,9 +53,16 @@ rm -f "$SRV"/mods/hearthwind-*.jar
 # exercised together (never the -sources jars). hearthwind-client is
 # client-only ("environment": "client") - the dedicated server ignores it,
 # so we exclude it here; it is exercised by client-gametest runs instead.
-find hearthwind-survival hearthwind-skills hearthwind-jobs hearthwind-primitive hearthwind-world -name "*.jar" \
+find hearthwind-survival hearthwind-skills hearthwind-jobs hearthwind-primitive hearthwind-world hearthwind-flora -name "*.jar" \
      -path "*build/libs/*" ! -name "*-sources.jar" -exec cp {} "$SRV/mods/" \;
 ls "$SRV"/mods/
+
+# Ship the migrated tuning corpus with the throwaway world so gametests read
+# the same data the dev server runs (world datapacks override mod resources,
+# which is exactly the override order SkillGates/SieveBlock rely on).
+mkdir -p "$SRV/world/datapacks"
+rm -rf "$SRV/world/datapacks/aged-server"
+cp -R "$DIR/../../conversion/datapacks/aged-server" "$SRV/world/datapacks/"
 
 grep -q "^eula=true$" "$SRV/eula.txt" 2>/dev/null || echo "eula=true" > "$SRV/eula.txt"
 # minimal properties: gametest mode ignores most, but the file must exist

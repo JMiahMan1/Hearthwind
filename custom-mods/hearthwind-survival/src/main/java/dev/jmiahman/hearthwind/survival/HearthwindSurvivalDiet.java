@@ -121,11 +121,6 @@ public final class HearthwindSurvivalDiet {
         DietState state = applyDecay(player, cfg);
         if (state.deficient > 0) {
             applyDeficiencyDebuffs(player);
-        } else {
-            refreshBonusHearts(player, cfg.balancedBonusHearts);
-        }
-        if (!state.allBalanced) {
-            player.removeEffect(MobEffects.ABSORPTION);
         }
     }
 
@@ -133,7 +128,6 @@ public final class HearthwindSurvivalDiet {
     public static DietState applyDecay(Entity entity, HearthwindSurvivalConfig.Diet cfg) {
         boolean allBalanced = true;
         int deficient = 0;
-        // TICK_INTERVAL is ticks (20 = 1s), decay is per-second
         double seconds = TICK_INTERVAL / 20.0;
         for (TagKey<Item> group : GROUPS) {
             double v = level(entity, group) - cfg.decayPerSecond * seconds;
@@ -172,15 +166,13 @@ public final class HearthwindSurvivalDiet {
                 true, false, true));
     }
 
-    private static void refreshBonusHearts(ServerPlayer player, float hearts) {
-        if (hearts <= 0) {
-            return;
+    public static float[] getNutrients(ServerPlayer player) {
+        Map<String, Double> nutrients = player.getAttached(NUTRIENTS);
+        float[] vals = new float[5];
+        for (int i = 0; i < GROUPS.length; i++) {
+            vals[i] = (float) level(player, GROUPS[i]);
         }
-        MobEffectInstance current = player.getEffect(MobEffects.ABSORPTION);
-        if (current == null || current.getDuration() <= DEBUFF_DURATION_TICKS / 2) {
-            player.addEffect(new MobEffectInstance(MobEffects.ABSORPTION,
-                    DEBUFF_DURATION_TICKS, (int) (hearts - 1), true, false, true));
-        }
+        return vals;
     }
 
     static void debugStatus(ServerPlayer player) {

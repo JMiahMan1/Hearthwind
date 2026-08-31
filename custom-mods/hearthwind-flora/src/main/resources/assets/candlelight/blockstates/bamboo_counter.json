@@ -1,0 +1,34 @@
+{
+  "variants": {
+    "facing=east": [
+      {
+        "model": "candlelight:block/bamboo_counter",
+        "y": 90
+      }
+    ],
+    "facing=north": [
+      {
+        "model": "candlelight:block/bamboo_counter",
+        "weight": 1
+      }
+    ],
+    "facing=south": [
+      {
+        "model": "candlelight:block/bamboo_counter",
+        "y": 180
+      }
+    ],
+    "facing=west": [
+      {
+        "model": "candlelight:block/bamboo_counter",
+        "y": 270
+      }
+    ],
+    "": [
+      {
+        "model": "candlelight:block/bamboo_counter",
+        "y": 90
+      }
+    ]
+  }
+}

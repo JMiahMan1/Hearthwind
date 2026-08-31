@@ -1,0 +1,120 @@
+{
+  "format_version": "1.12.0",
+  "minecraft:geometry": [
+    {
+      "description": {
+        "identifier": "geometry.sf_nba.firefly_baby",
+        "texture_width": 16,
+        "texture_height": 16,
+        "visible_bounds_width": 2,
+        "visible_bounds_height": 1.5,
+        "visible_bounds_offset": [
+          0,
+          0.25,
+          0
+        ]
+      },
+      "bones": [
+        {
+          "name": "root",
+          "pivot": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "name": "body",
+          "parent": "root",
+          "pivot": [
+            0,
+            1,
+            2
+          ]
+        },
+        {
+          "name": "butt",
+          "parent": "body",
+          "pivot": [
+            0,
+            1,
+            0
+          ],
+          "cubes": [
+            {
+              "origin": [
+                -1,
+                0,
+                0
+              ],
+              "size": [
+                2,
+                2,
+                2
+              ],
+              "uv": [
+                2,
+                0
+              ],
+              "mirror": true
+            }
+          ]
+        },
+        {
+          "name": "neck",
+          "parent": "body",
+          "pivot": [
+            0,
+            1,
+            0
+          ],
+          "cubes": [
+            {
+              "origin": [
+                -1,
+                0,
+                -2
+              ],
+              "size": [
+                2,
+                2,
+                2
+              ],
+              "uv": [
+                0,
+                4
+              ]
+            }
+          ]
+        },
+        {
+          "name": "antenna",
+          "parent": "neck",
+          "pivot": [
+            0,
+            2,
+            -2
+          ],
+          "cubes": [
+            {
+              "origin": [
+                -1,
+                2,
+                -3
+              ],
+              "size": [
+                2,
+                1,
+                1
+              ],
+              "uv": [
+                0,
+                10
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

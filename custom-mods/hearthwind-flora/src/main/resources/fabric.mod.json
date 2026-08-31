@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "id": "hearthwind_flora",
+  "version": "${version}",
+  "name": "Hearthwind Flora",
+  "description": "26.2 modern port of the Let's Do ecosystem (Vinery, Candlelight, Meadow, Bakery, HerbalBrews) with full nutrition and crop support.",
+  "authors": [
+    "JMiahMan",
+    "satisfyu"
+  ],
+  "contact": {
+    "sources": "https://github.com/Let-s-Do-Collection"
+  },
+  "license": "MIT",
+  "icon": "assets/hearthwind_flora/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "dev.jmiahman.hearthwind.flora.HearthwindFlora"
+    ],
+    "fabric-gametest": [
+      "dev.jmiahman.hearthwind.flora.HearthwindFloraGameTests"
+    ]
+  },
+  "depends": {
+    "fabricloader": ">=0.16.0",
+    "minecraft": ">=26.2",
+    "fabric-api": "*"
+  }
+}

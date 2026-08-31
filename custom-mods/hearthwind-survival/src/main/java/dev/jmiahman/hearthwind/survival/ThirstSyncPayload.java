@@ -10,10 +10,16 @@ public record ThirstSyncPayload(float hydration) implements CustomPacketPayload 
             new Type<>(Identifier.fromNamespaceAndPath("hearthwind", "thirst"));
 
     public static final StreamCodec<RegistryFriendlyByteBuf, ThirstSyncPayload> CODEC =
-            StreamCodec.composite(
-                    net.minecraft.network.codec.ByteBufCodecs.FLOAT, ThirstSyncPayload::hydration,
-                    ThirstSyncPayload::new
-            );
+            new StreamCodec<>() {
+                @Override
+                public ThirstSyncPayload decode(RegistryFriendlyByteBuf buf) {
+                    return new ThirstSyncPayload(buf.readFloat());
+                }
+                @Override
+                public void encode(RegistryFriendlyByteBuf buf, ThirstSyncPayload payload) {
+                    buf.writeFloat(payload.hydration());
+                }
+            };
 
     @Override
     public Type<? extends CustomPacketPayload> type() {

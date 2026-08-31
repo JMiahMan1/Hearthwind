@@ -1,20 +1,30 @@
 {
-	"schemaVersion": 1,
-	"id": "hearthwind_jobs",
-	"version": "${version}",
-	"name": "Hearthwind: Jobs",
-	"description": "Eight jobs with XP, levels and unlock tracks. Part of Hearthwind; inspired by the Hearthwind pack's jobs-addon.",
-	"authors": ["JMiahMan1"],
-	"license": "MIT",
-	"environment": "*",
-	"entrypoints": {
-		"main": ["dev.jmiahman.hearthwind.jobs.HearthwindJobs"],
-		"fabric-gametest": ["dev.jmiahman.hearthwind.jobs.HearthwindJobsGameTests"]
-	},
-	"depends": {
-		"fabricloader": ">=0.19.3",
-		"minecraft": "~26.2",
-		"java": ">=25",
-		"fabric-api": "*"
-	}
+  "schemaVersion": 1,
+  "id": "hearthwind_jobs",
+  "version": "${version}",
+  "name": "Hearthwind: Jobs",
+  "description": "Eight jobs with XP, levels and unlock tracks. Part of Hearthwind; inspired by the Hearthwind pack's jobs-addon.",
+  "authors": [
+    "JMiahMan1"
+  ],
+  "license": "MIT",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "dev.jmiahman.hearthwind.jobs.HearthwindJobs"
+    ],
+    "fabric-gametest": [
+      "dev.jmiahman.hearthwind.jobs.HearthwindJobsGameTests"
+    ]
+  },
+  "mixins": [
+    "hearthwind_jobs.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.19.3",
+    "minecraft": "~26.2",
+    "java": ">=25",
+    "fabric-api": "*"
+  },
+  "icon": "assets/hearthwind_jobs/icon.png"
 }

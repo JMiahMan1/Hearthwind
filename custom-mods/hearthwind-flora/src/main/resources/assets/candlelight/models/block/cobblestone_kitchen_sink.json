@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/cube_all",
+  "textures": {
+    "all": "candlelight:block/cobblestone_kitchen_sink"
+  }
+}

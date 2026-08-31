@@ -1,0 +1,66 @@
+{
+  "item": [
+    {
+      "entries": [
+        "minecraft:custom_item"
+      ],
+      "level": 6
+    },
+    {
+      "entries": [
+        "minecraft:custom_item"
+      ],
+      "level": 10
+    },
+    {
+      "entries": [
+        "minecraft:custom_item"
+      ],
+      "level": 14
+    },
+    {
+      "entries": [
+        "minecraft:custom_item"
+      ],
+      "level": 15
+    },
+    {
+      "entries": [
+        "minecraft:custom_item"
+      ],
+      "level": 18
+    },
+    {
+      "entries": [
+        "minecraft:custom_item"
+      ],
+      "level": 22
+    },
+    {
+      "entries": [
+        "minecraft:custom_item"
+      ],
+      "level": 26
+    },
+    {
+      "entries": [
+        "minecraft:custom_item"
+      ],
+      "level": 30
+    }
+  ],
+  "use": [
+    {
+      "entries": [
+        "minecraft:crafting_table"
+      ],
+      "level": 3
+    },
+    {
+      "entries": [
+        "minecraft:custom_block"
+      ],
+      "level": 15
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+[
+  { "rcon": "effect give TestPlayer minecraft:resistance 100000 3 true" },
+  { "rcon": "hearthwind hydration set 20" },
+  { "rcon": "hearthwind temp set 0" },
+  { "key": "e" },
+  { "shot": "live_tab_1_inventory" },
+  { "key": "k" },
+  { "shot": "live_tab_2_skills" },
+  { "key": "j" },
+  { "shot": "live_tab_3_jobs" },
+  { "key": "n" },
+  { "shot": "live_tab_4_nutrients" },
+  { "key": "escape" }
+]

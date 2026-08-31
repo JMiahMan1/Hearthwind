@@ -4,6 +4,10 @@ import com.mojang.serialization.Codec;
 
 import net.fabricmc.fabric.api.attachment.v1.AttachmentRegistry;
 import net.fabricmc.fabric.api.attachment.v1.AttachmentType;
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
@@ -16,8 +20,17 @@ public final class HearthwindSurvivalThirst {
     public static final double MAX_HYDRATION = 20.0;
     private static final int TICK_INTERVAL = 40;
 
-    private static int warningLevel = -1;
-    private static int damageCounter = 0;
+    /** Data-driven damage type (data/hearthwind/damage_type/dehydration.json)
+     *  so thirst deaths read "died of thirst", not vanilla's "killed by magic". */
+    public static final net.minecraft.resources.ResourceKey<net.minecraft.world.damagesource.DamageType> DEHYDRATION =
+            net.minecraft.resources.ResourceKey.create(
+                    net.minecraft.core.registries.Registries.DAMAGE_TYPE,
+                    net.minecraft.resources.Identifier.fromNamespaceAndPath(
+                            "hearthwind", "dehydration"));
+
+    // Per-player damage counter and warning state to avoid cross-player contamination
+    private static final Map<UUID, Integer> damageCounters = new ConcurrentHashMap<>();
+    private static final Map<UUID, Integer> warningLevels = new ConcurrentHashMap<>();
 
     // payload type is ThirstSyncPayload.TYPE
 
@@ -41,7 +54,7 @@ public final class HearthwindSurvivalThirst {
         setHydration(entity, Math.min(MAX_HYDRATION, hydration(entity) + amount));
     }
 
-    private static void setHydration(net.minecraft.world.entity.Entity entity, double value) {
+    public static void setHydration(net.minecraft.world.entity.Entity entity, double value) {
         entity.setAttached(HYDRATION, value);
     }
 
@@ -94,15 +107,18 @@ public final class HearthwindSurvivalThirst {
 
         long damageIntervalTicks =
                 (long) (cfg.damageIntervalSeconds * TICK_INTERVAL / 2);
+        UUID id = player.getUUID();
         if (h <= 0.0) {
-            damageCounter += TICK_INTERVAL;
-            if (damageCounter >= damageIntervalTicks) {
-                damageCounter = 0;
-                player.hurt(player.damageSources().magic(),
+            int currentDmgCount = damageCounters.getOrDefault(id, 0) + TICK_INTERVAL;
+            if (currentDmgCount >= damageIntervalTicks) {
+                damageCounters.put(id, 0);
+                player.hurt(player.damageSources().source(DEHYDRATION),
                         (float) cfg.damageAmount);
+            } else {
+                damageCounters.put(id, currentDmgCount);
             }
         } else {
-            damageCounter = 0;
+            damageCounters.remove(id);
         }
         sendThresholdWarnings(player, h, wasAboveRegenFloor);
     }
@@ -113,8 +129,11 @@ public final class HearthwindSurvivalThirst {
         if (!wasAboveRegenFloor && level >= 0) {
             return;
         }
-        if (level != warningLevel) {
-            warningLevel = level;
+        // Per-player warning state
+        UUID id = player.getUUID();
+        Integer prevLevel = warningLevels.get(id);
+        if (prevLevel == null || level != prevLevel) {
+            warningLevels.put(id, level);
             switch (level) {
                 case 0 -> warn(player, "You are getting thirsty.", ChatFormatting.YELLOW);
                 case 1 -> warn(player, "You are dehydrated! Find water!", ChatFormatting.GOLD);

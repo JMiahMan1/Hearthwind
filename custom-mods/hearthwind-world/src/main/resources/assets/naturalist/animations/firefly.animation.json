@@ -1,0 +1,50 @@
+{
+  "format_version": "1.10.0",
+  "animations": {
+    "animation.sf_nba.firefly.fly": {
+      "loop": true,
+      "animation_length": 2,
+      "bones": {
+        "rightWing": {
+          "rotation": [
+            "Math.sin(( q.anim_time - 0.3 ) * 2880 ) * 12.5",
+            0,
+            "-25 + Math.cos(( q.anim_time - 0.1 ) * 2880 ) * -45"
+          ]
+        },
+        "leftWing": {
+          "rotation": [
+            "Math.sin(( q.anim_time - 0.3 ) * 2880 ) * 12.5",
+            0,
+            "25 + Math.cos(( q.anim_time - 0.1 ) * 2880 ) * 45"
+          ]
+        },
+        "root": {
+          "rotation": ["Math.cos(( q.anim_time - 0.5 ) * 180 ) * -2", 0, 0],
+          "position": [
+            0,
+            "Math.cos(( q.anim_time - 0.1 ) * 180 ) * -0.25",
+            0
+          ]
+        }
+      }
+    },
+    "animation.sf_nba.firefly.light_effect": {
+      "loop": true,
+      "animation_length": 2,
+      "particle_effects": {
+        "0.0": {
+          "effect": "light_effect"
+        }
+      }
+    },
+    "animation.sf_nba.firefly.rotation": {
+      "loop": true,
+      "bones": {
+        "body": {
+          "rotation": ["-v.body_rotation_x", 0, 0]
+        }
+      }
+    }
+  }
+}

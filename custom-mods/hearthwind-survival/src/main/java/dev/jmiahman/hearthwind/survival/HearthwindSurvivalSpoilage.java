@@ -1,18 +1,24 @@
 package dev.jmiahman.hearthwind.survival;
 
+import java.util.HashSet;
+import java.util.Set;
+
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerBlockEntityEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.TagKey;
+import net.minecraft.world.Container;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.entity.BlockEntity;
 
 /**
  * Spoilage system replacing spoiledz (parity-first):
- * perishable items in player inventories slowly rot into rotten flesh.
- * Perishables are the <code>spoiledz:perishable_items</code> tag; anything in
- * the migrated <code>spoiledz:non_spoiling_items</code> tag (honey, teas,
+ * perishable items in player inventories and containers slowly rot into rotten
+ * flesh. Perishables are the <code>spoiledz:perishable_items</code> tag;
+ * anything in the <code>spoiledz:non_spoiling_items</code> tag (honey, teas,
  * wines, ...) is always exempt. Hot biomes accelerate the process.
  */
 public final class HearthwindSurvivalSpoilage {
@@ -23,21 +29,33 @@ public final class HearthwindSurvivalSpoilage {
             TagKey.create(Registries.ITEM,
                     Identifier.fromNamespaceAndPath("spoiledz", "non_spoiling_items"));
 
+    /** Tracks containers (chests, furnaces, etc.) that need spoilage checks. */
+    private static final Set<BlockEntity> CONTAINER_ENTITIES = java.util.concurrent.ConcurrentHashMap.newKeySet();
+
     private HearthwindSurvivalSpoilage() {}
 
     public static void registerTickLoop() {
+        ServerBlockEntityEvents.BLOCK_ENTITY_LOAD.register((be, level) -> {
+            if (be instanceof Container) {
+                CONTAINER_ENTITIES.add(be);
+            }
+        });
+        ServerBlockEntityEvents.BLOCK_ENTITY_UNLOAD.register((be, level) -> {
+            CONTAINER_ENTITIES.remove(be);
+        });
         ServerTickEvents.END_SERVER_TICK.register(server -> {
             HearthwindSurvivalConfig.Spoilage cfg = HearthwindSurvivalConfig.get().spoilage;
             if (cfg.chancePerCheck <= 0 || server.getTickCount() % cfg.checkIntervalTicks != 0) {
                 return;
             }
             for (ServerPlayer player : server.getPlayerList().getPlayers()) {
-                tick(player, cfg);
+                tickPlayer(player, cfg);
             }
+            tickContainers(server, cfg);
         });
     }
 
-    private static void tick(ServerPlayer player, HearthwindSurvivalConfig.Spoilage cfg) {
+    private static void tickPlayer(ServerPlayer player, HearthwindSurvivalConfig.Spoilage cfg) {
         if (player.getAbilities().invulnerable || player.getAbilities().instabuild) {
             return;
         }
@@ -48,13 +66,47 @@ public final class HearthwindSurvivalSpoilage {
             chance *= cfg.hotBiomeMultiplier;
         }
 
-        // rot output goes back into the inventory; overflow drops at the player
         spoilContainer(player.getInventory(), player.getRandom(), chance, cfg.rotsInto,
                 rotted -> {
                     if (!player.getInventory().add(rotted)) {
                         player.drop(rotted, false);
                     }
                 });
+    }
+
+    private static void tickContainers(net.minecraft.server.MinecraftServer server,
+            HearthwindSurvivalConfig.Spoilage cfg) {
+        for (BlockEntity be : CONTAINER_ENTITIES) {
+            if (be.isRemoved() || be.getLevel() == null) {
+                CONTAINER_ENTITIES.remove(be);
+                continue;
+            }
+            if (!(be instanceof Container container)) {
+                continue;
+            }
+            net.minecraft.world.level.Level level = be.getLevel();
+            if (!(level instanceof net.minecraft.server.level.ServerLevel serverLevel)) {
+                continue;
+            }
+            double chance = cfg.chancePerCheck;
+            net.minecraft.core.BlockPos pos = be.getBlockPos();
+            float biomeTemp = serverLevel.getBiome(pos)
+                    .value().getBaseTemperature();
+            if (biomeTemp > 1.5f) {
+                chance *= cfg.hotBiomeMultiplier;
+            }
+            spoilContainer(container, serverLevel.getRandom(), chance, cfg.rotsInto,
+                    rotted -> {
+                        net.minecraft.world.entity.item.ItemEntity drop =
+                                new net.minecraft.world.entity.item.ItemEntity(
+                                        serverLevel,
+                                        pos.getX() + 0.5,
+                                        pos.getY() + 0.5,
+                                        pos.getZ() + 0.5,
+                                        rotted);
+                        serverLevel.addFreshEntity(drop);
+                    });
+        }
     }
 
     /**
@@ -64,7 +116,7 @@ public final class HearthwindSurvivalSpoilage {
      *
      * @return number of items that rotted this pass
      */
-    public static int spoilContainer(net.minecraft.world.Container container,
+    public static int spoilContainer(Container container,
             net.minecraft.util.RandomSource random, double chance, String rotId,
             java.util.function.Consumer<ItemStack> spill) {
         int rotted = 0;

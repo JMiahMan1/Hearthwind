@@ -26,6 +26,13 @@ import net.minecraft.world.item.ItemStack;
  * freezing damage / overheating exhaustion. Scale is -10..+10.
  */
 public final class HearthwindSurvivalTemperature {
+
+    /** Data-driven heatstroke damage type (data/hearthwind/damage_type/heatstroke.json). */
+    public static final net.minecraft.resources.ResourceKey<net.minecraft.world.damagesource.DamageType> HEATSTROKE =
+            net.minecraft.resources.ResourceKey.create(
+                    net.minecraft.core.registries.Registries.DAMAGE_TYPE,
+                    Identifier.fromNamespaceAndPath("hearthwind", "heatstroke"));
+
     public static final double MIN = -10.0;
     public static final double MAX = 10.0;
 
@@ -36,7 +43,8 @@ public final class HearthwindSurvivalTemperature {
                     .buildAndRegister(
                             Identifier.fromNamespaceAndPath("environmentz", "temperature"));
 
-    private static int warningLevel = 0;
+    // Per-player warning state to avoid cross-player contamination
+    private static final Map<UUID, Integer> warningLevels = new ConcurrentHashMap<>();
     private static final Map<UUID, Long> freezeCooldowns = new ConcurrentHashMap<>();
     private static final Map<UUID, Long> heatCooldowns = new ConcurrentHashMap<>();
     private static final Map<UUID, Long> coldWaterCooldowns = new ConcurrentHashMap<>();
@@ -96,7 +104,9 @@ public final class HearthwindSurvivalTemperature {
         // vanilla range ~[-0.7 .. 2.0]: plains .8, desert 2.0, snowy taiga -.5,
         // frozen peaks -.7 -> map to [-9..+9]
         double t = (base - 0.6) * 6.5;
-        return Math.max(-9.0, Math.min(9.0, t));
+        double seasonal = dev.jmiahman.hearthwind.world.HearthwindWorld.currentSeason(
+                player.level()).tempOffset(dev.jmiahman.hearthwind.world.HearthwindWorldConfig.get());
+        return Math.max(-9.0, Math.min(9.0, t + seasonal));
     }
 
     public static void registerTickLoop() {
@@ -119,32 +129,11 @@ public final class HearthwindSurvivalTemperature {
         double target = targetFor(player);
         double current = get(player);
 
-        ItemStack[] armor = new ItemStack[]{
-                player.getItemBySlot(EquipmentSlot.HEAD),
-                player.getItemBySlot(EquipmentSlot.CHEST),
-                player.getItemBySlot(EquipmentSlot.LEGS),
-                player.getItemBySlot(EquipmentSlot.FEET)};
-        int warmPieces = countTag(armor, EnvironmentzItems.WARM_ARMOR);
-        int neutralPieces = countTag(armor, EnvironmentzItems.NON_AFFECTING_ARMOR);
-
-        // cold protection: warm pieces pull the effective target back up
-        if (target < current && warmPieces > 0) {
-            target += warmPieces * 1.2 + warmPieces * warmPieces * 0.3;
-        }
-        // non-affecting armor dampens both directions slightly
-        target *= 1.0 - 0.08 * neutralPieces;
-
         // inventory insulation / ice bias toward comfort
         boolean hasInsulation = player.getInventory().hasAnyMatching(
                 s -> !s.isEmpty() && s.is(EnvironmentzItems.INSOLATING_ITEM));
         boolean hasIce = player.getInventory().hasAnyMatching(
                 s -> !s.isEmpty() && s.is(EnvironmentzItems.ICE_ITEMS));
-        if (current > 0 && hasIce) {
-            target -= 1.5;
-        }
-        if (current < 0 && hasInsulation) {
-            target += 1.5;
-        }
         // cold-water drunk cooldown - extra -1.5 target dampening for 30-60s
         // (normal water 30s, cold 60s). Hot water does NOT grant this.
         Long coldUntil = coldWaterCooldowns.get(player.getUUID());
@@ -169,9 +158,10 @@ public final class HearthwindSurvivalTemperature {
         }
         boolean isNight = timeOfDay > 13000 && timeOfDay < 23000;
         boolean isOutside = player.level().canSeeSky(player.blockPosition());
-        if (isNight && isOutside) {
-            target -= 3.5; // desert 9 -> 5.5 at night (no longer extreme), snowy -8.5 -> -12 (worse)
-        }
+
+        target = environmentAdjustment(player, current, target, isNight, isOutside,
+                hasInsulation, hasIce);
+
         // environmental modifiers
         if (player.isOnFire()) {
             target = Math.max(target, 9.5);
@@ -205,16 +195,12 @@ public final class HearthwindSurvivalTemperature {
                 applyColdCooldown(player, 100); // 5s relief
             }
         }
-        if (player.blockPosition().getY() > 128) {
-            target += 1.0;
-        } else if (player.blockPosition().getY() < 0) {
-            target -= 1.5;
-        }
         // water reset: if just exited water, keep target low for a bit via cold cooldown
         // (already applied above)
 
-        HearthwindSurvivalConfig.Temperature cfg = HearthwindSurvivalConfig.get().temperature;
         // drift is per-second, tick is 40 ticks = 2s
+        HearthwindSurvivalConfig.Temperature cfg = HearthwindSurvivalConfig.get().temperature;
+        target = Math.max(-9.0, Math.min(9.0, target));
         double seconds = 40 / 20.0;
         double perTickDrift = cfg.driftPerSecond * seconds;
         double next;
@@ -237,10 +223,113 @@ public final class HearthwindSurvivalTemperature {
             player.getFoodData().addExhaustion(0.02f);
         }
         if (next >= cfg.heatHurtAt && cooldown(heatCooldowns, player.getUUID(), now, cooldownTicks)) {
-            player.hurt(player.damageSources().hotFloor(), 1.0f);
+            player.hurt(player.damageSources().source(HEATSTROKE), 1.0f);
         }
 
         warn(player, next);
+    }
+
+    /**
+     * Everything the environment adds on top of the biome target: nearby fires
+     * and ice, hot/cold carried items, and the dimension modifier rows
+     * (day/night, armor, wetness, shadow, height) from the migrated corpus.
+     * Package-private so gametests can exercise the whole model, not just the
+     * individual tables.
+     */
+    static double environmentAdjustment(ServerPlayer player, double current, double target,
+            boolean isNight, boolean isOutside, boolean hasInsulation, boolean hasIce) {
+        HearthwindSurvivalConfig.Temperature cfg = HearthwindSurvivalConfig.get().temperature;
+
+        // Data-driven heat/cold sources: this is what makes shelter and
+        // campfires matter. Without a corpus installed this contributes 0.
+        if (cfg.heatBlockRadius > 0) {
+            int surroundings = EnvironmentCorpus.blockHeat(
+                    player, cfg.heatBlockRadius, (float) cfg.roomHeatFactor, cfg.enclosedRadius)
+                    + EnvironmentCorpus.itemHeat(player);
+            target += surroundings;
+        }
+
+        EnvironmentCorpus.DimensionTable table = cfg.useEnvironmentzTables
+                ? EnvironmentCorpus.dimension(player.level().dimension().identifier()) : null;
+        if (table == null && cfg.useEnvironmentzTables) {
+            table = EnvironmentCorpus.dimension(
+                    Identifier.fromNamespaceAndPath("minecraft", "overworld"));
+        }
+        if (table != null && !table.basic()) {
+            // corpus-driven: the biome band picks the row, so a desert noon and
+            // a taiga night pull in opposite directions exactly as the
+            // reference model does
+            int band = EnvironmentCorpus.band(player.level().getBiome(player.blockPosition()));
+            target += table.standard(band);
+            target += isNight ? table.modifier("night", band) : table.modifier("day", band);
+            if (armorPieces(player) > 0) {
+                target += table.modifier("armor", band);
+            }
+            if (hasInsulation) {
+                target += table.modifier("insulated_armor", band);
+            }
+            if (hasIce) {
+                target += table.modifier("iced_armor", band);
+            }
+            if (player.isInWater()) {
+                target += table.modifier("soaked", band);
+            } else if (player.level().isRainingAt(player.blockPosition())) {
+                target += table.modifier("wett", band);
+            }
+            if (!isOutside) {
+                target += table.modifier("shadow", band);
+            }
+            if (table.hasHeight()) {
+                target += table.heightAt(player.blockPosition().getY());
+            }
+            if (band >= 3 && current > 0) {
+                target += table.modifier("sweat", band);
+            }
+            // NOTE: the corpus acclimatization values live on the reference
+            // mod's accumulated integer scale (thresholds 180/1680), not on our
+            // -10..+10 body scale, so they are loaded and exposed but
+            // deliberately not applied here.
+        } else {
+            // Fallback: the hand-tuned constants below, used when no corpus is
+            // installed or the tables are disabled in the config.
+            ItemStack[] armor = new ItemStack[]{
+                    player.getItemBySlot(EquipmentSlot.HEAD),
+                    player.getItemBySlot(EquipmentSlot.CHEST),
+                    player.getItemBySlot(EquipmentSlot.LEGS),
+                    player.getItemBySlot(EquipmentSlot.FEET)};
+            int warmPieces = countTag(armor, EnvironmentzItems.WARM_ARMOR);
+            int neutralPieces = countTag(armor, EnvironmentzItems.NON_AFFECTING_ARMOR);
+            if (target < current && warmPieces > 0) {
+                target += warmPieces * 1.2 + warmPieces * warmPieces * 0.3;
+            }
+            target *= 1.0 - 0.08 * neutralPieces;
+            if (current > 0 && hasIce) {
+                target -= 1.5;
+            }
+            if (current < 0 && hasInsulation) {
+                target += 1.5;
+            }
+            if (isNight && isOutside) {
+                target -= 3.5; // desert 9 -> 5.5 at night, snowy -8.5 -> -12 (worse)
+            }
+            if (player.blockPosition().getY() > 128) {
+                target += 1.0;
+            } else if (player.blockPosition().getY() < 0) {
+                target -= 1.5;
+            }
+        }
+        return Math.max(-9.0, Math.min(9.0, target));
+    }
+
+    private static int armorPieces(ServerPlayer player) {
+        int n = 0;
+        for (EquipmentSlot slot : new EquipmentSlot[]{
+                EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET}) {
+            if (!player.getItemBySlot(slot).isEmpty()) {
+                n++;
+            }
+        }
+        return n;
     }
 
     private static boolean cooldown(Map<UUID, Long> map, UUID id, long now,
@@ -253,12 +342,14 @@ public final class HearthwindSurvivalTemperature {
         return true;
     }
 
-    private static void warn(ServerPlayer player, double temp) {
+    static void warn(ServerPlayer player, double temp) {
         int level = temp <= -9 || temp >= 9 ? 2 : temp <= -6 || temp >= 6 ? 1 : 0;
-        if (level == warningLevel) {
+        // Per-player warning state
+        Integer prevLevel = warningLevels.get(player.getUUID());
+        if (prevLevel != null && level == prevLevel) {
             return;
         }
-        warningLevel = level;
+        warningLevels.put(player.getUUID(), level);
         if (level == 2) {
             player.sendOverlayMessage(Component.literal(
                     "\u26a0 Extreme temperature! Find shelter!"));

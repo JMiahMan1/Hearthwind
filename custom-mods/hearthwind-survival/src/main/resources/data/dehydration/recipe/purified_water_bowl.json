@@ -1,7 +1,0 @@
-{
-  "type": "minecraft:campfire_cooking",
-  "ingredient": "dehydration:water_bowl",
-  "result": {
-    "id": "dehydration:purified_water_bowl"
-  }
-}

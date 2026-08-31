@@ -1,0 +1,25 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "dev.jmiahman.hearthwind.primitive.mixin",
+  "compatibilityLevel": "JAVA_25",
+  "mixins": [
+    "AnvilMenuTieredMixin",
+    "AxeItemAccessor",
+    "AxeItemMixin",
+    "CampfireBlockMixin",
+    "BlastFurnaceBlockEntityMixin",
+    "AbstractFurnaceBlockEntityMixin",
+    "AbstractFurnaceMenuMixin",
+    "AbstractFurnaceBlockEntityItemsAccessor",
+    "AbstractFurnaceBlockEntityTimingsAccessor",
+    "ResultSlotTieredMixin",
+    "RecipeManagerRemovalMixin"
+  ],
+  "client": [
+    "client.BlastFurnaceScreenMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

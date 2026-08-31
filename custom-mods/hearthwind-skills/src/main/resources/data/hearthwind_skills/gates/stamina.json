@@ -1,0 +1,60 @@
+{
+  "item": [
+    {
+      "entries": [
+        "minecraft:custom_item"
+      ],
+      "level": 4
+    },
+    {
+      "entries": [
+        "minecraft:fishing_rod"
+      ],
+      "level": 10
+    },
+    {
+      "entries": [
+        "minecraft:armor"
+      ],
+      "level": 16
+    },
+    {
+      "entries": [
+        "minecraft:custom_item"
+      ],
+      "level": 22
+    }
+  ],
+  "use": [
+    {
+      "entries": [
+        "minecraft:lectern"
+      ],
+      "level": 5
+    },
+    {
+      "entries": [
+        "minecraft:loom"
+      ],
+      "level": 10
+    },
+    {
+      "entries": [
+        "minecraft:custom_block"
+      ],
+      "level": 15
+    },
+    {
+      "entries": [
+        "minecraft:custom_block"
+      ],
+      "level": 16
+    },
+    {
+      "entries": [
+        "minecraft:custom_block"
+      ],
+      "level": 22
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+ "replace": false,
+ "values": [
+  "minecraft:honey_bottle",
+  "minecraft:honey_block",
+  "minecraft:cookie",
+  "minecraft:cake",
+  "minecraft:spider_eye",
+  "minecraft:rotten_flesh",
+  "minecraft:bone_meal",
+  "minecraft:sugar",
+  {
+   "id": "farm_and_charm:cheese_wheel",
+   "required": false
+  }
+ ]
+}

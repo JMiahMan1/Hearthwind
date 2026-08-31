@@ -98,7 +98,12 @@ public final class JobState {
         if (!matchesAny(def, id)) {
             return;
         }
-        double newXp = d.xp() + HearthwindJobsConfig.get().xpPerAction;
+        // Reward tiers: content listed in the corpus pays its unlock level
+        // (iron ore as a miner pays 7, diamond 20); anything outside the
+        // ladder pays the flat fallback.
+        int tier = JobCorpus.levelFor(d.job(), id);
+        double amount = tier > 0 ? tier : HearthwindJobsConfig.get().xpPerAction;
+        double newXp = d.xp() + amount;
         int before = lvl;
         entity.setAttached(STATE, new Data(d.job(), newXp));
         int after = level(entity);
@@ -106,6 +111,7 @@ public final class JobState {
             p.sendSystemMessage(Component.literal(
                     "Job level up! You are now " + d.job()
                             + " level " + after + "."));
+            JobRewards.apply(p, d.job, after);
         }
     }
 

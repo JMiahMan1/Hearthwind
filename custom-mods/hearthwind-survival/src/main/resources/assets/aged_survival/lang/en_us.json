@@ -1,8 +1,7 @@
 {
-  "item.dehydration.water_bowl": "Water Bowl",
-  "item.dehydration.purified_water_bowl": "Purified Water Bowl",
-  "item.dehydration.hot_water_bowl": "Hot Water Bowl",
-  "item.dehydration.hot_purified_water_bowl": "Hot Purified Water Bowl",
-  "item.dehydration.cold_water_bowl": "Cold Water Bowl",
-  "item.dehydration.cold_purified_water_bowl": "Cold Purified Water Bowl"
+  "item.dehydration.leather_flask": "Leather Flask",
+  "item.dehydration.iron_leather_flask": "Iron Leather Flask",
+  "item.dehydration.golden_leather_flask": "Golden Leather Flask",
+  "item.dehydration.diamond_leather_flask": "Diamond Leather Flask",
+  "item.dehydration.netherite_leather_flask": "Netherite Leather Flask"
 }

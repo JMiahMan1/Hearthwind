@@ -12,7 +12,7 @@ public final class HearthwindWorldConfig {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     private static final String FILE = "hearthwind_world.json";
 
-    public int daysPerSeason = 21;
+    public int daysPerSeason = 18;
     public double winterTempOffset = -3.0;
     public double summerTempOffset = 2.0;
     public double springTempOffset = 0.5;
@@ -21,6 +21,17 @@ public final class HearthwindWorldConfig {
     public double summerCropMultiplier = 1.2;
     public double autumnCropMultiplier = 0.9;
     public double winterCropMultiplier = 0.4;
+
+    // Calendar rules (seasons config parity)
+    public boolean animalsBreedInWinter = false;
+
+    // HerdPanic parity tunables (herdspanic.json)
+    public double herdPanicAlertRadius = 16.0;
+    public double herdPanicSpeedMultiplier = 1.45;
+    public boolean herdPanicShelterSeeking = true;
+
+    // Couplings parity tunables (couplings.toml)
+    public boolean coupleTrapdoors = false;
 
     private static HearthwindWorldConfig instance;
     public static HearthwindWorldConfig get() {

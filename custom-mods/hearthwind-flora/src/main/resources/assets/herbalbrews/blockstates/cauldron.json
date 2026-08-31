@@ -1,0 +1,23 @@
+{
+  "variants": {
+    "facing=east": {
+      "model": "herbalbrews:block/cauldron",
+      "y": 90
+    },
+    "facing=north": {
+      "model": "herbalbrews:block/cauldron"
+    },
+    "facing=south": {
+      "model": "herbalbrews:block/cauldron",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "herbalbrews:block/cauldron",
+      "y": 270
+    },
+    "": {
+      "model": "herbalbrews:block/cauldron",
+      "y": 90
+    }
+  }
+}

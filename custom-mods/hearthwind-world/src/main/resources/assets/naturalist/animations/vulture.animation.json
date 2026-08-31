@@ -1,0 +1,427 @@
+{
+  "format_version": "1.10.0",
+  "animations": {
+    "animation.sf_nba.vulture.fly": {
+      "loop": true,
+      "animation_length": 1,
+      "bones": {
+        "body": {
+          "rotation": [
+            "Math.sin(( q.anim_time - 0.6 ) * 360 ) * 4",
+            0,
+            0
+          ]
+        },
+        "right_wing": {
+          "rotation": [
+            0,
+            0,
+            "-( Math.sin(( q.anim_time - 0.0 ) * 360 ) * 30 )"
+          ]
+        },
+        "right_wing_tip": {
+          "rotation": [
+            0,
+            0,
+            "-( Math.sin(( q.anim_time - 0.1 ) * 360 ) * 30 )"
+          ]
+        },
+        "tail": {
+          "rotation": [
+            "-5.0 * Math.cos( 360 * ( q.anim_time - 0.0 ) ) - 5.0",
+            0,
+            0
+          ]
+        },
+        "left_wing": {
+          "rotation": [
+            0,
+            0,
+            "Math.sin(( q.anim_time - 0.0 ) * 360 ) * 30"
+          ]
+        },
+        "left_wing_tip": {
+          "rotation": [
+            0,
+            0,
+            "Math.sin(( q.anim_time - 0.1 ) * 360 ) * 30"
+          ]
+        },
+        "neck": {
+          "rotation": [
+            "Math.sin(( q.anim_time - 0.6 ) * 360 ) * -4",
+            0,
+            0
+          ]
+        }
+      }
+    },
+    "animation.sf_nba.vulture.glide": {
+      "loop": true,
+      "animation_length": 2,
+      "anim_time_update": "q.anim_time + q.delta_time * v.anim_speed_multiplier * Math.min( 1, q.modified_move_speed / Math.max( 0.001, v.anim_speed_movement_max ) )",
+      "bones": {
+        "tailtip": {
+          "rotation": [
+            "-5.0 * Math.cos( 297.9380535 * ( q.anim_time - 0.0 ) ) - 5.0",
+            0,
+            0
+          ]
+        },
+        "right_wing": {
+          "rotation": [
+            0,
+            0,
+            "-( Math.sin(( q.anim_time - 0.0 ) * 180 ) * 2 )"
+          ]
+        },
+        "right_wing_tip": {
+          "rotation": [
+            0,
+            0,
+            "-( Math.sin(( q.anim_time - 0.2 ) * 180 ) * 5 )"
+          ]
+        },
+        "tail": {
+          "rotation": [
+            "-( Math.sin(( q.anim_time - 0.2 ) * 180 ) * 2 )",
+            0,
+            0
+          ]
+        },
+        "left_wing": {
+          "rotation": [
+            0,
+            0,
+            "-( Math.sin(( q.anim_time - 0.0 ) * 180 ) * -2 )"
+          ]
+        },
+        "left_wing_tip": {
+          "rotation": [
+            0,
+            0,
+            "-( Math.sin(( q.anim_time - 0.4 ) * 180 ) * -5 )"
+          ]
+        },
+        "body": {
+          "rotation": [
+            "Math.sin(( q.anim_time - 0.6 ) * 180 ) * 0.5",
+            0,
+            0
+          ]
+        },
+        "neck": {
+          "rotation": [
+            "Math.sin(( q.anim_time - 0.6 ) * 180 ) * -1",
+            0,
+            0
+          ]
+        }
+      }
+    },
+    "animation.sf_nba.vulture.idle": {
+      "loop": true,
+      "animation_length": 2,
+      "bones": {
+        "tail": {
+          "rotation": [
+            "-35 + Math.cos(( q.anim_time - 0.8 ) * 180 ) * 2",
+            0,
+            0
+          ]
+        },
+        "wings": {
+          "rotation": [
+            -30,
+            0,
+            0
+          ],
+          "position": [
+            0,
+            3,
+            -2
+          ]
+        },
+        "left_wing": {
+          "rotation": [
+            -0.51313,
+            "-5.4095 + Math.cos(( q.anim_time - 0.0 ) * 180 ) * 4",
+            20.00631
+          ],
+          "position": [
+            0,
+            0,
+            0.25
+          ]
+        },
+        "right_wing": {
+          "rotation": [
+            -0.51313,
+            "5.4095 + Math.cos(( q.anim_time - 0.0 ) * 180 ) * -4",
+            -20.00631
+          ],
+          "position": [
+            0,
+            0,
+            0.25
+          ]
+        },
+        "neck": {
+          "position": [
+            0,
+            1,
+            0
+          ]
+        },
+        "body": {
+          "position": [
+            0,
+            -1,
+            0
+          ]
+        },
+        "right_wing_tip": {
+          "rotation": [
+            0,
+            0,
+            17.5
+          ]
+        },
+        "left_wing_tip": {
+          "rotation": [
+            0,
+            0,
+            -17.5
+          ]
+        }
+      }
+    },
+    "animation.sf_nba.vulture.carrying_block": {
+      "loop": true,
+      "bones": {
+        "rightItem": {
+          "scale": 0.8,
+          "position": [
+            0,
+            0,
+            0
+          ],
+          "rotation": [
+            0,
+            90,
+            0
+          ]
+        }
+      }
+    },
+    "animation.sf_nba.vulture.baby_transform": {
+      "loop": true,
+      "bones": {
+        "neck": {
+          "scale": 1.5
+        }
+      }
+    },
+    "animation.sf_nba.vulture.sit": {
+      "loop": true,
+      "bones": {
+        "body": {
+          "rotation": [
+            -45,
+            0,
+            0
+          ],
+          "position": [
+            0,
+            0.75,
+            0
+          ]
+        },
+        "tail": {
+          "rotation": [
+            35,
+            0,
+            0
+          ],
+          "position": [
+            0,
+            -1,
+            -0.5
+          ]
+        },
+        "right_wing": {
+          "rotation": [
+            -180,
+            65,
+            -270
+          ],
+          "position": [
+            -2,
+            -4,
+            6
+          ]
+        },
+        "right_wing_tip": {
+          "rotation": [
+            -1.16524,
+            24.97457,
+            -2.75806
+          ]
+        },
+        "left_wing": {
+          "rotation": [
+            -180,
+            -65,
+            270
+          ],
+          "position": [
+            2,
+            -4,
+            6
+          ]
+        },
+        "left_wing_tip": {
+          "rotation": [
+            -1.16524,
+            -24.97457,
+            2.75806
+          ]
+        },
+        "leftFoot": {
+          "rotation": [
+            45,
+            0,
+            0
+          ]
+        },
+        "rightFoot": {
+          "rotation": [
+            45,
+            0,
+            0
+          ]
+        },
+        "neck": {
+          "rotation": [
+            45,
+            0,
+            0
+          ]
+        }
+      }
+    },
+    "animation.sf_nba.vulture.sleep": {
+      "loop": true,
+      "bones": {
+        "body": {
+          "rotation": [
+            -76,
+            0,
+            0
+          ],
+          "position": [
+            0,
+            "1.15 + Math.sin(( q.anim_time - 0.0 ) * 90 ) * -0.05",
+            0
+          ],
+          "scale": [
+            "1 + Math.sin(( q.anim_time - 0.0 ) * 45 ) * 0.015",
+            "1 + Math.sin(( q.anim_time - 0.0 ) * 45 ) * -0.03",
+            "1 + Math.sin(( q.anim_time - 0.0 ) * 45 ) * 0.015"
+          ]
+        },
+        "rightFoot": {
+          "rotation": [
+            78,
+            0,
+            0
+          ],
+          "position": [
+            0,
+            1,
+            1
+          ]
+        },
+        "leftFoot": {
+          "rotation": [
+            77,
+            0,
+            0
+          ],
+          "position": [
+            0,
+            1,
+            0.9
+          ]
+        },
+        "tail": {
+          "rotation": [
+            78,
+            0,
+            0
+          ],
+          "position": [
+            0,
+            -1,
+            -0.5
+          ]
+        },
+        "right_wing": {
+          "rotation": [
+            -180,
+            43,
+            -270
+          ],
+          "position": [
+            -2,
+            -4,
+            6
+          ]
+        },
+        "right_wing_tip": {
+          "rotation": [
+            -3.94286,
+            24.70688,
+            -9.36385
+          ]
+        },
+        "left_wing": {
+          "rotation": [
+            -180,
+            -43,
+            270
+          ],
+          "position": [
+            2,
+            -4,
+            6
+          ]
+        },
+        "left_wing_tip": {
+          "rotation": [
+            -4.8572,
+            -24.55342,
+            11.55757
+          ]
+        },
+        "neck": {
+          "rotation": [
+            154,
+            "-12 - Math.cos(( q.anim_time - 0.0 ) * 90 ) * 1",
+            21
+          ],
+          "position": [
+            0,
+            1,
+            0.4
+          ],
+          "scale": [
+            1,
+            1,
+            0.96
+          ]
+        }
+      }
+    }
+  }
+}

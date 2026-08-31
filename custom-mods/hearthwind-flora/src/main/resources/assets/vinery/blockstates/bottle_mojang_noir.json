@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "fake_model=false": {
+      "model": "vinery:block/bottle_mojang_noir"
+    },
+    "fake_model=true": {
+      "model": "vinery:block/transparent"
+    },
+    "": {
+      "model": "vinery:block/bottle_mojang_noir"
+    }
+  }
+}

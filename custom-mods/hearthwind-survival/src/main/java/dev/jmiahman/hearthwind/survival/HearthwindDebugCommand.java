@@ -15,7 +15,7 @@ public final class HearthwindDebugCommand {
 
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         dispatcher.register(Commands.literal("hearthwind")
-                .requires(src -> true)
+                .requires(src -> net.minecraft.commands.Commands.LEVEL_MODERATORS.check(src.permissions()))
                 .then(Commands.literal("hydration")
                         .then(Commands.literal("set")
                                 .then(Commands.argument("value", DoubleArgumentType.doubleArg(0, 20))
@@ -56,108 +56,69 @@ public final class HearthwindDebugCommand {
                                     return 1;
                                 })))
                 .then(Commands.literal("test")
-                        .then(Commands.literal("bowlfill")
+                        .then(Commands.literal("flaskfill")
                                 .executes(ctx -> {
                                     ServerPlayer p = ctx.getSource().getPlayerOrException();
-                                    // Find a bowl in inventory, consume one, give water_bowl
-                                    var inv = p.getInventory();
-                                    for (int i = 0; i < inv.getContainerSize(); i++) {
-                                        var stack = inv.getItem(i);
-                                        if (stack.is(net.minecraft.world.item.Items.BOWL)) {
-                                            stack.shrink(1);
-                                            var filled = new net.minecraft.world.item.ItemStack(DehydrationItems.WATER_BOWL);
-                                            if (!p.getInventory().add(filled)) p.drop(filled, false);
-                                            ctx.getSource().sendSuccess(() -> net.minecraft.network.chat.Component.literal(
-                                                    "Bowl fill simulated: bowl -> water_bowl"), false);
-                                            return 1;
-                                        }
-                                    }
-                                    ctx.getSource().sendFailure(net.minecraft.network.chat.Component.literal("No bowl in inventory"));
-                                    return 0;
+                                    var filled = new net.minecraft.world.item.ItemStack(FlaskItems.LEATHER_FLASK);
+                                    FlaskItems.setFill(filled, 2, FlaskData.IMPURIFIED);
+                                    if (!p.getInventory().add(filled)) p.drop(filled, false);
+                                    ctx.getSource().sendSuccess(() -> net.minecraft.network.chat.Component.literal(
+                                            "Gave a filled leather flask"), false);
+                                    return 1;
                                 }))
                         .then(Commands.literal("baresip")
                                 .executes(ctx -> {
                                     ServerPlayer p = ctx.getSource().getPlayerOrException();
                                     double before = HearthwindSurvivalThirst.hydration(p);
-                                    HearthwindSurvivalThirst.addHydration(p, 1.0);
-                                    if (p.getRandom().nextFloat() < 0.60f) {
-                                        p.addEffect(new net.minecraft.world.effect.MobEffectInstance(ThirstMobEffect.HOLDER, 400, 0));
+                                    HearthwindSurvivalThirst.addHydration(p, HearthwindSurvivalConfig.get().bareHand.sipQuench);
+                                    if (p.getRandom().nextFloat() < HearthwindSurvivalConfig.get().bareHand.sipThirstChance) {
+                                        p.addEffect(new net.minecraft.world.effect.MobEffectInstance(ThirstMobEffect.HOLDER,
+                                                HearthwindSurvivalConfig.get().bareHand.sipThirstDuration, 1));
                                     }
-                                    p.getFoodData().addExhaustion(0.6f);
                                     double after = HearthwindSurvivalThirst.hydration(p);
                                     ctx.getSource().sendSuccess(() -> net.minecraft.network.chat.Component.literal(
-                                            "Bare-hand sip: " + String.format("%.1f->%.1f", before, after) + " (90% thirst, tedious)"), false);
+                                            "Bare-hand sip: " + String.format("%.1f->%.1f", before, after)), false);
                                     return 1;
                                 }))
                         .then(Commands.literal("drink")
-                                .then(Commands.argument("type", com.mojang.brigadier.arguments.StringArgumentType.word())
+                                .then(Commands.argument("tier", com.mojang.brigadier.arguments.StringArgumentType.word())
                                         .suggests((c, b) -> {
-                                            b.suggest("water");
-                                            b.suggest("purified");
-                                            b.suggest("hot");
-                                            b.suggest("hot_purified");
-                                            b.suggest("cold");
-                                            b.suggest("cold_purified");
+                                            b.suggest("leather");
+                                            b.suggest("iron");
+                                            b.suggest("golden");
+                                            b.suggest("diamond");
+                                            b.suggest("netherite");
                                             return b.buildFuture();
                                         })
                                         .executes(ctx -> {
                                             ServerPlayer p = ctx.getSource().getPlayerOrException();
-                                            String type = com.mojang.brigadier.arguments.StringArgumentType.getString(ctx, "type");
-                                            double before = HearthwindSurvivalThirst.hydration(p);
-                                            var inv = p.getInventory();
-                                            net.minecraft.world.item.Item target = null;
-                                            boolean isHot = false;
-                                            boolean isCold = false;
-                                            boolean isPurified = false;
-                                            if (type.equals("water")) { target = DehydrationItems.WATER_BOWL; isHot=false; isCold=false; isPurified=false; }
-                                            else if (type.equals("purified")) { target = DehydrationItems.PURIFIED_WATER_BOWL; isHot=false; isCold=false; isPurified=true; }
-                                            else if (type.equals("hot")) { target = DehydrationItems.HOT_WATER_BOWL; isHot=true; isCold=false; isPurified=false; }
-                                            else if (type.equals("hot_purified")) { target = DehydrationItems.HOT_PURIFIED_WATER_BOWL; isHot=true; isCold=false; isPurified=true; }
-                                            else if (type.equals("cold")) { target = DehydrationItems.COLD_WATER_BOWL; isHot=false; isCold=true; isPurified=false; }
-                                            else if (type.equals("cold_purified")) { target = DehydrationItems.COLD_PURIFIED_WATER_BOWL; isHot=false; isCold=true; isPurified=true; }
-                                            else {
-                                                ctx.getSource().sendFailure(net.minecraft.network.chat.Component.literal("Unknown type: use water/purified/hot/hot_purified"));
+                                            String tier = com.mojang.brigadier.arguments.StringArgumentType.getString(ctx, "tier");
+                                            dev.jmiahman.hearthwind.survival.LeatherFlaskItem item = switch (tier) {
+                                                case "leather" -> FlaskItems.LEATHER_FLASK;
+                                                case "iron" -> FlaskItems.IRON_LEATHER_FLASK;
+                                                case "golden" -> FlaskItems.GOLDEN_LEATHER_FLASK;
+                                                case "diamond" -> FlaskItems.DIAMOND_LEATHER_FLASK;
+                                                case "netherite" -> FlaskItems.NETHERITE_LEATHER_FLASK;
+                                                default -> null;
+                                            };
+                                            if (item == null) {
+                                                ctx.getSource().sendFailure(net.minecraft.network.chat.Component.literal(
+                                                        "Unknown tier: leather/iron/golden/diamond/netherite"));
                                                 return 0;
                                             }
+                                            var inv = p.getInventory();
                                             for (int i = 0; i < inv.getContainerSize(); i++) {
                                                 var stack = inv.getItem(i);
-                                                if (stack.is(target)) {
-                                                    // Directly simulate drink without needing hand
-                                                    if (isHot) {
-                                                        // Hot always scalds in test (force hot) - direct health
-                                                        p.setHealth(Math.max(0.1f, p.getHealth() - 2.0f));
-                                                        p.setRemainingFireTicks(20);
-                                                        p.addEffect(new net.minecraft.world.effect.MobEffectInstance(ThirstMobEffect.HOLDER, 400, 0));
-                                                        HearthwindSurvivalThirst.addHydration(p, 3.0);
-                                                        p.sendOverlayMessage(net.minecraft.network.chat.Component.literal("Test: drank hot! 2 dmg + thirst").withStyle(net.minecraft.ChatFormatting.RED));
-                                                    } else if (isCold) {
-                                                        HearthwindSurvivalThirst.addHydration(p, 6.0);
-                                                        if (!isPurified && p.getRandom().nextDouble() < 0.30) {
-                                                            p.addEffect(new net.minecraft.world.effect.MobEffectInstance(ThirstMobEffect.HOLDER, 300, 0));
-                                                        }
-                                                        HearthwindSurvivalTemperature.shift(p, -1.5);
-                                                        HearthwindSurvivalTemperature.applyColdCooldown(p, 1200);
-                                                        p.sendOverlayMessage(net.minecraft.network.chat.Component.literal("Test: drank cold! -1.5 temp, 60s cooling").withStyle(net.minecraft.ChatFormatting.AQUA));
-                                                    } else {
-                                                        HearthwindSurvivalThirst.addHydration(p, 6.0);
-                                                        if (!isPurified && p.getRandom().nextDouble() < 0.30) {
-                                                            p.addEffect(new net.minecraft.world.effect.MobEffectInstance(ThirstMobEffect.HOLDER, 300, 0));
-                                                        }
-                                                        HearthwindSurvivalTemperature.shift(p, -0.7);
-                                                        HearthwindSurvivalTemperature.applyColdCooldown(p, 600);
-                                                    }
-                                                    p.getFoodData().addExhaustion(0.0f);
-                                                    // Consume and return bowl
-                                                    stack.shrink(1);
-                                                    var bowl = new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.BOWL);
-                                                    if (!p.getInventory().add(bowl)) p.drop(bowl, false);
+                                                if (stack.is(item)) {
+                                                    double before = HearthwindSurvivalThirst.hydration(p);
+                                                    FlaskItems.onFlaskConsumed(p, stack);
                                                     double after = HearthwindSurvivalThirst.hydration(p);
                                                     ctx.getSource().sendSuccess(() -> net.minecraft.network.chat.Component.literal(
-                                                            "Drank " + type + ": " + String.format("%.1f->%.1f", before, after)), false);
+                                                            "Drank from " + tier + " flask: " + String.format("%.1f->%.1f", before, after)), false);
                                                     return 1;
                                                 }
                                             }
-                                            ctx.getSource().sendFailure(net.minecraft.network.chat.Component.literal("No " + type + " bowl in inventory"));
+                                            ctx.getSource().sendFailure(net.minecraft.network.chat.Component.literal("No " + tier + " flask in inventory"));
                                             return 0;
                                         })))
                         .then(Commands.literal("move")

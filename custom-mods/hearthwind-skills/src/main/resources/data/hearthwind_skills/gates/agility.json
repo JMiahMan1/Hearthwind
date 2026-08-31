@@ -1,0 +1,86 @@
+{
+  "entity": [
+    {
+      "entries": [
+        "minecraft:custom_entity"
+      ],
+      "level": 0
+    },
+    {
+      "entries": [
+        "minecraft:custom_entity"
+      ],
+      "level": 6
+    }
+  ],
+  "item": [
+    {
+      "entries": [
+        "minecraft:compass"
+      ],
+      "level": 0
+    },
+    {
+      "entries": [
+        "minecraft:armor"
+      ],
+      "level": 4
+    },
+    {
+      "entries": [
+        "minecraft:armor"
+      ],
+      "level": 8
+    },
+    {
+      "entries": [
+        "minecraft:armor"
+      ],
+      "level": 10
+    },
+    {
+      "entries": [
+        "minecraft:armor"
+      ],
+      "level": 16
+    },
+    {
+      "entries": [
+        "minecraft:armor"
+      ],
+      "level": 22
+    },
+    {
+      "entries": [
+        "minecraft:elytra"
+      ],
+      "level": 30
+    }
+  ],
+  "use": [
+    {
+      "entries": [
+        "minecraft:cartography_table"
+      ],
+      "level": 8
+    },
+    {
+      "entries": [
+        "minecraft:custom_block"
+      ],
+      "level": 15
+    },
+    {
+      "entries": [
+        "minecraft:custom_block"
+      ],
+      "level": 18
+    },
+    {
+      "entries": [
+        "minecraft:custom_block"
+      ],
+      "level": 25
+    }
+  ]
+}

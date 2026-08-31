@@ -1,0 +1,14 @@
+{
+  "required": true,
+  "package": "dev.jmiahman.hearthwind.client.mixin",
+  "compatibilityLevel": "JAVA_25",
+  "client": [
+    "AbstractContainerScreenClickMixin",
+    "AgedTitleScreenMixin",
+    "InventoryScreenButtonMixin",
+    "LogoRendererMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

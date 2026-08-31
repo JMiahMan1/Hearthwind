@@ -1,0 +1,12 @@
+{
+	"required": true,
+	"package": "dev.jmiahman.hearthwind.skills.mixin",
+	"compatibilityLevel": "JAVA_21",
+	"mixins": [
+		"SkillProcDamageMixin",
+		"SkillProcTwinMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	}
+}

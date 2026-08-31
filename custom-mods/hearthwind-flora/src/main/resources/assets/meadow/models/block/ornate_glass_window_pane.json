@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/cube_all",
+  "textures": {
+    "all": "meadow:block/ornate_glass_window_pane"
+  }
+}

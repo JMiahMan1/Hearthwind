@@ -57,7 +57,17 @@ public final class JobCommands {
                                 "Job: " + jid + " Lv." + lvl + " (" + (int) xp + " xp)"), false);
                         }
                         return 1;
-                    })));
+                    }))
+                .then(Commands.literal("age")
+                    .then(Commands.argument("age", com.mojang.brigadier.arguments.IntegerArgumentType.integer(0, 5))
+                        .executes(ctx -> {
+                            ServerPlayer p = ctx.getSource().getPlayerOrException();
+                            int age = com.mojang.brigadier.arguments.IntegerArgumentType.getInteger(ctx, "age");
+                            AgeState.set(p, age);
+                            ctx.getSource().sendSuccess(() -> Component.literal(
+                                "Age set to " + age + "."), false);
+                            return 1;
+                        }))));
         });
     }
 }

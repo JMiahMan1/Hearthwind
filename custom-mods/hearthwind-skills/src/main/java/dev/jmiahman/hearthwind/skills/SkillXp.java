@@ -35,6 +35,10 @@ public final class SkillXp {
         return map.get(skill.id);
     }
 
+    public static void award(Entity entity, Skill skill, double amount) {
+        addXp(entity, skill, amount);
+    }
+
     public static void addXp(Entity entity, Skill skill, double amount) {
         if (amount <= 0 || level(entity, skill) >= maxLevel()) {
             return;
@@ -45,10 +49,41 @@ public final class SkillXp {
         Map<String, Double> map = existing == null
                 ? new java.util.HashMap<>()
                 : new java.util.HashMap<>(existing);
+        int before = level(entity, skill);
         map.merge(skill.id, amount, Double::sum);
         entity.setAttached(XP, map);
         if (entity instanceof net.minecraft.world.entity.LivingEntity living) {
             SkillAttributes.onLevelChanged(living, skill);
+        }
+        if (entity instanceof net.minecraft.server.level.ServerPlayer sp) {
+            int after = level(sp, skill);
+            if (after > before) {
+                dev.jmiahman.hearthwind.survival.SkillUpPayload payload =
+                        new dev.jmiahman.hearthwind.survival.SkillUpPayload(skill.id, after);
+                net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking.send(
+                        sp, payload);
+                SkillsSync.send(sp);
+            }
+        }
+    }
+
+    public static void setLevel(Entity entity, Skill skill, int targetLevel) {
+        int clamped = Math.max(0, Math.min(maxLevel(), targetLevel));
+        long neededXp = xpForLevel(clamped);
+        Map<String, Double> existing = entity.getAttached(XP);
+        Map<String, Double> map = existing == null
+                ? new java.util.HashMap<>()
+                : new java.util.HashMap<>(existing);
+        map.put(skill.id, (double) neededXp);
+        entity.setAttached(XP, map);
+        if (entity instanceof net.minecraft.world.entity.LivingEntity living) {
+            SkillAttributes.onLevelChanged(living, skill);
+        }
+        if (entity instanceof net.minecraft.server.level.ServerPlayer sp) {
+            dev.jmiahman.hearthwind.survival.SkillUpPayload payload =
+                    new dev.jmiahman.hearthwind.survival.SkillUpPayload(skill.id, clamped);
+            net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking.send(sp, payload);
+            SkillsSync.send(sp);
         }
     }
 

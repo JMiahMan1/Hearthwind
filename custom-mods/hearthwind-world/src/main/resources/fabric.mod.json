@@ -1,23 +1,30 @@
 {
-	"schemaVersion": 1,
-	"id": "hearthwind_world",
-	"version": "${version}",
-	"name": "Hearthwind: World",
-	"description": "Seasons, climate and living water. Part of Hearthwind.",
-	"authors": [
-		"JMiahMan1"
-	],
-	"license": "MIT",
-	"environment": "*",
-	"entrypoints": {
-		"main": [
-			"dev.jmiahman.hearthwind.world.HearthwindWorld"
-		]
-	},
-	"depends": {
-		"fabricloader": ">=0.19.3",
-		"minecraft": "~26.2",
-		"java": ">=25",
-		"fabric-api": "*"
-	}
+  "schemaVersion": 1,
+  "id": "hearthwind_world",
+  "version": "${version}",
+  "name": "Hearthwind: World",
+  "description": "Seasons, climate and living water. Part of Hearthwind.",
+  "authors": [
+    "JMiahMan1"
+  ],
+  "license": "MIT",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "dev.jmiahman.hearthwind.world.HearthwindWorld"
+    ],
+    "fabric-gametest": [
+      "dev.jmiahman.hearthwind.world.HearthwindWorldGameTests"
+    ]
+  },
+  "depends": {
+    "fabricloader": ">=0.19.3",
+    "minecraft": "~26.2",
+    "java": ">=25",
+    "fabric-api": "*"
+  },
+  "mixins": [
+    "hearthwind_world.mixins.json"
+  ],
+  "icon": "assets/hearthwind_world/icon.png"
 }

@@ -29,11 +29,22 @@ public final class JobEvents {
         if (!(player instanceof ServerPlayer sp) || sp.getAbilities().instabuild || state.isAir()) return;
         String id = BuiltInRegistries.BLOCK.getKey(state.getBlock()).toString();
         JobState.awardIfMatch(sp, id);
+        sendJobSync(sp);
     }
 
     private static void onDeath(LivingEntity entity, DamageSource source) {
         if (!(source.getEntity() instanceof ServerPlayer sp)) return;
         String id = BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType()).toString();
         JobState.awardIfMatch(sp, id);
+        sendJobSync(sp);
+    }
+
+    private static void sendJobSync(ServerPlayer sp) {
+        dev.jmiahman.hearthwind.survival.JobSyncPayload payload =
+                new dev.jmiahman.hearthwind.survival.JobSyncPayload(
+                        JobState.jobId(sp), JobState.level(sp), JobState.xp(sp),
+                        HearthwindJobsConfig.get().pointsPerLevel);
+        net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking.send(
+                sp, payload);
     }
 }

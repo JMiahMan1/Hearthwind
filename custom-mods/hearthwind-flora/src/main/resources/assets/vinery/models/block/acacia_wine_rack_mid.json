@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/cube_all",
+  "textures": {
+    "all": "vinery:block/acacia_wine_rack_mid"
+  }
+}

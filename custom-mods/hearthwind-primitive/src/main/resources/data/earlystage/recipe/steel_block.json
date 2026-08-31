@@ -1,0 +1,7 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": ["###", "###", "###"],
+  "key": { "#": "earlystage:steel_ingot" },
+  "result": { "id": "earlystage:steel_block", "count": 1 }
+}

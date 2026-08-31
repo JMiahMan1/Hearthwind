@@ -1,0 +1,7 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": ["X X", "XXX", "XXX"],
+  "key": { "X": "earlystage:steel_ingot" },
+  "result": { "id": "earlystage:steel_chestplate", "count": 1 }
+}

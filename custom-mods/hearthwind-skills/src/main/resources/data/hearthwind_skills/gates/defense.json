@@ -1,0 +1,64 @@
+{
+  "item": [
+    {
+      "entries": [
+        "minecraft:custom_item"
+      ],
+      "level": 0
+    },
+    {
+      "entries": [
+        "minecraft:armor"
+      ],
+      "level": 4
+    },
+    {
+      "entries": [
+        "minecraft:armor"
+      ],
+      "level": 8
+    },
+    {
+      "entries": [
+        "minecraft:armor"
+      ],
+      "level": 12
+    },
+    {
+      "entries": [
+        "minecraft:shield"
+      ],
+      "level": 15
+    },
+    {
+      "entries": [
+        "minecraft:armor"
+      ],
+      "level": 16
+    },
+    {
+      "entries": [
+        "minecraft:armor"
+      ],
+      "level": 20
+    },
+    {
+      "entries": [
+        "minecraft:armor"
+      ],
+      "level": 22
+    },
+    {
+      "entries": [
+        "minecraft:armor"
+      ],
+      "level": 24
+    },
+    {
+      "entries": [
+        "minecraft:armor"
+      ],
+      "level": 30
+    }
+  ]
+}

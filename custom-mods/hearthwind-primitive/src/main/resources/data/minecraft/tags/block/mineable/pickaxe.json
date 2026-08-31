@@ -1,0 +1,7 @@
+{
+  "replace": false,
+  "values": [
+    "earlystage:crafting_rock",
+    "earlystage:steel_block"
+  ]
+}

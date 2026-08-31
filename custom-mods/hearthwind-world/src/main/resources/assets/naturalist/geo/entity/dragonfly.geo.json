@@ -1,0 +1,368 @@
+{
+  "format_version": "1.12.0",
+  "minecraft:geometry": [
+    {
+      "description": {
+        "identifier": "geometry.sf_nba.dragonfly",
+        "texture_width": 32,
+        "texture_height": 32,
+        "visible_bounds_width": 3,
+        "visible_bounds_height": 3,
+        "visible_bounds_offset": [
+          0,
+          0.5,
+          0
+        ]
+      },
+      "bones": [
+        {
+          "name": "root",
+          "pivot": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "name": "neck",
+          "parent": "root",
+          "pivot": [
+            0,
+            4,
+            -5
+          ],
+          "cubes": [
+            {
+              "origin": [
+                -3,
+                2.5,
+                -8
+              ],
+              "size": [
+                6,
+                3,
+                3
+              ],
+              "uv": [
+                0,
+                16
+              ]
+            }
+          ]
+        },
+        {
+          "name": "body",
+          "parent": "root",
+          "pivot": [
+            0,
+            3.83333,
+            -4.66667
+          ],
+          "cubes": [
+            {
+              "origin": [
+                -1,
+                3,
+                -1
+              ],
+              "size": [
+                2,
+                2,
+                11
+              ],
+              "uv": [
+                0,
+                0
+              ]
+            },
+            {
+              "origin": [
+                -1.5,
+                2,
+                -5
+              ],
+              "size": [
+                3,
+                3,
+                4
+              ],
+              "uv": [
+                18,
+                13
+              ]
+            }
+          ],
+          "locators": {
+            "lead": [
+              0,
+              3,
+              -5
+            ]
+          }
+        },
+        {
+          "name": "wings",
+          "parent": "body",
+          "pivot": [
+            1,
+            5,
+            0.5
+          ]
+        },
+        {
+          "name": "wingsBack",
+          "parent": "wings",
+          "pivot": [
+            1,
+            5,
+            0.5
+          ]
+        },
+        {
+          "name": "wingLeftBack",
+          "parent": "wingsBack",
+          "pivot": [
+            1,
+            5,
+            0.5
+          ],
+          "rotation": [
+            0,
+            0,
+            -47.4982
+          ],
+          "cubes": [
+            {
+              "origin": [
+                1.33781,
+                4.63137,
+                -2
+              ],
+              "size": [
+                9,
+                0,
+                3
+              ],
+              "uv": [
+                12,
+                6
+              ]
+            }
+          ]
+        },
+        {
+          "name": "wingRightBack",
+          "parent": "wingsBack",
+          "pivot": [
+            -1,
+            5,
+            0.5
+          ],
+          "rotation": [
+            0,
+            0,
+            47.4982
+          ],
+          "cubes": [
+            {
+              "origin": [
+                -10.33781,
+                4.63137,
+                -2
+              ],
+              "size": [
+                9,
+                0,
+                3
+              ],
+              "uv": [
+                12,
+                6
+              ],
+              "mirror": true
+            }
+          ]
+        },
+        {
+          "name": "wingsFront",
+          "parent": "wings",
+          "pivot": [
+            -1,
+            5,
+            -3.5
+          ]
+        },
+        {
+          "name": "wingRightFront",
+          "parent": "wingsFront",
+          "pivot": [
+            -1,
+            5,
+            -3.5
+          ],
+          "rotation": [
+            0,
+            0,
+            24.99815
+          ],
+          "cubes": [
+            {
+              "origin": [
+                -11.95316,
+                4.78871,
+                -5
+              ],
+              "size": [
+                11,
+                0,
+                3
+              ],
+              "uv": [
+                12,
+                3
+              ],
+              "mirror": true
+            }
+          ]
+        },
+        {
+          "name": "wingLeftFront",
+          "parent": "wingsFront",
+          "pivot": [
+            1,
+            5,
+            -3.5
+          ],
+          "rotation": [
+            0,
+            0,
+            -24.99815
+          ],
+          "cubes": [
+            {
+              "origin": [
+                0.95316,
+                4.78871,
+                -5
+              ],
+              "size": [
+                11,
+                0,
+                3
+              ],
+              "uv": [
+                12,
+                3
+              ]
+            }
+          ]
+        },
+        {
+          "name": "legs",
+          "parent": "body",
+          "pivot": [
+            0,
+            2,
+            -3
+          ]
+        },
+        {
+          "name": "legsFront",
+          "parent": "legs",
+          "pivot": [
+            0,
+            2,
+            -4
+          ],
+          "rotation": [
+            22.5,
+            0,
+            0
+          ],
+          "cubes": [
+            {
+              "origin": [
+                -1.5,
+                0,
+                -4
+              ],
+              "size": [
+                3,
+                2,
+                0
+              ],
+              "uv": [
+                0,
+                0
+              ]
+            }
+          ]
+        },
+        {
+          "name": "legsMiddle",
+          "parent": "legs",
+          "pivot": [
+            0,
+            2,
+            -3
+          ],
+          "rotation": [
+            22.5,
+            0,
+            0
+          ],
+          "cubes": [
+            {
+              "origin": [
+                -1.5,
+                0,
+                -3
+              ],
+              "size": [
+                3,
+                2,
+                0
+              ],
+              "uv": [
+                0,
+                0
+              ]
+            }
+          ]
+        },
+        {
+          "name": "legsBack",
+          "parent": "legs",
+          "pivot": [
+            0,
+            2,
+            -2
+          ],
+          "rotation": [
+            22.5,
+            0,
+            0
+          ],
+          "cubes": [
+            {
+              "origin": [
+                -1.5,
+                0,
+                -2
+              ],
+              "size": [
+                3,
+                2,
+                0
+              ],
+              "uv": [
+                0,
+                0
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,19 +1,27 @@
 {
-	"schemaVersion": 1,
-	"id": "hearthwind_client",
-	"version": "${version}",
-	"name": "Hearthwind: Client",
-	"description": "Optional companion for Hearthwind Server - HUD bars (thirst/diet/temperature/skills/jobs), instruction toasts, water-motion preview. Presentation only; server enforces. Part of Hearthwind.",
-	"authors": ["JMiahMan1"],
-	"license": "MIT",
-	"environment": "client",
-	"entrypoints": {
-		"client": ["dev.jmiahman.hearthwind.client.HearthwindClient"]
-	},
-	"depends": {
-		"fabricloader": ">=0.19.3",
-		"minecraft": "~26.2",
-		"java": ">=25",
-		"fabric-api": "*"
-	}
+  "schemaVersion": 1,
+  "id": "hearthwind_client",
+  "version": "${version}",
+  "name": "Hearthwind: Client",
+  "description": "Optional companion for Hearthwind Server - HUD bars (thirst/diet/temperature/skills/jobs), instruction toasts, water-motion preview. Presentation only; server enforces. Part of Hearthwind.",
+  "authors": [
+    "JMiahMan1"
+  ],
+  "license": "MIT",
+  "environment": "client",
+  "entrypoints": {
+    "client": [
+      "dev.jmiahman.hearthwind.client.HearthwindClient"
+    ]
+  },
+  "depends": {
+    "fabricloader": ">=0.19.3",
+    "minecraft": "~26.2",
+    "java": ">=25",
+    "fabric-api": "*"
+  },
+  "mixins": [
+    "hearthwind_client.mixins.json"
+  ],
+  "icon": "assets/hearthwind/icon.png"
 }

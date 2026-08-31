@@ -1,29 +1,30 @@
 {
-	"schemaVersion": 1,
-	"id": "hearthwind_survival",
-	"version": "${version}",
-	"name": "Hearthwind: Survival",
-	"description": "Thirst, body temperature, five-group diet and food spoilage. Part of Hearthwind; mechanics inspired by the Hearthwind pack's dehydration/environmentz/nutritionz/spoiledz.",
-	"authors": [
-		"JMiahMan1"
-	],
-	"license": "MIT",
-	"environment": "*",
-	"entrypoints": {
-		"main": [
-			"dev.jmiahman.hearthwind.survival.HearthwindSurvival"
-		],
-		"fabric-gametest": [
-			"dev.jmiahman.hearthwind.survival.HearthwindSurvivalGameTests"
-		]
-	},
-	"mixins": [
-		"hearthwind_survival.mixins.json"
-	],
-	"depends": {
-		"fabricloader": ">=0.19.3",
-		"minecraft": "~26.2",
-		"java": ">=25",
-		"fabric-api": "*"
-	}
+  "schemaVersion": 1,
+  "id": "hearthwind_survival",
+  "version": "${version}",
+  "name": "Hearthwind: Survival",
+  "description": "Thirst, body temperature, five-group diet and food spoilage. Part of Hearthwind; mechanics inspired by the Hearthwind pack's dehydration/environmentz/nutritionz/spoiledz.",
+  "authors": [
+    "JMiahMan1"
+  ],
+  "license": "MIT",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "dev.jmiahman.hearthwind.survival.HearthwindSurvival"
+    ],
+    "fabric-gametest": [
+      "dev.jmiahman.hearthwind.survival.HearthwindSurvivalGameTests"
+    ]
+  },
+  "mixins": [
+    "hearthwind_survival.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.19.3",
+    "minecraft": "~26.2",
+    "java": ">=25",
+    "fabric-api": "*"
+  },
+  "icon": "assets/hearthwind_survival/icon.png"
 }

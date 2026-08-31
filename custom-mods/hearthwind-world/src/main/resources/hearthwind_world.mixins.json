@@ -1,0 +1,16 @@
+{
+	"required": true,
+	"package": "dev.jmiahman.hearthwind.world.mixin",
+	"compatibilityLevel": "JAVA_21",
+	"mixins": [
+		"HearthwindSeasonalCropMixin",
+		"HearthwindSeasonalSaplingMixin",
+		"HearthwindSeasonalStemMixin",
+		"HearthwindSeasonalBerryMixin",
+		"HearthwindSeasonalCocoaMixin",
+		"HearthwindWinterBreedingMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	}
+}

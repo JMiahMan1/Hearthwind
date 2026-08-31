@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "dd",
+    "dd"
+  ],
+  "key": {
+    "d": "earlystage:rock"
+  },
+  "result": {
+    "id": "minecraft:cobblestone"
+  }
+}

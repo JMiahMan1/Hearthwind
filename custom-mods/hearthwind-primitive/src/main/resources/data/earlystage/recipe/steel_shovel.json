@@ -1,0 +1,7 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": ["X", "#", "#"],
+  "key": { "X": "earlystage:steel_ingot", "#": "minecraft:stick" },
+  "result": { "id": "earlystage:steel_shovel", "count": 1 }
+}

@@ -1,0 +1,12 @@
+{
+	"required": true,
+	"package": "dev.jmiahman.hearthwind.jobs.mixin",
+	"compatibilityLevel": "JAVA_21",
+	"mixins": [
+		"CraftingGateAccessor",
+		"CraftingGateMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	}
+}

@@ -1,0 +1,62 @@
+{
+  "type": "minecraft:simple_random_selector",
+  "config": {
+    "features": [
+      {
+        "feature": {
+          "type": "minecraft:simple_block",
+          "config": {
+            "to_place": {
+              "type": "minecraft:weighted_state_provider",
+              "entries": [
+                {
+                  "data": {
+                    "Name": "meadow:edelweiss"
+                  },
+                  "weight": 3
+                },
+                {
+                  "data": {
+                    "Name": "meadow:alpine_poppy"
+                  },
+                  "weight": 3
+                },
+                {
+                  "data": {
+                    "Name": "meadow:gentian"
+                  },
+                  "weight": 3
+                },
+                {
+                  "data": {
+                    "Name": "meadow:delphinium"
+                  },
+                  "weight": 2
+                },
+                {
+                  "data": {
+                    "Name": "meadow:fire_lily"
+                  },
+                  "weight": 2
+                },
+                {
+                  "data": {
+                    "Name": "meadow:saxifrage"
+                  },
+                  "weight": 2
+                },
+                {
+                  "data": {
+                    "Name": "meadow:eriophorum"
+                  },
+                  "weight": 2
+                }
+              ]
+            }
+          }
+        },
+        "placement": []
+      }
+    ]
+  }
+}

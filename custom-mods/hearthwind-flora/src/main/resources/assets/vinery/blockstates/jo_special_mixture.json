@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "fake_model=false": {
+      "model": "vinery:block/jo_special_mixture"
+    },
+    "fake_model=true": {
+      "model": "vinery:block/transparent"
+    },
+    "": {
+      "model": "vinery:block/jo_special_mixture"
+    }
+  }
+}

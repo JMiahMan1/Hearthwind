@@ -1,0 +1,80 @@
+{
+  "entity": [
+    {
+      "entries": [
+        "minecraft:wolf"
+      ],
+      "level": 8
+    }
+  ],
+  "item": [
+    {
+      "entries": [
+        "minecraft:sword"
+      ],
+      "level": 4
+    },
+    {
+      "entries": [
+        "minecraft:sword"
+      ],
+      "level": 7
+    },
+    {
+      "entries": [
+        "minecraft:sword"
+      ],
+      "level": 8
+    },
+    {
+      "entries": [
+        "minecraft:sword"
+      ],
+      "level": 14
+    },
+    {
+      "entries": [
+        "minecraft:sword"
+      ],
+      "level": 18
+    },
+    {
+      "entries": [
+        "minecraft:custom_item"
+      ],
+      "level": 20
+    },
+    {
+      "entries": [
+        "minecraft:armor"
+      ],
+      "level": 22
+    },
+    {
+      "entries": [
+        "minecraft:sword"
+      ],
+      "level": 24
+    },
+    {
+      "entries": [
+        "minecraft:custom_item"
+      ],
+      "level": 26
+    },
+    {
+      "entries": [
+        "minecraft:sword"
+      ],
+      "level": 30
+    }
+  ],
+  "use": [
+    {
+      "entries": [
+        "minecraft:grindstone"
+      ],
+      "level": 15
+    }
+  ]
+}

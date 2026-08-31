@@ -1,0 +1,37 @@
+{
+  "variants": {
+    "facing=north,half=lower": {
+      "model": "candlelight:block/crimson_chair"
+    },
+    "facing=west,half=upper": {
+      "y": 270,
+      "model": "candlelight:block/crimson_chair_top"
+    },
+    "facing=west,half=lower": {
+      "y": 270,
+      "model": "candlelight:block/crimson_chair"
+    },
+    "facing=north,half=upper": {
+      "model": "candlelight:block/crimson_chair_top"
+    },
+    "facing=south,half=upper": {
+      "y": 180,
+      "model": "candlelight:block/crimson_chair_top"
+    },
+    "facing=east,half=upper": {
+      "y": 90,
+      "model": "candlelight:block/crimson_chair_top"
+    },
+    "facing=south,half=lower": {
+      "y": 180,
+      "model": "candlelight:block/crimson_chair"
+    },
+    "facing=east,half=lower": {
+      "y": 90,
+      "model": "candlelight:block/crimson_chair"
+    },
+    "": {
+      "model": "candlelight:block/crimson_chair"
+    }
+  }
+}

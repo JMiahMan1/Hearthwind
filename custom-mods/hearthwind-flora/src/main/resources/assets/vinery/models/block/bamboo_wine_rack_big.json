@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/cube_all",
+  "textures": {
+    "all": "vinery:block/bamboo_wine_rack_big"
+  }
+}
