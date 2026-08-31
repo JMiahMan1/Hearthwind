@@ -2,37 +2,28 @@
   "feature": "hearthwind_flora:wild_flowers",
   "placement": [
     {
-      "type": "minecraft:rarity_filter",
-      "chance": 2
+      "type": "minecraft:count",
+      "count": 36
     },
     {
       "type": "minecraft:in_square"
     },
     {
-      "type": "minecraft:heightmap",
-      "heightmap": "MOTION_BLOCKING_NO_LEAVES"
-    },
-    {
-      "type": "minecraft:biome"
-    },
-    {
-      "type": "minecraft:count",
-      "count": 48
-    },
-    {
       "type": "minecraft:random_offset",
       "xz_spread": {
         "type": "minecraft:trapezoid",
-        "max": 6,
-        "min": -6,
+        "max": 7,
+        "min": -7,
         "plateau": 0
       },
-      "y_spread": {
-        "type": "minecraft:trapezoid",
-        "max": 2,
-        "min": -2,
-        "plateau": 0
-      }
+      "y_spread": 0
+    },
+    {
+      "type": "minecraft:heightmap",
+      "heightmap": "WORLD_SURFACE_WG"
+    },
+    {
+      "type": "minecraft:biome"
     },
     {
       "type": "minecraft:block_predicate_filter",
@@ -44,6 +35,8 @@
             "blocks": [
               "minecraft:air",
               "minecraft:short_grass",
+              "minecraft:tall_grass",
+              "minecraft:fern",
               "minecraft:snow"
             ]
           },

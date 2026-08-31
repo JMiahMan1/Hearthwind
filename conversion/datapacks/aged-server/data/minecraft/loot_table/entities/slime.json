@@ -3,18 +3,7 @@
  "pools": [
   {
    "bonus_rolls": 0.0,
-   "conditions": [
-    {
-     "condition": "minecraft:entity_properties",
-     "entity": "this",
-     "predicate": {
-      "type_specific": {
-       "type": "slime",
-       "size": 1
-      }
-     }
-    }
-   ],
+   "conditions": [],
    "entries": [
     {
      "type": "minecraft:item",
@@ -25,7 +14,7 @@
         "condition": "minecraft:damage_source_properties",
         "predicate": {
          "source_entity": {
-          "type": "minecraft:frog"
+          "entity_type": "minecraft:frog"
          }
         }
        }
@@ -47,7 +36,8 @@
         "max": 1.0,
         "min": 0.0
        },
-       "function": "minecraft:looting_enchant"
+       "function": "minecraft:enchanted_count_increase",
+       "enchantment": "minecraft:looting"
       }
      ],
      "name": "minecraft:slime_ball"
@@ -59,7 +49,7 @@
        "condition": "minecraft:damage_source_properties",
        "predicate": {
         "source_entity": {
-         "type": "minecraft:frog"
+         "entity_type": "minecraft:frog"
         }
        }
       }
@@ -102,7 +92,8 @@
         "max": 2.0,
         "min": 1.0
        },
-       "function": "minecraft:looting_enchant"
+       "function": "minecraft:enchanted_count_increase",
+       "enchantment": "minecraft:looting"
       }
      ],
      "name": "minecraft:emerald",

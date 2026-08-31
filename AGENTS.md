@@ -75,7 +75,7 @@ How far CI can go:
 cd custom-mods && bash tools/run_gametests.sh [--keep-server]
 # -> builds all modules, boots a throwaway 26.2 server, runs every @GameTest,
 #    prints "gametests: N/M passed", exits nonzero on failure
-#    (19 gametests green: 8 survival + 7 skills + 4 jobs)
+#    (83 gametests green: survival + skills + jobs + primitive)
 ```
 
 Gotchas learned the hard way:
@@ -179,6 +179,27 @@ python3 ../custom-mods/tools/rcon.py 127.0.0.1 25575 agedtest "summon item ~ ~ ~
 - Register custom items under ORIGINAL upstream namespaces (earlystage,
   agedaddition, dehydration, environmentz, levelz, tiered, ...) so the
   ~800 migrated tuning files activate unchanged.
+- Blocks: `DirectionProperty` is GONE in 26.2 - `BlockStateProperties.
+  HORIZONTAL_FACING` is an `EnumProperty<Direction>`. Block overrides:
+  `updateShape(state, LevelReader, ScheduledTickAccess, pos, dir,
+  neighborPos, neighborState, RandomSource)`, `useItemOn(...) ->
+  InteractionResult`, `canSurvive(state, LevelReader, pos)`,
+  `rotate/mirror` standard. Custom enums need `StringRepresentable`.
+- GUI text colors are STRICT ARGB: `0x3F3F3F` renders INVISIBLE (alpha
+  0x00) - always `0xFF3F3F3F` style. `GuiGraphicsExtractor.text(Font,
+  String, int x, int y, int color)`.
+- Screen hit-test helpers must take PANEL-RELATIVE coords (like vanilla
+  `isPointWithinBounds(5,5,...)`) - passing absolute `this.x+5` into a
+  helper that subtracts `this.x` double-offsets the region (this exact
+  bug broke the nutrients back-arrow).
+- Inventory widgets: anchor to `@Shadow leftPos/topPos` (mixins on
+  InventoryScreen can extend AbstractContainerScreen to reach them).
+  NEVER recompute `(width-176)/2` - the recipe book shifts leftPos by
+  +71 and the drawn/clicked regions diverge.
+- macOS host has NO `setsid`/GNU `timeout`: launch test servers with
+  `(nohup java ... > log 2>&1 < /dev/null &)` from the server dir.
+- cliclick: `kp:` is unreliable for LETTER keys in game - use `t:`
+  (`type`). Held left-click mining: `rhold X Y --ms N --button left`.
 
 ## Overarching principles (from docs/PROJECT_DIRECTION.md North star)
 
@@ -221,8 +242,8 @@ Every task is judged against **realism → earned unlock → harder frontier →
 3. **Jobs** (`hearthwind-jobs`, jobs-addon parity) - 🟡 partial, 4/4 gametests green:
    8 jobs (fisher/miner/farmer/warrior/smither/brewer/builder/lumberjack), per-player job attachment `hearthwind_jobs:state`, level math `pointsPerLevel` (default 100), XP hooks on block break / entity kill via `JobState.awardIfMatch`, **`/job join/leave/info` commands** shipped; config `config/hearthwind_jobs.json`.
    Remaining: job-restricted recipe gating (reuses gate infra), bonus rewards - must respect **Age 2+** before smither/brewer unlocks.
-4. **Primitive Ages 0→3** (`hearthwind-primitive`) - 🟡 partial: flint tools/rock item, stone->rock loot, ore pieces, **steel ingot/nugget/block + assets** shipped; **next is Age 1 Sieve** (`earlystage:sieve_drops/aged_drops.json` as the ONE sieve, tanning 4 flesh→leather as datapack recipe, no duplicate Prospector Bench), then knapping minigame,
-    beginner-death forgiveness (`beginnerDeathCount: 3`), full `tiered` affix system. Steel stays gated behind `mining 7`+`smithing 14` (Iron Age).
+4. **Primitive Ages 0→3** (`hearthwind-primitive`) - 🟡 partial: **faithful earlystage rock+flint port shipped** (surface `earlystage:rock` 4 variants / `earlystage:flint` 2 variants × facing, weighted_state_provider worldgen in Aged's biome tag, 1-hit mounds drop rock/flint, shovel right-click cycles variant, stonecutter rocks_from_stone + shaped cobblestone_from_rock, original earlystage MIT models/textures - they render vanilla stone); flint tools, ore pieces, steel ingot/nugget/block + assets shipped. **Removed the invented stone->rock/gravel loot hooks** (Aged keeps vanilla drops). Next: Age 1 Sieve (`earlystage:sieve_drops/aged_drops.json` as the ONE sieve, tanning 4 flesh→leather as datapack recipe, no duplicate Prospector Bench), knapping minigame on `crafting_rock`, beginner-death forgiveness (`beginnerDeathCount: 3`), full `tiered` affix system. Steel stays gated behind `mining 7`+`smithing 14` (Iron Age).
+   - Client: **NutrientsScreen + inventory tab SHIPPED and live-verified** (apple tab top-left anchored to `leftPos/topPos`, N key, back arrow, E close; NutritionZ MIT crops for panel/bars/arrow).
 5. **World Ages 1→5** (`hearthwind-world`) - 🟡 partial: **seasons-lite shipped** (4 seasons over `daysPerSeason` 21, `Season.fromWorldTime()`, temp offsets + crop multipliers per season, `config/hearthwind_world.json`); next wiring crop growth + temperature hook, then **Age-gated Mechanical preview** (Create wind/water wheel after `smithing 18`/`builder 3`, full Create only at Mechanical Age). Water motion per `ideas/rivers-and-waves.md` (river currents, ocean swell, foam, tides -> later visible wave surfaces via optional client companion/shaders; Tectonic vs Terralith pick ONE).
 6. **De-kludge audit** (new): before adding any tech, dedupe overlap - `grep` `mods-manifest.json` for duplicate storage (`Sophisticated Backpacks` vs `Iron Chests` → keep best), duplicate farming (`Let's Do` vs `Farmer's Delight` → keep one), duplicate sieving (keep `earlystage:sieve`, drop Homesteads `Prospector's Bench`). Count per need must go down.
 7. **Datapack noise shrink**: each shipped item set reduces the
@@ -237,8 +258,28 @@ Every task is judged against **realism → earned unlock → harder frontier →
    in-house, see `ideas/genesis-comparison.md`; neither mod adopted.
 9. **Snapshot CI probe**: nightly resolver run against newest snapshot.
 10. **Real art**: replace generated placeholder textures/models.
-11. **Cleanup discipline**: remove `.tmp-test-server/`,
-    `/tmp/opencode/*` scratch at task end.
+11. **Cleanup discipline**: remove `.tmp-test-server/` and all
+    `.tmp/` scratch at task end.
+
+## Scratch-file policy (MANDATORY)
+
+ALL generated files (logs, screenshots, test scripts, compiled helpers,
+classpath dumps, scenario JSONs, crash dumps) stay INSIDE the project in
+`.tmp/` (git-ignored). NEVER write scratch to `/tmp`, `/var/folders/...`,
+or any absolute path outside the repo - macOS temp dirs are invisible to
+code review, survive across sessions as litter, and get purged at random.
+
+```
+.tmp/
+  logs/    client-stdout.log, server_run.log, ...
+  shots/   *.png screenshots from the live harness
+  bin/     compiled helpers (cghold, winlist)
+  *.json   test scenarios, mc_cp.txt classpath dumps
+```
+
+Tools must default to these paths (see `custom-mods/tools/client_harness.py`).
+Before finishing any task: `git status` must show no untracked litter, and
+nothing may remain in system temp dirs from this project.
 
 ## Verification checklist per feature
 

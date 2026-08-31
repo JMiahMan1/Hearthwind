@@ -967,5 +967,6 @@
       "reason": "Flora ambience stuck 1.21.1"
     }
   ],
-  "client_optional_extra_note": "All 28 client-only visual/perf mods from 3.1.2 (sodium, iris, indium, DistantHorizons, EMF/ETF, firstperson, skinlayers, presence-footsteps, sound-physics, fancymenu stack, etc.) ship as an OPTIONAL companion download, not in the server index."
+  "client_optional_extra_note": "All 28 client-only visual/perf mods from 3.1.2 (sodium, iris, indium, DistantHorizons, EMF/ETF, firstperson, skinlayers, presence-footsteps, sound-physics, fancymenu stack, etc.) ship as an OPTIONAL companion download, not in the server index.",
+  "_policy": "NO MOD IS EVER DROPPED (user directive 2026-08-29). 'drop' here means 'not in this pack build yet'. Every dropped mod has a defined return path (adopt / watchlist / fork-port / rebuild / superseded) in docs/DROPPED_78_STUDY.md; kept mods missing builds have build plans in docs/PATCH_PORT_STUDY.md."
 }

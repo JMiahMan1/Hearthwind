@@ -23,12 +23,13 @@
        "add": false
       },
       {
-       "function": "minecraft:looting_enchant",
+       "function": "minecraft:enchanted_count_increase",
        "count": {
         "type": "minecraft:uniform",
         "min": 1.0,
         "max": 3.0
-       }
+       },
+       "enchantment": "minecraft:looting"
       }
      ],
      "name": "minecraft:arrow",
@@ -52,7 +53,8 @@
         "max": 2.0,
         "min": 0.0
        },
-       "function": "minecraft:looting_enchant"
+       "function": "minecraft:enchanted_count_increase",
+       "enchantment": "minecraft:looting"
       }
      ],
      "name": "minecraft:emerald",

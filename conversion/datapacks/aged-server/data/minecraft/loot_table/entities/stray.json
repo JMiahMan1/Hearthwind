@@ -27,7 +27,8 @@
         "max": 1.0,
         "min": 0.0
        },
-       "function": "minecraft:looting_enchant"
+       "function": "minecraft:enchanted_count_increase",
+       "enchantment": "minecraft:looting"
       }
      ],
      "name": "minecraft:arrow",
@@ -51,7 +52,8 @@
         "max": 1.0,
         "min": 0.0
        },
-       "function": "minecraft:looting_enchant"
+       "function": "minecraft:enchanted_count_increase",
+       "enchantment": "minecraft:looting"
       }
      ],
      "name": "minecraft:emerald",
@@ -86,7 +88,8 @@
         "max": 1.0,
         "min": 0.0
        },
-       "function": "minecraft:looting_enchant"
+       "function": "minecraft:enchanted_count_increase",
+       "enchantment": "minecraft:looting"
       }
      ],
      "name": "minecraft:bone"
@@ -120,8 +123,9 @@
         "max": 1.0,
         "min": 0.0
        },
-       "function": "minecraft:looting_enchant",
-       "limit": 1
+       "function": "minecraft:enchanted_count_increase",
+       "limit": 1,
+       "enchantment": "minecraft:looting"
       },
       {
        "function": "minecraft:set_potion",

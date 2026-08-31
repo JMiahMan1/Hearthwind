@@ -27,7 +27,8 @@
         "max": 1.0,
         "min": 0.0
        },
-       "function": "minecraft:looting_enchant"
+       "function": "minecraft:enchanted_count_increase",
+       "enchantment": "minecraft:looting"
       }
      ],
      "name": "minecraft:glowstone_dust"
@@ -50,7 +51,8 @@
         "max": 1.0,
         "min": 0.0
        },
-       "function": "minecraft:looting_enchant"
+       "function": "minecraft:enchanted_count_increase",
+       "enchantment": "minecraft:looting"
       }
      ],
      "name": "minecraft:sugar"
@@ -73,7 +75,8 @@
         "max": 1.0,
         "min": 0.0
        },
-       "function": "minecraft:looting_enchant"
+       "function": "minecraft:enchanted_count_increase",
+       "enchantment": "minecraft:looting"
       }
      ],
      "name": "minecraft:redstone"
@@ -96,7 +99,8 @@
         "max": 1.0,
         "min": 0.0
        },
-       "function": "minecraft:looting_enchant"
+       "function": "minecraft:enchanted_count_increase",
+       "enchantment": "minecraft:looting"
       }
      ],
      "name": "minecraft:spider_eye"
@@ -119,7 +123,8 @@
         "max": 1.0,
         "min": 0.0
        },
-       "function": "minecraft:looting_enchant"
+       "function": "minecraft:enchanted_count_increase",
+       "enchantment": "minecraft:looting"
       }
      ],
      "name": "minecraft:glass_bottle"
@@ -142,7 +147,8 @@
         "max": 1.0,
         "min": 0.0
        },
-       "function": "minecraft:looting_enchant"
+       "function": "minecraft:enchanted_count_increase",
+       "enchantment": "minecraft:looting"
       }
      ],
      "name": "minecraft:gunpowder"
@@ -165,7 +171,8 @@
         "max": 1.0,
         "min": 0.0
        },
-       "function": "minecraft:looting_enchant"
+       "function": "minecraft:enchanted_count_increase",
+       "enchantment": "minecraft:looting"
       }
      ],
      "name": "minecraft:stick",
@@ -204,7 +211,8 @@
         "max": 1.0,
         "min": 0.0
        },
-       "function": "minecraft:looting_enchant"
+       "function": "minecraft:enchanted_count_increase",
+       "enchantment": "minecraft:looting"
       }
      ],
      "name": "minecraft:emerald"

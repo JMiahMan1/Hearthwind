@@ -1,7 +1,7 @@
 {
  "files": 817,
  "recipe_fixed": 72,
- "loot_fixed": 0,
+ "loot_fixed": 107,
  "skipped_ns": [
   "brewery/seasons/crop/hops_crop.json",
   "chalk/recipes/crafting_table/black_chalk.json",

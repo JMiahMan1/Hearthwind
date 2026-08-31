@@ -167,6 +167,12 @@ def main():
         # plus its own companion jar; actual Modrinth env filtering happens on import)
         for p in (sdir / "mods").glob("*.jar"):
             shutil.copy(p, cdir / "mods" / p.name)
+        # Vendored jars (e.g. locally patched YUNG 26.2 builds) go to both dirs
+        for j in sorted((ROOT / "conversion" / "vendored").glob("*.jar")):
+            if "sources" in j.name or "javadoc" in j.name:
+                continue
+            shutil.copy(j, sdir / "mods" / j.name)
+            shutil.copy(j, cdir / "mods" / j.name)
         # Also copy our custom jars into the plain dirs for offline installs
         custom_jars = list((ROOT / "custom-mods").rglob("hearthwind-*/build/libs/*26.2*.jar"))
         custom_jars = [j for j in custom_jars if "sources" not in j.name]

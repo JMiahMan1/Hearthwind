@@ -27,7 +27,8 @@
         "max": 1.0,
         "min": 0.0
        },
-       "function": "minecraft:looting_enchant"
+       "function": "minecraft:enchanted_count_increase",
+       "enchantment": "minecraft:looting"
       }
      ],
      "name": "minecraft:prismarine_shard"
@@ -52,7 +53,8 @@
         "max": 1.0,
         "min": 0.0
        },
-       "function": "minecraft:looting_enchant"
+       "function": "minecraft:enchanted_count_increase",
+       "enchantment": "minecraft:looting"
       },
       {
        "conditions": [
@@ -81,7 +83,8 @@
         "max": 1.0,
         "min": 0.0
        },
-       "function": "minecraft:looting_enchant"
+       "function": "minecraft:enchanted_count_increase",
+       "enchantment": "minecraft:looting"
       }
      ],
      "name": "minecraft:prismarine_crystals",
@@ -105,7 +108,8 @@
         "max": 1.0,
         "min": 0.0
        },
-       "function": "minecraft:looting_enchant"
+       "function": "minecraft:enchanted_count_increase",
+       "enchantment": "minecraft:looting"
       }
      ],
      "name": "minecraft:emerald",
@@ -121,9 +125,14 @@
      "condition": "minecraft:killed_by_player"
     },
     {
-     "chance": 0.025,
-     "condition": "minecraft:random_chance_with_looting",
-     "looting_multiplier": 0.01
+     "condition": "minecraft:random_chance_with_enchanted_bonus",
+     "enchantment": "minecraft:looting",
+     "unenchanted_chance": 0.025,
+     "enchanted_chance": {
+      "type": "minecraft:linear",
+      "base": 0.035,
+      "per_level_above_first": 0.01
+     }
     }
    ],
    "entries": [

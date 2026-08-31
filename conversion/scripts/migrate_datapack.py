@@ -7,6 +7,12 @@ modern 26.x format conventions:
   - recipe schema changes from 1.21.2 (result.item -> result.id,
     {"item": x} / {"tag": t} ingredients -> [x] / ["#t"])
   - removed loot functions (set_nbt -> set_custom_data)
+  - 1.20.1 loot renames: looting_enchant -> enchanted_count_increase,
+    random_chance_with_looting -> random_chance_with_enchanted_bonus,
+    EntityPredicate 'type' -> 'entity_type', type_specific sub-predicates
+    dropped (26.x dispatch changed; corpus only used them for tiny-slime
+    exclusion), loot entries for cut mods pruned (whole tables fail parse
+    otherwise, e.g. the fishing table shipping a naturalist egg)
 
 Only gameplay-relevant namespaces of kept/rebuilt systems are carried over;
 data belonging to cut mods is left behind (see SKIP_NAMESPACES).
@@ -18,9 +24,11 @@ import sys
 from pathlib import Path
 from typing import Any
 
-SRC_DEFAULT = Path("/tmp/opencode/aged-ref/overrides/config/paxi/datapacks/aged")
 ROOT = Path(__file__).resolve().parents[2]
 OUT = ROOT / "conversion" / "datapacks" / "aged-server"
+SRC_DEFAULT = (
+    ROOT / ".tmp/aged-ref/extract/overrides/config/paxi/datapacks/aged"
+)
 
 DIR_RENAMES = {
     "loot_tables": "loot_table",
@@ -38,6 +46,17 @@ TAG_RENAMES = {
     "functions": "function",
     "game_events": "game_event",
 }
+
+SKIP_FILES = {
+    # we ship earlystage:steel_ingot_from_blasting (the blast furnace's extra
+    # flux slot); the corpus copy references the 1.20.1-only
+    # minecraft:blasting_extra serializer and can never parse.
+    "aged:recipe/steel_ingot_from_blasting_extra_iron_ingot_and_coal",
+}
+
+# namespaces whose items no longer exist in the 26.2 registry; any loot entry
+# referencing them would take the whole table down with it
+ABSENT_LOOT_NAMESPACES = {"naturalist"}
 
 SKIP_NAMESPACES = {
     # cut mods' private data
@@ -209,13 +228,146 @@ def migrate_recipe(data):
     return data, changed
 
 
+def fix_item_predicate(node):
+    """1.20.1 item predicates carried enchantments inline; 26.x moved them
+    behind the component-style `predicates` map. Leaving the old shape is
+    SILENT: unknown keys are ignored, so a silk-touch test matches every
+    tool and ores drop themselves instead of their piece economy."""
+    n = 0
+    for key, comp in (("enchantments", "minecraft:enchantments"),
+                      ("stored_enchantments", "minecraft:stored_enchantments")):
+        ents = node.get(key)
+        if not isinstance(ents, list) or not ents:
+            continue
+        if not all(isinstance(e, dict) and "enchantment" in e for e in ents):
+            continue
+        migrated = []
+        for e in ents:
+            entry = {"enchantments": e["enchantment"]}
+            entry.update({k: v for k, v in e.items() if k != "enchantment"})
+            migrated.append(entry)
+        node.pop(key)
+        node.setdefault("predicates", {})[comp] = migrated
+        n += 1
+    return n
+
+
+def _has_key(node, key):
+    if isinstance(node, dict):
+        return key in node or any(_has_key(v, key) for v in node.values())
+    if isinstance(node, list):
+        return any(_has_key(v, key) for v in node)
+    return False
+
+
+def prune_type_specific(node):
+    """26.x replaced the 1.20.1 `type_specific` entity sub-predicate with a
+    dispatch-keyed `predicates` list. The corpus only used it to exclude tiny
+    slimes/cube mobs, so the condition is dropped (slight widening, keeps the
+    table parseable)."""
+    if isinstance(node, list):
+        out, n = [], 0
+        for it in node:
+            # only the condition object itself is removed; a list item that
+            # merely CONTAINS one deeper (a pool, the table root) survives
+            if isinstance(it, dict) and "condition" in it and _has_key(it, "type_specific"):
+                n += 1
+            else:
+                v, c = prune_type_specific(it)
+                out.append(v)
+                n += c
+        return out, n
+    if isinstance(node, dict):
+        out, n = {}, 0
+        for k, v in node.items():
+            w, c = prune_type_specific(v)
+            out[k] = w
+            n += c
+        return out, n
+    return node, 0
+
+
+def prune_absent_items(node):
+    """Loot entries referencing items from cut mods fail the WHOLE table (the
+    Aged fishing table ships a naturalist egg). Prune such entries, then drop
+    pools whose entry list became empty."""
+    if isinstance(node, list):
+        out, n = [], 0
+        for it in node:
+            if isinstance(it, dict):
+                name = it.get("name") or it.get("item")
+                if isinstance(name, str) and name.split(":", 1)[0] in ABSENT_LOOT_NAMESPACES:
+                    n += 1
+                    continue
+            v, c = prune_absent_items(it)
+            out.append(v)
+            n += c
+        return out, n
+    if isinstance(node, dict):
+        out, n = {}, 0
+        for k, v in node.items():
+            w, c = prune_absent_items(v)
+            out[k] = w
+            n += c
+        if isinstance(out.get("pools"), list):
+            pools = [pl for pl in out["pools"]
+                     if isinstance(pl, dict) and pl.get("entries")]
+            n += len(out["pools"]) - len(pools)
+            out["pools"] = pools
+        return out, n
+    return node, 0
+
+
+def fix_entity_predicate_keys(node):
+    """EntityPredicate's `type` field was renamed `entity_type` in 26.x
+    (e.g. the frog-kills-slime rule in the slime table)."""
+    if "type" in node and "entity_type" not in node:
+        node["entity_type"] = node.pop("type")
+        return 1
+    return 0
+
+
+def fix_loot_renames(node):
+    n = 0
+    if node.get("function") == "minecraft:looting_enchant":
+        node["function"] = "minecraft:enchanted_count_increase"
+        node["enchantment"] = "minecraft:looting"
+        n += 1
+    if node.get("condition") == "minecraft:random_chance_with_looting":
+        chance = node.pop("chance")
+        mult = node.pop("looting_multiplier", 0.0)
+        node["condition"] = "minecraft:random_chance_with_enchanted_bonus"
+        node["enchantment"] = "minecraft:looting"
+        node["unenchanted_chance"] = chance
+        # old semantics: chance + looting_multiplier * level
+        node["enchanted_chance"] = {
+            "type": "minecraft:linear",
+            "base": chance + mult,
+            "per_level_above_first": mult,
+        }
+        n += 1
+    return n
+
+
 def walk_loot(node):
     n = 0
     if isinstance(node, dict):
-        fn = node.get("function")
-        if fn == "minecraft:set_nbt":
+        if node.get("function") == "minecraft:set_nbt":
             node["function"] = "minecraft:set_custom_data"
             n += 1
+        n += fix_loot_renames(node)
+        if node.get("condition") == "minecraft:entity_properties":
+            pred = node.get("predicate")
+            if isinstance(pred, dict):
+                n += fix_entity_predicate_keys(pred)
+        if node.get("condition") == "minecraft:damage_source_properties":
+            pred = node.get("predicate")
+            if isinstance(pred, dict):
+                for sub in pred.values():
+                    if isinstance(sub, dict):
+                        n += fix_entity_predicate_keys(sub)
+        if "predicate" in node and isinstance(node["predicate"], dict):
+            n += fix_item_predicate(node["predicate"])
         for v in node.values():
             n += walk_loot(v)
     elif isinstance(node, list):
@@ -237,6 +389,10 @@ def migrate_file(dst: Path, src: Path):
             parts[i] = DIR_RENAMES[p]
         elif i >= 1 and parts[i - 1] == "tags" and p in TAG_RENAMES:
             parts[i] = TAG_RENAMES[p]
+    file_id = f"{ns}:{'/'.join(parts[1:])}"
+    if file_id in SKIP_FILES:
+        report["warnings"].append(f"skipped file (dead upstream recipe): {rel}")
+        return
     dst = OUT.joinpath("data", *parts)
     dst.parent.mkdir(parents=True, exist_ok=True)
 
@@ -254,9 +410,11 @@ def migrate_file(dst: Path, src: Path):
         if ch:
             report["recipe_fixed"] += 1
     if "loot_table" in (" ".join(parts)):
+        data, dropped_conditions = prune_type_specific(data)
+        data, pruned_entries = prune_absent_items(data)
         n = walk_loot(data)
-        if n:
-            report["loot_fixed"] += n
+        if n or dropped_conditions or pruned_entries:
+            report["loot_fixed"] += n + dropped_conditions + pruned_entries
     if '"set_nbt"' in text and "loot" not in str(rel):
         report["warnings"].append(f"set_nbt outside loot table: {rel}")
 
