@@ -51,10 +51,7 @@ public final class BareHandDrinkHandler {
     }
 
     public static InteractionResult trySip(Player player, Level level) {
-        boolean isCrouching = player.isShiftKeyDown() || player.isCrouching()
-                || player.getPose() == net.minecraft.world.entity.Pose.CROUCHING;
-        if (!player.getMainHandItem().isEmpty() || player.isSpectator()
-                || !isCrouching) {
+        if (!player.getMainHandItem().isEmpty() || player.isSpectator()) {
             return InteractionResult.PASS;
         }
 
