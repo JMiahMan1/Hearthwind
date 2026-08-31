@@ -140,4 +140,23 @@ public final class HearthwindFloraGameTests {
         helper.assertTrue(food.canAlwaysEat(), "tea must be drinkable at full hunger");
         helper.succeed();
     }
+
+    @GameTest
+    public void fruitLeavesHarvestAndBonemeal(GameTestHelper helper) {
+        var cherryLeaves = BuiltInRegistries.BLOCK.getValue(Identifier.fromNamespaceAndPath("vinery", "dark_cherry_leaves"));
+        var appleLeaves = BuiltInRegistries.BLOCK.getValue(Identifier.fromNamespaceAndPath("vinery", "apple_leaves"));
+        helper.assertTrue(cherryLeaves instanceof FruitLeavesBlock, "dark_cherry_leaves is a FruitLeavesBlock");
+        helper.assertTrue(appleLeaves instanceof FruitLeavesBlock, "apple_leaves is a FruitLeavesBlock");
+
+        var pos = new net.minecraft.core.BlockPos(1, 2, 1);
+        helper.setBlock(pos, cherryLeaves.defaultBlockState().setValue(FruitLeavesBlock.AGE, 3));
+        helper.assertTrue(helper.getBlockState(pos).getValue(FruitLeavesBlock.AGE) == 3, "cherry leaves at stage 3");
+
+        var bonemealPos = new net.minecraft.core.BlockPos(1, 2, 2);
+        helper.setBlock(bonemealPos, appleLeaves.defaultBlockState().setValue(FruitLeavesBlock.AGE, 1));
+        ((FruitLeavesBlock) appleLeaves).performBonemeal(helper.getLevel(), helper.getLevel().getRandom(), helper.absolutePos(bonemealPos), helper.getBlockState(bonemealPos));
+        helper.assertTrue(helper.getBlockState(bonemealPos).getValue(FruitLeavesBlock.AGE) == 2, "apple leaves advanced by bonemeal");
+
+        helper.succeed();
+    }
 }

@@ -47,6 +47,7 @@ public final class VineryContent {
         registerFood("cherry_wine", WINE_FOOD);
         registerFood("kelp_cider", WINE_FOOD);
         registerFood("solaris_wine", WINE_FOOD);
+        registerFood("cherry", GRAPE_FOOD);
         registerFood("clark_wine", WINE_FOOD);
         registerFood("apple_wine", WINE_FOOD);
         registerFood("villagers_fright", WINE_FOOD);
@@ -55,8 +56,8 @@ public final class VineryContent {
         registerBlock("grapevine_pot", SoundType.STONE, 1.0f);
         registerBlock("fermentation_barrel", SoundType.WOOD, 2.0f);
         registerBlock("apple_press", SoundType.WOOD, 2.0f);
-        registerLeaves("dark_cherry_leaves");
-        registerLeaves("apple_leaves");
+        registerFruitLeaves("dark_cherry_leaves", () -> ITEMS.getOrDefault("cherry", net.minecraft.world.item.Items.SWEET_BERRIES));
+        registerFruitLeaves("apple_leaves", () -> net.minecraft.world.item.Items.APPLE);
         registerLog("dark_cherry_log");
         registerLog("apple_log");
         registerLog("dark_cherry_wood");
@@ -128,6 +129,18 @@ public final class VineryContent {
         ResourceKey<Block> bKey = ResourceKey.create(Registries.BLOCK, Identifier.fromNamespaceAndPath(MOD_ID, name));
         ResourceKey<Item> iKey = ResourceKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath(MOD_ID, name));
         Block block = new FloraLeavesBlock(BlockBehaviour.Properties.of().sound(SoundType.GRASS).strength(0.2f).noOcclusion().setId(bKey));
+        Registry.register(BuiltInRegistries.BLOCK, bKey, block);
+        Item item = new BlockItem(block, new Item.Properties().setId(iKey).useBlockDescriptionPrefix());
+        Registry.register(BuiltInRegistries.ITEM, iKey, item);
+        BLOCKS.put(name, block);
+        ITEMS.put(name, item);
+        return block;
+    }
+
+    private static Block registerFruitLeaves(String name, java.util.function.Supplier<Item> fruitSupplier) {
+        ResourceKey<Block> bKey = ResourceKey.create(Registries.BLOCK, Identifier.fromNamespaceAndPath(MOD_ID, name));
+        ResourceKey<Item> iKey = ResourceKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath(MOD_ID, name));
+        Block block = new FruitLeavesBlock(BlockBehaviour.Properties.of().sound(SoundType.GRASS).strength(0.2f).noOcclusion().setId(bKey), fruitSupplier);
         Registry.register(BuiltInRegistries.BLOCK, bKey, block);
         Item item = new BlockItem(block, new Item.Properties().setId(iKey).useBlockDescriptionPrefix());
         Registry.register(BuiltInRegistries.ITEM, iKey, item);

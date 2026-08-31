@@ -1,7 +1,6 @@
 {
-	"parent": "minecraft:block/cube_column",
-	"textures": {
-		"end": "vinery:block/dark_cherry_leaves_0",
-		"side": "vinery:block/dark_cherry_leaves_2"
-	}
+  "parent": "minecraft:block/leaves",
+  "textures": {
+    "all": "vinery:block/dark_cherry_leaves_2"
+  }
 }
