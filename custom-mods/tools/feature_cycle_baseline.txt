@@ -1,0 +1,5 @@
+# Feature-order cycle signatures known to be non-fatal
+# (cycle-tolerant FeatureSorter mixin drops these back-edges).
+# Regenerate: python3 custom-mods/tools/check_feature_cycles.py --update-baseline
+
+minecraft:flower_meadow@vegetal_decoration|minecraft:patch_grass_plain@vegetal_decoration|minecraft:trees_meadow@vegetal_decoration

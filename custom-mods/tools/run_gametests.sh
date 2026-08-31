@@ -78,10 +78,24 @@ PROPS
 REPORT="$SRV/gametest-report.xml"
 rm -f "$REPORT"
 
+MERGED_JAR=$(ls "$DIR/../.gradle/loom-cache/minecraftMaven/net/minecraft/"minecraft-merged-*/26.2/minecraft-merged-*-26.2.jar 2>/dev/null | head -1 || true)
+
+echo "== static feature-order cycle check =="
+ANALYZER_ARGS=(--mods-dir "$SRV/mods"
+  --datapack "$DIR/../../conversion/datapacks/hearthwind"
+  --baseline "$DIR/feature_cycle_baseline.txt"
+  --strict)
+if [ -n "$MERGED_JAR" ]; then ANALYZER_ARGS+=(--vanilla "$MERGED_JAR"); fi
+if python3 "$DIR/check_feature_cycles.py" "${ANALYZER_ARGS[@]}"; then
+  echo "static cycle check: OK"
+else
+  echo "FAIL: NEW feature-order cycle(s) detected (update datapack fixes or baseline)"
+  exit 2
+fi
+
 echo "== running gametests headless (${HEAP} heap) =="
 set +e
 cd "$SRV"
-MERGED_JAR=$(ls "$DIR/../.gradle/loom-cache/minecraftMaven/net/minecraft/"minecraft-merged-*/26.2/minecraft-merged-*-26.2.jar 2>/dev/null | head -1 || true)
 timeout "${GAMETEST_TIMEOUT:-420}" java -Xmx"$HEAP" \
      -Dfabric-api.gametest=true \
      -Dhearthwind.mergedJar="${MERGED_JAR}" \
@@ -89,6 +103,19 @@ timeout "${GAMETEST_TIMEOUT:-420}" java -Xmx"$HEAP" \
      -jar "$SRV/fabric-server.jar" nogui > "$SRV/gametest.log" 2>&1
 STATUS=$?
 set -e
+
+echo "== worldgen cycle smoke check =="
+CYCLE_RC=0
+if grep -q "Feature order cycle" "$SRV/gametest.log"; then
+  echo "FAIL: 'Feature order cycle' in server log (cycle-tolerant mixin not applied?)"
+  CYCLE_RC=2
+fi
+if grep -q "Error upgrading chunk" "$SRV/gametest.log"; then
+  echo "FAIL: chunk feature upgrade errors in server log"
+  CYCLE_RC=2
+fi
+DROPS=$(grep -c "Dropped feature-order back-edge" "$SRV/gametest.log" || true)
+echo "tolerant back-edge drops in this boot: ${DROPS}"
 
 echo "== server log tail =="
 tail -5 "$SRV/gametest.log"
@@ -100,6 +127,9 @@ fi
 
 python3 "$DIR/parse_gametest_report.py" "$REPORT"
 RC=$?
+if [ $CYCLE_RC -ne 0 ]; then
+  RC=$CYCLE_RC
+fi
 
 if [ $RC -eq 0 ] && [ $STATUS -ne 0 ]; then
   echo "note: tests passed but server exited with status $STATUS"

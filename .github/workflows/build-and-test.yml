@@ -62,14 +62,39 @@ jobs:
         run: |
           python3 conversion/scripts/resolve_deps.py
           python3 conversion/scripts/build_pack.py --server-dir
-      - name: Boot server, expect Done
+      - name: Static feature-order cycle check
+        run: |
+          python3 custom-mods/tools/check_feature_cycles.py \
+            --mods-dir conversion/build/dist/server/mods \
+            --datapack conversion/datapacks/hearthwind \
+            --baseline custom-mods/tools/feature_cycle_baseline.txt \
+            --strict
+      - name: Boot server, expect Done, smoke fresh worldgen
         run: |
           cd dist/server || cd conversion/dist/server
+          rm -rf world
           echo "eula=true" > eula.txt
-          printf "\nenable-rcon=true\nrcon.port=25575\nrcon.password=agedtest\n" >> server.properties
+          printf "\nenable-rcon=true\nrcon.port=25575\nrcon.password=agedtest\npause-when-empty-seconds=-1\n" >> server.properties
           (timeout 240 java -Xmx3G -jar fabric-server.jar nogui > boot.log 2>&1 &)
+          RCON="$(git rev-parse --show-toplevel)/custom-mods/tools/rcon.py"
           for i in $(seq 1 40); do
             sleep 6
-            grep -q "Done (" boot.log && exit 0
+            if grep -q "Done (" boot.log; then
+              for chunk in "1000 1000" "-1000 -1000"; do
+                for r in 1 2 3; do
+                  python3 "$RCON" 127.0.0.1 25575 agedtest "forceload add $chunk" && break
+                  sleep 3
+                done
+              done
+              sleep 10
+              if grep -q "Feature order cycle" boot.log; then
+                echo "FAIL: feature order cycle during fresh worldgen"; tail -50 boot.log; exit 1
+              fi
+              if grep -q "Error upgrading chunk" boot.log; then
+                echo "FAIL: chunk feature upgrade error"; tail -50 boot.log; exit 1
+              fi
+              echo "boot-smoke OK: Done + fresh-chunk forceload clean"
+              exit 0
+            fi
           done
           tail -50 boot.log; exit 1
