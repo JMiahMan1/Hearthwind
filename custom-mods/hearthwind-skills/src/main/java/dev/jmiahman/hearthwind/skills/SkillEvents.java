@@ -83,6 +83,44 @@ public final class SkillEvents {
             }
             return net.minecraft.world.InteractionResult.PASS;
         });
+
+        // Luck: XP on discovering loot containers & fishing
+        net.fabricmc.fabric.api.event.player.UseBlockCallback.EVENT.register((player, world, hand, hitResult) -> {
+            if (player instanceof ServerPlayer sp && !sp.getAbilities().instabuild) {
+                var state = world.getBlockState(hitResult.getBlockPos());
+                if (state.is(Blocks.CHEST) || state.is(Blocks.BARREL)
+                        || state.is(Blocks.SUSPICIOUS_GRAVEL) || state.is(Blocks.SUSPICIOUS_SAND)) {
+                    SkillXp.addXp(sp, Skill.LUCK, SkillsConfig.get().xp.luckPerFishing * 0.2);
+                }
+            }
+            return net.minecraft.world.InteractionResult.PASS;
+        });
+
+        // Agility & Stamina & Health: periodic movement / exertion / regeneration hooks
+        net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents.END_SERVER_TICK.register(server -> {
+            if (server.getTickCount() % 40 != 0) {
+                return;
+            }
+            SkillsConfig.Xp cfg = SkillsConfig.get().xp;
+            for (ServerPlayer sp : server.getPlayerList().getPlayers()) {
+                if (sp.getAbilities().instabuild || sp.isSpectator()) {
+                    continue;
+                }
+                if (sp.isSprinting()) {
+                    SkillXp.addXp(sp, Skill.AGILITY, cfg.agilityPerDistance * 0.2);
+                    SkillXp.addXp(sp, Skill.STAMINA, cfg.staminaPerDig * 0.1);
+                } else if (sp.isSwimming() || sp.isInWater()) {
+                    SkillXp.addXp(sp, Skill.STAMINA, cfg.staminaPerDig * 0.15);
+                    SkillXp.addXp(sp, Skill.AGILITY, cfg.agilityPerDistance * 0.1);
+                }
+
+                // Health XP when maintaining good health above half
+                if (sp.getHealth() >= sp.getMaxHealth() * 0.8f) {
+                    SkillXp.addXp(sp, Skill.HEALTH, cfg.healthPerRegen * 0.05);
+                }
+            }
+        });
+
         net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents.JOIN.register(
                 (handler, sender, server) -> SkillsSync.send(handler.getPlayer()));
     }

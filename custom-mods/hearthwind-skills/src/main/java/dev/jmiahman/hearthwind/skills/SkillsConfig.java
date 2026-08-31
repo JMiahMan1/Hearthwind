@@ -53,6 +53,16 @@ public final class SkillsConfig {
         public double defensePerHit = 1.0;
         /** Smithing XP per smithing table interaction (result pickup handled via mixin). */
         public double smithingPerInteract = 3.0;
+        /** Smithing XP awarded upon taking a completed craft from the smithing table. */
+        public double smithingPerCraft = 15.0;
+        /** Alchemy XP awarded upon brewing completion or potion creation. */
+        public double alchemyPerBrew = 8.0;
+        /** Agility XP awarded per sprint / travel distance milestone. */
+        public double agilityPerDistance = 1.0;
+        /** Health XP awarded upon natural health regeneration / eating nutrient food. */
+        public double healthPerRegen = 1.0;
+        /** Luck XP awarded upon fishing / discovering rare loot. */
+        public double luckPerFishing = 5.0;
         /** Trade XP per successful villager trade. */
         public double tradePerTransaction = 2.0;
     }

@@ -3,8 +3,11 @@
 	"package": "dev.jmiahman.hearthwind.skills.mixin",
 	"compatibilityLevel": "JAVA_21",
 	"mixins": [
+		"BrewingPotionSlotMixin",
+		"ItemCombinerMenuAccessor",
 		"SkillProcDamageMixin",
-		"SkillProcTwinMixin"
+		"SkillProcTwinMixin",
+		"SmithingGateMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

@@ -4,6 +4,7 @@ import java.util.List;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -105,6 +106,11 @@ public class HearthwindFlintBlock extends Block {
         }
         if (!level.isClientSide()) {
             level.setBlock(pos, state.cycle(FLINT_TYPE), Block.UPDATE_ALL);
+            if (player instanceof ServerPlayer sp && !sp.getAbilities().instabuild) {
+                stack.hurtAndBreak(1, sp, hand == net.minecraft.world.InteractionHand.MAIN_HAND
+                        ? net.minecraft.world.entity.EquipmentSlot.MAINHAND
+                        : net.minecraft.world.entity.EquipmentSlot.OFFHAND);
+            }
         }
         return InteractionResult.SUCCESS_SERVER;
     }
