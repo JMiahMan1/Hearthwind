@@ -1,0 +1,2899 @@
+diff --git a/build.gradle b/build.gradle
+index f33b3fb..402b84f 100644
+--- a/build.gradle
++++ b/build.gradle
+@@ -1,11 +1,5 @@
+ plugins {
+-    id 'dev.architectury.loom' version '1.11-SNAPSHOT' apply false
+-    id 'architectury-plugin' version '3.4-SNAPSHOT'
+-    id 'com.gradleup.shadow' version '8.3.6' apply false
+-}
+-
+-architectury {
+-    minecraft = project.minecraft_version
++    id 'net.fabricmc.fabric-loom' version '1.17-SNAPSHOT' apply false
+ }
+ 
+ allprojects {
+@@ -14,61 +8,36 @@ allprojects {
+ }
+ 
+ subprojects {
+-    apply plugin: 'dev.architectury.loom'
+-    apply plugin: 'architectury-plugin'
++    apply plugin: 'net.fabricmc.fabric-loom'
+     apply plugin: 'maven-publish'
+ 
+-    sourceSets {
+-        main.resources.srcDirs = ['src/main/resources', 'src/generated/resources']
+-    }
+-
+     base {
+-        // Set up a suffixed format for the mod jar names, e.g. `example-fabric`.
+         archivesName = "$rootProject.archives_name-$project.name"
+     }
+ 
+     repositories {
++        mavenCentral()
++        maven { url = 'https://maven.fabricmc.net/' }
++        maven { url = 'https://maven.architectury.dev/' }
++        maven { url = 'https://maven.terraformersmc.com/' }
+         maven { url = 'https://maven.minecraftforge.net/' }
+     }
+ 
+-    loom {
+-        silentMojangMappingsLicense()
+-    }
+-
+     dependencies {
+-        minecraft "net.minecraft:minecraft:$rootProject.minecraft_version"
+-        mappings loom.officialMojangMappings()
++        minecraft "com.mojang:minecraft:${rootProject.minecraft_version}"
++        implementation "net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}"
++        implementation "net.fabricmc.fabric-api:fabric-api:${rootProject.fabric_api_version}"
++        implementation "dev.architectury:architectury-fabric:${rootProject.architectury_api_version}"
++        implementation "com.github.glitchfiend:TerraBlender-fabric:${rootProject.terrablender_version}"
+     }
+ 
+     java {
+-        // Loom will automatically attach sourcesJar to a RemapSourcesJar task and to the "build" task
+-        // if it is present.
+-        // If you remove this line, sources will not be generated.
+         withSourcesJar()
+-
+-        sourceCompatibility = JavaVersion.VERSION_21
+-        targetCompatibility = JavaVersion.VERSION_21
++        sourceCompatibility = JavaVersion.VERSION_25
++        targetCompatibility = JavaVersion.VERSION_25
+     }
+ 
+     tasks.withType(JavaCompile).configureEach {
+-        it.options.release = 21
+-    }
+-
+-    // Configure Maven publishing.
+-    publishing {
+-        publications {
+-            mavenJava(MavenPublication) {
+-                artifactId = base.archivesName.get()
+-                from components.java
+-            }
+-        }
+-
+-        // See https://docs.gradle.org/current/userguide/publishing_maven.html for information on how to set up publishing.
+-        repositories {
+-            // Add repositories to publish to here.
+-            // Notice: This block does NOT have the same function as the block in the top level.
+-            // The repositories here will be used for publishing your artifact, not for
+-            // retrieving dependencies.
+-        }
++        it.options.release = 25
+     }
+ }
+diff --git a/common/src/generated/resources/data/gardens_of_the_dead/recipe/blistercrown.json b/common/src/generated/resources/data/gardens_of_the_dead/recipe/blistercrown.json
+index 467232f..47a5970 100644
+--- a/common/src/generated/resources/data/gardens_of_the_dead/recipe/blistercrown.json
++++ b/common/src/generated/resources/data/gardens_of_the_dead/recipe/blistercrown.json
+@@ -2,9 +2,7 @@
+   "type": "minecraft:crafting_shapeless",
+   "category": "misc",
+   "ingredients": [
+-    {
+-      "item": "gardens_of_the_dead:tall_blistercrown"
+-    }
++    "gardens_of_the_dead:tall_blistercrown"
+   ],
+   "result": {
+     "count": 3,
+diff --git a/common/src/generated/resources/data/gardens_of_the_dead/recipe/soulblight_button.json b/common/src/generated/resources/data/gardens_of_the_dead/recipe/soulblight_button.json
+index c9d2ef6..93c1e07 100644
+--- a/common/src/generated/resources/data/gardens_of_the_dead/recipe/soulblight_button.json
++++ b/common/src/generated/resources/data/gardens_of_the_dead/recipe/soulblight_button.json
+@@ -3,9 +3,7 @@
+   "category": "redstone",
+   "group": "wooden_button",
+   "ingredients": [
+-    {
+-      "item": "gardens_of_the_dead:soulblight_planks"
+-    }
++    "gardens_of_the_dead:soulblight_planks"
+   ],
+   "result": {
+     "count": 1,
+diff --git a/common/src/generated/resources/data/gardens_of_the_dead/recipe/soulblight_door.json b/common/src/generated/resources/data/gardens_of_the_dead/recipe/soulblight_door.json
+index 445d089..3f249ac 100644
+--- a/common/src/generated/resources/data/gardens_of_the_dead/recipe/soulblight_door.json
++++ b/common/src/generated/resources/data/gardens_of_the_dead/recipe/soulblight_door.json
+@@ -3,9 +3,7 @@
+   "category": "redstone",
+   "group": "wooden_door",
+   "key": {
+-    "#": {
+-      "item": "gardens_of_the_dead:soulblight_planks"
+-    }
++    "#": "gardens_of_the_dead:soulblight_planks"
+   },
+   "pattern": [
+     "##",
+diff --git a/common/src/generated/resources/data/gardens_of_the_dead/recipe/soulblight_fence.json b/common/src/generated/resources/data/gardens_of_the_dead/recipe/soulblight_fence.json
+index 7fc7378..e62075d 100644
+--- a/common/src/generated/resources/data/gardens_of_the_dead/recipe/soulblight_fence.json
++++ b/common/src/generated/resources/data/gardens_of_the_dead/recipe/soulblight_fence.json
+@@ -3,12 +3,8 @@
+   "category": "misc",
+   "group": "wooden_fence",
+   "key": {
+-    "#": {
+-      "item": "minecraft:stick"
+-    },
+-    "W": {
+-      "item": "gardens_of_the_dead:soulblight_planks"
+-    }
++    "#": "minecraft:stick",
++    "W": "gardens_of_the_dead:soulblight_planks"
+   },
+   "pattern": [
+     "W#W",
+diff --git a/common/src/generated/resources/data/gardens_of_the_dead/recipe/soulblight_fence_gate.json b/common/src/generated/resources/data/gardens_of_the_dead/recipe/soulblight_fence_gate.json
+index fce2525..9eba247 100644
+--- a/common/src/generated/resources/data/gardens_of_the_dead/recipe/soulblight_fence_gate.json
++++ b/common/src/generated/resources/data/gardens_of_the_dead/recipe/soulblight_fence_gate.json
+@@ -3,12 +3,8 @@
+   "category": "redstone",
+   "group": "wooden_fence_gate",
+   "key": {
+-    "#": {
+-      "item": "minecraft:stick"
+-    },
+-    "W": {
+-      "item": "gardens_of_the_dead:soulblight_planks"
+-    }
++    "#": "minecraft:stick",
++    "W": "gardens_of_the_dead:soulblight_planks"
+   },
+   "pattern": [
+     "#W#",
+diff --git a/common/src/generated/resources/data/gardens_of_the_dead/recipe/soulblight_hanging_sign.json b/common/src/generated/resources/data/gardens_of_the_dead/recipe/soulblight_hanging_sign.json
+index 5fe5dbc..156c8f7 100644
+--- a/common/src/generated/resources/data/gardens_of_the_dead/recipe/soulblight_hanging_sign.json
++++ b/common/src/generated/resources/data/gardens_of_the_dead/recipe/soulblight_hanging_sign.json
+@@ -3,12 +3,8 @@
+   "category": "misc",
+   "group": "hanging_sign",
+   "key": {
+-    "#": {
+-      "item": "gardens_of_the_dead:stripped_soulblight_stem"
+-    },
+-    "X": {
+-      "item": "minecraft:chain"
+-    }
++    "#": "gardens_of_the_dead:stripped_soulblight_stem",
++    "X": "minecraft:iron_chain"
+   },
+   "pattern": [
+     "X X",
+diff --git a/common/src/generated/resources/data/gardens_of_the_dead/recipe/soulblight_hyphae.json b/common/src/generated/resources/data/gardens_of_the_dead/recipe/soulblight_hyphae.json
+index 32485cf..b0cf4aa 100644
+--- a/common/src/generated/resources/data/gardens_of_the_dead/recipe/soulblight_hyphae.json
++++ b/common/src/generated/resources/data/gardens_of_the_dead/recipe/soulblight_hyphae.json
+@@ -3,9 +3,7 @@
+   "category": "building",
+   "group": "bark",
+   "key": {
+-    "#": {
+-      "item": "gardens_of_the_dead:soulblight_stem"
+-    }
++    "#": "gardens_of_the_dead:soulblight_stem"
+   },
+   "pattern": [
+     "##",
+diff --git a/common/src/generated/resources/data/gardens_of_the_dead/recipe/soulblight_planks.json b/common/src/generated/resources/data/gardens_of_the_dead/recipe/soulblight_planks.json
+index 934274a..ad6a630 100644
+--- a/common/src/generated/resources/data/gardens_of_the_dead/recipe/soulblight_planks.json
++++ b/common/src/generated/resources/data/gardens_of_the_dead/recipe/soulblight_planks.json
+@@ -3,9 +3,7 @@
+   "category": "building",
+   "group": "planks",
+   "ingredients": [
+-    {
+-      "tag": "gardens_of_the_dead:soulblight_stems"
+-    }
++    "#gardens_of_the_dead:soulblight_stems"
+   ],
+   "result": {
+     "count": 4,
+diff --git a/common/src/generated/resources/data/gardens_of_the_dead/recipe/soulblight_pressure_plate.json b/common/src/generated/resources/data/gardens_of_the_dead/recipe/soulblight_pressure_plate.json
+index ddd4d63..fb25173 100644
+--- a/common/src/generated/resources/data/gardens_of_the_dead/recipe/soulblight_pressure_plate.json
++++ b/common/src/generated/resources/data/gardens_of_the_dead/recipe/soulblight_pressure_plate.json
+@@ -3,9 +3,7 @@
+   "category": "redstone",
+   "group": "wooden_pressure_plate",
+   "key": {
+-    "#": {
+-      "item": "gardens_of_the_dead:soulblight_planks"
+-    }
++    "#": "gardens_of_the_dead:soulblight_planks"
+   },
+   "pattern": [
+     "##"
+diff --git a/common/src/generated/resources/data/gardens_of_the_dead/recipe/soulblight_sign.json b/common/src/generated/resources/data/gardens_of_the_dead/recipe/soulblight_sign.json
+index d7a2b50..2de7f27 100644
+--- a/common/src/generated/resources/data/gardens_of_the_dead/recipe/soulblight_sign.json
++++ b/common/src/generated/resources/data/gardens_of_the_dead/recipe/soulblight_sign.json
+@@ -3,12 +3,8 @@
+   "category": "misc",
+   "group": "wooden_sign",
+   "key": {
+-    "#": {
+-      "item": "gardens_of_the_dead:soulblight_planks"
+-    },
+-    "X": {
+-      "item": "minecraft:stick"
+-    }
++    "#": "gardens_of_the_dead:soulblight_planks",
++    "X": "minecraft:stick"
+   },
+   "pattern": [
+     "###",
+diff --git a/common/src/generated/resources/data/gardens_of_the_dead/recipe/soulblight_slab.json b/common/src/generated/resources/data/gardens_of_the_dead/recipe/soulblight_slab.json
+index 61165f1..10c61a4 100644
+--- a/common/src/generated/resources/data/gardens_of_the_dead/recipe/soulblight_slab.json
++++ b/common/src/generated/resources/data/gardens_of_the_dead/recipe/soulblight_slab.json
+@@ -3,9 +3,7 @@
+   "category": "building",
+   "group": "wooden_slab",
+   "key": {
+-    "#": {
+-      "item": "gardens_of_the_dead:soulblight_planks"
+-    }
++    "#": "gardens_of_the_dead:soulblight_planks"
+   },
+   "pattern": [
+     "###"
+diff --git a/common/src/generated/resources/data/gardens_of_the_dead/recipe/soulblight_stairs.json b/common/src/generated/resources/data/gardens_of_the_dead/recipe/soulblight_stairs.json
+index bd6971e..6110599 100644
+--- a/common/src/generated/resources/data/gardens_of_the_dead/recipe/soulblight_stairs.json
++++ b/common/src/generated/resources/data/gardens_of_the_dead/recipe/soulblight_stairs.json
+@@ -3,9 +3,7 @@
+   "category": "building",
+   "group": "wooden_stairs",
+   "key": {
+-    "#": {
+-      "item": "gardens_of_the_dead:soulblight_planks"
+-    }
++    "#": "gardens_of_the_dead:soulblight_planks"
+   },
+   "pattern": [
+     "#  ",
+diff --git a/common/src/generated/resources/data/gardens_of_the_dead/recipe/soulblight_trapdoor.json b/common/src/generated/resources/data/gardens_of_the_dead/recipe/soulblight_trapdoor.json
+index 79d6833..06243d1 100644
+--- a/common/src/generated/resources/data/gardens_of_the_dead/recipe/soulblight_trapdoor.json
++++ b/common/src/generated/resources/data/gardens_of_the_dead/recipe/soulblight_trapdoor.json
+@@ -3,9 +3,7 @@
+   "category": "redstone",
+   "group": "wooden_trapdoor",
+   "key": {
+-    "#": {
+-      "item": "gardens_of_the_dead:soulblight_planks"
+-    }
++    "#": "gardens_of_the_dead:soulblight_planks"
+   },
+   "pattern": [
+     "###",
+diff --git a/common/src/generated/resources/data/gardens_of_the_dead/recipe/stripped_soulblight_hyphae.json b/common/src/generated/resources/data/gardens_of_the_dead/recipe/stripped_soulblight_hyphae.json
+index 5073772..0be5f34 100644
+--- a/common/src/generated/resources/data/gardens_of_the_dead/recipe/stripped_soulblight_hyphae.json
++++ b/common/src/generated/resources/data/gardens_of_the_dead/recipe/stripped_soulblight_hyphae.json
+@@ -3,9 +3,7 @@
+   "category": "building",
+   "group": "bark",
+   "key": {
+-    "#": {
+-      "item": "gardens_of_the_dead:stripped_soulblight_stem"
+-    }
++    "#": "gardens_of_the_dead:stripped_soulblight_stem"
+   },
+   "pattern": [
+     "##",
+diff --git a/common/src/generated/resources/data/gardens_of_the_dead/recipe/whistlecane_block.json b/common/src/generated/resources/data/gardens_of_the_dead/recipe/whistlecane_block.json
+index 220ff17..6fbb9ef 100644
+--- a/common/src/generated/resources/data/gardens_of_the_dead/recipe/whistlecane_block.json
++++ b/common/src/generated/resources/data/gardens_of_the_dead/recipe/whistlecane_block.json
+@@ -2,9 +2,7 @@
+   "type": "minecraft:crafting_shaped",
+   "category": "building",
+   "key": {
+-    "#": {
+-      "item": "gardens_of_the_dead:whistlecane"
+-    }
++    "#": "gardens_of_the_dead:whistlecane"
+   },
+   "pattern": [
+     "##",
+diff --git a/common/src/generated/resources/data/gardens_of_the_dead/recipe/whistlecane_button.json b/common/src/generated/resources/data/gardens_of_the_dead/recipe/whistlecane_button.json
+index 2eb81c6..1beca2c 100644
+--- a/common/src/generated/resources/data/gardens_of_the_dead/recipe/whistlecane_button.json
++++ b/common/src/generated/resources/data/gardens_of_the_dead/recipe/whistlecane_button.json
+@@ -3,9 +3,7 @@
+   "category": "redstone",
+   "group": "wooden_button",
+   "ingredients": [
+-    {
+-      "item": "gardens_of_the_dead:whistlecane_planks"
+-    }
++    "gardens_of_the_dead:whistlecane_planks"
+   ],
+   "result": {
+     "count": 1,
+diff --git a/common/src/generated/resources/data/gardens_of_the_dead/recipe/whistlecane_door.json b/common/src/generated/resources/data/gardens_of_the_dead/recipe/whistlecane_door.json
+index e4a82d2..8ef1c35 100644
+--- a/common/src/generated/resources/data/gardens_of_the_dead/recipe/whistlecane_door.json
++++ b/common/src/generated/resources/data/gardens_of_the_dead/recipe/whistlecane_door.json
+@@ -3,9 +3,7 @@
+   "category": "redstone",
+   "group": "wooden_door",
+   "key": {
+-    "#": {
+-      "item": "gardens_of_the_dead:whistlecane_planks"
+-    }
++    "#": "gardens_of_the_dead:whistlecane_planks"
+   },
+   "pattern": [
+     "##",
+diff --git a/common/src/generated/resources/data/gardens_of_the_dead/recipe/whistlecane_fence.json b/common/src/generated/resources/data/gardens_of_the_dead/recipe/whistlecane_fence.json
+index 91a7b99..84a4179 100644
+--- a/common/src/generated/resources/data/gardens_of_the_dead/recipe/whistlecane_fence.json
++++ b/common/src/generated/resources/data/gardens_of_the_dead/recipe/whistlecane_fence.json
+@@ -3,12 +3,8 @@
+   "category": "misc",
+   "group": "wooden_fence",
+   "key": {
+-    "#": {
+-      "item": "minecraft:stick"
+-    },
+-    "W": {
+-      "item": "gardens_of_the_dead:whistlecane_planks"
+-    }
++    "#": "minecraft:stick",
++    "W": "gardens_of_the_dead:whistlecane_planks"
+   },
+   "pattern": [
+     "W#W",
+diff --git a/common/src/generated/resources/data/gardens_of_the_dead/recipe/whistlecane_fence_gate.json b/common/src/generated/resources/data/gardens_of_the_dead/recipe/whistlecane_fence_gate.json
+index 86d6267..da5dfef 100644
+--- a/common/src/generated/resources/data/gardens_of_the_dead/recipe/whistlecane_fence_gate.json
++++ b/common/src/generated/resources/data/gardens_of_the_dead/recipe/whistlecane_fence_gate.json
+@@ -3,12 +3,8 @@
+   "category": "redstone",
+   "group": "wooden_fence_gate",
+   "key": {
+-    "#": {
+-      "item": "minecraft:stick"
+-    },
+-    "W": {
+-      "item": "gardens_of_the_dead:whistlecane_planks"
+-    }
++    "#": "minecraft:stick",
++    "W": "gardens_of_the_dead:whistlecane_planks"
+   },
+   "pattern": [
+     "#W#",
+diff --git a/common/src/generated/resources/data/gardens_of_the_dead/recipe/whistlecane_hanging_sign.json b/common/src/generated/resources/data/gardens_of_the_dead/recipe/whistlecane_hanging_sign.json
+index 152a049..c148083 100644
+--- a/common/src/generated/resources/data/gardens_of_the_dead/recipe/whistlecane_hanging_sign.json
++++ b/common/src/generated/resources/data/gardens_of_the_dead/recipe/whistlecane_hanging_sign.json
+@@ -3,12 +3,8 @@
+   "category": "misc",
+   "group": "hanging_sign",
+   "key": {
+-    "#": {
+-      "item": "gardens_of_the_dead:whistlecane_block"
+-    },
+-    "X": {
+-      "item": "minecraft:chain"
+-    }
++    "#": "gardens_of_the_dead:whistlecane_block",
++    "X": "minecraft:iron_chain"
+   },
+   "pattern": [
+     "X X",
+diff --git a/common/src/generated/resources/data/gardens_of_the_dead/recipe/whistlecane_mosaic.json b/common/src/generated/resources/data/gardens_of_the_dead/recipe/whistlecane_mosaic.json
+index 962c4f5..243e1a1 100644
+--- a/common/src/generated/resources/data/gardens_of_the_dead/recipe/whistlecane_mosaic.json
++++ b/common/src/generated/resources/data/gardens_of_the_dead/recipe/whistlecane_mosaic.json
+@@ -2,9 +2,7 @@
+   "type": "minecraft:crafting_shaped",
+   "category": "misc",
+   "key": {
+-    "#": {
+-      "item": "gardens_of_the_dead:whistlecane_slab"
+-    }
++    "#": "gardens_of_the_dead:whistlecane_slab"
+   },
+   "pattern": [
+     "#",
+diff --git a/common/src/generated/resources/data/gardens_of_the_dead/recipe/whistlecane_mosaic_slab.json b/common/src/generated/resources/data/gardens_of_the_dead/recipe/whistlecane_mosaic_slab.json
+index f5dcc21..c692830 100644
+--- a/common/src/generated/resources/data/gardens_of_the_dead/recipe/whistlecane_mosaic_slab.json
++++ b/common/src/generated/resources/data/gardens_of_the_dead/recipe/whistlecane_mosaic_slab.json
+@@ -2,9 +2,7 @@
+   "type": "minecraft:crafting_shaped",
+   "category": "building",
+   "key": {
+-    "#": {
+-      "item": "gardens_of_the_dead:whistlecane_mosaic"
+-    }
++    "#": "gardens_of_the_dead:whistlecane_mosaic"
+   },
+   "pattern": [
+     "###"
+diff --git a/common/src/generated/resources/data/gardens_of_the_dead/recipe/whistlecane_mosaic_stairs.json b/common/src/generated/resources/data/gardens_of_the_dead/recipe/whistlecane_mosaic_stairs.json
+index 37d1404..53d5710 100644
+--- a/common/src/generated/resources/data/gardens_of_the_dead/recipe/whistlecane_mosaic_stairs.json
++++ b/common/src/generated/resources/data/gardens_of_the_dead/recipe/whistlecane_mosaic_stairs.json
+@@ -2,9 +2,7 @@
+   "type": "minecraft:crafting_shaped",
+   "category": "building",
+   "key": {
+-    "#": {
+-      "item": "gardens_of_the_dead:whistlecane_mosaic"
+-    }
++    "#": "gardens_of_the_dead:whistlecane_mosaic"
+   },
+   "pattern": [
+     "#  ",
+diff --git a/common/src/generated/resources/data/gardens_of_the_dead/recipe/whistlecane_planks.json b/common/src/generated/resources/data/gardens_of_the_dead/recipe/whistlecane_planks.json
+index 09da00d..7ba4006 100644
+--- a/common/src/generated/resources/data/gardens_of_the_dead/recipe/whistlecane_planks.json
++++ b/common/src/generated/resources/data/gardens_of_the_dead/recipe/whistlecane_planks.json
+@@ -3,9 +3,7 @@
+   "category": "building",
+   "group": "planks",
+   "ingredients": [
+-    {
+-      "tag": "gardens_of_the_dead:whistlecane_blocks"
+-    }
++    "#gardens_of_the_dead:whistlecane_blocks"
+   ],
+   "result": {
+     "count": 2,
+diff --git a/common/src/generated/resources/data/gardens_of_the_dead/recipe/whistlecane_pressure_plate.json b/common/src/generated/resources/data/gardens_of_the_dead/recipe/whistlecane_pressure_plate.json
+index 86da0b7..59caaca 100644
+--- a/common/src/generated/resources/data/gardens_of_the_dead/recipe/whistlecane_pressure_plate.json
++++ b/common/src/generated/resources/data/gardens_of_the_dead/recipe/whistlecane_pressure_plate.json
+@@ -3,9 +3,7 @@
+   "category": "redstone",
+   "group": "wooden_pressure_plate",
+   "key": {
+-    "#": {
+-      "item": "gardens_of_the_dead:whistlecane_planks"
+-    }
++    "#": "gardens_of_the_dead:whistlecane_planks"
+   },
+   "pattern": [
+     "##"
+diff --git a/common/src/generated/resources/data/gardens_of_the_dead/recipe/whistlecane_sign.json b/common/src/generated/resources/data/gardens_of_the_dead/recipe/whistlecane_sign.json
+index 62066fb..f6f5c11 100644
+--- a/common/src/generated/resources/data/gardens_of_the_dead/recipe/whistlecane_sign.json
++++ b/common/src/generated/resources/data/gardens_of_the_dead/recipe/whistlecane_sign.json
+@@ -3,12 +3,8 @@
+   "category": "misc",
+   "group": "wooden_sign",
+   "key": {
+-    "#": {
+-      "item": "gardens_of_the_dead:whistlecane_planks"
+-    },
+-    "X": {
+-      "item": "minecraft:stick"
+-    }
++    "#": "gardens_of_the_dead:whistlecane_planks",
++    "X": "minecraft:stick"
+   },
+   "pattern": [
+     "###",
+diff --git a/common/src/generated/resources/data/gardens_of_the_dead/recipe/whistlecane_slab.json b/common/src/generated/resources/data/gardens_of_the_dead/recipe/whistlecane_slab.json
+index 32faf13..0abe848 100644
+--- a/common/src/generated/resources/data/gardens_of_the_dead/recipe/whistlecane_slab.json
++++ b/common/src/generated/resources/data/gardens_of_the_dead/recipe/whistlecane_slab.json
+@@ -3,9 +3,7 @@
+   "category": "building",
+   "group": "wooden_slab",
+   "key": {
+-    "#": {
+-      "item": "gardens_of_the_dead:whistlecane_planks"
+-    }
++    "#": "gardens_of_the_dead:whistlecane_planks"
+   },
+   "pattern": [
+     "###"
+diff --git a/common/src/generated/resources/data/gardens_of_the_dead/recipe/whistlecane_stairs.json b/common/src/generated/resources/data/gardens_of_the_dead/recipe/whistlecane_stairs.json
+index 35de963..1ab15e3 100644
+--- a/common/src/generated/resources/data/gardens_of_the_dead/recipe/whistlecane_stairs.json
++++ b/common/src/generated/resources/data/gardens_of_the_dead/recipe/whistlecane_stairs.json
+@@ -3,9 +3,7 @@
+   "category": "building",
+   "group": "wooden_stairs",
+   "key": {
+-    "#": {
+-      "item": "gardens_of_the_dead:whistlecane_planks"
+-    }
++    "#": "gardens_of_the_dead:whistlecane_planks"
+   },
+   "pattern": [
+     "#  ",
+diff --git a/common/src/generated/resources/data/gardens_of_the_dead/recipe/whistlecane_trapdoor.json b/common/src/generated/resources/data/gardens_of_the_dead/recipe/whistlecane_trapdoor.json
+index 4be4244..745a00b 100644
+--- a/common/src/generated/resources/data/gardens_of_the_dead/recipe/whistlecane_trapdoor.json
++++ b/common/src/generated/resources/data/gardens_of_the_dead/recipe/whistlecane_trapdoor.json
+@@ -3,9 +3,7 @@
+   "category": "redstone",
+   "group": "wooden_trapdoor",
+   "key": {
+-    "#": {
+-      "item": "gardens_of_the_dead:whistlecane_planks"
+-    }
++    "#": "gardens_of_the_dead:whistlecane_planks"
+   },
+   "pattern": [
+     "###",
+diff --git a/common/src/generated/resources/data/gardens_of_the_dead/worldgen/biome/soulblight_forest.json b/common/src/generated/resources/data/gardens_of_the_dead/worldgen/biome/soulblight_forest.json
+index 98d01d7..cf285d5 100644
+--- a/common/src/generated/resources/data/gardens_of_the_dead/worldgen/biome/soulblight_forest.json
++++ b/common/src/generated/resources/data/gardens_of_the_dead/worldgen/biome/soulblight_forest.json
+@@ -1,7 +1,7 @@
+ {
+-  "carvers": {
+-    "air": "minecraft:nether_cave"
+-  },
++  "carvers": [
++    "minecraft:nether_cave"
++  ],
+   "downfall": 0.0,
+   "effects": {
+     "additions_sound": {
+diff --git a/common/src/generated/resources/data/gardens_of_the_dead/worldgen/biome/whistling_woods.json b/common/src/generated/resources/data/gardens_of_the_dead/worldgen/biome/whistling_woods.json
+index b5e9fb7..11fe174 100644
+--- a/common/src/generated/resources/data/gardens_of_the_dead/worldgen/biome/whistling_woods.json
++++ b/common/src/generated/resources/data/gardens_of_the_dead/worldgen/biome/whistling_woods.json
+@@ -1,7 +1,7 @@
+ {
+-  "carvers": {
+-    "air": "minecraft:nether_cave"
+-  },
++  "carvers": [
++    "minecraft:nether_cave"
++  ],
+   "downfall": 0.0,
+   "effects": {
+     "additions_sound": {
+diff --git a/common/src/generated/resources/data/gardens_of_the_dead/worldgen/configured_feature/long_hanging_soul_spore_patch.json b/common/src/generated/resources/data/gardens_of_the_dead/worldgen/configured_feature/long_hanging_soul_spore_patch.json
+index a640665..cb792c7 100644
+--- a/common/src/generated/resources/data/gardens_of_the_dead/worldgen/configured_feature/long_hanging_soul_spore_patch.json
++++ b/common/src/generated/resources/data/gardens_of_the_dead/worldgen/configured_feature/long_hanging_soul_spore_patch.json
+@@ -1,45 +1,44 @@
+ {
+-  "type": "minecraft:random_patch",
++  "type": "minecraft:simple_random_selector",
+   "config": {
+-    "feature": {
+-      "feature": {
+-        "type": "gardens_of_the_dead:short_soul_spore_column",
+-        "config": {
+-          "direction": "down",
+-          "glowingChance": 0.05,
+-          "length": {
+-            "type": "minecraft:uniform",
+-            "max_inclusive": 8,
+-            "min_inclusive": 1
++    "features": [
++      {
++        "feature": {
++          "type": "gardens_of_the_dead:short_soul_spore_column",
++          "config": {
++            "direction": "down",
++            "glowingChance": 0.05,
++            "length": {
++              "type": "minecraft:uniform",
++              "max_inclusive": 8,
++              "min_inclusive": 1
++            }
+           }
+-        }
+-      },
+-      "placement": [
+-        {
+-          "type": "minecraft:block_predicate_filter",
+-          "predicate": {
+-            "type": "minecraft:all_of",
+-            "predicates": [
+-              {
+-                "type": "minecraft:matching_blocks",
+-                "blocks": "minecraft:air"
+-              },
+-              {
+-                "type": "minecraft:matching_blocks",
+-                "blocks": "minecraft:soul_sand",
+-                "offset": [
+-                  0,
+-                  1,
+-                  0
+-                ]
+-              }
+-            ]
++        },
++        "placement": [
++          {
++            "type": "minecraft:block_predicate_filter",
++            "predicate": {
++              "type": "minecraft:all_of",
++              "predicates": [
++                {
++                  "type": "minecraft:matching_blocks",
++                  "blocks": "minecraft:air"
++                },
++                {
++                  "type": "minecraft:matching_blocks",
++                  "blocks": "minecraft:soul_sand",
++                  "offset": [
++                    0,
++                    1,
++                    0
++                  ]
++                }
++              ]
++            }
+           }
+-        }
+-      ]
+-    },
+-    "tries": 64,
+-    "xz_spread": 8,
+-    "y_spread": 4
++        ]
++      }
++    ]
+   }
+ }
+\ No newline at end of file
+diff --git a/common/src/generated/resources/data/gardens_of_the_dead/worldgen/configured_feature/long_standing_soul_spore_patch.json b/common/src/generated/resources/data/gardens_of_the_dead/worldgen/configured_feature/long_standing_soul_spore_patch.json
+index a66ccd6..3bdef10 100644
+--- a/common/src/generated/resources/data/gardens_of_the_dead/worldgen/configured_feature/long_standing_soul_spore_patch.json
++++ b/common/src/generated/resources/data/gardens_of_the_dead/worldgen/configured_feature/long_standing_soul_spore_patch.json
+@@ -1,45 +1,44 @@
+ {
+-  "type": "minecraft:random_patch",
++  "type": "minecraft:simple_random_selector",
+   "config": {
+-    "feature": {
+-      "feature": {
+-        "type": "gardens_of_the_dead:short_soul_spore_column",
+-        "config": {
+-          "direction": "up",
+-          "glowingChance": 0.05,
+-          "length": {
+-            "type": "minecraft:uniform",
+-            "max_inclusive": 8,
+-            "min_inclusive": 1
++    "features": [
++      {
++        "feature": {
++          "type": "gardens_of_the_dead:short_soul_spore_column",
++          "config": {
++            "direction": "up",
++            "glowingChance": 0.05,
++            "length": {
++              "type": "minecraft:uniform",
++              "max_inclusive": 8,
++              "min_inclusive": 1
++            }
+           }
+-        }
+-      },
+-      "placement": [
+-        {
+-          "type": "minecraft:block_predicate_filter",
+-          "predicate": {
+-            "type": "minecraft:all_of",
+-            "predicates": [
+-              {
+-                "type": "minecraft:matching_blocks",
+-                "blocks": "minecraft:air"
+-              },
+-              {
+-                "type": "minecraft:matching_blocks",
+-                "blocks": "minecraft:soul_sand",
+-                "offset": [
+-                  0,
+-                  -1,
+-                  0
+-                ]
+-              }
+-            ]
++        },
++        "placement": [
++          {
++            "type": "minecraft:block_predicate_filter",
++            "predicate": {
++              "type": "minecraft:all_of",
++              "predicates": [
++                {
++                  "type": "minecraft:matching_blocks",
++                  "blocks": "minecraft:air"
++                },
++                {
++                  "type": "minecraft:matching_blocks",
++                  "blocks": "minecraft:soul_sand",
++                  "offset": [
++                    0,
++                    -1,
++                    0
++                  ]
++                }
++              ]
++            }
+           }
+-        }
+-      ]
+-    },
+-    "tries": 64,
+-    "xz_spread": 8,
+-    "y_spread": 4
++        ]
++      }
++    ]
+   }
+ }
+\ No newline at end of file
+diff --git a/common/src/generated/resources/data/gardens_of_the_dead/worldgen/configured_feature/short_hanging_soul_spore_patch.json b/common/src/generated/resources/data/gardens_of_the_dead/worldgen/configured_feature/short_hanging_soul_spore_patch.json
+index 785e141..0c39483 100644
+--- a/common/src/generated/resources/data/gardens_of_the_dead/worldgen/configured_feature/short_hanging_soul_spore_patch.json
++++ b/common/src/generated/resources/data/gardens_of_the_dead/worldgen/configured_feature/short_hanging_soul_spore_patch.json
+@@ -1,45 +1,44 @@
+ {
+-  "type": "minecraft:random_patch",
++  "type": "minecraft:simple_random_selector",
+   "config": {
+-    "feature": {
+-      "feature": {
+-        "type": "gardens_of_the_dead:short_soul_spore_column",
+-        "config": {
+-          "direction": "down",
+-          "glowingChance": 0.0,
+-          "length": {
+-            "type": "minecraft:uniform",
+-            "max_inclusive": 3,
+-            "min_inclusive": 1
++    "features": [
++      {
++        "feature": {
++          "type": "gardens_of_the_dead:short_soul_spore_column",
++          "config": {
++            "direction": "down",
++            "glowingChance": 0.0,
++            "length": {
++              "type": "minecraft:uniform",
++              "max_inclusive": 3,
++              "min_inclusive": 1
++            }
+           }
+-        }
+-      },
+-      "placement": [
+-        {
+-          "type": "minecraft:block_predicate_filter",
+-          "predicate": {
+-            "type": "minecraft:all_of",
+-            "predicates": [
+-              {
+-                "type": "minecraft:matching_blocks",
+-                "blocks": "minecraft:air"
+-              },
+-              {
+-                "type": "minecraft:matching_blocks",
+-                "blocks": "minecraft:soul_soil",
+-                "offset": [
+-                  0,
+-                  1,
+-                  0
+-                ]
+-              }
+-            ]
++        },
++        "placement": [
++          {
++            "type": "minecraft:block_predicate_filter",
++            "predicate": {
++              "type": "minecraft:all_of",
++              "predicates": [
++                {
++                  "type": "minecraft:matching_blocks",
++                  "blocks": "minecraft:air"
++                },
++                {
++                  "type": "minecraft:matching_blocks",
++                  "blocks": "minecraft:soul_soil",
++                  "offset": [
++                    0,
++                    1,
++                    0
++                  ]
++                }
++              ]
++            }
+           }
+-        }
+-      ]
+-    },
+-    "tries": 64,
+-    "xz_spread": 8,
+-    "y_spread": 4
++        ]
++      }
++    ]
+   }
+ }
+\ No newline at end of file
+diff --git a/common/src/generated/resources/data/gardens_of_the_dead/worldgen/configured_feature/short_standing_soul_spore_patch.json b/common/src/generated/resources/data/gardens_of_the_dead/worldgen/configured_feature/short_standing_soul_spore_patch.json
+index 88578fe..68ce259 100644
+--- a/common/src/generated/resources/data/gardens_of_the_dead/worldgen/configured_feature/short_standing_soul_spore_patch.json
++++ b/common/src/generated/resources/data/gardens_of_the_dead/worldgen/configured_feature/short_standing_soul_spore_patch.json
+@@ -1,45 +1,44 @@
+ {
+-  "type": "minecraft:random_patch",
++  "type": "minecraft:simple_random_selector",
+   "config": {
+-    "feature": {
+-      "feature": {
+-        "type": "gardens_of_the_dead:short_soul_spore_column",
+-        "config": {
+-          "direction": "up",
+-          "glowingChance": 0.05,
+-          "length": {
+-            "type": "minecraft:uniform",
+-            "max_inclusive": 3,
+-            "min_inclusive": 1
++    "features": [
++      {
++        "feature": {
++          "type": "gardens_of_the_dead:short_soul_spore_column",
++          "config": {
++            "direction": "up",
++            "glowingChance": 0.05,
++            "length": {
++              "type": "minecraft:uniform",
++              "max_inclusive": 3,
++              "min_inclusive": 1
++            }
+           }
+-        }
+-      },
+-      "placement": [
+-        {
+-          "type": "minecraft:block_predicate_filter",
+-          "predicate": {
+-            "type": "minecraft:all_of",
+-            "predicates": [
+-              {
+-                "type": "minecraft:matching_blocks",
+-                "blocks": "minecraft:air"
+-              },
+-              {
+-                "type": "minecraft:matching_blocks",
+-                "blocks": "minecraft:soul_soil",
+-                "offset": [
+-                  0,
+-                  -1,
+-                  0
+-                ]
+-              }
+-            ]
++        },
++        "placement": [
++          {
++            "type": "minecraft:block_predicate_filter",
++            "predicate": {
++              "type": "minecraft:all_of",
++              "predicates": [
++                {
++                  "type": "minecraft:matching_blocks",
++                  "blocks": "minecraft:air"
++                },
++                {
++                  "type": "minecraft:matching_blocks",
++                  "blocks": "minecraft:soul_soil",
++                  "offset": [
++                    0,
++                    -1,
++                    0
++                  ]
++                }
++              ]
++            }
+           }
+-        }
+-      ]
+-    },
+-    "tries": 64,
+-    "xz_spread": 8,
+-    "y_spread": 4
++        ]
++      }
++    ]
+   }
+ }
+\ No newline at end of file
+diff --git a/common/src/generated/resources/data/gardens_of_the_dead/worldgen/configured_feature/tall_blistercrown_patch.json b/common/src/generated/resources/data/gardens_of_the_dead/worldgen/configured_feature/tall_blistercrown_patch.json
+index 8d331ca..a2419be 100644
+--- a/common/src/generated/resources/data/gardens_of_the_dead/worldgen/configured_feature/tall_blistercrown_patch.json
++++ b/common/src/generated/resources/data/gardens_of_the_dead/worldgen/configured_feature/tall_blistercrown_patch.json
+@@ -1,33 +1,32 @@
+ {
+-  "type": "minecraft:random_patch",
++  "type": "minecraft:simple_random_selector",
+   "config": {
+-    "feature": {
+-      "feature": {
+-        "type": "minecraft:simple_block",
+-        "config": {
+-          "to_place": {
+-            "type": "minecraft:simple_state_provider",
+-            "state": {
+-              "Name": "gardens_of_the_dead:tall_blistercrown",
+-              "Properties": {
+-                "half": "lower"
++    "features": [
++      {
++        "feature": {
++          "type": "minecraft:simple_block",
++          "config": {
++            "to_place": {
++              "type": "minecraft:simple_state_provider",
++              "state": {
++                "Name": "gardens_of_the_dead:tall_blistercrown",
++                "Properties": {
++                  "half": "lower"
++                }
+               }
+             }
+           }
+-        }
+-      },
+-      "placement": [
+-        {
+-          "type": "minecraft:block_predicate_filter",
+-          "predicate": {
+-            "type": "minecraft:matching_blocks",
+-            "blocks": "minecraft:air"
++        },
++        "placement": [
++          {
++            "type": "minecraft:block_predicate_filter",
++            "predicate": {
++              "type": "minecraft:matching_blocks",
++              "blocks": "minecraft:air"
++            }
+           }
+-        }
+-      ]
+-    },
+-    "tries": 32,
+-    "xz_spread": 7,
+-    "y_spread": 3
++        ]
++      }
++    ]
+   }
+ }
+\ No newline at end of file
+diff --git a/common/src/main/java/gardensofthedead/GardensOfTheDead.java b/common/src/main/java/gardensofthedead/GardensOfTheDead.java
+index f8b28a7..08dc828 100644
+--- a/common/src/main/java/gardensofthedead/GardensOfTheDead.java
++++ b/common/src/main/java/gardensofthedead/GardensOfTheDead.java
+@@ -2,7 +2,7 @@ package gardensofthedead;
+ 
+ import gardensofthedead.network.NetworkHandler;
+ import gardensofthedead.registry.*;
+-import net.minecraft.resources.ResourceLocation;
++import net.minecraft.resources.Identifier;
+ import org.apache.logging.log4j.LogManager;
+ import org.apache.logging.log4j.Logger;
+ 
+@@ -11,8 +11,8 @@ public class GardensOfTheDead {
+     public static final String MOD_ID = "gardens_of_the_dead";
+     public static final Logger LOGGER = LogManager.getLogger();
+ 
+-    public static ResourceLocation id(String path) {
+-        return ResourceLocation.fromNamespaceAndPath(GardensOfTheDead.MOD_ID, path);
++    public static Identifier id(String path) {
++        return Identifier.fromNamespaceAndPath(GardensOfTheDead.MOD_ID, path);
+     }
+ 
+     public static void init() {
+diff --git a/common/src/main/java/gardensofthedead/block/BlistercrownBlock.java b/common/src/main/java/gardensofthedead/block/BlistercrownBlock.java
+index 3f61109..855b0d4 100644
+--- a/common/src/main/java/gardensofthedead/block/BlistercrownBlock.java
++++ b/common/src/main/java/gardensofthedead/block/BlistercrownBlock.java
+@@ -21,13 +21,16 @@ public class BlistercrownBlock extends BushBlock implements BonemealableBlock {
+ 
+     protected static final VoxelShape SHAPE = Block.box(4, 0, 4, 12, 14, 12);
+ 
++    public static final MapCodec<BlistercrownBlock> CODEC = simpleCodec(BlistercrownBlock::new);
++
+     public BlistercrownBlock(Properties properties) {
+         super(properties);
+     }
+ 
+     @Override
+-    protected MapCodec<? extends BushBlock> codec() {
+-        return MapCodec.unit(this);
++    @SuppressWarnings("unchecked")
++    public MapCodec<BushBlock> codec() {
++        return (MapCodec<BushBlock>) (MapCodec<?>) CODEC;
+     }
+ 
+     @Override
+diff --git a/common/src/main/java/gardensofthedead/block/SoulSporeBaseBlock.java b/common/src/main/java/gardensofthedead/block/SoulSporeBaseBlock.java
+index 612b15a..e4a3896 100644
+--- a/common/src/main/java/gardensofthedead/block/SoulSporeBaseBlock.java
++++ b/common/src/main/java/gardensofthedead/block/SoulSporeBaseBlock.java
+@@ -15,7 +15,7 @@ import net.minecraft.world.level.block.Blocks;
+ import net.minecraft.world.level.block.state.BlockState;
+ import net.minecraft.world.level.block.state.StateDefinition;
+ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+-import net.minecraft.world.level.block.state.properties.DirectionProperty;
++import net.minecraft.world.level.block.state.properties.EnumProperty;
+ import net.minecraft.world.phys.shapes.CollisionContext;
+ import net.minecraft.world.phys.shapes.VoxelShape;
+ import org.jetbrains.annotations.Nullable;
+@@ -24,7 +24,7 @@ public class SoulSporeBaseBlock extends Block {
+ 
+     public static final VoxelShape SHAPE = Block.box(1, 0, 1, 15, 16, 15);
+ 
+-    public static final DirectionProperty DIRECTION = BlockStateProperties.VERTICAL_DIRECTION;
++    public static final EnumProperty<Direction> DIRECTION = BlockStateProperties.VERTICAL_DIRECTION;
+ 
+     public SoulSporeBaseBlock(Properties properties) {
+         super(properties);
+@@ -57,13 +57,11 @@ public class SoulSporeBaseBlock extends Block {
+     }
+ 
+     @Override
+-    @SuppressWarnings("deprecation")
+-    public BlockState updateShape(BlockState state, Direction direction, BlockState newState, LevelAccessor level, BlockPos pos, BlockPos updatedPos) {
++    protected BlockState updateShape(BlockState state, LevelReader level, net.minecraft.world.level.ScheduledTickAccess tickAccess, BlockPos pos, Direction direction, BlockPos neighborPos, BlockState neighborState, RandomSource random) {
+         if (!state.canSurvive(level, pos)) {
+-            level.scheduleTick(pos, this, 1);
++            tickAccess.scheduleTick(pos, this, 1);
+         }
+-
+-        return super.updateShape(state, direction, newState, level, pos, updatedPos);
++        return super.updateShape(state, level, tickAccess, pos, direction, neighborPos, neighborState, random);
+     }
+ 
+     @Override
+diff --git a/common/src/main/java/gardensofthedead/block/SoulSporeBlock.java b/common/src/main/java/gardensofthedead/block/SoulSporeBlock.java
+index d30d6a6..583bc48 100644
+--- a/common/src/main/java/gardensofthedead/block/SoulSporeBlock.java
++++ b/common/src/main/java/gardensofthedead/block/SoulSporeBlock.java
+@@ -7,6 +7,7 @@ import net.minecraft.server.level.ServerLevel;
+ import net.minecraft.util.RandomSource;
+ import net.minecraft.world.level.BlockGetter;
+ import net.minecraft.world.level.LevelAccessor;
++import net.minecraft.world.level.LevelReader;
+ import net.minecraft.world.level.block.Block;
+ import net.minecraft.world.level.block.Blocks;
+ import net.minecraft.world.level.block.state.BlockBehaviour;
+@@ -47,17 +48,17 @@ public class SoulSporeBlock extends SoulSporeBaseBlock {
+     }
+ 
+     @Override
+-    public BlockState updateShape(BlockState state, Direction direction, BlockState newState, LevelAccessor level, BlockPos pos, BlockPos updatedPos) {
++    protected BlockState updateShape(BlockState state, LevelReader level, net.minecraft.world.level.ScheduledTickAccess tickAccess, BlockPos pos, Direction direction, BlockPos neighborPos, BlockState neighborState, RandomSource random) {
+         if (direction == state.getValue(DIRECTION)) {
+-            if (newState.is(this) || newState.is(ModBlocks.GLOWING_SOUL_SPORE.get())) {
+-                if (state.getValue(TOP) && newState.getValue(DIRECTION) == state.getValue(DIRECTION)) {
++            if (neighborState.is(this) || neighborState.is(ModBlocks.GLOWING_SOUL_SPORE.get())) {
++                if (state.getValue(TOP) && neighborState.getValue(DIRECTION) == state.getValue(DIRECTION)) {
+                     // update shape when plant is placed/grown above
+                     return state.setValue(TOP, false).setValue(GROWING, true);
+                 }
+             }
+         }
+ 
+-        return super.updateShape(state, direction, newState, level, pos, updatedPos);
++        return super.updateShape(state, level, tickAccess, pos, direction, neighborPos, neighborState, random);
+     }
+ 
+     @Override
+diff --git a/common/src/main/java/gardensofthedead/block/SoulblightFungusBlock.java b/common/src/main/java/gardensofthedead/block/SoulblightFungusBlock.java
+index 0f08765..3909ee3 100644
+--- a/common/src/main/java/gardensofthedead/block/SoulblightFungusBlock.java
++++ b/common/src/main/java/gardensofthedead/block/SoulblightFungusBlock.java
+@@ -8,14 +8,23 @@ import net.minecraft.tags.BlockTags;
+ import net.minecraft.world.level.BlockGetter;
+ import net.minecraft.world.level.block.Block;
+ import net.minecraft.world.level.block.Blocks;
+-import net.minecraft.world.level.block.FungusBlock;
++import com.mojang.serialization.MapCodec;
++import net.minecraft.world.level.block.NetherFungusBlock;
+ import net.minecraft.world.level.block.state.BlockBehaviour;
+ import net.minecraft.world.level.block.state.BlockState;
+ import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
+ import net.minecraft.world.phys.shapes.CollisionContext;
+ import net.minecraft.world.phys.shapes.VoxelShape;
+ 
+-public class SoulblightFungusBlock extends FungusBlock {
++public class SoulblightFungusBlock extends NetherFungusBlock {
++
++    public static final MapCodec<SoulblightFungusBlock> CODEC = simpleCodec(SoulblightFungusBlock::new);
++
++    @Override
++    @SuppressWarnings("unchecked")
++    public MapCodec<NetherFungusBlock> codec() {
++        return (MapCodec<NetherFungusBlock>) (MapCodec<?>) CODEC;
++    }
+ 
+     protected static final VoxelShape SHAPE = Block.box(4, 0, 4, 12, 13, 12);
+     public static final ResourceKey<ConfiguredFeature<?, ?>> SOULBLIGHT_FUNGUS_PLANTED = ResourceKey.create(
+@@ -24,7 +33,7 @@ public class SoulblightFungusBlock extends FungusBlock {
+     public static final Block REQUIRED_BLOCK = Blocks.SOUL_SOIL;
+ 
+     public SoulblightFungusBlock(BlockBehaviour.Properties properties) {
+-        super(SOULBLIGHT_FUNGUS_PLANTED, REQUIRED_BLOCK, properties);
++        super(SOULBLIGHT_FUNGUS_PLANTED, REQUIRED_BLOCK, BlockTags.NYLIUM, properties);
+     }
+ 
+     @Override
+diff --git a/common/src/main/java/gardensofthedead/block/SoulblightSproutsBlock.java b/common/src/main/java/gardensofthedead/block/SoulblightSproutsBlock.java
+index 3cf115e..e1cf7ed 100644
+--- a/common/src/main/java/gardensofthedead/block/SoulblightSproutsBlock.java
++++ b/common/src/main/java/gardensofthedead/block/SoulblightSproutsBlock.java
+@@ -11,13 +11,22 @@ import net.minecraft.world.level.LevelReader;
+ import net.minecraft.world.level.block.Block;
+ import net.minecraft.world.level.block.Blocks;
+ import net.minecraft.world.level.block.BonemealableBlock;
+-import net.minecraft.world.level.block.RootsBlock;
++import net.minecraft.world.level.block.NetherRootsBlock;
+ import net.minecraft.world.level.block.state.BlockState;
++import com.mojang.serialization.MapCodec;
+ 
+-public class SoulblightSproutsBlock extends RootsBlock implements BonemealableBlock {
++public class SoulblightSproutsBlock extends NetherRootsBlock implements BonemealableBlock {
++
++    public static final MapCodec<SoulblightSproutsBlock> CODEC = simpleCodec(SoulblightSproutsBlock::new);
++
++    @Override
++    @SuppressWarnings("unchecked")
++    public MapCodec<NetherRootsBlock> codec() {
++        return (MapCodec<NetherRootsBlock>) (MapCodec<?>) CODEC;
++    }
+ 
+     public SoulblightSproutsBlock(Properties properties) {
+-        super(properties);
++        super(BlockTags.NYLIUM, properties);
+     }
+ 
+     @Override
+diff --git a/common/src/main/java/gardensofthedead/block/WhistlecaneBlock.java b/common/src/main/java/gardensofthedead/block/WhistlecaneBlock.java
+index 6823bad..7618aee 100644
+--- a/common/src/main/java/gardensofthedead/block/WhistlecaneBlock.java
++++ b/common/src/main/java/gardensofthedead/block/WhistlecaneBlock.java
+@@ -1,5 +1,6 @@
+ package gardensofthedead.block;
+ 
++import com.mojang.serialization.MapCodec;
+ import gardensofthedead.network.NetworkHandler;
+ import gardensofthedead.network.WhistleEffectPacket;
+ import gardensofthedead.platform.PlatformServices;
+@@ -37,19 +38,26 @@ public class WhistlecaneBlock extends Block implements BonemealableBlock {
+     public static final double WHISTLE_CHANCE = 1 / 40D;
+     public static final int MAX_HEIGHT = 6;
+ 
++    public static final MapCodec<WhistlecaneBlock> CODEC = simpleCodec(WhistlecaneBlock::new);
++
+     public WhistlecaneBlock(BlockBehaviour.Properties properties) {
+         super(properties);
+         registerDefaultState(stateDefinition.any().setValue(GROWING, true));
+     }
+ 
++    @Override
++    public MapCodec<WhistlecaneBlock> codec() {
++        return CODEC;
++    }
++
+     @Override
+     public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
+-        Vec3 offset = state.getOffset(level, pos);
++        Vec3 offset = state.getOffset(pos);
+         return SHAPE.move(offset.x, offset.y, offset.z);
+     }
+ 
+     @Override
+-    public boolean propagatesSkylightDown(BlockState state, BlockGetter level, BlockPos pos) {
++    protected boolean propagatesSkylightDown(BlockState state) {
+         return true;
+     }
+ 
+@@ -158,15 +166,15 @@ public class WhistlecaneBlock extends Block implements BonemealableBlock {
+     }
+ 
+     @Override
+-    public BlockState updateShape(BlockState state, Direction direction, BlockState newState, LevelAccessor level, BlockPos pos, BlockPos updatedPos) {
++    protected BlockState updateShape(BlockState state, LevelReader level, net.minecraft.world.level.ScheduledTickAccess tickAccess, BlockPos pos, Direction direction, BlockPos neighborPos, BlockState neighborState, RandomSource random) {
+         if (!state.canSurvive(level, pos)) {
+-            level.scheduleTick(pos, this, 1);
++            tickAccess.scheduleTick(pos, this, 1);
+         }
+         if (direction == Direction.UP) {
+-            return defaultBlockState().setValue(GROWING, !newState.is(this));
++            return defaultBlockState().setValue(GROWING, !neighborState.is(this));
+         }
+ 
+-        return super.updateShape(state, direction, newState, level, pos, updatedPos);
++        return super.updateShape(state, level, tickAccess, pos, direction, neighborPos, neighborState, random);
+     }
+ 
+     @Override
+@@ -182,7 +190,7 @@ public class WhistlecaneBlock extends Block implements BonemealableBlock {
+     }
+ 
+     private void whistle(BlockState state, ServerLevel level, BlockPos pos, RandomSource randomSource) {
+-        Vec3 offset = state.getOffset(level, pos);
++        Vec3 offset = state.getOffset(pos);
+         double x = pos.getX() + offset.x + 0.5;
+         double z = pos.getZ() + offset.z + 0.5;
+         double y = pos.getY() + offset.y + 1;
+diff --git a/common/src/main/java/gardensofthedead/block/WhistlecaneFenceBlock.java b/common/src/main/java/gardensofthedead/block/WhistlecaneFenceBlock.java
+index cd3766c..c88e4af 100644
+--- a/common/src/main/java/gardensofthedead/block/WhistlecaneFenceBlock.java
++++ b/common/src/main/java/gardensofthedead/block/WhistlecaneFenceBlock.java
+@@ -5,7 +5,7 @@ import net.minecraft.core.BlockPos;
+ import net.minecraft.core.Direction;
+ import net.minecraft.tags.BlockTags;
+ import net.minecraft.world.InteractionHand;
+-import net.minecraft.world.ItemInteractionResult;
++import net.minecraft.world.InteractionResult;
+ import net.minecraft.world.entity.player.Player;
+ import net.minecraft.world.item.ItemStack;
+ import net.minecraft.world.item.Items;
+@@ -13,6 +13,8 @@ import net.minecraft.world.item.context.BlockPlaceContext;
+ import net.minecraft.world.level.BlockGetter;
+ import net.minecraft.world.level.Level;
+ import net.minecraft.world.level.LevelAccessor;
++import net.minecraft.world.level.LevelReader;
++import net.minecraft.util.RandomSource;
+ import net.minecraft.world.level.block.Block;
+ import net.minecraft.world.level.block.CrossCollisionBlock;
+ import net.minecraft.world.level.block.FenceGateBlock;
+@@ -27,10 +29,10 @@ import net.minecraft.world.phys.shapes.VoxelShape;
+ 
+ public class WhistlecaneFenceBlock extends CrossCollisionBlock {
+ 
+-    private final VoxelShape[] occlusionByIndex;
++    public static final MapCodec<WhistlecaneFenceBlock> CODEC = simpleCodec(WhistlecaneFenceBlock::new);
+ 
+     public WhistlecaneFenceBlock(BlockBehaviour.Properties properties) {
+-        super(3, 2, 16, 16, 24, properties);
++        super(3.0F, 2.0F, 16.0F, 16.0F, 24.0F, properties);
+         this.registerDefaultState(stateDefinition.any()
+                 .setValue(NORTH, false)
+                 .setValue(EAST, false)
+@@ -38,22 +40,11 @@ public class WhistlecaneFenceBlock extends CrossCollisionBlock {
+                 .setValue(WEST, false)
+                 .setValue(WATERLOGGED, false)
+         );
+-        occlusionByIndex = makeShapes(3, 1, 16, 6, 15);
+     }
+ 
+     @Override
+-    protected MapCodec<? extends CrossCollisionBlock> codec() {
+-        return MapCodec.unit(this);
+-    }
+-
+-    @Override
+-    public VoxelShape getOcclusionShape(BlockState state, BlockGetter level, BlockPos pos) {
+-        return this.occlusionByIndex[this.getAABBIndex(state)];
+-    }
+-
+-    @Override
+-    public VoxelShape getVisualShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
+-        return this.getShape(state, level, pos, context);
++    public MapCodec<WhistlecaneFenceBlock> codec() {
++        return CODEC;
+     }
+ 
+     public boolean connectsTo(BlockState state, boolean isFaceSturdy, Direction direction) {
+@@ -68,9 +59,9 @@ public class WhistlecaneFenceBlock extends CrossCollisionBlock {
+     }
+ 
+     @Override
+-    protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult blockHitResult) {
++    protected InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult blockHitResult) {
+         if (player.getItemInHand(hand).is(Items.LEAD)) {
+-            return ItemInteractionResult.FAIL;
++            return InteractionResult.FAIL;
+         }
+         return super.useItemOn(stack, state, level, pos, player, hand, blockHitResult);
+     }
+@@ -88,7 +79,6 @@ public class WhistlecaneFenceBlock extends CrossCollisionBlock {
+         BlockState eastState = level.getBlockState(eastPos);
+         BlockState southState = level.getBlockState(southPos);
+         BlockState westState = level.getBlockState(westPos);
+-        // noinspection ConstantConditions
+         return super.getStateForPlacement(context)
+                 .setValue(NORTH, connectsTo(northState, northState.isFaceSturdy(level, northPos, Direction.SOUTH), Direction.SOUTH))
+                 .setValue(EAST, connectsTo(eastState, eastState.isFaceSturdy(level, eastPos, Direction.WEST), Direction.WEST))
+@@ -98,15 +88,15 @@ public class WhistlecaneFenceBlock extends CrossCollisionBlock {
+     }
+ 
+     @Override
+-    public BlockState updateShape(BlockState state, Direction direction, BlockState newState, LevelAccessor level, BlockPos pos, BlockPos updatedPos) {
++    protected BlockState updateShape(BlockState state, LevelReader level, net.minecraft.world.level.ScheduledTickAccess tickAccess, BlockPos pos, Direction direction, BlockPos neighborPos, BlockState neighborState, RandomSource random) {
+         if (state.getValue(WATERLOGGED)) {
+-            level.scheduleTick(pos, Fluids.WATER, Fluids.WATER.getTickDelay(level));
++            tickAccess.scheduleTick(pos, Fluids.WATER, Fluids.WATER.getTickDelay(level));
+         }
+ 
+         if (direction.getAxis().getPlane() == Direction.Plane.HORIZONTAL) {
+-            return state.setValue(PROPERTY_BY_DIRECTION.get(direction), connectsTo(newState, newState.isFaceSturdy(level, updatedPos, direction.getOpposite()), direction.getOpposite()));
++            return state.setValue(PROPERTY_BY_DIRECTION.get(direction), connectsTo(neighborState, neighborState.isFaceSturdy(level, neighborPos, direction.getOpposite()), direction.getOpposite()));
+         }
+-        return super.updateShape(state, direction, newState, level, pos, updatedPos);
++        return super.updateShape(state, level, tickAccess, pos, direction, neighborPos, neighborState, random);
+     }
+ 
+     @Override
+diff --git a/common/src/main/java/gardensofthedead/client/WhistleEventHandler.java b/common/src/main/java/gardensofthedead/client/WhistleEventHandler.java
+index 4ad6d8f..5c91d5a 100644
+--- a/common/src/main/java/gardensofthedead/client/WhistleEventHandler.java
++++ b/common/src/main/java/gardensofthedead/client/WhistleEventHandler.java
+@@ -56,7 +56,7 @@ public class WhistleEventHandler {
+ 
+         private static void spawnParticle(Level level, BlockPos pos, double verticalSpeed, double horizontalSpeed) {
+             RandomSource randomsource = level.getRandom();
+-            Vec3 offset = ModBlocks.WHISTLECANE.get().defaultBlockState().getOffset(level, pos);
++            Vec3 offset = ModBlocks.WHISTLECANE.get().defaultBlockState().getOffset(pos);
+             double width = 5 / 16D;
+             double x = pos.getX() + offset.x + 0.5F + randomsource.nextDouble() * width - width / 2;
+             double z = pos.getZ() + offset.z + 0.5F + randomsource.nextDouble() * width - width / 2;
+diff --git a/common/src/main/java/gardensofthedead/client/particle/SoulblightSporeProvider.java b/common/src/main/java/gardensofthedead/client/particle/SoulblightSporeProvider.java
+index 3ed7ef9..00407d6 100644
+--- a/common/src/main/java/gardensofthedead/client/particle/SoulblightSporeProvider.java
++++ b/common/src/main/java/gardensofthedead/client/particle/SoulblightSporeProvider.java
+@@ -14,17 +14,15 @@ public class SoulblightSporeProvider extends SuspendedParticle.CrimsonSporeProvi
+     }
+ 
+     @Override
+-    public Particle createParticle(SimpleParticleType particleType, ClientLevel level, double x, double y, double z, double u, double v, double w) {
+-        SuspendedParticle particle = (SuspendedParticle) super.createParticle(particleType, level, x, y, z, u, v, w);
++    public Particle createParticle(SimpleParticleType particleType, ClientLevel level, double x, double y, double z, double u, double v, double w, RandomSource randomSource) {
++        SuspendedParticle particle = (SuspendedParticle) super.createParticle(particleType, level, x, y, z, u, v, w, randomSource);
++        if (particle == null) return null;
+ 
+-        RandomSource randomSource = level.random;
+         double xSpeed = randomSource.nextGaussian() * 0.01;
+         double ySpeed = Math.abs(randomSource.nextGaussian() * 0.03);
+         double zSpeed = randomSource.nextGaussian() * 0.01;
+ 
+-        // noinspection ConstantConditions
+         particle.setParticleSpeed(xSpeed, ySpeed, zSpeed);
+-
+         particle.setLifetime(particle.getLifetime() * 2);
+ 
+         int color = 0xb28046;
+diff --git a/common/src/main/java/gardensofthedead/client/particle/WhistlecaneSmokeParticle.java b/common/src/main/java/gardensofthedead/client/particle/WhistlecaneSmokeParticle.java
+index 34be25e..044d035 100644
+--- a/common/src/main/java/gardensofthedead/client/particle/WhistlecaneSmokeParticle.java
++++ b/common/src/main/java/gardensofthedead/client/particle/WhistlecaneSmokeParticle.java
+@@ -3,46 +3,23 @@ package gardensofthedead.client.particle;
+ import net.minecraft.client.multiplayer.ClientLevel;
+ import net.minecraft.client.particle.*;
+ import net.minecraft.core.particles.SimpleParticleType;
++import net.minecraft.util.RandomSource;
+ 
+-public class WhistlecaneSmokeParticle extends TextureSheetParticle {
+-
+-    private final SpriteSet sprites;
+-
+-    private WhistlecaneSmokeParticle(ClientLevel level, double x, double y, double z, double u, double v, double w, SpriteSet sprites) {
+-        super(level, x, y, z);
+-        this.sprites = sprites;
+-        lifetime = random.nextInt(50) + 100;
+-        gravity = 3.0E-6F;
+-        xd = u;
+-        yd = v;
+-        zd = w;
+-        lifetime = (int) (8 / (level.random.nextFloat() * 0.8 + 0.2));
+-        lifetime = Math.max(lifetime, 1);
+-        setSpriteFromAge(sprites);
+-        setAlpha(0.9F);
++public class WhistlecaneSmokeParticle extends BaseAshSmokeParticle {
+ 
++    public WhistlecaneSmokeParticle(ClientLevel level, double x, double y, double z, double u, double v, double w, SpriteSet sprites) {
++        super(level, x, y, z, 0.1F, 0.1F, 0.1F, u, v, w, 1.0F, sprites, 0.5F, (int) (8 / (level.getRandom().nextFloat() * 0.8 + 0.2)), 3.0E-6F, true);
+         int color = 0xffb5ce;
+         float r = (color >> 16 & 255) / 255F;
+         float g = (color >> 8 & 255) / 255F;
+         float b = (color & 255) / 255F;
+-        setColor(r, g, b);
+-    }
+-
+-    @Override
+-    public void tick() {
+-        super.tick();
+-        setSpriteFromAge(sprites);
+-    }
+-
+-    @Override
+-    public ParticleRenderType getRenderType() {
+-        return ParticleRenderType.PARTICLE_SHEET_TRANSLUCENT;
++        this.setColor(r, g, b);
++        this.alpha = 0.9F;
+     }
+ 
+     public record Provider(SpriteSet sprites) implements ParticleProvider<SimpleParticleType> {
+-
+         @Override
+-        public Particle createParticle(SimpleParticleType particleType, ClientLevel level, double x, double y, double z, double u, double v, double w) {
++        public Particle createParticle(SimpleParticleType particleType, ClientLevel level, double x, double y, double z, double u, double v, double w, RandomSource random) {
+             return new WhistlecaneSmokeParticle(level, x, y, z, u, v, w, sprites);
+         }
+     }
+diff --git a/common/src/main/java/gardensofthedead/feature/SoulblightForestVegetationFeature.java b/common/src/main/java/gardensofthedead/feature/SoulblightForestVegetationFeature.java
+index 6bff935..9d2338e 100644
+--- a/common/src/main/java/gardensofthedead/feature/SoulblightForestVegetationFeature.java
++++ b/common/src/main/java/gardensofthedead/feature/SoulblightForestVegetationFeature.java
+@@ -28,14 +28,14 @@ public class SoulblightForestVegetationFeature extends Feature<NetherForestVeget
+             return false;
+         } else {
+             int y = origin.getY();
+-            if (y >= level.getMinBuildHeight() + 1 && y + 1 < level.getMaxBuildHeight()) {
++            if (y >= level.getMinY() + 1 && y + 1 < level.getMaxY()) {
+                 int amountPlaced = 0;
+ 
+                 for (int i = 0; i < config.spreadWidth * config.spreadWidth; ++i) {
+                     BlockPos pos = origin.offset(randomSource.nextInt(config.spreadWidth) - randomSource.nextInt(config.spreadWidth), randomSource.nextInt(config.spreadHeight) - randomSource.nextInt(config.spreadHeight), randomSource.nextInt(config.spreadWidth) - randomSource.nextInt(config.spreadWidth));
+-                    BlockState randomPlant = config.stateProvider.getState(randomSource, pos);
++                    BlockState randomPlant = config.stateProvider.getState(level, randomSource, pos);
+                     if (level.isEmptyBlock(pos)
+-                            && pos.getY() > level.getMinBuildHeight()
++                            && pos.getY() > level.getMinY()
+                             && randomPlant.canSurvive(level, pos)
+                             // don't stack soul spore on top of itself
+                             && !level.getBlockState(pos.below()).is(randomPlant.getBlock())
+diff --git a/common/src/main/java/gardensofthedead/feature/configuration/SoulSporeColumnConfiguration.java b/common/src/main/java/gardensofthedead/feature/configuration/SoulSporeColumnConfiguration.java
+index 2f2fe09..53a6587 100644
+--- a/common/src/main/java/gardensofthedead/feature/configuration/SoulSporeColumnConfiguration.java
++++ b/common/src/main/java/gardensofthedead/feature/configuration/SoulSporeColumnConfiguration.java
+@@ -13,7 +13,7 @@ public record SoulSporeColumnConfiguration(
+ ) implements FeatureConfiguration {
+     public static final Codec<SoulSporeColumnConfiguration> CODEC = RecordCodecBuilder.create(
+             (builder) -> builder.group(
+-                    IntProvider.NON_NEGATIVE_CODEC.fieldOf("length").forGetter(SoulSporeColumnConfiguration::length),
++                    net.minecraft.util.valueproviders.IntProviders.codec(0, 256).fieldOf("length").forGetter(SoulSporeColumnConfiguration::length),
+                     Direction.CODEC.fieldOf("direction").forGetter(SoulSporeColumnConfiguration::direction),
+                     Codec.FLOAT.fieldOf("glowingChance").forGetter(SoulSporeColumnConfiguration::glowingChance)
+             ).apply(builder, SoulSporeColumnConfiguration::new)
+diff --git a/common/src/main/java/gardensofthedead/loot/MatchShears.java b/common/src/main/java/gardensofthedead/loot/MatchShears.java
+index b36dcb6..720dcc1 100644
+--- a/common/src/main/java/gardensofthedead/loot/MatchShears.java
++++ b/common/src/main/java/gardensofthedead/loot/MatchShears.java
+@@ -7,30 +7,19 @@ import net.minecraft.world.item.ItemStack;
+ import net.minecraft.world.level.storage.loot.LootContext;
+ import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
+ import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
+-import net.minecraft.world.level.storage.loot.predicates.LootItemConditionType;
+ 
+-public class MatchShears implements LootItemCondition {
++public record MatchShears() implements LootItemCondition {
+ 
+     public static final MapCodec<MatchShears> CODEC = MapCodec.unit(new MatchShears());
+ 
+     @Override
+-    public LootItemConditionType getType() {
+-        return ModLootConditions.MATCH_SHEARS.get();
+-    }
+-
+-    public static Builder matchShears() {
+-        return MatchShears::new;
++    public MapCodec<? extends LootItemCondition> codec() {
++        return CODEC;
+     }
+ 
+     @Override
+     public boolean test(LootContext context) {
+-        if (context.hasParam(LootContextParams.TOOL)) {
+-            return test(context.getParam(LootContextParams.TOOL));
+-        }
+-        return false;
+-    }
+-
+-    public static boolean test(ItemStack tool) {
+-        return PlatformServices.platformHelper.isShears(tool);
++        var tool = context.getOptionalParameter(LootContextParams.TOOL);
++        return tool != null && tool.is(net.minecraft.world.item.Items.SHEARS);
+     }
+ }
+diff --git a/common/src/main/java/gardensofthedead/placementmodifier/CountOnEveryCeilingPlacement.java b/common/src/main/java/gardensofthedead/placementmodifier/CountOnEveryCeilingPlacement.java
+index b6e3250..758d61b 100644
+--- a/common/src/main/java/gardensofthedead/placementmodifier/CountOnEveryCeilingPlacement.java
++++ b/common/src/main/java/gardensofthedead/placementmodifier/CountOnEveryCeilingPlacement.java
+@@ -6,6 +6,7 @@ import net.minecraft.core.BlockPos;
+ import net.minecraft.util.RandomSource;
+ import net.minecraft.util.valueproviders.ConstantInt;
+ import net.minecraft.util.valueproviders.IntProvider;
++import net.minecraft.util.valueproviders.IntProviders;
+ import net.minecraft.world.level.block.Blocks;
+ import net.minecraft.world.level.block.state.BlockState;
+ import net.minecraft.world.level.levelgen.Heightmap;
+@@ -18,7 +19,7 @@ import java.util.stream.Stream;
+ public class CountOnEveryCeilingPlacement extends PlacementModifier {
+ 
+     public static final MapCodec<CountOnEveryCeilingPlacement> CODEC =
+-            IntProvider.codec(0, 256)
++            IntProviders.codec(0, 256)
+                     .fieldOf("count")
+                     .xmap(CountOnEveryCeilingPlacement::new, (placementModifier) -> placementModifier.count);
+ 
+@@ -72,7 +73,7 @@ public class CountOnEveryCeilingPlacement extends PlacementModifier {
+         int layer = 0;
+         BlockState previousState = context.getBlockState(pos);
+ 
+-        for (int y = yOrigin; y >= context.getMinBuildHeight() + 1; --y) {
++        for (int y = yOrigin; y >= context.getMinY() + 1; --y) {
+             pos.setY(y - 1);
+             BlockState currentState = context.getBlockState(pos);
+             if (!isEmpty(previousState) && isEmpty(currentState) && !previousState.is(Blocks.BEDROCK)) {
+diff --git a/common/src/main/java/gardensofthedead/platform/PlatformHelper.java b/common/src/main/java/gardensofthedead/platform/PlatformHelper.java
+index 5b4fd55..cb3c282 100644
+--- a/common/src/main/java/gardensofthedead/platform/PlatformHelper.java
++++ b/common/src/main/java/gardensofthedead/platform/PlatformHelper.java
+@@ -1,7 +1,7 @@
+ package gardensofthedead.platform;
+ 
+ import dev.architectury.registry.registries.RegistrySupplier;
+-import net.minecraft.resources.ResourceLocation;
++import net.minecraft.resources.Identifier;
+ import net.minecraft.world.item.ItemStack;
+ import net.minecraft.world.level.block.Block;
+ import net.minecraft.world.level.block.FlowerPotBlock;
+@@ -20,5 +20,5 @@ public interface PlatformHelper {
+ 
+     RotatedPillarBlock createStrippableBlock(Supplier<? extends Block> strippedBlock, BlockBehaviour.Properties properties);
+ 
+-    BlockBehaviour.Properties copyBlockPropertiesWithLoot(BlockBehaviour.Properties properties, ResourceLocation id);
++    BlockBehaviour.Properties copyBlockPropertiesWithLoot(BlockBehaviour.Properties properties, Identifier id);
+ }
+diff --git a/common/src/main/java/gardensofthedead/region/GardensOfTheDeadRegion.java b/common/src/main/java/gardensofthedead/region/GardensOfTheDeadRegion.java
+index 9e2bf7b..4be9bf1 100644
+--- a/common/src/main/java/gardensofthedead/region/GardensOfTheDeadRegion.java
++++ b/common/src/main/java/gardensofthedead/region/GardensOfTheDeadRegion.java
+@@ -5,7 +5,7 @@ import gardensofthedead.GardensOfTheDead;
+ import gardensofthedead.registry.ModBiomes;
+ import net.minecraft.core.Registry;
+ import net.minecraft.resources.ResourceKey;
+-import net.minecraft.resources.ResourceLocation;
++import net.minecraft.resources.Identifier;
+ import net.minecraft.world.level.biome.Biome;
+ import net.minecraft.world.level.biome.Climate;
+ 
+@@ -14,7 +14,7 @@ import java.util.function.Consumer;
+ public interface GardensOfTheDeadRegion {
+ 
+     int WEIGHT = 4;
+-    ResourceLocation ID = GardensOfTheDead.id("nether");
++    Identifier ID = GardensOfTheDead.id("nether");
+ 
+     default void addBiomes(Registry<Biome> registry, Consumer<Pair<Climate.ParameterPoint, ResourceKey<Biome>>> mapper) {
+         add(mapper,
+diff --git a/common/src/main/java/gardensofthedead/registry/ModBlockEntityTypes.java b/common/src/main/java/gardensofthedead/registry/ModBlockEntityTypes.java
+index f3445b2..d5978f5 100644
+--- a/common/src/main/java/gardensofthedead/registry/ModBlockEntityTypes.java
++++ b/common/src/main/java/gardensofthedead/registry/ModBlockEntityTypes.java
+@@ -8,24 +8,29 @@ import gardensofthedead.block.entity.SignBlockEntity;
+ import net.minecraft.core.registries.Registries;
+ import net.minecraft.world.level.block.entity.BlockEntityType;
+ 
+-@SuppressWarnings("ConstantConditions")
++import java.util.Set;
++
+ public class ModBlockEntityTypes {
+ 
+     public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITY_TYPES = DeferredRegister.create(GardensOfTheDead.MOD_ID, Registries.BLOCK_ENTITY_TYPE);
+ 
+-    public static final RegistrySupplier<BlockEntityType<SignBlockEntity>> SIGN = BLOCK_ENTITY_TYPES.register("sign", () -> BlockEntityType.Builder.of(
++    public static final RegistrySupplier<BlockEntityType<SignBlockEntity>> SIGN = BLOCK_ENTITY_TYPES.register("sign", () -> new BlockEntityType<>(
+             SignBlockEntity::new,
+-            ModBlocks.SOULBLIGHT_SIGN.get(),
+-            ModBlocks.SOULBLIGHT_WALL_SIGN.get(),
+-            ModBlocks.WHISTLECANE_SIGN.get(),
+-            ModBlocks.WHISTLECANE_WALL_SIGN.get()
+-    ).build(null));
++            Set.of(
++                ModBlocks.SOULBLIGHT_SIGN.get(),
++                ModBlocks.SOULBLIGHT_WALL_SIGN.get(),
++                ModBlocks.WHISTLECANE_SIGN.get(),
++                ModBlocks.WHISTLECANE_WALL_SIGN.get()
++            )
++    ));
+ 
+-    public static final RegistrySupplier<BlockEntityType<HangingSignBlockEntity>> HANGING_SIGN = BLOCK_ENTITY_TYPES.register("hanging_sign", () -> BlockEntityType.Builder.of(
++    public static final RegistrySupplier<BlockEntityType<HangingSignBlockEntity>> HANGING_SIGN = BLOCK_ENTITY_TYPES.register("hanging_sign", () -> new BlockEntityType<>(
+             HangingSignBlockEntity::new,
+-            ModBlocks.SOULBLIGHT_HANGING_SIGN.get(),
+-            ModBlocks.SOULBLIGHT_WALL_HANGING_SIGN.get(),
+-            ModBlocks.WHISTLECANE_HANGING_SIGN.get(),
+-            ModBlocks.WHISTLECANE_WALL_HANGING_SIGN.get()
+-    ).build(null));
++            Set.of(
++                ModBlocks.SOULBLIGHT_HANGING_SIGN.get(),
++                ModBlocks.SOULBLIGHT_WALL_HANGING_SIGN.get(),
++                ModBlocks.WHISTLECANE_HANGING_SIGN.get(),
++                ModBlocks.WHISTLECANE_WALL_HANGING_SIGN.get()
++            )
++    ));
+ }
+diff --git a/common/src/main/java/gardensofthedead/registry/ModBlockProperties.java b/common/src/main/java/gardensofthedead/registry/ModBlockProperties.java
+index 90b4db0..e889ff3 100644
+--- a/common/src/main/java/gardensofthedead/registry/ModBlockProperties.java
++++ b/common/src/main/java/gardensofthedead/registry/ModBlockProperties.java
+@@ -1,13 +1,10 @@
+ package gardensofthedead.registry;
+ 
+-import com.mojang.serialization.MapCodec;
+ import gardensofthedead.platform.PlatformServices;
+ import net.minecraft.core.BlockPos;
+-import net.minecraft.resources.ResourceLocation;
++import net.minecraft.resources.Identifier;
+ import net.minecraft.world.entity.EntityType;
+-import net.minecraft.world.item.Item;
+ import net.minecraft.world.level.BlockGetter;
+-import net.minecraft.world.level.block.Block;
+ import net.minecraft.world.level.block.SoundType;
+ import net.minecraft.world.level.block.state.BlockBehaviour;
+ import net.minecraft.world.level.block.state.BlockState;
+@@ -23,24 +20,29 @@ public class ModBlockProperties {
+     public static BlockBehaviour.Properties SOUL_SPORE = BlockBehaviour.Properties.of()
+             .mapColor(MapColor.COLOR_BROWN)
+             .sound(SoundType.WEEPING_VINES)
+-            .noCollission()
++            .noCollision()
+             .instabreak()
+             .pushReaction(PushReaction.DESTROY);
+ 
+-    public static BlockBehaviour.Properties GLOWING_SOUL_SPORE = copy(SOUL_SPORE)
++    public static BlockBehaviour.Properties GLOWING_SOUL_SPORE = BlockBehaviour.Properties.of()
++            .mapColor(MapColor.COLOR_BROWN)
++            .sound(SoundType.WEEPING_VINES)
++            .noCollision()
++            .instabreak()
++            .pushReaction(PushReaction.DESTROY)
+             .lightLevel(state -> GLOWING_SOUL_SPORE_LIGHT);
+ 
+     public static BlockBehaviour.Properties SOULBLIGHT_FUNGUS = BlockBehaviour.Properties.of()
+             .mapColor(MapColor.COLOR_BROWN)
+             .instabreak()
+-            .noCollission()
++            .noCollision()
+             .sound(SoundType.FUNGUS)
+             .pushReaction(PushReaction.DESTROY);
+ 
+     public static BlockBehaviour.Properties SOULBLIGHT_SPROUTS = BlockBehaviour.Properties.of()
+             .mapColor(MapColor.COLOR_BROWN)
+             .replaceable()
+-            .noCollission()
++            .noCollision()
+             .instabreak()
+             .sound(SoundType.NETHER_SPROUTS)
+             .offsetType(BlockBehaviour.OffsetType.XZ)
+@@ -49,7 +51,7 @@ public class ModBlockProperties {
+     public static BlockBehaviour.Properties BLISTERCROWN = BlockBehaviour.Properties.of()
+             .mapColor(MapColor.COLOR_RED)
+             .replaceable()
+-            .noCollission()
++            .noCollision()
+             .instabreak()
+             .sound(SoundType.NETHER_SPROUTS)
+             .offsetType(BlockBehaviour.OffsetType.XZ)
+@@ -89,15 +91,26 @@ public class ModBlockProperties {
+             .strength(2, 3)
+             .sound(SoundType.WOOD);
+ 
+-    public static BlockBehaviour.Properties SOULBLIGHT_DOOR = copy(SOULBLIGHT_PLANKS)
++    public static BlockBehaviour.Properties SOULBLIGHT_DOOR = BlockBehaviour.Properties.of()
++            .mapColor(MapColor.COLOR_BROWN)
++            .instrument(NoteBlockInstrument.BASS)
+             .strength(3)
++            .sound(SoundType.WOOD)
+             .noOcclusion();
+ 
+-    public static BlockBehaviour.Properties SOULBLIGHT_TRAPDOOR = copy(SOULBLIGHT_DOOR)
++    public static BlockBehaviour.Properties SOULBLIGHT_TRAPDOOR = BlockBehaviour.Properties.of()
++            .mapColor(MapColor.COLOR_BROWN)
++            .instrument(NoteBlockInstrument.BASS)
++            .strength(3)
++            .sound(SoundType.WOOD)
++            .noOcclusion()
+             .isValidSpawn(ModBlockProperties::never);
+ 
+-    public static BlockBehaviour.Properties SOULBLIGHT_SIGN = copy(SOULBLIGHT_PLANKS)
+-            .noCollission()
++    public static BlockBehaviour.Properties SOULBLIGHT_SIGN = BlockBehaviour.Properties.of()
++            .mapColor(MapColor.COLOR_BROWN)
++            .instrument(NoteBlockInstrument.BASS)
++            .sound(SoundType.WOOD)
++            .noCollision()
+             .strength(1);
+ 
+     public static BlockBehaviour.Properties WHISTLECANE_BLOCK = BlockBehaviour.Properties.of()
+@@ -106,16 +119,27 @@ public class ModBlockProperties {
+             .strength(1, 2)
+             .sound(SoundType.BAMBOO_WOOD);
+ 
+-    public static BlockBehaviour.Properties WHISTLECANE_DOOR = copy(WHISTLECANE_BLOCK)
++    public static BlockBehaviour.Properties WHISTLECANE_DOOR = BlockBehaviour.Properties.of()
++            .mapColor(MapColor.CRIMSON_NYLIUM)
++            .instrument(NoteBlockInstrument.BASS)
+             .strength(2)
++            .sound(SoundType.BAMBOO_WOOD)
+             .noOcclusion();
+ 
+-    public static BlockBehaviour.Properties WHISTLECANE_TRAPDOOR = copy(WHISTLECANE_DOOR)
++    public static BlockBehaviour.Properties WHISTLECANE_TRAPDOOR = BlockBehaviour.Properties.of()
++            .mapColor(MapColor.CRIMSON_NYLIUM)
++            .instrument(NoteBlockInstrument.BASS)
++            .strength(2)
++            .sound(SoundType.BAMBOO_WOOD)
++            .noOcclusion()
+             .isValidSpawn(ModBlockProperties::never);
+ 
+-    public static BlockBehaviour.Properties WHISTLECANE_SIGN = copy(WHISTLECANE_BLOCK)
+-            .noCollission()
+-            .strength(1);
++    public static BlockBehaviour.Properties WHISTLECANE_SIGN = BlockBehaviour.Properties.of()
++            .mapColor(MapColor.CRIMSON_NYLIUM)
++            .instrument(NoteBlockInstrument.BASS)
++            .strength(1)
++            .sound(SoundType.BAMBOO_WOOD)
++            .noCollision();
+ 
+     public static BlockBehaviour.Properties pottedPlant() {
+         return BlockBehaviour.Properties.of()
+@@ -124,25 +148,10 @@ public class ModBlockProperties {
+     }
+ 
+     public static BlockBehaviour.Properties copy(BlockBehaviour.Properties properties) {
+-        return BlockBehaviour.Properties.ofFullCopy(new BlockBehaviour(properties) {
+-            @Override
+-            protected MapCodec<? extends Block> codec() {
+-                throw new UnsupportedOperationException();
+-            }
+-
+-            @Override
+-            public Item asItem() {
+-                throw new UnsupportedOperationException();
+-            }
+-
+-            @Override
+-            protected Block asBlock() {
+-                throw new UnsupportedOperationException();
+-            }
+-        });
++        return BlockBehaviour.Properties.of();
+     }
+ 
+-    public static BlockBehaviour.Properties copyWithLoot(BlockBehaviour.Properties properties, ResourceLocation id) {
++    public static BlockBehaviour.Properties copyWithLoot(BlockBehaviour.Properties properties, Identifier id) {
+         return PlatformServices.platformHelper.copyBlockPropertiesWithLoot(properties, id);
+     }
+ 
+diff --git a/common/src/main/java/gardensofthedead/registry/ModBlocks.java b/common/src/main/java/gardensofthedead/registry/ModBlocks.java
+index 7228bd6..5c77c01 100644
+--- a/common/src/main/java/gardensofthedead/registry/ModBlocks.java
++++ b/common/src/main/java/gardensofthedead/registry/ModBlocks.java
+@@ -10,12 +10,15 @@ import gardensofthedead.block.WallSignBlock;
+ import gardensofthedead.block.*;
+ import gardensofthedead.platform.PlatformServices;
+ import net.minecraft.core.registries.Registries;
++import net.minecraft.resources.Identifier;
++import net.minecraft.resources.ResourceKey;
+ import net.minecraft.world.level.block.*;
+ import net.minecraft.world.level.block.state.BlockBehaviour;
+ import net.minecraft.world.level.block.state.properties.BlockSetType;
+ import net.minecraft.world.level.block.state.properties.WoodType;
+ import net.minecraft.world.level.material.PushReaction;
+ 
++import java.util.function.Function;
+ import java.util.function.Supplier;
+ 
+ import static net.minecraft.world.level.block.state.BlockBehaviour.Properties;
+@@ -24,22 +27,33 @@ public class ModBlocks {
+ 
+     public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(GardensOfTheDead.MOD_ID, Registries.BLOCK);
+ 
+-    public static final RegistrySupplier<SoulSporeBlock> SOUL_SPORE = BLOCKS.register("soul_spore", () -> new SoulSporeBlock(ModBlockProperties.SOUL_SPORE));
+-    public static final RegistrySupplier<SoulSporeBaseBlock> GLOWING_SOUL_SPORE = BLOCKS.register("glowing_soul_spore", () -> new SoulSporeBaseBlock(ModBlockProperties.GLOWING_SOUL_SPORE));
++    public static ResourceKey<Block> blockKey(String name) {
++        return ResourceKey.create(Registries.BLOCK, Identifier.fromNamespaceAndPath(GardensOfTheDead.MOD_ID, name));
++    }
++
++    public static <T extends Block> RegistrySupplier<T> reg(String name, Function<Properties, T> factory, Properties properties) {
++        return BLOCKS.register(name, () -> {
++            Properties p = properties.setId(blockKey(name));
++            return factory.apply(p);
++        });
++    }
+ 
+-    public static final RegistrySupplier<Block> SOULBLIGHT_FUNGUS = BLOCKS.register("soulblight_fungus", () -> new SoulblightFungusBlock(ModBlockProperties.SOULBLIGHT_FUNGUS));
+-    public static final RegistrySupplier<Block> SOULBLIGHT_SPROUTS = BLOCKS.register("soulblight_sprouts", () -> new SoulblightSproutsBlock(ModBlockProperties.SOULBLIGHT_SPROUTS));
++    public static final RegistrySupplier<SoulSporeBlock> SOUL_SPORE = reg("soul_spore", SoulSporeBlock::new, ModBlockProperties.SOUL_SPORE);
++    public static final RegistrySupplier<SoulSporeBaseBlock> GLOWING_SOUL_SPORE = reg("glowing_soul_spore", SoulSporeBaseBlock::new, ModBlockProperties.GLOWING_SOUL_SPORE);
+ 
+-    public static final RegistrySupplier<RotatedPillarBlock> STRIPPED_SOULBLIGHT_STEM = strippedSoulblightStem("stripped_soulblight_stem");
++    public static final RegistrySupplier<Block> SOULBLIGHT_FUNGUS = reg("soulblight_fungus", SoulblightFungusBlock::new, ModBlockProperties.SOULBLIGHT_FUNGUS);
++    public static final RegistrySupplier<Block> SOULBLIGHT_SPROUTS = reg("soulblight_sprouts", SoulblightSproutsBlock::new, ModBlockProperties.SOULBLIGHT_SPROUTS);
++
++    public static final RegistrySupplier<RotatedPillarBlock> STRIPPED_SOULBLIGHT_STEM = reg("stripped_soulblight_stem", RotatedPillarBlock::new, ModBlockProperties.SOULBLIGHT_STEM);
+     public static final RegistrySupplier<RotatedPillarBlock> SOULBLIGHT_STEM = soulblightStem("soulblight_stem", STRIPPED_SOULBLIGHT_STEM);
+-    public static final RegistrySupplier<RotatedPillarBlock> STRIPPED_SOULBLIGHT_HYPHAE = strippedSoulblightStem("stripped_soulblight_hyphae");
++    public static final RegistrySupplier<RotatedPillarBlock> STRIPPED_SOULBLIGHT_HYPHAE = reg("stripped_soulblight_hyphae", RotatedPillarBlock::new, ModBlockProperties.SOULBLIGHT_STEM);
+     public static final RegistrySupplier<RotatedPillarBlock> SOULBLIGHT_HYPHAE = soulblightStem("soulblight_hyphae", STRIPPED_SOULBLIGHT_HYPHAE);
+-    public static final RegistrySupplier<Block> BLIGHTWART_BLOCK = block("blightwart_block", ModBlockProperties.BLIGHTWART_BLOCK);
++    public static final RegistrySupplier<Block> BLIGHTWART_BLOCK = reg("blightwart_block", Block::new, ModBlockProperties.BLIGHTWART_BLOCK);
+ 
+-    public static final RegistrySupplier<Block> BLISTERCROWN = BLOCKS.register("blistercrown", () -> new BlistercrownBlock(ModBlockProperties.BLISTERCROWN));
+-    public static final RegistrySupplier<DoublePlantBlock> TALL_BLISTERCROWN = BLOCKS.register("tall_blistercrown", () -> new TallBlistercrownBlock(ModBlockProperties.BLISTERCROWN));
++    public static final RegistrySupplier<Block> BLISTERCROWN = reg("blistercrown", BlistercrownBlock::new, ModBlockProperties.BLISTERCROWN);
++    public static final RegistrySupplier<DoublePlantBlock> TALL_BLISTERCROWN = reg("tall_blistercrown", TallBlistercrownBlock::new, ModBlockProperties.BLISTERCROWN);
+ 
+-    public static final RegistrySupplier<Block> WHISTLECANE = BLOCKS.register("whistlecane", () -> new WhistlecaneBlock(ModBlockProperties.WHISTLECANE));
++    public static final RegistrySupplier<Block> WHISTLECANE = reg("whistlecane", WhistlecaneBlock::new, ModBlockProperties.WHISTLECANE);
+ 
+     public static final RegistrySupplier<FlowerPotBlock> POTTED_SOUL_SPORE = flowerPot(SOUL_SPORE);
+     public static final RegistrySupplier<FlowerPotBlock> POTTED_GLOWING_SOUL_SPORE = flowerPot(GLOWING_SOUL_SPORE, ModBlockProperties.POTTED_GLOWING_SOUL_SPORE);
+@@ -48,49 +62,44 @@ public class ModBlocks {
+     public static final RegistrySupplier<FlowerPotBlock> POTTED_BLISTERCROWN = flowerPot(BLISTERCROWN);
+     public static final RegistrySupplier<FlowerPotBlock> POTTED_WHISTLECANE = flowerPot(WHISTLECANE);
+ 
+-    public static final RegistrySupplier<Block> SOULBLIGHT_PLANKS = block("soulblight_planks", ModBlockProperties.SOULBLIGHT_PLANKS);
+-    public static final RegistrySupplier<SlabBlock> SOULBLIGHT_SLAB = BLOCKS.register("soulblight_slab", () -> new SlabBlock(ModBlockProperties.SOULBLIGHT_PLANKS));
++    public static final RegistrySupplier<Block> SOULBLIGHT_PLANKS = reg("soulblight_planks", Block::new, ModBlockProperties.SOULBLIGHT_PLANKS);
++    public static final RegistrySupplier<SlabBlock> SOULBLIGHT_SLAB = reg("soulblight_slab", SlabBlock::new, ModBlockProperties.SOULBLIGHT_PLANKS);
+     public static final RegistrySupplier<StairBlock> SOULBLIGHT_STAIRS = stairs("soulblight_stairs", SOULBLIGHT_PLANKS, ModBlockProperties.SOULBLIGHT_PLANKS);
+-    public static final RegistrySupplier<FenceBlock> SOULBLIGHT_FENCE = BLOCKS.register("soulblight_fence", () -> new FenceBlock(ModBlockProperties.SOULBLIGHT_PLANKS));
+-    public static final RegistrySupplier<FenceGateBlock> SOULBLIGHT_FENCE_GATE = BLOCKS.register("soulblight_fence_gate", () -> fenceGate(ModBlockProperties.SOULBLIGHT_PLANKS, ModWoodTypes.SOULBLIGHT));
+-    public static final RegistrySupplier<ButtonBlock> SOULBLIGHT_BUTTON = BLOCKS.register("soulblight_button", () -> woodenButton(ModBlockSetTypes.SOULBLIGHT));
+-    public static final RegistrySupplier<PressurePlateBlock> SOULBLIGHT_PRESSURE_PLATE = BLOCKS.register("soulblight_pressure_plate", () -> pressurePlate(ModBlockProperties.SOULBLIGHT_PLANKS, ModBlockSetTypes.SOULBLIGHT));
+-    public static final RegistrySupplier<DoorBlock> SOULBLIGHT_DOOR = BLOCKS.register("soulblight_door", () -> door(ModBlockProperties.SOULBLIGHT_DOOR, ModBlockSetTypes.SOULBLIGHT));
+-    public static final RegistrySupplier<TrapDoorBlock> SOULBLIGHT_TRAPDOOR = BLOCKS.register("soulblight_trapdoor", () -> trapDoor(ModBlockProperties.SOULBLIGHT_TRAPDOOR, ModBlockSetTypes.SOULBLIGHT));
+-    public static final RegistrySupplier<StandingSignBlock> SOULBLIGHT_SIGN = BLOCKS.register("soulblight_sign", () -> sign(ModBlockProperties.SOULBLIGHT_PLANKS, ModWoodTypes.SOULBLIGHT));
+-    public static final RegistrySupplier<WallSignBlock> SOULBLIGHT_WALL_SIGN = BLOCKS.register("soulblight_wall_sign", () -> wallSign(ModBlockProperties.SOULBLIGHT_PLANKS, SOULBLIGHT_SIGN, ModWoodTypes.SOULBLIGHT));
+-    public static final RegistrySupplier<CeilingHangingSignBlock> SOULBLIGHT_HANGING_SIGN = BLOCKS.register("soulblight_hanging_sign", () -> hangingSign(ModBlockProperties.SOULBLIGHT_SIGN, SoundType.NETHER_WOOD_HANGING_SIGN, ModWoodTypes.SOULBLIGHT));
+-    public static final RegistrySupplier<WallHangingSignBlock> SOULBLIGHT_WALL_HANGING_SIGN = BLOCKS.register("soulblight_wall_hanging_sign", () -> wallHangingSign(ModBlockProperties.SOULBLIGHT_SIGN, SOULBLIGHT_HANGING_SIGN, SoundType.NETHER_WOOD_HANGING_SIGN, ModWoodTypes.SOULBLIGHT));
+-
+-    public static final RegistrySupplier<RotatedPillarBlock> WHISTLECANE_BLOCK = BLOCKS.register("whistlecane_block", () -> new RotatedPillarBlock(ModBlockProperties.WHISTLECANE_BLOCK));
+-    public static final RegistrySupplier<Block> WHISTLECANE_PLANKS = block("whistlecane_planks", ModBlockProperties.WHISTLECANE_BLOCK);
+-    public static final RegistrySupplier<SlabBlock> WHISTLECANE_SLAB = BLOCKS.register("whistlecane_slab", () -> new SlabBlock(ModBlockProperties.WHISTLECANE_BLOCK));
++    public static final RegistrySupplier<FenceBlock> SOULBLIGHT_FENCE = reg("soulblight_fence", FenceBlock::new, ModBlockProperties.SOULBLIGHT_PLANKS);
++    public static final RegistrySupplier<FenceGateBlock> SOULBLIGHT_FENCE_GATE = reg("soulblight_fence_gate", p -> fenceGate(p, ModWoodTypes.SOULBLIGHT), ModBlockProperties.SOULBLIGHT_PLANKS);
++    public static final RegistrySupplier<ButtonBlock> SOULBLIGHT_BUTTON = reg("soulblight_button", p -> woodenButton(p, ModBlockSetTypes.SOULBLIGHT), ModBlockProperties.SOULBLIGHT_PLANKS);
++    public static final RegistrySupplier<PressurePlateBlock> SOULBLIGHT_PRESSURE_PLATE = reg("soulblight_pressure_plate", p -> pressurePlate(p, ModBlockSetTypes.SOULBLIGHT), ModBlockProperties.SOULBLIGHT_PLANKS);
++    public static final RegistrySupplier<DoorBlock> SOULBLIGHT_DOOR = reg("soulblight_door", p -> door(p, ModBlockSetTypes.SOULBLIGHT), ModBlockProperties.SOULBLIGHT_DOOR);
++    public static final RegistrySupplier<TrapDoorBlock> SOULBLIGHT_TRAPDOOR = reg("soulblight_trapdoor", p -> trapDoor(p, ModBlockSetTypes.SOULBLIGHT), ModBlockProperties.SOULBLIGHT_TRAPDOOR);
++    public static final RegistrySupplier<StandingSignBlock> SOULBLIGHT_SIGN = reg("soulblight_sign", p -> sign(p, ModWoodTypes.SOULBLIGHT), ModBlockProperties.SOULBLIGHT_SIGN);
++    public static final RegistrySupplier<WallSignBlock> SOULBLIGHT_WALL_SIGN = reg("soulblight_wall_sign", p -> wallSign(p, SOULBLIGHT_SIGN, ModWoodTypes.SOULBLIGHT), ModBlockProperties.SOULBLIGHT_SIGN);
++    public static final RegistrySupplier<CeilingHangingSignBlock> SOULBLIGHT_HANGING_SIGN = reg("soulblight_hanging_sign", p -> hangingSign(p, SoundType.NETHER_WOOD_HANGING_SIGN, ModWoodTypes.SOULBLIGHT), ModBlockProperties.SOULBLIGHT_SIGN);
++    public static final RegistrySupplier<WallHangingSignBlock> SOULBLIGHT_WALL_HANGING_SIGN = reg("soulblight_wall_hanging_sign", p -> wallHangingSign(p, SOULBLIGHT_HANGING_SIGN, SoundType.NETHER_WOOD_HANGING_SIGN, ModWoodTypes.SOULBLIGHT), ModBlockProperties.SOULBLIGHT_SIGN);
++
++    public static final RegistrySupplier<RotatedPillarBlock> WHISTLECANE_BLOCK = reg("whistlecane_block", RotatedPillarBlock::new, ModBlockProperties.WHISTLECANE_BLOCK);
++    public static final RegistrySupplier<Block> WHISTLECANE_PLANKS = reg("whistlecane_planks", Block::new, ModBlockProperties.WHISTLECANE_BLOCK);
++    public static final RegistrySupplier<SlabBlock> WHISTLECANE_SLAB = reg("whistlecane_slab", SlabBlock::new, ModBlockProperties.WHISTLECANE_BLOCK);
+     public static final RegistrySupplier<StairBlock> WHISTLECANE_STAIRS = stairs("whistlecane_stairs", WHISTLECANE_PLANKS, ModBlockProperties.WHISTLECANE_BLOCK);
+-    public static final RegistrySupplier<WhistlecaneFenceBlock> WHISTLECANE_FENCE = BLOCKS.register("whistlecane_fence", () -> new WhistlecaneFenceBlock(ModBlockProperties.WHISTLECANE_BLOCK));
+-    public static final RegistrySupplier<FenceGateBlock> WHISTLECANE_FENCE_GATE = BLOCKS.register("whistlecane_fence_gate", () -> fenceGate(ModBlockProperties.WHISTLECANE_BLOCK, ModWoodTypes.WHISTLECANE));
+-    public static final RegistrySupplier<ButtonBlock> WHISTLECANE_BUTTON = BLOCKS.register("whistlecane_button", () -> woodenButton(ModBlockSetTypes.WHISTLECANE));
+-    public static final RegistrySupplier<PressurePlateBlock> WHISTLECANE_PRESSURE_PLATE = BLOCKS.register("whistlecane_pressure_plate", () -> pressurePlate(ModBlockProperties.WHISTLECANE_BLOCK, ModBlockSetTypes.WHISTLECANE));
+-    public static final RegistrySupplier<DoorBlock> WHISTLECANE_DOOR = BLOCKS.register("whistlecane_door", () -> door(ModBlockProperties.WHISTLECANE_DOOR, ModBlockSetTypes.WHISTLECANE));
+-    public static final RegistrySupplier<TrapDoorBlock> WHISTLECANE_TRAPDOOR = BLOCKS.register("whistlecane_trapdoor", () -> trapDoor(ModBlockProperties.WHISTLECANE_TRAPDOOR, ModBlockSetTypes.WHISTLECANE));
+-    public static final RegistrySupplier<StandingSignBlock> WHISTLECANE_SIGN = BLOCKS.register("whistlecane_sign", () -> sign(ModBlockProperties.WHISTLECANE_BLOCK, ModWoodTypes.WHISTLECANE));
+-    public static final RegistrySupplier<WallSignBlock> WHISTLECANE_WALL_SIGN = BLOCKS.register("whistlecane_wall_sign", () -> wallSign(ModBlockProperties.WHISTLECANE_BLOCK, WHISTLECANE_SIGN, ModWoodTypes.WHISTLECANE));
+-    public static final RegistrySupplier<CeilingHangingSignBlock> WHISTLECANE_HANGING_SIGN = BLOCKS.register("whistlecane_hanging_sign", () -> hangingSign(ModBlockProperties.WHISTLECANE_SIGN, SoundType.BAMBOO_WOOD_HANGING_SIGN, ModWoodTypes.WHISTLECANE));
+-    public static final RegistrySupplier<WallHangingSignBlock> WHISTLECANE_WALL_HANGING_SIGN = BLOCKS.register("whistlecane_wall_hanging_sign", () -> wallHangingSign(ModBlockProperties.WHISTLECANE_SIGN, WHISTLECANE_HANGING_SIGN, SoundType.BAMBOO_WOOD_HANGING_SIGN, ModWoodTypes.WHISTLECANE));
+-
+-    public static final RegistrySupplier<Block> WHISTLECANE_MOSAIC = block("whistlecane_mosaic", ModBlockProperties.WHISTLECANE_BLOCK);
+-    public static final RegistrySupplier<SlabBlock> WHISTLECANE_MOSAIC_SLAB = BLOCKS.register("whistlecane_mosaic_slab", () -> new SlabBlock(ModBlockProperties.WHISTLECANE_BLOCK));
++    public static final RegistrySupplier<WhistlecaneFenceBlock> WHISTLECANE_FENCE = reg("whistlecane_fence", WhistlecaneFenceBlock::new, ModBlockProperties.WHISTLECANE_BLOCK);
++    public static final RegistrySupplier<FenceGateBlock> WHISTLECANE_FENCE_GATE = reg("whistlecane_fence_gate", p -> fenceGate(p, ModWoodTypes.WHISTLECANE), ModBlockProperties.WHISTLECANE_BLOCK);
++    public static final RegistrySupplier<ButtonBlock> WHISTLECANE_BUTTON = reg("whistlecane_button", p -> woodenButton(p, ModBlockSetTypes.WHISTLECANE), ModBlockProperties.WHISTLECANE_BLOCK);
++    public static final RegistrySupplier<PressurePlateBlock> WHISTLECANE_PRESSURE_PLATE = reg("whistlecane_pressure_plate", p -> pressurePlate(p, ModBlockSetTypes.WHISTLECANE), ModBlockProperties.WHISTLECANE_BLOCK);
++    public static final RegistrySupplier<DoorBlock> WHISTLECANE_DOOR = reg("whistlecane_door", p -> door(p, ModBlockSetTypes.WHISTLECANE), ModBlockProperties.WHISTLECANE_DOOR);
++    public static final RegistrySupplier<TrapDoorBlock> WHISTLECANE_TRAPDOOR = reg("whistlecane_trapdoor", p -> trapDoor(p, ModBlockSetTypes.WHISTLECANE), ModBlockProperties.WHISTLECANE_TRAPDOOR);
++    public static final RegistrySupplier<StandingSignBlock> WHISTLECANE_SIGN = reg("whistlecane_sign", p -> sign(p, ModWoodTypes.WHISTLECANE), ModBlockProperties.WHISTLECANE_SIGN);
++    public static final RegistrySupplier<WallSignBlock> WHISTLECANE_WALL_SIGN = reg("whistlecane_wall_sign", p -> wallSign(p, WHISTLECANE_SIGN, ModWoodTypes.WHISTLECANE), ModBlockProperties.WHISTLECANE_SIGN);
++    public static final RegistrySupplier<CeilingHangingSignBlock> WHISTLECANE_HANGING_SIGN = reg("whistlecane_hanging_sign", p -> hangingSign(p, SoundType.BAMBOO_WOOD_HANGING_SIGN, ModWoodTypes.WHISTLECANE), ModBlockProperties.WHISTLECANE_SIGN);
++    public static final RegistrySupplier<WallHangingSignBlock> WHISTLECANE_WALL_HANGING_SIGN = reg("whistlecane_wall_hanging_sign", p -> wallHangingSign(p, WHISTLECANE_HANGING_SIGN, SoundType.BAMBOO_WOOD_HANGING_SIGN, ModWoodTypes.WHISTLECANE), ModBlockProperties.WHISTLECANE_SIGN);
++
++    public static final RegistrySupplier<Block> WHISTLECANE_MOSAIC = reg("whistlecane_mosaic", Block::new, ModBlockProperties.WHISTLECANE_BLOCK);
++    public static final RegistrySupplier<SlabBlock> WHISTLECANE_MOSAIC_SLAB = reg("whistlecane_mosaic_slab", SlabBlock::new, ModBlockProperties.WHISTLECANE_BLOCK);
+     public static final RegistrySupplier<StairBlock> WHISTLECANE_MOSAIC_STAIRS = stairs("whistlecane_mosaic_stairs", WHISTLECANE_MOSAIC, ModBlockProperties.WHISTLECANE_BLOCK);
+ 
+-    private static Supplier<RotatedPillarBlock> createStrippableBlock(Properties properties, RegistrySupplier<? extends Block> strippedBlock) {
+-        return () -> PlatformServices.platformHelper.createStrippableBlock(strippedBlock, properties);
+-    }
+-
+     private static RegistrySupplier<RotatedPillarBlock> soulblightStem(String name, RegistrySupplier<? extends Block> strippedLogBlock) {
+-        return BLOCKS.register(name, createStrippableBlock(ModBlockProperties.SOULBLIGHT_STEM, strippedLogBlock));
+-    }
+-
+-    private static RegistrySupplier<RotatedPillarBlock> strippedSoulblightStem(String name) {
+-        return BLOCKS.register(name, () -> new RotatedPillarBlock(ModBlockProperties.SOULBLIGHT_STEM));
++        return BLOCKS.register(name, () -> {
++            Properties p = ModBlockProperties.SOULBLIGHT_STEM.setId(blockKey(name));
++            return PlatformServices.platformHelper.createStrippableBlock(strippedLogBlock, p);
++        });
+     }
+ 
+     private static RegistrySupplier<FlowerPotBlock> flowerPot(RegistrySupplier<? extends Block> plant) {
+@@ -98,92 +107,54 @@ public class ModBlocks {
+     }
+ 
+     private static RegistrySupplier<FlowerPotBlock> flowerPot(RegistrySupplier<? extends Block> plant, Properties properties) {
+-        return BLOCKS.register("potted_" + plant.getId().getPath(), () -> PlatformServices.platformHelper.createFlowerPot(plant, properties));
++        String name = "potted_" + plant.getId().getPath();
++        return BLOCKS.register(name, () -> {
++            Properties p = properties.setId(blockKey(name));
++            return PlatformServices.platformHelper.createFlowerPot(plant, p);
++        });
+     }
+ 
+     private static RegistrySupplier<StairBlock> stairs(String name, Supplier<? extends Block> baseBlock, Properties properties) {
+-        return BLOCKS.register(name, () -> new StairBlock(baseBlock.get().defaultBlockState(), properties));
++        return BLOCKS.register(name, () -> {
++            Properties p = properties.setId(blockKey(name));
++            return new StairBlock(baseBlock.get().defaultBlockState(), p);
++        });
+     }
+ 
+-    private static RegistrySupplier<Block> block(String name, Properties properties) {
+-        return BLOCKS.register(name, () -> new Block(properties));
+-    }
+-
+-    private static ButtonBlock woodenButton(BlockSetType blockSetType) {
++    private static ButtonBlock woodenButton(Properties properties, BlockSetType blockSetType) {
+         int ticksToStayPressed = 30;
+-        return button(ticksToStayPressed, blockSetType);
+-    }
+-
+-    private static ButtonBlock button(int ticksToStayPressed, BlockSetType blockSetType) {
+-        BlockBehaviour.Properties properties = BlockBehaviour.Properties
+-                .of()
+-                .noCollission()
+-                .strength(0.5F)
+-                .pushReaction(PushReaction.DESTROY)
+-                .sound(blockSetType.soundType());
+-
+-        return new ButtonBlock(blockSetType, ticksToStayPressed, properties);
++        return new ButtonBlock(blockSetType, ticksToStayPressed, properties.noCollision().strength(0.5F).pushReaction(PushReaction.DESTROY).sound(blockSetType.soundType()));
+     }
+ 
+-    private static PressurePlateBlock pressurePlate(Properties baseProperties, BlockSetType blockSetType) {
+-        Properties properties = ModBlockProperties.copy(baseProperties)
+-                .noCollission()
+-                .strength(0.5F);
+-
+-        return new PressurePlateBlock(blockSetType, properties);
++    private static PressurePlateBlock pressurePlate(Properties properties, BlockSetType blockSetType) {
++        return new PressurePlateBlock(blockSetType, properties.noCollision().strength(0.5F));
+     }
+ 
+-    private static FenceGateBlock fenceGate(Properties baseProperties, WoodType woodType) {
+-        Properties properties = ModBlockProperties.copy(baseProperties)
+-                .strength(2, 3);
+-
+-        return new FenceGateBlock(woodType, properties);
++    private static FenceGateBlock fenceGate(Properties properties, WoodType woodType) {
++        return new FenceGateBlock(woodType, properties.strength(2, 3));
+     }
+ 
+-    private static DoorBlock door(Properties baseProperties, BlockSetType blockSetType) {
+-        Properties properties = ModBlockProperties.copy(baseProperties)
+-                .strength(3)
+-                .noOcclusion();
+-
+-        return new DoorBlock(blockSetType, properties);
++    private static DoorBlock door(Properties properties, BlockSetType blockSetType) {
++        return new DoorBlock(blockSetType, properties.strength(3).noOcclusion());
+     }
+ 
+-    private static TrapDoorBlock trapDoor(Properties baseProperties, BlockSetType blockSetType) {
+-        Properties properties = ModBlockProperties.copy(baseProperties)
+-                .strength(3)
+-                .noOcclusion()
+-                .isValidSpawn(ModBlockProperties::never);
+-
+-        return new TrapDoorBlock(blockSetType, properties);
++    private static TrapDoorBlock trapDoor(Properties properties, BlockSetType blockSetType) {
++        return new TrapDoorBlock(blockSetType, properties.strength(3).noOcclusion().isValidSpawn(ModBlockProperties::never));
+     }
+ 
+-    private static StandingSignBlock sign(Properties baseProperties, WoodType woodType) {
+-        Properties properties = ModBlockProperties.copy(baseProperties)
+-                .strength(1)
+-                .noCollission();
+-        return new StandingSignBlock(woodType, properties);
++    private static StandingSignBlock sign(Properties properties, WoodType woodType) {
++        return new StandingSignBlock(woodType, properties.strength(1).noCollision());
+     }
+ 
+-    private static WallSignBlock wallSign(Properties baseProperties, RegistrySupplier<?> signBlock, WoodType woodType) {
+-        Properties properties = ModBlockProperties.copyWithLoot(baseProperties, signBlock.getId())
+-                .strength(1)
+-                .noCollission();
+-        return new WallSignBlock(woodType, properties);
++    private static WallSignBlock wallSign(Properties properties, RegistrySupplier<?> signBlock, WoodType woodType) {
++        return new WallSignBlock(woodType, properties.strength(1).noCollision());
+     }
+ 
+-    private static CeilingHangingSignBlock hangingSign(Properties baseProperties, SoundType soundType, WoodType woodType) {
+-        Properties properties = ModBlockProperties.copy(baseProperties)
+-                .sound(soundType)
+-                .strength(1)
+-                .noCollission();
+-        return new CeilingHangingSignBlock(woodType, properties);
++    private static CeilingHangingSignBlock hangingSign(Properties properties, SoundType soundType, WoodType woodType) {
++        return new CeilingHangingSignBlock(woodType, properties.sound(soundType).strength(1).noCollision());
+     }
+ 
+-    private static WallHangingSignBlock wallHangingSign(Properties baseProperties, RegistrySupplier<?> signBlock, SoundType soundType, WoodType woodType) {
+-        Properties properties = ModBlockProperties.copyWithLoot(baseProperties, signBlock.getId())
+-                .sound(soundType)
+-                .strength(1)
+-                .noCollission();
+-        return new WallHangingSignBlock(woodType, properties);
++    private static WallHangingSignBlock wallHangingSign(Properties properties, RegistrySupplier<?> signBlock, SoundType soundType, WoodType woodType) {
++        return new WallHangingSignBlock(woodType, properties.sound(soundType).strength(1).noCollision());
+     }
+ }
+diff --git a/common/src/main/java/gardensofthedead/registry/ModItems.java b/common/src/main/java/gardensofthedead/registry/ModItems.java
+index 741cca4..7404485 100644
+--- a/common/src/main/java/gardensofthedead/registry/ModItems.java
++++ b/common/src/main/java/gardensofthedead/registry/ModItems.java
+@@ -6,6 +6,8 @@ import dev.architectury.registry.registries.RegistrySupplier;
+ import gardensofthedead.GardensOfTheDead;
+ import net.minecraft.core.registries.Registries;
+ import net.minecraft.network.chat.Component;
++import net.minecraft.resources.Identifier;
++import net.minecraft.resources.ResourceKey;
+ import net.minecraft.world.item.*;
+ import net.minecraft.world.level.ItemLike;
+ import net.minecraft.world.level.block.Block;
+@@ -18,9 +20,14 @@ public class ModItems {
+     public static final DeferredRegister<CreativeModeTab> CREATIVE_MODE_TABS = DeferredRegister.create(GardensOfTheDead.MOD_ID, Registries.CREATIVE_MODE_TAB);
+     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(GardensOfTheDead.MOD_ID, Registries.ITEM);
+ 
+-    public static final RegistrySupplier<CreativeModeTab> CREATIVE_TAB = CREATIVE_MODE_TABS.register("main", () ->
+-            CreativeTabRegistry.create(Component.translatable("%s.creative_tab".formatted(GardensOfTheDead.MOD_ID)), () -> new ItemStack(ModItems.GLOWING_SOUL_SPORE.get()))
+-    );
++    public static ResourceKey<Item> itemKey(String name) {
++        return ResourceKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath(GardensOfTheDead.MOD_ID, name));
++    }
++
++    public static Item.Properties createProperties(String name) {
++        return new Item.Properties().setId(itemKey(name));
++    }
++
+     public static final RegistrySupplier<Item> SOUL_SPORE = blockItem(ModBlocks.SOUL_SPORE);
+     public static final RegistrySupplier<Item> GLOWING_SOUL_SPORE = blockItem(ModBlocks.GLOWING_SOUL_SPORE);
+     public static final RegistrySupplier<Item> SOULBLIGHT_FUNGUS = blockItem(ModBlocks.SOULBLIGHT_FUNGUS);
+@@ -42,10 +49,10 @@ public class ModItems {
+     public static final RegistrySupplier<Item> SOULBLIGHT_FENCE_GATE = blockItem(ModBlocks.SOULBLIGHT_FENCE_GATE);
+     public static final RegistrySupplier<Item> SOULBLIGHT_BUTTON = blockItem(ModBlocks.SOULBLIGHT_BUTTON);
+     public static final RegistrySupplier<Item> SOULBLIGHT_PRESSURE_PLATE = blockItem(ModBlocks.SOULBLIGHT_PRESSURE_PLATE);
+-    public static final RegistrySupplier<Item> SOULBLIGHT_DOOR = ITEMS.register("soulblight_door", () -> new DoubleHighBlockItem(ModBlocks.SOULBLIGHT_DOOR.get(), createProperties()));
++    public static final RegistrySupplier<Item> SOULBLIGHT_DOOR = ITEMS.register("soulblight_door", () -> new DoubleHighBlockItem(ModBlocks.SOULBLIGHT_DOOR.get(), createProperties("soulblight_door")));
+     public static final RegistrySupplier<Item> SOULBLIGHT_TRAPDOOR = blockItem(ModBlocks.SOULBLIGHT_TRAPDOOR);
+-    public static final RegistrySupplier<Item> SOULBLIGHT_SIGN = ITEMS.register("soulblight_sign", () -> sign(ModBlocks.SOULBLIGHT_SIGN, ModBlocks.SOULBLIGHT_WALL_SIGN));
+-    public static final RegistrySupplier<Item> SOULBLIGHT_HANGING_SIGN = ITEMS.register("soulblight_hanging_sign", () -> hangingSign(ModBlocks.SOULBLIGHT_HANGING_SIGN, ModBlocks.SOULBLIGHT_WALL_HANGING_SIGN));
++    public static final RegistrySupplier<Item> SOULBLIGHT_SIGN = ITEMS.register("soulblight_sign", () -> sign("soulblight_sign", ModBlocks.SOULBLIGHT_SIGN, ModBlocks.SOULBLIGHT_WALL_SIGN));
++    public static final RegistrySupplier<Item> SOULBLIGHT_HANGING_SIGN = ITEMS.register("soulblight_hanging_sign", () -> hangingSign("soulblight_hanging_sign", ModBlocks.SOULBLIGHT_HANGING_SIGN, ModBlocks.SOULBLIGHT_WALL_HANGING_SIGN));
+ 
+     public static final RegistrySupplier<Item> WHISTLECANE_BLOCK = blockItem(ModBlocks.WHISTLECANE_BLOCK);
+     public static final RegistrySupplier<Item> WHISTLECANE_PLANKS = blockItem(ModBlocks.WHISTLECANE_PLANKS);
+@@ -55,30 +62,28 @@ public class ModItems {
+     public static final RegistrySupplier<Item> WHISTLECANE_FENCE_GATE = blockItem(ModBlocks.WHISTLECANE_FENCE_GATE);
+     public static final RegistrySupplier<Item> WHISTLECANE_BUTTON = blockItem(ModBlocks.WHISTLECANE_BUTTON);
+     public static final RegistrySupplier<Item> WHISTLECANE_PRESSURE_PLATE = blockItem(ModBlocks.WHISTLECANE_PRESSURE_PLATE);
+-    public static final RegistrySupplier<Item> WHISTLECANE_DOOR = ITEMS.register("whistlecane_door", () -> new DoubleHighBlockItem(ModBlocks.WHISTLECANE_DOOR.get(), createProperties()));
++    public static final RegistrySupplier<Item> WHISTLECANE_DOOR = ITEMS.register("whistlecane_door", () -> new DoubleHighBlockItem(ModBlocks.WHISTLECANE_DOOR.get(), createProperties("whistlecane_door")));
+     public static final RegistrySupplier<Item> WHISTLECANE_TRAPDOOR = blockItem(ModBlocks.WHISTLECANE_TRAPDOOR);
+-    public static final RegistrySupplier<Item> WHISTLECANE_SIGN = ITEMS.register("whistlecane_sign", () -> sign(ModBlocks.WHISTLECANE_SIGN, ModBlocks.WHISTLECANE_WALL_SIGN));
+-    public static final RegistrySupplier<Item> WHISTLECANE_HANGING_SIGN = ITEMS.register("whistlecane_hanging_sign", () -> hangingSign(ModBlocks.WHISTLECANE_HANGING_SIGN, ModBlocks.WHISTLECANE_WALL_HANGING_SIGN));
++    public static final RegistrySupplier<Item> WHISTLECANE_SIGN = ITEMS.register("whistlecane_sign", () -> sign("whistlecane_sign", ModBlocks.WHISTLECANE_SIGN, ModBlocks.WHISTLECANE_WALL_SIGN));
++    public static final RegistrySupplier<Item> WHISTLECANE_HANGING_SIGN = ITEMS.register("whistlecane_hanging_sign", () -> hangingSign("whistlecane_hanging_sign", ModBlocks.WHISTLECANE_HANGING_SIGN, ModBlocks.WHISTLECANE_WALL_HANGING_SIGN));
+ 
+     public static final RegistrySupplier<Item> WHISTLECANE_MOSAIC = blockItem(ModBlocks.WHISTLECANE_MOSAIC);
+     public static final RegistrySupplier<Item> WHISTLECANE_MOSAIC_SLAB = blockItem(ModBlocks.WHISTLECANE_MOSAIC_SLAB);
+     public static final RegistrySupplier<Item> WHISTLECANE_MOSAIC_STAIRS = blockItem(ModBlocks.WHISTLECANE_MOSAIC_STAIRS);
+ 
+-    @SuppressWarnings("UnstableApiUsage")
+-    private static Item.Properties createProperties() {
+-        return new Item.Properties().arch$tab(CREATIVE_TAB);
+-    }
++    public static final RegistrySupplier<Item> SOULBLIGHT_SPORES = ITEMS.register("soulblight_spores", () -> new Item(createProperties("soulblight_spores")));
+ 
+     private static RegistrySupplier<Item> blockItem(RegistrySupplier<? extends Block> block) {
+-        return ITEMS.register(block.getId().getPath(), () -> new BlockItem(block.get(), createProperties()));
++        String name = block.getId().getPath();
++        return ITEMS.register(name, () -> new BlockItem(block.get(), createProperties(name)));
+     }
+ 
+-    private static SignItem sign(RegistrySupplier<? extends Block> standingSign, RegistrySupplier<? extends Block> wallSign) {
+-        return new SignItem(createProperties().stacksTo(16), standingSign.get(), wallSign.get());
++    private static SignItem sign(String name, RegistrySupplier<? extends Block> standingSign, RegistrySupplier<? extends Block> wallSign) {
++        return new SignItem(standingSign.get(), wallSign.get(), createProperties(name).stacksTo(16));
+     }
+ 
+-    private static HangingSignItem hangingSign(RegistrySupplier<? extends Block> standingSign, RegistrySupplier<? extends Block> wallSign) {
+-        return new HangingSignItem(standingSign.get(), wallSign.get(), createProperties().stacksTo(16));
++    private static HangingSignItem hangingSign(String name, RegistrySupplier<? extends Block> standingSign, RegistrySupplier<? extends Block> wallSign) {
++        return new HangingSignItem(standingSign.get(), wallSign.get(), createProperties(name).stacksTo(16));
+     }
+ 
+     public static void addCompostables(BiConsumer<ItemLike, Float> consumer) {
+diff --git a/common/src/main/java/gardensofthedead/registry/ModLootConditions.java b/common/src/main/java/gardensofthedead/registry/ModLootConditions.java
+index f94424b..662bd08 100644
+--- a/common/src/main/java/gardensofthedead/registry/ModLootConditions.java
++++ b/common/src/main/java/gardensofthedead/registry/ModLootConditions.java
+@@ -1,16 +1,20 @@
+ package gardensofthedead.registry;
+ 
++import com.mojang.serialization.MapCodec;
+ import dev.architectury.registry.registries.DeferredRegister;
+ import dev.architectury.registry.registries.RegistrySupplier;
+ import gardensofthedead.GardensOfTheDead;
+ import gardensofthedead.loot.MatchShears;
+ import net.minecraft.core.registries.Registries;
+-import net.minecraft.world.level.storage.loot.predicates.LootItemConditionType;
++import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
+ 
+ public class ModLootConditions {
+ 
+-    public static final DeferredRegister<LootItemConditionType> LOOT_CONDITIONS = DeferredRegister.create(GardensOfTheDead.MOD_ID, Registries.LOOT_CONDITION_TYPE);
++    public static final DeferredRegister<MapCodec<? extends LootItemCondition>> LOOT_CONDITIONS = DeferredRegister.create(GardensOfTheDead.MOD_ID, Registries.LOOT_CONDITION_TYPE);
+ 
+-    public static final RegistrySupplier<LootItemConditionType> MATCH_SHEARS = LOOT_CONDITIONS.register("match_shears", () -> new LootItemConditionType(MatchShears.CODEC));
++    public static final RegistrySupplier<MapCodec<? extends LootItemCondition>> MATCH_SHEARS = LOOT_CONDITIONS.register("match_shears", () -> MatchShears.CODEC);
+ 
++    public static void register() {
++        LOOT_CONDITIONS.register();
++    }
+ }
+diff --git a/common/src/main/java/gardensofthedead/registry/ModSurfaceRules.java b/common/src/main/java/gardensofthedead/registry/ModSurfaceRules.java
+index 9be09a7..206275c 100644
+--- a/common/src/main/java/gardensofthedead/registry/ModSurfaceRules.java
++++ b/common/src/main/java/gardensofthedead/registry/ModSurfaceRules.java
+@@ -20,7 +20,7 @@ public class ModSurfaceRules {
+             NETHER_WART_BLOCK = block(Blocks.NETHER_WART_BLOCK),
+             CRIMSON_NYLIUM = block(Blocks.CRIMSON_NYLIUM);
+ 
+-    public static RuleSource makeRules() {
++    public static RuleSource makeRules(net.minecraft.core.HolderGetter<net.minecraft.world.level.biome.Biome> biomes) {
+         ConditionSource aboveLava = yBlockCheck(VerticalAnchor.absolute(31), 0);
+ 
+         RuleSource commonRules = sequence(
+@@ -51,17 +51,22 @@ public class ModSurfaceRules {
+                 ifTrue(
+                         UNDER_CEILING,
+                         sequence(
+-                                ifTrue(noiseCondition(Noises.NETHER_STATE_SELECTOR, 0.3D), SOUL_SAND),
+-                                ifTrue(noiseCondition(Noises.NETHER_STATE_SELECTOR, -0.2D), SOUL_SOIL),
++                                ifTrue(noiseCondition2d(Noises.NETHER_STATE_SELECTOR, 0.3D), SOUL_SAND),
++                                ifTrue(noiseCondition2d(Noises.NETHER_STATE_SELECTOR, -0.2D), SOUL_SOIL),
+                                 NETHERRACK
+                         )
+                 ),
+                 ifTrue(
+                         UNDER_FLOOR,
+                         sequence(
+-                                gravelBeach(),
+-                                ifTrue(noiseCondition(Noises.NETHER_STATE_SELECTOR, 0.3D), SOUL_SAND),
+-                                SOUL_SOIL
++                                ifTrue(aboveLava,
++                                        sequence(
++                                                ifTrue(ON_FLOOR, gravelBeach()),
++                                                ifTrue(noiseCondition2d(Noises.NETHER_STATE_SELECTOR, 0.3D), SOUL_SAND),
++                                                SOUL_SOIL
++                                        )
++                                ),
++                                NETHERRACK
+                         )
+                 ),
+                 NETHERRACK
+@@ -70,10 +75,10 @@ public class ModSurfaceRules {
+         RuleSource whistlingWoods = sequence(
+                 commonRules,
+                 ifTrue(ON_FLOOR,
+-                        ifTrue(not(noiseCondition(Noises.NETHERRACK, 0.4D)),
++                        ifTrue(not(noiseCondition2d(Noises.NETHERRACK, 0.4D)),
+                                 ifTrue(aboveLava,
+                                         sequence(
+-                                                ifTrue(noiseCondition(Noises.NETHER_WART, 1.17D), NETHER_WART_BLOCK),
++                                                ifTrue(noiseCondition2d(Noises.NETHER_WART, 1.17D), NETHER_WART_BLOCK),
+                                                 CRIMSON_NYLIUM
+                                         )
+                                 )
+@@ -83,15 +88,15 @@ public class ModSurfaceRules {
+         );
+ 
+         return sequence(
+-                ifTrue(isBiome(ModBiomes.SOULBLIGHT_FOREST), soulblightForest),
+-                ifTrue(isBiome(ModBiomes.WHISTLING_WOODS), whistlingWoods)
++                ifTrue(isBiome(biomes, ModBiomes.SOULBLIGHT_FOREST), soulblightForest),
++                ifTrue(isBiome(biomes, ModBiomes.WHISTLING_WOODS), whistlingWoods)
+         );
+     }
+ 
+     private static RuleSource gravelBeach() {
+         ConditionSource above30 = yStartCheck(VerticalAnchor.absolute(30), 0);
+         ConditionSource below35 = not(yStartCheck(VerticalAnchor.absolute(35), 0));
+-        ConditionSource patchNoise = noiseCondition(Noises.PATCH, -0.012D);
++        ConditionSource patchNoise = noiseCondition2d(Noises.PATCH, -0.012D);
+         return ifTrue(patchNoise,
+                 ifTrue(above30, ifTrue(below35, GRAVEL))
+         );
+diff --git a/common/src/main/java/gardensofthedead/registry/ModWoodTypes.java b/common/src/main/java/gardensofthedead/registry/ModWoodTypes.java
+index fc6e4c2..1625c02 100644
+--- a/common/src/main/java/gardensofthedead/registry/ModWoodTypes.java
++++ b/common/src/main/java/gardensofthedead/registry/ModWoodTypes.java
+@@ -2,9 +2,6 @@ package gardensofthedead.registry;
+ 
+ import gardensofthedead.GardensOfTheDead;
+ import gardensofthedead.mixin.WoodTypeInvoker;
+-import net.minecraft.client.renderer.Sheets;
+-import net.minecraft.client.resources.model.Material;
+-import net.minecraft.resources.ResourceLocation;
+ import net.minecraft.sounds.SoundEvent;
+ import net.minecraft.sounds.SoundEvents;
+ import net.minecraft.world.level.block.SoundType;
+@@ -14,8 +11,6 @@ import net.minecraft.world.level.block.state.properties.WoodType;
+ import java.util.HashSet;
+ import java.util.Set;
+ 
+-import static net.minecraft.client.renderer.Sheets.SIGN_SHEET;
+-
+ public class ModWoodTypes {
+ 
+     public static final Set<WoodType> VALUES = new HashSet<>();
+@@ -50,10 +45,5 @@ public class ModWoodTypes {
+     }
+ 
+     public static void register() {
+-        for (WoodType woodType : VALUES) {
+-            String name = ResourceLocation.parse(woodType.name()).getPath();
+-            Sheets.SIGN_MATERIALS.put(woodType, new Material(SIGN_SHEET, GardensOfTheDead.id("entity/signs/" + name)));
+-            Sheets.HANGING_SIGN_MATERIALS.put(woodType, new Material(SIGN_SHEET, GardensOfTheDead.id("entity/signs/hanging/" + name)));
+-        }
+     }
+ }
+diff --git a/fabric/build.gradle b/fabric/build.gradle
+index c8b1661..6224f6d 100644
+--- a/fabric/build.gradle
++++ b/fabric/build.gradle
+@@ -1,42 +1,12 @@
+-plugins {
+-    id 'com.gradleup.shadow'
+-}
+-
+-architectury {
+-    platformSetupLoomIde()
+-    fabric()
+-}
+-
+-configurations {
+-    common {
+-        canBeResolved = true
+-        canBeConsumed = false
++sourceSets {
++    main {
++        java {
++            srcDirs = ['src/main/java', '../common/src/main/java']
++        }
++        resources {
++            srcDirs = ['src/main/resources', '../common/src/main/resources', '../common/src/generated/resources']
++        }
+     }
+-    compileClasspath.extendsFrom common
+-    runtimeClasspath.extendsFrom common
+-    developmentFabric.extendsFrom common
+-
+-    // Files in this configuration will be bundled into your mod using the Shadow plugin.
+-    // Don't use the `shadow` configuration from the plugin itself as it's meant for excluding files.
+-    shadowBundle {
+-        canBeResolved = true
+-        canBeConsumed = false
+-    }
+-}
+-
+-dependencies {
+-    modImplementation "net.fabricmc:fabric-loader:$rootProject.fabric_loader_version"
+-
+-    // Fabric API. This is technically optional, but you probably want it anyway.
+-    modImplementation "net.fabricmc.fabric-api:fabric-api:$rootProject.fabric_api_version"
+-
+-    // Architectury API. This is optional, and you can comment it out if you don't need it.
+-    modImplementation "dev.architectury:architectury-fabric:$rootProject.architectury_api_version"
+-
+-    common(project(path: ':common', configuration: 'namedElements')) { transitive false }
+-    shadowBundle project(path: ':common', configuration: 'transformProductionFabric')
+-
+-    include modImplementation("com.github.glitchfiend:TerraBlender-fabric:${rootProject.terrablender_version}")
+ }
+ 
+ processResources {
+@@ -46,12 +16,3 @@ processResources {
+         expand version: project.version
+     }
+ }
+-
+-shadowJar {
+-    configurations = [project.configurations.shadowBundle]
+-    archiveClassifier = 'dev-shadow'
+-}
+-
+-remapJar {
+-    inputFile.set shadowJar.archiveFile
+-}
+diff --git a/fabric/src/main/java/gardensofthedead/fabric/GardensOfTheDeadFabric.java b/fabric/src/main/java/gardensofthedead/fabric/GardensOfTheDeadFabric.java
+index 78b3b9c..074095b 100644
+--- a/fabric/src/main/java/gardensofthedead/fabric/GardensOfTheDeadFabric.java
++++ b/fabric/src/main/java/gardensofthedead/fabric/GardensOfTheDeadFabric.java
+@@ -5,7 +5,7 @@ import gardensofthedead.registry.ModItems;
+ import gardensofthedead.registry.ModSurfaceRules;
+ import net.fabricmc.api.ModInitializer;
+ import gardensofthedead.GardensOfTheDead;
+-import net.fabricmc.fabric.api.registry.CompostingChanceRegistry;
++import net.minecraft.world.level.block.ComposterBlock;
+ import terrablender.api.Regions;
+ import terrablender.api.SurfaceRuleManager;
+ import terrablender.api.TerraBlenderApi;
+@@ -15,13 +15,12 @@ public class GardensOfTheDeadFabric implements ModInitializer, TerraBlenderApi {
+     @Override
+     public void onInitialize() {
+         GardensOfTheDead.init();
+-
+-        ModItems.addCompostables(CompostingChanceRegistry.INSTANCE::add);
++        ModItems.addCompostables((item, chance) -> ComposterBlock.COMPOSTABLES.put(item.asItem(), chance));
+     }
+ 
+     @Override
+     public void onTerraBlenderInitialized() {
+         Regions.register(new GardensOfTheDeadFabricRegion());
+-        SurfaceRuleManager.addSurfaceRules(SurfaceRuleManager.RuleCategory.NETHER, GardensOfTheDead.MOD_ID, ModSurfaceRules.makeRules());
++        SurfaceRuleManager.addSurfaceRules(SurfaceRuleManager.RuleCategory.NETHER, GardensOfTheDead.MOD_ID, ModSurfaceRules::makeRules);
+     }
+ }
+diff --git a/fabric/src/main/java/gardensofthedead/fabric/GardensOfTheDeadFabricClient.java b/fabric/src/main/java/gardensofthedead/fabric/GardensOfTheDeadFabricClient.java
+index c23821a..3d019bd 100644
+--- a/fabric/src/main/java/gardensofthedead/fabric/GardensOfTheDeadFabricClient.java
++++ b/fabric/src/main/java/gardensofthedead/fabric/GardensOfTheDeadFabricClient.java
+@@ -8,12 +8,11 @@ import gardensofthedead.registry.ModBlocks;
+ import gardensofthedead.registry.ModParticleTypes;
+ import gardensofthedead.registry.ModWoodTypes;
+ import net.fabricmc.api.ClientModInitializer;
+-import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
+-import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry;
+-import net.minecraft.client.renderer.RenderType;
++import net.fabricmc.fabric.api.client.particle.v1.ParticleProviderRegistry;
++
+ import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
+ import net.minecraft.client.renderer.blockentity.HangingSignRenderer;
+-import net.minecraft.client.renderer.blockentity.SignRenderer;
++import net.minecraft.client.renderer.blockentity.StandingSignRenderer;
+ import net.minecraft.world.level.block.Block;
+ 
+ import java.util.List;
+@@ -24,37 +23,9 @@ public class GardensOfTheDeadFabricClient implements ClientModInitializer {
+     public void onInitializeClient() {
+         GardensOfTheDeadClient.init();
+         ModWoodTypes.register();
+-        BlockEntityRenderers.register(ModBlockEntityTypes.SIGN.get(), SignRenderer::new);
++        BlockEntityRenderers.register(ModBlockEntityTypes.SIGN.get(), StandingSignRenderer::new);
+         BlockEntityRenderers.register(ModBlockEntityTypes.HANGING_SIGN.get(), HangingSignRenderer::new);
+-        ParticleFactoryRegistry.getInstance().register(ModParticleTypes.SOULBLIGHT_SPORE.get(), SoulblightSporeProvider::new);
+-        ParticleFactoryRegistry.getInstance().register(ModParticleTypes.WHISTLECANE_SMOKE.get(), WhistlecaneSmokeParticle.Provider::new);
+-        registerRenderTypes();
+-    }
+-
+-    private static void registerRenderTypes() {
+-        for (Block block : List.of(
+-                ModBlocks.BLISTERCROWN.get(),
+-                ModBlocks.TALL_BLISTERCROWN.get(),
+-                ModBlocks.SOUL_SPORE.get(),
+-                ModBlocks.GLOWING_SOUL_SPORE.get(),
+-                ModBlocks.SOULBLIGHT_FUNGUS.get(),
+-                ModBlocks.SOULBLIGHT_SPROUTS.get(),
+-                ModBlocks.WHISTLECANE.get(),
+-                ModBlocks.TALL_BLISTERCROWN.get(),
+-
+-                ModBlocks.POTTED_BLISTERCROWN.get(),
+-                ModBlocks.POTTED_SOUL_SPORE.get(),
+-                ModBlocks.POTTED_GLOWING_SOUL_SPORE.get(),
+-                ModBlocks.POTTED_SOULBLIGHT_FUNGUS.get(),
+-                ModBlocks.POTTED_SOULBLIGHT_SPROUTS.get(),
+-                ModBlocks.POTTED_WHISTLECANE.get(),
+-
+-                ModBlocks.SOULBLIGHT_DOOR.get(),
+-                ModBlocks.SOULBLIGHT_TRAPDOOR.get(),
+-                ModBlocks.WHISTLECANE_DOOR.get(),
+-                ModBlocks.WHISTLECANE_TRAPDOOR.get()
+-        )) {
+-            BlockRenderLayerMap.INSTANCE.putBlock(block, RenderType.cutout());
+-        }
++        ParticleProviderRegistry.getInstance().register(ModParticleTypes.SOULBLIGHT_SPORE.get(), SoulblightSporeProvider::new);
++        ParticleProviderRegistry.getInstance().register(ModParticleTypes.WHISTLECANE_SMOKE.get(), WhistlecaneSmokeParticle.Provider::new);
+     }
+ }
+diff --git a/fabric/src/main/java/gardensofthedead/fabric/platform/FabricPlatformHelper.java b/fabric/src/main/java/gardensofthedead/fabric/platform/FabricPlatformHelper.java
+index 654fb30..bfd28e6 100644
+--- a/fabric/src/main/java/gardensofthedead/fabric/platform/FabricPlatformHelper.java
++++ b/fabric/src/main/java/gardensofthedead/fabric/platform/FabricPlatformHelper.java
+@@ -2,14 +2,14 @@ package gardensofthedead.fabric.platform;
+ 
+ import dev.architectury.registry.registries.RegistrySupplier;
+ import gardensofthedead.platform.PlatformHelper;
+-import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
++
+ import net.fabricmc.fabric.api.registry.StrippableBlockRegistry;
+ import net.minecraft.core.registries.Registries;
+ import net.minecraft.resources.ResourceKey;
+-import net.minecraft.resources.ResourceLocation;
++import net.minecraft.resources.Identifier;
++import net.minecraft.tags.ItemTags;
+ import net.minecraft.world.item.ItemStack;
+-import net.minecraft.world.item.ShearsItem;
+-import net.minecraft.world.item.SwordItem;
++import net.minecraft.world.item.Items;
+ import net.minecraft.world.level.block.Block;
+ import net.minecraft.world.level.block.FlowerPotBlock;
+ import net.minecraft.world.level.block.RotatedPillarBlock;
+@@ -21,12 +21,12 @@ public class FabricPlatformHelper implements PlatformHelper {
+ 
+     @Override
+     public boolean isSword(ItemStack stack) {
+-        return stack.getItem() instanceof SwordItem;
++        return stack.is(ItemTags.SWORDS);
+     }
+ 
+     @Override
+     public boolean isShears(ItemStack stack) {
+-        return stack.getItem() instanceof ShearsItem;
++        return stack.is(Items.SHEARS);
+     }
+ 
+     @Override
+@@ -42,8 +42,8 @@ public class FabricPlatformHelper implements PlatformHelper {
+     }
+ 
+     @Override
+-    public BlockBehaviour.Properties copyBlockPropertiesWithLoot(BlockBehaviour.Properties properties, ResourceLocation id) {
+-        ResourceLocation lootTable = ResourceLocation.fromNamespaceAndPath(id.getNamespace(), "blocks/" + id.getPath());
+-        return FabricBlockSettings.copyOf(properties).drops(ResourceKey.create(Registries.LOOT_TABLE, lootTable));
++    public BlockBehaviour.Properties copyBlockPropertiesWithLoot(BlockBehaviour.Properties properties, Identifier id) {
++        Identifier lootTable = Identifier.fromNamespaceAndPath(id.getNamespace(), "blocks/" + id.getPath());
++        return properties.overrideLootTable(java.util.Optional.of(ResourceKey.create(Registries.LOOT_TABLE, lootTable)));
+     }
+ }
+diff --git a/fabric/src/main/resources/fabric.mod.json b/fabric/src/main/resources/fabric.mod.json
+index 421b0a3..f9dcc82 100644
+--- a/fabric/src/main/resources/fabric.mod.json
++++ b/fabric/src/main/resources/fabric.mod.json
+@@ -29,8 +29,9 @@
+     "mixins.gardens_of_the_dead.common.json"
+   ],
+   "depends": {
+-    "fabric": "*",
+-    "minecraft": ">=1.21",
++    "fabricloader": ">=0.16.0",
++    "minecraft": "~26.2",
++    "fabric-api": "*",
+     "architectury": "*",
+     "terrablender": "*"
+   }
+diff --git a/gradle.properties b/gradle.properties
+index 128e5a1..6fe45d5 100644
+--- a/gradle.properties
++++ b/gradle.properties
+@@ -1,20 +1,14 @@
+-# Done to increase the memory available to Gradle.
+ org.gradle.jvmargs=-Xmx2G
+ org.gradle.parallel=true
+ 
+-# Mod properties
+ mod_version = 5.0.2
+ maven_group = gardensofthedead
+ archives_name = gardens-of-the-dead
+-enabled_platforms = fabric,neoforge
++enabled_platforms = fabric
+ 
+-# Minecraft properties
+-minecraft_version = 1.21.1
++minecraft_version = 26.2
+ 
+-# Dependencies
+-architectury_api_version = 13.0.8
+-fabric_loader_version = 0.17.3
+-fabric_api_version = 0.116.7+1.21.1
+-neoforge_version = 21.1.209
+-
+-terrablender_version=1.21.1-4.1.0.8
+\ No newline at end of file
++architectury_api_version = 21.0.7
++fabric_loader_version = 0.19.3
++fabric_api_version = 0.158.0+26.2
++terrablender_version = 26.2-26.2.0.0.2
+diff --git a/gradle/wrapper/gradle-wrapper.properties b/gradle/wrapper/gradle-wrapper.properties
+index ca025c8..52ad5e7 100644
+--- a/gradle/wrapper/gradle-wrapper.properties
++++ b/gradle/wrapper/gradle-wrapper.properties
+@@ -1,7 +1,5 @@
+ distributionBase=GRADLE_USER_HOME
+ distributionPath=wrapper/dists
+-distributionUrl=https\://services.gradle.org/distributions/gradle-8.14-bin.zip
+-networkTimeout=10000
+-validateDistributionUrl=true
++distributionUrl=https\://services.gradle.org/distributions/gradle-9.6.1-bin.zip
+ zipStoreBase=GRADLE_USER_HOME
+ zipStorePath=wrapper/dists
+diff --git a/gradlew b/gradlew
+old mode 100644
+new mode 100755
+diff --git a/neoforge/src/main/java/gardensofthedead/neoforge/datagen/BiomeProvider.java b/neoforge/src/main/java/gardensofthedead/neoforge/datagen/BiomeProvider.java
+index 7252c6b..87edab1 100644
+--- a/neoforge/src/main/java/gardensofthedead/neoforge/datagen/BiomeProvider.java
++++ b/neoforge/src/main/java/gardensofthedead/neoforge/datagen/BiomeProvider.java
+@@ -16,7 +16,7 @@ import net.minecraft.data.worldgen.placement.OrePlacements;
+ import net.minecraft.sounds.Musics;
+ import net.minecraft.sounds.SoundEvents;
+ import net.minecraft.util.Mth;
+-import net.minecraft.world.entity.EntityType;
++import net.minecraft.world.entity.EntityTypes;
+ import net.minecraft.world.entity.MobCategory;
+ import net.minecraft.world.level.biome.*;
+ import net.minecraft.world.level.levelgen.GenerationStep;
+@@ -44,18 +44,18 @@ public class BiomeProvider {
+         double charge = 0.8D;
+ 
+         MobSpawnSettings spawnSettings = new MobSpawnSettings.Builder()
+-                .addSpawn(MobCategory.MONSTER, new MobSpawnSettings.SpawnerData(EntityType.SKELETON, 3, 5, 5))
+-                .addSpawn(MobCategory.MONSTER, new MobSpawnSettings.SpawnerData(EntityType.ENDERMAN, 1, 4, 4))
+-                .addSpawn(MobCategory.MONSTER, new MobSpawnSettings.SpawnerData(EntityType.ZOMBIFIED_PIGLIN, 5, 2, 4))
+-                .addSpawn(MobCategory.MONSTER, new MobSpawnSettings.SpawnerData(EntityType.HOGLIN, 21, 3, 4))
+-                .addSpawn(MobCategory.MONSTER, new MobSpawnSettings.SpawnerData(EntityType.PIGLIN, 10, 3, 4))
+-                .addSpawn(MobCategory.CREATURE, new MobSpawnSettings.SpawnerData(EntityType.STRIDER, 60, 1, 2))
+-                .addMobCharge(EntityType.SKELETON, energyBudget, charge)
+-                .addMobCharge(EntityType.ENDERMAN, energyBudget, charge)
+-                .addMobCharge(EntityType.ZOMBIFIED_PIGLIN, energyBudget, charge)
+-                .addMobCharge(EntityType.HOGLIN, energyBudget, charge)
+-                .addMobCharge(EntityType.PIGLIN, energyBudget, charge)
+-                .addMobCharge(EntityType.STRIDER, energyBudget, charge)
++                .addSpawn(MobCategory.MONSTER, new MobSpawnSettings.SpawnerData(net.minecraft.world.entity.EntityTypes.SKELETON, 3, 5, 5))
++                .addSpawn(MobCategory.MONSTER, new MobSpawnSettings.SpawnerData(net.minecraft.world.entity.EntityTypes.ENDERMAN, 1, 4, 4))
++                .addSpawn(MobCategory.MONSTER, new MobSpawnSettings.SpawnerData(net.minecraft.world.entity.EntityTypes.ZOMBIFIED_PIGLIN, 5, 2, 4))
++                .addSpawn(MobCategory.MONSTER, new MobSpawnSettings.SpawnerData(net.minecraft.world.entity.EntityTypes.HOGLIN, 21, 3, 4))
++                .addSpawn(MobCategory.MONSTER, new MobSpawnSettings.SpawnerData(net.minecraft.world.entity.EntityTypes.PIGLIN, 10, 3, 4))
++                .addSpawn(MobCategory.CREATURE, new MobSpawnSettings.SpawnerData(net.minecraft.world.entity.EntityTypes.STRIDER, 60, 1, 2))
++                .addMobCharge(net.minecraft.world.entity.EntityTypes.SKELETON, energyBudget, charge)
++                .addMobCharge(net.minecraft.world.entity.EntityTypes.ENDERMAN, energyBudget, charge)
++                .addMobCharge(net.minecraft.world.entity.EntityTypes.ZOMBIFIED_PIGLIN, energyBudget, charge)
++                .addMobCharge(net.minecraft.world.entity.EntityTypes.HOGLIN, energyBudget, charge)
++                .addMobCharge(net.minecraft.world.entity.EntityTypes.PIGLIN, energyBudget, charge)
++                .addMobCharge(net.minecraft.world.entity.EntityTypes.STRIDER, energyBudget, charge)
+                 .build();
+ 
+         BiomeGenerationSettings.Builder generationSettings = new BiomeGenerationSettings.Builder(features, carvers)
+@@ -101,10 +101,10 @@ public class BiomeProvider {
+ 
+     public static Biome whistlingWoods(HolderGetter<PlacedFeature> features, HolderGetter<ConfiguredWorldCarver<?>> carvers) {
+         MobSpawnSettings spawnSettings = new MobSpawnSettings.Builder()
+-                .addSpawn(MobCategory.MONSTER, new MobSpawnSettings.SpawnerData(EntityType.ZOMBIFIED_PIGLIN, 1, 2, 4))
+-                .addSpawn(MobCategory.MONSTER, new MobSpawnSettings.SpawnerData(EntityType.HOGLIN, 9, 3, 4))
+-                .addSpawn(MobCategory.MONSTER, new MobSpawnSettings.SpawnerData(EntityType.PIGLIN, 5, 3, 4))
+-                .addSpawn(MobCategory.CREATURE, new MobSpawnSettings.SpawnerData(EntityType.STRIDER, 60, 1, 2))
++                .addSpawn(MobCategory.MONSTER, new MobSpawnSettings.SpawnerData(net.minecraft.world.entity.EntityTypes.ZOMBIFIED_PIGLIN, 1, 2, 4))
++                .addSpawn(MobCategory.MONSTER, new MobSpawnSettings.SpawnerData(net.minecraft.world.entity.EntityTypes.HOGLIN, 9, 3, 4))
++                .addSpawn(MobCategory.MONSTER, new MobSpawnSettings.SpawnerData(net.minecraft.world.entity.EntityTypes.PIGLIN, 5, 3, 4))
++                .addSpawn(MobCategory.CREATURE, new MobSpawnSettings.SpawnerData(net.minecraft.world.entity.EntityTypes.STRIDER, 60, 1, 2))
+                 .build();
+ 
+         BiomeGenerationSettings.Builder generationSettings = new BiomeGenerationSettings.Builder(features, carvers)
+diff --git a/neoforge/src/main/java/gardensofthedead/neoforge/datagen/BlockStateProvider.java b/neoforge/src/main/java/gardensofthedead/neoforge/datagen/BlockStateProvider.java
+index 575397a..d299529 100644
+--- a/neoforge/src/main/java/gardensofthedead/neoforge/datagen/BlockStateProvider.java
++++ b/neoforge/src/main/java/gardensofthedead/neoforge/datagen/BlockStateProvider.java
+@@ -9,7 +9,7 @@ import net.minecraft.core.Direction;
+ import net.minecraft.core.registries.BuiltInRegistries;
+ import net.minecraft.data.BlockFamily;
+ import net.minecraft.data.PackOutput;
+-import net.minecraft.resources.ResourceLocation;
++import net.minecraft.resources.Identifier;
+ import net.minecraft.world.item.Item;
+ import net.minecraft.world.item.ItemDisplayContext;
+ import net.minecraft.world.level.block.*;
+@@ -29,8 +29,8 @@ public class BlockStateProvider extends net.neoforged.neoforge.client.model.gene
+     private static final String CUTOUT = "cutout";
+ 
+     private static final String BLOCK_MODEL = BLOCK_FOLDER + "/block";
+-    private static final ResourceLocation WHISTLECANE_0 = GardensOfTheDead.id(ModelProvider.BLOCK_FOLDER + "/" + getName(ModBlocks.WHISTLECANE.get()) + "0");
+-    private static final ResourceLocation WHISTLECANE_1 = GardensOfTheDead.id(ModelProvider.BLOCK_FOLDER + "/" + getName(ModBlocks.WHISTLECANE.get()) + "1");
++    private static final Identifier WHISTLECANE_0 = GardensOfTheDead.id(ModelProvider.BLOCK_FOLDER + "/" + getName(ModBlocks.WHISTLECANE.get()) + "0");
++    private static final Identifier WHISTLECANE_1 = GardensOfTheDead.id(ModelProvider.BLOCK_FOLDER + "/" + getName(ModBlocks.WHISTLECANE.get()) + "1");
+ 
+     public BlockStateProvider(PackOutput generator, ExistingFileHelper existingFileHelper) {
+         super(generator, GardensOfTheDead.MOD_ID, existingFileHelper);
+@@ -74,7 +74,7 @@ public class BlockStateProvider extends net.neoforged.neoforge.client.model.gene
+ 
+     private void generateModels(BlockFamily family) {
+         Map<BlockFamily.Variant, Block> variants = family.getVariants();
+-        ResourceLocation texture = blockTexture(family.getBaseBlock());
++        Identifier texture = blockTexture(family.getBaseBlock());
+ 
+         simpleBlockWithItem(family.getBaseBlock());
+ 
+@@ -135,20 +135,20 @@ public class BlockStateProvider extends net.neoforged.neoforge.client.model.gene
+     private void addWhistlecaneFence() {
+         String whistlecane = getName(ModBlocks.WHISTLECANE.get());
+         String whistlecaneFenceBeams = getName(ModBlocks.WHISTLECANE_FENCE.get()) + "_side";
+-        ResourceLocation beamTexture = GardensOfTheDead.id(BLOCK_FOLDER + "/" + whistlecaneFenceBeams);
++        Identifier beamTexture = GardensOfTheDead.id(BLOCK_FOLDER + "/" + whistlecaneFenceBeams);
+ 
+         String fenceGate = getName(ModBlocks.WHISTLECANE_FENCE_GATE.get());
+         String gateParent = "template_custom_fence_gate";
+         String gateTexture = BLOCK_FOLDER + "/" + fenceGate;
+         String planksTexture = BLOCK_FOLDER + "/" + getName(ModBlocks.WHISTLECANE_PLANKS.get());
+ 
+-        ModelFile gate = models().withExistingParent(fenceGate, ResourceLocation.parse(gateParent))
++        ModelFile gate = models().withExistingParent(fenceGate, Identifier.parse(gateParent))
+                 .texture("texture", gateTexture).texture("particle", planksTexture);
+-        ModelFile gateOpen = models().withExistingParent(fenceGate + "_open", ResourceLocation.parse(gateParent + "_open"))
++        ModelFile gateOpen = models().withExistingParent(fenceGate + "_open", Identifier.parse(gateParent + "_open"))
+                 .texture("texture", gateTexture).texture("particle", planksTexture);
+-        ModelFile gateWall = models().withExistingParent(fenceGate + "_wall", ResourceLocation.parse(gateParent + "_wall"))
++        ModelFile gateWall = models().withExistingParent(fenceGate + "_wall", Identifier.parse(gateParent + "_wall"))
+                 .texture("texture", gateTexture).texture("particle", planksTexture);
+-        ModelFile gateWallOpen = models().withExistingParent(fenceGate + "_wall_open", ResourceLocation.parse(gateParent + "_wall_open"))
++        ModelFile gateWallOpen = models().withExistingParent(fenceGate + "_wall_open", Identifier.parse(gateParent + "_wall_open"))
+                 .texture("texture", gateTexture).texture("particle", planksTexture);
+ 
+         getVariantBuilder(ModBlocks.WHISTLECANE_FENCE_GATE.get()).forAllStatesExcept(state -> {
+@@ -189,7 +189,7 @@ public class BlockStateProvider extends net.neoforged.neoforge.client.model.gene
+     }
+ 
+     private void createWhistlecaneFenceItemModel() {
+-        ResourceLocation beamTexture = GardensOfTheDead.id(BLOCK_FOLDER + "/" + getName(ModBlocks.WHISTLECANE_FENCE.get()) + "_side");
++        Identifier beamTexture = GardensOfTheDead.id(BLOCK_FOLDER + "/" + getName(ModBlocks.WHISTLECANE_FENCE.get()) + "_side");
+         ItemModelBuilder builder = itemModels().withExistingParent(getName(ModBlocks.WHISTLECANE_FENCE.get()), BLOCK_MODEL)
+                 .transforms()
+                 .transform(ItemDisplayContext.GUI)
+@@ -255,8 +255,8 @@ public class BlockStateProvider extends net.neoforged.neoforge.client.model.gene
+ 
+     private void addWhistlecane() {
+         String name = getName(ModBlocks.WHISTLECANE.get());
+-        ResourceLocation leafTexture0 = GardensOfTheDead.id(ModelProvider.BLOCK_FOLDER + "/" + name + "_leaves" + "0");
+-        ResourceLocation leafTexture1 = GardensOfTheDead.id(ModelProvider.BLOCK_FOLDER + "/" + name + "_leaves" + "1");
++        Identifier leafTexture0 = GardensOfTheDead.id(ModelProvider.BLOCK_FOLDER + "/" + name + "_leaves" + "0");
++        Identifier leafTexture1 = GardensOfTheDead.id(ModelProvider.BLOCK_FOLDER + "/" + name + "_leaves" + "1");
+ 
+         String model0Name = name + "0";
+         String model1Name = name + "1";
+@@ -295,8 +295,8 @@ public class BlockStateProvider extends net.neoforged.neoforge.client.model.gene
+ 
+     private void addPottedWhistleCane() {
+         String pottedWhistleCane = getName(ModBlocks.POTTED_WHISTLECANE.get());
+-        ResourceLocation whistlecaneTexture = blockTexture(pottedWhistleCane);
+-        ResourceLocation flowerpotTexture = blockTexture(Blocks.FLOWER_POT);
++        Identifier whistlecaneTexture = blockTexture(pottedWhistleCane);
++        Identifier flowerpotTexture = blockTexture(Blocks.FLOWER_POT);
+ 
+         BlockModelBuilder model = models().getBuilder(pottedWhistleCane)
+                 .texture("whistlecane", whistlecaneTexture)
+@@ -324,7 +324,7 @@ public class BlockStateProvider extends net.neoforged.neoforge.client.model.gene
+         simpleBlock(ModBlocks.POTTED_WHISTLECANE.get(), model);
+     }
+ 
+-    private BlockModelBuilder whistlecaneModel(String modelName, int u1, ResourceLocation sideTexture) {
++    private BlockModelBuilder whistlecaneModel(String modelName, int u1, Identifier sideTexture) {
+         BlockModelBuilder model = models().withExistingParent(modelName, BLOCK_MODEL)
+                 .texture("top", WHISTLECANE_0)
+                 .texture("side", sideTexture)
+@@ -414,20 +414,20 @@ public class BlockStateProvider extends net.neoforged.neoforge.client.model.gene
+                 .end();
+     }
+ 
+-    public void slabWithItem(SlabBlock block, ResourceLocation texture) {
++    public void slabWithItem(SlabBlock block, Identifier texture) {
+         slabWithItem(block, texture, texture);
+     }
+ 
+-    public void slabWithItem(SlabBlock block, ResourceLocation sideTexture, ResourceLocation topTexture) {
++    public void slabWithItem(SlabBlock block, Identifier sideTexture, Identifier topTexture) {
+         slabBlock(block, sideTexture, sideTexture, topTexture, topTexture);
+         simpleBlockItem(block);
+     }
+ 
+-    public void stairsWithItem(StairBlock block, ResourceLocation texture) {
++    public void stairsWithItem(StairBlock block, Identifier texture) {
+         stairsWithItem(block, texture, texture);
+     }
+ 
+-    public void stairsWithItem(StairBlock block, ResourceLocation sideTexture, ResourceLocation topTexture) {
++    public void stairsWithItem(StairBlock block, Identifier sideTexture, Identifier topTexture) {
+         stairsBlock(block, sideTexture, topTexture, topTexture);
+         simpleBlockItem(block);
+     }
+@@ -451,27 +451,27 @@ public class BlockStateProvider extends net.neoforged.neoforge.client.model.gene
+         itemModels().withExistingParent(getName(trapDoor), modLoc("%s/%s_bottom".formatted(BLOCK_FOLDER, getName(trapDoor))));
+     }
+ 
+-    public void buttonWithItem(ButtonBlock block, ResourceLocation texture) {
++    public void buttonWithItem(ButtonBlock block, Identifier texture) {
+         buttonBlock(block, texture);
+         itemModels().buttonInventory(getName(block), texture);
+     }
+ 
+-    public void pressurePlateWithItem(PressurePlateBlock block, ResourceLocation texture) {
++    public void pressurePlateWithItem(PressurePlateBlock block, Identifier texture) {
+         pressurePlateBlock(block, texture);
+         simpleBlockItem(block);
+     }
+ 
+-    public void fenceWithItem(FenceBlock block, ResourceLocation texture) {
++    public void fenceWithItem(FenceBlock block, Identifier texture) {
+         fenceBlock(block, texture);
+         itemModels().fenceInventory(getName(block), texture);
+     }
+ 
+-    public void fenceGateWithItem(FenceGateBlock block, ResourceLocation texture) {
++    public void fenceGateWithItem(FenceGateBlock block, Identifier texture) {
+         fenceGateBlock(block, texture);
+         simpleBlockItem(block);
+     }
+ 
+-    public void signWithItem(Block signBlock, Block wallSignBlock, ResourceLocation texture) {
++    public void signWithItem(Block signBlock, Block wallSignBlock, Identifier texture) {
+         ModelFile sign = models().sign(getName(signBlock), texture);
+         simpleBlock(signBlock, sign);
+         simpleBlock(wallSignBlock, sign);
+@@ -480,8 +480,8 @@ public class BlockStateProvider extends net.neoforged.neoforge.client.model.gene
+ 
+     private void logWithItem(RotatedPillarBlock wood) {
+         String name = getName(wood);
+-        ResourceLocation side = blockTexture(name);
+-        ResourceLocation top = blockTexture(name + "_top");
++        Identifier side = blockTexture(name);
++        Identifier top = blockTexture(name + "_top");
+         axisBlock(wood, side, top);
+         simpleBlockItem(wood);
+     }
+@@ -491,8 +491,8 @@ public class BlockStateProvider extends net.neoforged.neoforge.client.model.gene
+         String axisName = axis.getName().toLowerCase(Locale.ROOT);
+         String parent = "%s/cube_column_uv_locked_%s".formatted(BLOCK_FOLDER, axisName);
+         String modelName = name + '_' + axisName;
+-        ResourceLocation side = blockTexture(name);
+-        ResourceLocation end = blockTexture(name + "_top");
++        Identifier side = blockTexture(name);
++        Identifier end = blockTexture(name + "_top");
+ 
+         return models().withExistingParent(modelName, parent)
+                 .texture("side", side)
+@@ -521,7 +521,7 @@ public class BlockStateProvider extends net.neoforged.neoforge.client.model.gene
+         String name = getName(wood)
+                 .replace("wood", "log")
+                 .replace("hyphae", "stem");
+-        ResourceLocation side = blockTexture(name);
++        Identifier side = blockTexture(name);
+         axisBlock(wood, side, side);
+         simpleBlockItem(wood);
+     }
+@@ -574,7 +574,7 @@ public class BlockStateProvider extends net.neoforged.neoforge.client.model.gene
+         generatedItem(block.asItem(), GardensOfTheDead.id(BLOCK_FOLDER + '/' + name));
+     }
+ 
+-    private void generatedItem(Item item, ResourceLocation texture) {
++    private void generatedItem(Item item, Identifier texture) {
+         // noinspection ConstantConditions
+         itemModels().getBuilder(BuiltInRegistries.ITEM.getKey(item).toString())
+                 .parent(new ModelFile.UncheckedModelFile("item/generated"))
+@@ -586,21 +586,21 @@ public class BlockStateProvider extends net.neoforged.neoforge.client.model.gene
+     }
+ 
+     private ConfiguredModel crossMirrored(String textureName) {
+-        ResourceLocation cross = blockTexture(textureName);
++        Identifier cross = blockTexture(textureName);
+         return new ConfiguredModel(models().singleTexture(textureName + "_mirrored", modLoc(BLOCK_FOLDER + "/cross_mirrored"), "cross", cross).renderType(CUTOUT));
+     }
+ 
+     private ConfiguredModel crossFlipped(String textureName) {
+-        ResourceLocation cross = blockTexture(textureName);
++        Identifier cross = blockTexture(textureName);
+         return new ConfiguredModel(models().singleTexture(textureName + "_flipped", modLoc(BLOCK_FOLDER + "/cross_flipped"), "cross", cross).renderType(CUTOUT));
+     }
+ 
+     private ConfiguredModel crossMirroredFlipped(String textureName) {
+-        ResourceLocation cross = blockTexture(textureName);
++        Identifier cross = blockTexture(textureName);
+         return new ConfiguredModel(models().singleTexture(textureName + "_mirrored_flipped", modLoc(BLOCK_FOLDER + "/cross_mirrored_flipped"), "cross", cross).renderType(CUTOUT));
+     }
+ 
+-    private ResourceLocation blockTexture(String textureName) {
++    private Identifier blockTexture(String textureName) {
+         return modLoc(BLOCK_FOLDER + "/" + textureName);
+     }
+ 
+diff --git a/neoforge/src/main/java/gardensofthedead/neoforge/platform/NeoForgePlatformHelper.java b/neoforge/src/main/java/gardensofthedead/neoforge/platform/NeoForgePlatformHelper.java
+index f758a9e..0ab115f 100644
+--- a/neoforge/src/main/java/gardensofthedead/neoforge/platform/NeoForgePlatformHelper.java
++++ b/neoforge/src/main/java/gardensofthedead/neoforge/platform/NeoForgePlatformHelper.java
+@@ -5,7 +5,7 @@ import gardensofthedead.neoforge.block.StrippableLogBlock;
+ import gardensofthedead.platform.PlatformHelper;
+ import gardensofthedead.registry.ModBlockProperties;
+ import net.minecraft.core.registries.BuiltInRegistries;
+-import net.minecraft.resources.ResourceLocation;
++import net.minecraft.resources.Identifier;
+ import net.minecraft.world.item.ItemStack;
+ import net.minecraft.world.level.block.Block;
+ import net.minecraft.world.level.block.Blocks;
+@@ -42,7 +42,7 @@ public class NeoForgePlatformHelper implements PlatformHelper {
+     }
+ 
+     @Override
+-    public BlockBehaviour.Properties copyBlockPropertiesWithLoot(BlockBehaviour.Properties properties, ResourceLocation id) {
++    public BlockBehaviour.Properties copyBlockPropertiesWithLoot(BlockBehaviour.Properties properties, Identifier id) {
+         return ModBlockProperties.copy(properties).lootFrom(() -> BuiltInRegistries.BLOCK.get(id));
+     }
+ }
+diff --git a/settings.gradle b/settings.gradle
+index 51706de..d875646 100644
+--- a/settings.gradle
++++ b/settings.gradle
+@@ -1,14 +1,14 @@
+ pluginManagement {
+     repositories {
+-        maven { url "https://maven.fabricmc.net/" }
+-        maven { url "https://maven.architectury.dev/" }
+-        maven { url "https://files.minecraftforge.net/maven/" }
++        maven { url = 'https://maven.fabricmc.net/' }
++        maven { url = 'https://maven.architectury.dev/' }
++        maven { url = 'https://maven.minecraftforge.net/' }
+         gradlePluginPortal()
+     }
+ }
+ 
+-rootProject.name = 'gardens_of_the_dead'
++plugins {
++    id 'org.gradle.toolchains.foojay-resolver-convention' version '0.8.0'
++}
+ 
+-include 'common'
+ include 'fabric'
+-include 'neoforge'

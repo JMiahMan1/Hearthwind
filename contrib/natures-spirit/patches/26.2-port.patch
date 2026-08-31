@@ -1,0 +1,1624 @@
+diff --git a/build.gradle b/build.gradle
+index 77c38b3..adabb33 100644
+--- a/build.gradle
++++ b/build.gradle
+@@ -11,7 +11,9 @@ plugins {
+ // subproject's jar, sharing common options via the `*Options { ... }` blocks.
+ evaluationDependsOn(':common')
+ evaluationDependsOn(':fabric')
+-evaluationDependsOn(':neoforge')
++if (findProject(':neoforge') != null) {
++    evaluationDependsOn(':neoforge')
++}
+ 
+ // Maven publish aggregators. Run `./gradlew publishToSnapshots` to push a `-SNAPSHOT`
+ // artifact (republishable, refreshes consumers per cacheChangingModulesFor); run
+@@ -64,11 +66,13 @@ publishMods {
+             modLoaders.add('fabric')
+             displayName = fabricDisplayName
+         }
+-        curseforge('curseforgeNeoforge') {
+-            from cfOptions
+-            file = project(':neoforge').tasks.named('jar', Jar).flatMap { it.archiveFile }
+-            modLoaders.add('neoforge')
+-            displayName = neoforgeDisplayName
++        if (findProject(':neoforge') != null) {
++            curseforge('curseforgeNeoforge') {
++                from cfOptions
++                file = project(':neoforge').tasks.named('jar', Jar).flatMap { it.archiveFile }
++                modLoaders.add('neoforge')
++                displayName = neoforgeDisplayName
++            }
+         }
+     }
+ 
+@@ -89,11 +93,13 @@ publishMods {
+             modLoaders.add('fabric')
+             displayName = fabricDisplayName
+         }
+-        modrinth('modrinthNeoforge') {
+-            from mrOptions
+-            file = project(':neoforge').tasks.named('jar', Jar).flatMap { it.archiveFile }
+-            modLoaders.add('neoforge')
+-            displayName = neoforgeDisplayName
++        if (findProject(':neoforge') != null) {
++            modrinth('modrinthNeoforge') {
++                from mrOptions
++                file = project(':neoforge').tasks.named('jar', Jar).flatMap { it.archiveFile }
++                modLoaders.add('neoforge')
++                displayName = neoforgeDisplayName
++            }
+         }
+     }
+ 
+diff --git a/common/src/main/java/net/hibiscus/naturespirit/NSCommonContent.java b/common/src/main/java/net/hibiscus/naturespirit/NSCommonContent.java
+index e39e7d0..989e014 100644
+--- a/common/src/main/java/net/hibiscus/naturespirit/NSCommonContent.java
++++ b/common/src/main/java/net/hibiscus/naturespirit/NSCommonContent.java
+@@ -60,7 +60,7 @@ public final class NSCommonContent {
+     }
+ 
+     private static void blockEntityBlocks() {
+-        NSCommonHooks.BLOCK_ENTITY_BLOCKS.add(new NSCommonHooks.BlockEntityBlocks(() -> BlockEntityType.SIGN, List.of(
++        NSCommonHooks.BLOCK_ENTITY_BLOCKS.add(new NSCommonHooks.BlockEntityBlocks(() -> net.minecraft.world.level.block.entity.BlockEntityTypes.SIGN, List.of(
+                 NSBlocks.REDWOOD.getSign(),
+                 NSBlocks.REDWOOD.getWallSign(),
+                 NSBlocks.SUGI.getSign(),
+@@ -98,7 +98,7 @@ public final class NSCommonContent {
+                 NSBlocks.PAPER_SIGN,
+                 NSBlocks.PAPER_WALL_SIGN
+         )));
+-        NSCommonHooks.BLOCK_ENTITY_BLOCKS.add(new NSCommonHooks.BlockEntityBlocks(() -> BlockEntityType.HANGING_SIGN, List.of(
++        NSCommonHooks.BLOCK_ENTITY_BLOCKS.add(new NSCommonHooks.BlockEntityBlocks(() -> net.minecraft.world.level.block.entity.BlockEntityTypes.HANGING_SIGN, List.of(
+                 NSBlocks.REDWOOD.getHangingSign(),
+                 NSBlocks.REDWOOD.getHangingWallSign(),
+                 NSBlocks.SUGI.getHangingSign(),
+diff --git a/common/src/main/java/net/hibiscus/naturespirit/advancements/CoconutHitCriterion.java b/common/src/main/java/net/hibiscus/naturespirit/advancements/CoconutHitCriterion.java
+index 61d2a5f..a8c57cf 100644
+--- a/common/src/main/java/net/hibiscus/naturespirit/advancements/CoconutHitCriterion.java
++++ b/common/src/main/java/net/hibiscus/naturespirit/advancements/CoconutHitCriterion.java
+@@ -3,10 +3,10 @@ package net.hibiscus.naturespirit.advancements;
+ import com.mojang.serialization.Codec;
+ import com.mojang.serialization.codecs.RecordCodecBuilder;
+ import net.hibiscus.naturespirit.registration.NSCriteria;
+-import net.minecraft.advancements.Criterion;
+-import net.minecraft.advancements.criterion.ContextAwarePredicate;
+-import net.minecraft.advancements.criterion.EntityPredicate;
+-import net.minecraft.advancements.criterion.SimpleCriterionTrigger;
++import net.minecraft.advancements.triggers.Criterion;
++import net.minecraft.advancements.predicates.ContextAwarePredicate;
++import net.minecraft.advancements.predicates.entity.EntityPredicate;
++import net.minecraft.advancements.triggers.SimpleCriterionTrigger;
+ import net.minecraft.server.level.ServerPlayer;
+ import net.minecraft.world.entity.Entity;
+ import net.minecraft.world.level.storage.loot.LootContext;
+diff --git a/common/src/main/java/net/hibiscus/naturespirit/blocks/BranchingTrunkBlock.java b/common/src/main/java/net/hibiscus/naturespirit/blocks/BranchingTrunkBlock.java
+index f3915c1..fd67ea2 100644
+--- a/common/src/main/java/net/hibiscus/naturespirit/blocks/BranchingTrunkBlock.java
++++ b/common/src/main/java/net/hibiscus/naturespirit/blocks/BranchingTrunkBlock.java
+@@ -11,7 +11,7 @@ import net.minecraft.tags.BlockTags;
+ import net.minecraft.tags.FluidTags;
+ import net.minecraft.tags.ItemTags;
+ import net.minecraft.util.RandomSource;
+-import net.minecraft.advancements.CriteriaTriggers;
++import net.minecraft.advancements.triggers.CriteriaTriggers;
+ import net.minecraft.server.level.ServerPlayer;
+ import net.minecraft.sounds.SoundEvents;
+ import net.minecraft.sounds.SoundSource;
+diff --git a/common/src/main/java/net/hibiscus/naturespirit/blocks/GrowingBranchingTrunkBlock.java b/common/src/main/java/net/hibiscus/naturespirit/blocks/GrowingBranchingTrunkBlock.java
+index f091cf6..e06cee0 100644
+--- a/common/src/main/java/net/hibiscus/naturespirit/blocks/GrowingBranchingTrunkBlock.java
++++ b/common/src/main/java/net/hibiscus/naturespirit/blocks/GrowingBranchingTrunkBlock.java
+@@ -2,7 +2,7 @@ package net.hibiscus.naturespirit.blocks;
+ 
+ 
+ import net.hibiscus.naturespirit.registration.NSTags;
+-import net.minecraft.advancements.CriteriaTriggers;
++import net.minecraft.advancements.triggers.CriteriaTriggers;
+ import net.minecraft.core.BlockPos;
+ import net.minecraft.core.Direction;
+ import net.minecraft.server.level.ServerLevel;
+diff --git a/common/src/main/java/net/hibiscus/naturespirit/blocks/NSCauldronBehavior.java b/common/src/main/java/net/hibiscus/naturespirit/blocks/NSCauldronBehavior.java
+index 61aa34f..c004469 100644
+--- a/common/src/main/java/net/hibiscus/naturespirit/blocks/NSCauldronBehavior.java
++++ b/common/src/main/java/net/hibiscus/naturespirit/blocks/NSCauldronBehavior.java
+@@ -4,7 +4,7 @@ import java.util.List;
+ import java.util.function.Supplier;
+ import net.hibiscus.naturespirit.NaturesSpirit;
+ import net.hibiscus.naturespirit.registration.NSBlocks;
+-import net.minecraft.advancements.CriteriaTriggers;
++import net.minecraft.advancements.triggers.CriteriaTriggers;
+ import net.minecraft.core.BlockPos;
+ import net.minecraft.core.cauldron.CauldronInteraction;
+ import net.minecraft.core.cauldron.CauldronInteractions;
+diff --git a/common/src/main/java/net/hibiscus/naturespirit/items/CoconutHalfItem.java b/common/src/main/java/net/hibiscus/naturespirit/items/CoconutHalfItem.java
+index 398fd98..8e1138b 100644
+--- a/common/src/main/java/net/hibiscus/naturespirit/items/CoconutHalfItem.java
++++ b/common/src/main/java/net/hibiscus/naturespirit/items/CoconutHalfItem.java
+@@ -1,6 +1,6 @@
+ package net.hibiscus.naturespirit.items;
+ 
+-import net.minecraft.advancements.CriteriaTriggers;
++import net.minecraft.advancements.triggers.CriteriaTriggers;
+ import net.minecraft.server.level.ServerPlayer;
+ import net.minecraft.stats.Stats;
+ import net.minecraft.world.InteractionHand;
+diff --git a/common/src/main/java/net/hibiscus/naturespirit/mixin/BrushItemMixin.java b/common/src/main/java/net/hibiscus/naturespirit/mixin/BrushItemMixin.java
+index 549aaf1..555b30c 100644
+--- a/common/src/main/java/net/hibiscus/naturespirit/mixin/BrushItemMixin.java
++++ b/common/src/main/java/net/hibiscus/naturespirit/mixin/BrushItemMixin.java
+@@ -52,11 +52,11 @@ public class BrushItemMixin {
+ 
+   @Unique
+   private ItemEntity naturespirit$getChalkPowder(Level world, BlockPos blockPos) {
+-    double d = EntityType.ITEM.getWidth();
++    double d = net.minecraft.world.entity.EntityTypes.ITEM.getWidth();
+     double e = 1.0 - d;
+     double f = d / 2.0;
+     double g = (double) blockPos.getX() + 0.5 * e + f;
+-    double h = (double) blockPos.getY() + 0.25 + (double)(EntityType.ITEM.getHeight() / 2.0F);
++    double h = (double) blockPos.getY() + 0.25 + (double)(net.minecraft.world.entity.EntityTypes.ITEM.getHeight() / 2.0F);
+     double i = (double) blockPos.getZ() + 0.5 * e + f;
+     return new ItemEntity(world, g, h, i, new ItemStack(NSBlocks.CHALK_POWDER.get(), world.getRandom().nextIntBetweenInclusive(1, 3)));
+   }
+diff --git a/common/src/main/java/net/hibiscus/naturespirit/mixin/SurfaceBuilderMixin.java b/common/src/main/java/net/hibiscus/naturespirit/mixin/SurfaceBuilderMixin.java
+index b92c529..e6bca6b 100644
+--- a/common/src/main/java/net/hibiscus/naturespirit/mixin/SurfaceBuilderMixin.java
++++ b/common/src/main/java/net/hibiscus/naturespirit/mixin/SurfaceBuilderMixin.java
+@@ -57,8 +57,8 @@ public abstract class SurfaceBuilderMixin {
+   }
+ 
+   @Inject(method = "buildSurface", at = @At(value = "INVOKE", target = "Lnet/minecraft/core/Holder;is(Lnet/minecraft/resources/ResourceKey;)Z", ordinal = 0))
+-  private void injectPillars(RandomState noiseConfig, BiomeManager biomeAccess, Registry<Biome> biomeRegistry, boolean useLegacyRandom, WorldGenerationContext heightContext,
+-      ChunkAccess chunk, NoiseChunk chunkNoiseSampler, SurfaceRules.RuleSource materialRule,
++  private void injectPillars(RandomState noiseConfig, BiomeManager biomeAccess, boolean useLegacyRandom, WorldGenerationContext heightContext,
++      ChunkAccess chunk, NoiseChunk chunkNoiseSampler, SurfaceRules.RuleSource materialRule, java.util.Set<Holder<Biome>> biomes,
+       CallbackInfo ci,
+       @Local Holder<Biome> registryEntry, @Local(ordinal = 2) int k, @Local(ordinal = 3) int l, @Local(ordinal = 4) int m, @Local(ordinal = 5) int n,
+       @Local BlockColumn blockColumn) {
+diff --git a/common/src/main/java/net/hibiscus/naturespirit/registration/NSBlocks.java b/common/src/main/java/net/hibiscus/naturespirit/registration/NSBlocks.java
+index e42b954..28f0e9a 100644
+--- a/common/src/main/java/net/hibiscus/naturespirit/registration/NSBlocks.java
++++ b/common/src/main/java/net/hibiscus/naturespirit/registration/NSBlocks.java
+@@ -186,29 +186,29 @@ public class NSBlocks {
+   public static final NSBlockHolder<FlowerPotBlock> POTTED_SHIITAKE_MUSHROOM = registerPottedBlock("potted_shiitake_mushroom", SHIITAKE_MUSHROOM);
+ 
+ 
+-  public static final FlowerSet LAVENDER = new FlowerSet("lavender", Items.PURPLE_DYE, FlowerSet.FlowerPreset.BIG_TALL);
+-  public static final FlowerSet BLEEDING_HEART = new FlowerSet("bleeding_heart", Items.PINK_DYE, FlowerSet.FlowerPreset.BIG_TALL);
+-  public static final FlowerSet BLUE_BULBS = new FlowerSet("blue_bulbs", Items.BLUE_DYE, FlowerSet.FlowerPreset.BIG_TALL);
+-  public static final FlowerSet CARNATION = new FlowerSet("carnation", Items.RED_DYE, FlowerSet.FlowerPreset.BIG_TALL);
+-  public static final FlowerSet GARDENIA = new FlowerSet("gardenia", Items.WHITE_DYE, FlowerSet.FlowerPreset.TALL);
+-  public static final FlowerSet SNAPDRAGON = new FlowerSet("snapdragon", Items.PINK_DYE, FlowerSet.FlowerPreset.TALL);
+-  public static final FlowerSet FOXGLOVE = new FlowerSet("foxglove", Items.PURPLE_DYE, FlowerSet.FlowerPreset.TALL);
+-  public static final FlowerSet BEGONIA = new FlowerSet("begonia", Items.ORANGE_DYE, FlowerSet.FlowerPreset.TALL);
+-  public static final FlowerSet MARIGOLD = new FlowerSet("marigold", Items.ORANGE_DYE, MobEffects.FIRE_RESISTANCE, FlowerSet.FlowerPreset.BIG_SMALL);
+-  public static final FlowerSet BLUEBELL = new FlowerSet("bluebell", Items.BLUE_DYE, MobEffects.HASTE, FlowerSet.FlowerPreset.BIG_SMALL);
+-  public static final FlowerSet TIGER_LILY = new FlowerSet("tiger_lily", Items.ORANGE_DYE, MobEffects.FIRE_RESISTANCE, FlowerSet.FlowerPreset.BIG_SMALL);
+-  public static final FlowerSet PURPLE_WILDFLOWER = new FlowerSet("purple_wildflower", Items.PURPLE_DYE, MobEffects.SLOW_FALLING, FlowerSet.FlowerPreset.BIG_SMALL);
+-  public static final FlowerSet YELLOW_WILDFLOWER = new FlowerSet("yellow_wildflower", Items.YELLOW_DYE, MobEffects.SLOW_FALLING, FlowerSet.FlowerPreset.BIG_SMALL);
+-  public static final FlowerSet RED_HEATHER = new FlowerSet("red_heather", Items.RED_DYE, MobEffects.FIRE_RESISTANCE, FlowerSet.FlowerPreset.BIG_SMALL);
+-  public static final FlowerSet WHITE_HEATHER = new FlowerSet("white_heather", Items.WHITE_DYE, MobEffects.FIRE_RESISTANCE, FlowerSet.FlowerPreset.BIG_SMALL);
+-  public static final FlowerSet PURPLE_HEATHER = new FlowerSet("purple_heather", Items.PURPLE_DYE, MobEffects.FIRE_RESISTANCE, FlowerSet.FlowerPreset.BIG_SMALL);
+-  public static final FlowerSet ANEMONE = new FlowerSet("anemone", Items.MAGENTA_DYE, MobEffects.RESISTANCE, FlowerSet.FlowerPreset.MID_SMALL);
+-  public static final FlowerSet DWARF_BLOSSOMS = new FlowerSet("dwarf_blossoms", Items.PINK_DYE, MobEffects.RESISTANCE, FlowerSet.FlowerPreset.MID_SMALL);
+-  public static final FlowerSet PROTEA = new FlowerSet("protea", Items.PINK_DYE, MobEffects.WATER_BREATHING, FlowerSet.FlowerPreset.MID_SMALL);
+-  public static final FlowerSet HIBISCUS = new FlowerSet("hibiscus", Items.RED_DYE, MobEffects.LUCK, FlowerSet.FlowerPreset.SMALL);
+-  public static final FlowerSet BLUE_IRIS = new FlowerSet("blue_iris", Items.LIGHT_BLUE_DYE, MobEffects.STRENGTH, FlowerSet.FlowerPreset.SMALL);
+-  public static final FlowerSet BLACK_IRIS = new FlowerSet("black_iris", Items.BLACK_DYE, MobEffects.STRENGTH, FlowerSet.FlowerPreset.SMALL);
+-  public static final FlowerSet RUBY_BLOSSOMS = new FlowerSet("ruby_blossoms", Items.RED_DYE, MobEffects.JUMP_BOOST, FlowerSet.FlowerPreset.BIG_SMALL);
++  public static final FlowerSet LAVENDER = new FlowerSet("lavender", Items.DYE.purple(), FlowerSet.FlowerPreset.BIG_TALL);
++  public static final FlowerSet BLEEDING_HEART = new FlowerSet("bleeding_heart", Items.DYE.pink(), FlowerSet.FlowerPreset.BIG_TALL);
++  public static final FlowerSet BLUE_BULBS = new FlowerSet("blue_bulbs", Items.DYE.blue(), FlowerSet.FlowerPreset.BIG_TALL);
++  public static final FlowerSet CARNATION = new FlowerSet("carnation", Items.DYE.red(), FlowerSet.FlowerPreset.BIG_TALL);
++  public static final FlowerSet GARDENIA = new FlowerSet("gardenia", Items.DYE.white(), FlowerSet.FlowerPreset.TALL);
++  public static final FlowerSet SNAPDRAGON = new FlowerSet("snapdragon", Items.DYE.pink(), FlowerSet.FlowerPreset.TALL);
++  public static final FlowerSet FOXGLOVE = new FlowerSet("foxglove", Items.DYE.purple(), FlowerSet.FlowerPreset.TALL);
++  public static final FlowerSet BEGONIA = new FlowerSet("begonia", Items.DYE.orange(), FlowerSet.FlowerPreset.TALL);
++  public static final FlowerSet MARIGOLD = new FlowerSet("marigold", Items.DYE.orange(), MobEffects.FIRE_RESISTANCE, FlowerSet.FlowerPreset.BIG_SMALL);
++  public static final FlowerSet BLUEBELL = new FlowerSet("bluebell", Items.DYE.blue(), MobEffects.HASTE, FlowerSet.FlowerPreset.BIG_SMALL);
++  public static final FlowerSet TIGER_LILY = new FlowerSet("tiger_lily", Items.DYE.orange(), MobEffects.FIRE_RESISTANCE, FlowerSet.FlowerPreset.BIG_SMALL);
++  public static final FlowerSet PURPLE_WILDFLOWER = new FlowerSet("purple_wildflower", Items.DYE.purple(), MobEffects.SLOW_FALLING, FlowerSet.FlowerPreset.BIG_SMALL);
++  public static final FlowerSet YELLOW_WILDFLOWER = new FlowerSet("yellow_wildflower", Items.DYE.yellow(), MobEffects.SLOW_FALLING, FlowerSet.FlowerPreset.BIG_SMALL);
++  public static final FlowerSet RED_HEATHER = new FlowerSet("red_heather", Items.DYE.red(), MobEffects.FIRE_RESISTANCE, FlowerSet.FlowerPreset.BIG_SMALL);
++  public static final FlowerSet WHITE_HEATHER = new FlowerSet("white_heather", Items.DYE.white(), MobEffects.FIRE_RESISTANCE, FlowerSet.FlowerPreset.BIG_SMALL);
++  public static final FlowerSet PURPLE_HEATHER = new FlowerSet("purple_heather", Items.DYE.purple(), MobEffects.FIRE_RESISTANCE, FlowerSet.FlowerPreset.BIG_SMALL);
++  public static final FlowerSet ANEMONE = new FlowerSet("anemone", Items.DYE.magenta(), MobEffects.RESISTANCE, FlowerSet.FlowerPreset.MID_SMALL);
++  public static final FlowerSet DWARF_BLOSSOMS = new FlowerSet("dwarf_blossoms", Items.DYE.pink(), MobEffects.RESISTANCE, FlowerSet.FlowerPreset.MID_SMALL);
++  public static final FlowerSet PROTEA = new FlowerSet("protea", Items.DYE.pink(), MobEffects.WATER_BREATHING, FlowerSet.FlowerPreset.MID_SMALL);
++  public static final FlowerSet HIBISCUS = new FlowerSet("hibiscus", Items.DYE.red(), MobEffects.LUCK, FlowerSet.FlowerPreset.SMALL);
++  public static final FlowerSet BLUE_IRIS = new FlowerSet("blue_iris", Items.DYE.lightBlue(), MobEffects.STRENGTH, FlowerSet.FlowerPreset.SMALL);
++  public static final FlowerSet BLACK_IRIS = new FlowerSet("black_iris", Items.DYE.black(), MobEffects.STRENGTH, FlowerSet.FlowerPreset.SMALL);
++  public static final FlowerSet RUBY_BLOSSOMS = new FlowerSet("ruby_blossoms", Items.DYE.red(), MobEffects.JUMP_BOOST, FlowerSet.FlowerPreset.BIG_SMALL);
+   public static final FlowerSet SILVERBUSH = new FlowerSet("silverbush", FlowerSet.FlowerPreset.BIG_TALL);
+ 
+ 
+diff --git a/common/src/main/java/net/hibiscus/naturespirit/registration/NSCreativeTabContents.java b/common/src/main/java/net/hibiscus/naturespirit/registration/NSCreativeTabContents.java
+index 37afbef..1f94478 100644
+--- a/common/src/main/java/net/hibiscus/naturespirit/registration/NSCreativeTabContents.java
++++ b/common/src/main/java/net/hibiscus/naturespirit/registration/NSCreativeTabContents.java
+@@ -392,7 +392,7 @@ public final class NSCreativeTabContents {
+     }
+ 
+     private static void coloredBlocks(TabOutput output) {
+-        output.insertAfter(Items.PINK_TERRACOTTA.getDefaultInstance(), NSBlocks.KAOLIN.get().asItem().getDefaultInstance(), TabVisibility.PARENT_AND_SEARCH_TABS);
++        output.insertAfter(Items.DYED_TERRACOTTA.pink().getDefaultInstance(), NSBlocks.KAOLIN.get().asItem().getDefaultInstance(), TabVisibility.PARENT_AND_SEARCH_TABS);
+         output.insertAfter(NSBlocks.KAOLIN.get().asItem().getDefaultInstance(), NSBlocks.WHITE_KAOLIN.get().asItem().getDefaultInstance(), TabVisibility.PARENT_AND_SEARCH_TABS);
+         output.insertAfter(NSBlocks.WHITE_KAOLIN.get().asItem().getDefaultInstance(), NSBlocks.LIGHT_GRAY_KAOLIN.get().asItem().getDefaultInstance(), TabVisibility.PARENT_AND_SEARCH_TABS);
+         output.insertAfter(NSBlocks.LIGHT_GRAY_KAOLIN.get().asItem().getDefaultInstance(), NSBlocks.GRAY_KAOLIN.get().asItem().getDefaultInstance(), TabVisibility.PARENT_AND_SEARCH_TABS);
+@@ -543,7 +543,7 @@ public final class NSCreativeTabContents {
+         output.insertAfter(NSBlocks.PURPLE_CHALK_SLAB.get().asItem().getDefaultInstance(), NSBlocks.MAGENTA_CHALK_SLAB.get().asItem().getDefaultInstance(), TabVisibility.PARENT_AND_SEARCH_TABS);
+         output.insertAfter(NSBlocks.MAGENTA_CHALK_SLAB.get().asItem().getDefaultInstance(), NSBlocks.PINK_CHALK_SLAB.get().asItem().getDefaultInstance(), TabVisibility.PARENT_AND_SEARCH_TABS);
+ 
+-        output.insertAfter(Items.PINK_CANDLE.getDefaultInstance(), NSBlocks.WHITE_PAPER_LANTERN.get().asItem().getDefaultInstance(), TabVisibility.PARENT_AND_SEARCH_TABS);
++        output.insertAfter(Items.DYED_CANDLE.pink().getDefaultInstance(), NSBlocks.WHITE_PAPER_LANTERN.get().asItem().getDefaultInstance(), TabVisibility.PARENT_AND_SEARCH_TABS);
+         output.insertAfter(NSBlocks.WHITE_PAPER_LANTERN.get().asItem().getDefaultInstance(), NSBlocks.LIGHT_GRAY_PAPER_LANTERN.get().asItem().getDefaultInstance(), TabVisibility.PARENT_AND_SEARCH_TABS);
+         output.insertAfter(NSBlocks.LIGHT_GRAY_PAPER_LANTERN.get().asItem().getDefaultInstance(), NSBlocks.GRAY_PAPER_LANTERN.get().asItem().getDefaultInstance(), TabVisibility.PARENT_AND_SEARCH_TABS);
+         output.insertAfter(NSBlocks.GRAY_PAPER_LANTERN.get().asItem().getDefaultInstance(), NSBlocks.BLACK_PAPER_LANTERN.get().asItem().getDefaultInstance(), TabVisibility.PARENT_AND_SEARCH_TABS);
+diff --git a/common/src/main/java/net/hibiscus/naturespirit/registration/NSCriteria.java b/common/src/main/java/net/hibiscus/naturespirit/registration/NSCriteria.java
+index 6aede3f..a0491e7 100644
+--- a/common/src/main/java/net/hibiscus/naturespirit/registration/NSCriteria.java
++++ b/common/src/main/java/net/hibiscus/naturespirit/registration/NSCriteria.java
+@@ -2,7 +2,7 @@ package net.hibiscus.naturespirit.registration;
+ 
+ 
+ import net.hibiscus.naturespirit.advancements.CoconutHitCriterion;
+-import net.minecraft.advancements.CriterionTrigger;
++import net.minecraft.advancements.triggers.CriterionTrigger;
+ import net.minecraft.core.registries.Registries;
+ 
+ public class NSCriteria {
+diff --git a/common/src/main/java/net/hibiscus/naturespirit/registration/NSRegistryHelper.java b/common/src/main/java/net/hibiscus/naturespirit/registration/NSRegistryHelper.java
+index fc43416..2a101f7 100644
+--- a/common/src/main/java/net/hibiscus/naturespirit/registration/NSRegistryHelper.java
++++ b/common/src/main/java/net/hibiscus/naturespirit/registration/NSRegistryHelper.java
+@@ -55,7 +55,7 @@ public class NSRegistryHelper {
+     }
+ 
+     public static Boolean ocelotOrParrot(BlockState state, BlockGetter world, BlockPos pos, EntityType<?> type) {
+-        return type == EntityType.OCELOT || type == EntityType.PARROT;
++        return type == net.minecraft.world.entity.EntityTypes.OCELOT || type == net.minecraft.world.entity.EntityTypes.PARROT;
+     }
+ 
+     public static <T extends Block> NSBlockHolder<T> registerBlockWithoutItem(String name, Function<BlockBehaviour.Properties, ? extends T> block, Supplier<BlockBehaviour.Properties> properties) {
+diff --git a/common/src/main/java/net/hibiscus/naturespirit/world/NSSurfaceRules.java b/common/src/main/java/net/hibiscus/naturespirit/world/NSSurfaceRules.java
+index 8c74626..e3afb57 100644
+--- a/common/src/main/java/net/hibiscus/naturespirit/world/NSSurfaceRules.java
++++ b/common/src/main/java/net/hibiscus/naturespirit/world/NSSurfaceRules.java
+@@ -40,6 +40,25 @@ public class NSSurfaceRules {
+   private static final ConditionSource STONE_DEPTH_FLOOR_DOWN_1 = SurfaceRules.stoneDepthCheck(1, false, CaveSurface.FLOOR);
+   private static final ConditionSource STONE_DEPTH_FLOOR_DOWN_1_WITH_DEPTH = SurfaceRules.stoneDepthCheck(1, true, CaveSurface.FLOOR);
+ 
++  private static final net.minecraft.core.HolderGetter<net.minecraft.world.level.biome.Biome> DUMMY_BIOME_GETTER = new net.minecraft.core.HolderGetter<>() {
++    private final net.minecraft.core.HolderOwner<net.minecraft.world.level.biome.Biome> owner = new net.minecraft.core.HolderOwner<>() {};
++
++    @Override
++    public java.util.Optional<net.minecraft.core.Holder.Reference<net.minecraft.world.level.biome.Biome>> get(net.minecraft.resources.ResourceKey<net.minecraft.world.level.biome.Biome> key) {
++      return java.util.Optional.of(net.minecraft.core.Holder.Reference.createStandAlone(owner, key));
++    }
++
++    @Override
++    public java.util.Optional<net.minecraft.core.HolderSet.Named<net.minecraft.world.level.biome.Biome>> get(net.minecraft.tags.TagKey<net.minecraft.world.level.biome.Biome> tag) {
++      return java.util.Optional.empty();
++    }
++  };
++
++  @SafeVarargs
++  private static ConditionSource isNSBiome(net.minecraft.resources.ResourceKey<net.minecraft.world.level.biome.Biome>... biomes) {
++    return SurfaceRules.isBiome(DUMMY_BIOME_GETTER, biomes);
++  }
++
+   public static RuleSource makeRules() {
+     ConditionSource above25 = SurfaceRules.yBlockCheck(VerticalAnchor.absolute(25), -1);
+     ConditionSource above60 = SurfaceRules.yBlockCheck(VerticalAnchor.absolute(60), 0);
+@@ -58,12 +77,12 @@ public class NSSurfaceRules {
+         0
+     );
+     ConditionSource holeCondition = SurfaceRules.hole();
+-    ConditionSource noiseCondition1 = SurfaceRules.noiseCondition(Noises.SURFACE, -0.909D, -0.5454D);
+-    ConditionSource noiseCondition2 = SurfaceRules.noiseCondition(Noises.SURFACE, -0.5454D, -0.3818D);
+-    ConditionSource noiseCondition3 = SurfaceRules.noiseCondition(Noises.SURFACE, 0.5454D, 0.909D);
+-    ConditionSource noiseCondition4 = SurfaceRules.noiseCondition(Noises.SURFACE, -0.5454D, 0.0454D);
+-    ConditionSource noiseCondition5 = SurfaceRules.noiseCondition(Noises.SURFACE, 0.2454D, 6D);
+-    ConditionSource noiseCondition6 = SurfaceRules.noiseCondition(Noises.SURFACE, -0.0454D, 6D);
++    ConditionSource noiseCondition1 = SurfaceRules.noiseCondition2d(Noises.SURFACE, -0.909D, -0.5454D);
++    ConditionSource noiseCondition2 = SurfaceRules.noiseCondition2d(Noises.SURFACE, -0.5454D, -0.3818D);
++    ConditionSource noiseCondition3 = SurfaceRules.noiseCondition2d(Noises.SURFACE, 0.5454D, 0.909D);
++    ConditionSource noiseCondition4 = SurfaceRules.noiseCondition2d(Noises.SURFACE, -0.5454D, 0.0454D);
++    ConditionSource noiseCondition5 = SurfaceRules.noiseCondition2d(Noises.SURFACE, 0.2454D, 6D);
++    ConditionSource noiseCondition6 = SurfaceRules.noiseCondition2d(Noises.SURFACE, -0.0454D, 6D);
+ 
+     ConditionSource belowWater = SurfaceRules.waterStartCheck(-6, -1);
+ 
+@@ -75,10 +94,10 @@ public class NSSurfaceRules {
+     RuleSource chertOrSoil = SurfaceRules.sequence(SurfaceRules.ifTrue(SurfaceRules.ON_CEILING, CHERT), SANDY_SOIL);
+     RuleSource stoneOrMoss = SurfaceRules.sequence(SurfaceRules.ifTrue(SurfaceRules.ON_CEILING, STONE), RED_MOSS_BLOCK);
+     RuleSource stoneOrSnow = SurfaceRules.sequence(SurfaceRules.ifTrue(SurfaceRules.ON_CEILING, STONE), SNOW_BLOCK);
+-    RuleSource powderSnow = SurfaceRules.ifTrue(SurfaceRules.noiseCondition(Noises.POWDER_SNOW, 0.35, 0.6), SurfaceRules.ifTrue(materialCondition7, POWDER_SNOW));
++    RuleSource powderSnow = SurfaceRules.ifTrue(SurfaceRules.noiseCondition2d(Noises.POWDER_SNOW, 0.35, 0.6), SurfaceRules.ifTrue(materialCondition7, POWDER_SNOW));
+ 
+     RuleSource stratifiedDesertRule = SurfaceRules.ifTrue(SurfaceRules.ON_FLOOR,
+-        SurfaceRules.ifTrue(SurfaceRules.isBiome(NSBiomes.STRATIFIED_DESERT), SurfaceRules.sequence(
++        SurfaceRules.ifTrue(isNSBiome(NSBiomes.STRATIFIED_DESERT), SurfaceRules.sequence(
+             SurfaceRules.ifTrue(above256, CHERT),
+             SurfaceRules.ifTrue(above70, SurfaceRules.sequence(
+                 SurfaceRules.ifTrue(SurfaceRules.not(above76),
+@@ -100,60 +119,60 @@ public class NSSurfaceRules {
+ 
+     );
+     RuleSource steppeUndergroundRule = SurfaceRules.ifTrue(
+-        SurfaceRules.isBiome(NSBiomes.SLEETED_SLOPES, NSBiomes.BLOOMING_HIGHLANDS, NSBiomes.SNOWCAPPED_RED_PEAKS, NSBiomes.SHRUBBY_HIGHLANDS, NSBiomes.WOODY_HIGHLANDS,
++        isNSBiome(NSBiomes.SLEETED_SLOPES, NSBiomes.BLOOMING_HIGHLANDS, NSBiomes.SNOWCAPPED_RED_PEAKS, NSBiomes.SHRUBBY_HIGHLANDS, NSBiomes.WOODY_HIGHLANDS,
+             NSBiomes.ARID_HIGHLANDS, NSBiomes.STRATIFIED_DESERT, NSBiomes.LIVELY_DUNES, NSBiomes.BLOOMING_DUNES),
+         SurfaceRules.ifTrue(above25, SurfaceRules.bandlands())
+     );
+ 
+     RuleSource desertSteppeRule = SurfaceRules.sequence(
+-        SurfaceRules.ifTrue(SurfaceRules.ON_FLOOR,  SurfaceRules.ifTrue(SurfaceRules.isBiome(NSBiomes.ARID_HIGHLANDS, NSBiomes.SHRUBBY_HIGHLANDS, NSBiomes.WOODY_HIGHLANDS, NSBiomes.BLOOMING_HIGHLANDS), SurfaceRules.sequence(
++        SurfaceRules.ifTrue(SurfaceRules.ON_FLOOR,  SurfaceRules.ifTrue(isNSBiome(NSBiomes.ARID_HIGHLANDS, NSBiomes.SHRUBBY_HIGHLANDS, NSBiomes.WOODY_HIGHLANDS, NSBiomes.BLOOMING_HIGHLANDS), SurfaceRules.sequence(
+                 SurfaceRules.ifTrue(above256, CHERT),
+                 SurfaceRules.ifTrue(above70, SurfaceRules.sequence(
+-                    SurfaceRules.ifTrue(SurfaceRules.isBiome(NSBiomes.SHRUBBY_HIGHLANDS, NSBiomes.ARID_HIGHLANDS), SurfaceRules.ifTrue(noiseCondition3, SANDY_SOIL)),
+-                    SurfaceRules.ifTrue(SurfaceRules.isBiome(NSBiomes.WOODY_HIGHLANDS, NSBiomes.BLOOMING_HIGHLANDS), SurfaceRules.ifTrue(noiseCondition3, GRASS)),
++                    SurfaceRules.ifTrue(isNSBiome(NSBiomes.SHRUBBY_HIGHLANDS, NSBiomes.ARID_HIGHLANDS), SurfaceRules.ifTrue(noiseCondition3, SANDY_SOIL)),
++                    SurfaceRules.ifTrue(isNSBiome(NSBiomes.WOODY_HIGHLANDS, NSBiomes.BLOOMING_HIGHLANDS), SurfaceRules.ifTrue(noiseCondition3, GRASS)),
+                     SurfaceRules.bandlands(),
+                     SurfaceRules.ifTrue(SurfaceRules.not(above80), SurfaceRules.sequence(
+-                        SurfaceRules.ifTrue(SurfaceRules.isBiome(NSBiomes.SHRUBBY_HIGHLANDS), SurfaceRules.ifTrue(noiseCondition6, GRASS)),
+-                        SurfaceRules.ifTrue(SurfaceRules.isBiome(NSBiomes.WOODY_HIGHLANDS, NSBiomes.BLOOMING_HIGHLANDS), SurfaceRules.ifTrue(noiseCondition6, SANDY_SOIL))
++                        SurfaceRules.ifTrue(isNSBiome(NSBiomes.SHRUBBY_HIGHLANDS), SurfaceRules.ifTrue(noiseCondition6, GRASS)),
++                        SurfaceRules.ifTrue(isNSBiome(NSBiomes.WOODY_HIGHLANDS, NSBiomes.BLOOMING_HIGHLANDS), SurfaceRules.ifTrue(noiseCondition6, SANDY_SOIL))
+                     ))
+                 )),
+                 SurfaceRules.ifTrue(materialCondition5, SurfaceRules.sequence(
+                     SurfaceRules.ifTrue(SurfaceRules.ON_CEILING, CHERT),
+-                    SurfaceRules.ifTrue(SurfaceRules.isBiome(NSBiomes.SHRUBBY_HIGHLANDS), SANDY_SOIL),
+-                    SurfaceRules.ifTrue(SurfaceRules.isBiome(NSBiomes.ARID_HIGHLANDS), PINK_SAND)
++                    SurfaceRules.ifTrue(isNSBiome(NSBiomes.SHRUBBY_HIGHLANDS), SANDY_SOIL),
++                    SurfaceRules.ifTrue(isNSBiome(NSBiomes.ARID_HIGHLANDS), PINK_SAND)
+                 )),
+                 SurfaceRules.ifTrue(SurfaceRules.not(holeCondition), CHERT)
+             ))),
+-        SurfaceRules.ifTrue(UNDER_FLOOR, SurfaceRules.ifTrue(SurfaceRules.isBiome(NSBiomes.ARID_HIGHLANDS, NSBiomes.SHRUBBY_HIGHLANDS, NSBiomes.WOODY_HIGHLANDS, NSBiomes.BLOOMING_HIGHLANDS), SurfaceRules.ifTrue(belowWater, CHERT)))
++        SurfaceRules.ifTrue(UNDER_FLOOR, SurfaceRules.ifTrue(isNSBiome(NSBiomes.ARID_HIGHLANDS, NSBiomes.SHRUBBY_HIGHLANDS, NSBiomes.WOODY_HIGHLANDS, NSBiomes.BLOOMING_HIGHLANDS), SurfaceRules.ifTrue(belowWater, CHERT)))
+         );
+     
+     RuleSource aspenRule = SurfaceRules.sequence(
+             SurfaceRules.ifTrue(SurfaceRules.stoneDepthCheck(4, false, CaveSurface.FLOOR),
+-                SurfaceRules.ifTrue(SurfaceRules.isBiome(NSBiomes.ASPEN_FOREST),
++                SurfaceRules.ifTrue(isNSBiome(NSBiomes.ASPEN_FOREST),
+                     SurfaceRules.sequence(
+-                        SurfaceRules.ifTrue(SurfaceRules.noiseCondition(Noises.SURFACE, 2.4 / 8.25, Double.MAX_VALUE), COARSE_DIRT),
+-                        SurfaceRules.ifTrue(SurfaceRules.noiseCondition(Noises.SURFACE, 1.6 / 8.25, Double.MAX_VALUE), ROOTED_DIRT),
+-                        SurfaceRules.ifTrue(SurfaceRules.noiseCondition(Noises.SURFACE, -1.4 / 8.25, Double.MAX_VALUE), ROOTED_DIRT),
++                        SurfaceRules.ifTrue(SurfaceRules.noiseCondition2d(Noises.SURFACE, 2.4 / 8.25, Double.MAX_VALUE), COARSE_DIRT),
++                        SurfaceRules.ifTrue(SurfaceRules.noiseCondition2d(Noises.SURFACE, 1.6 / 8.25, Double.MAX_VALUE), ROOTED_DIRT),
++                        SurfaceRules.ifTrue(SurfaceRules.noiseCondition2d(Noises.SURFACE, -1.4 / 8.25, Double.MAX_VALUE), ROOTED_DIRT),
+                         SurfaceRules.ifTrue(SurfaceRules.ON_FLOOR, SurfaceRules.ifTrue(materialCondition7, GRASS)),
+                         DIRT
+                     ))),
+-            SurfaceRules.ifTrue(SurfaceRules.stoneDepthCheck(36, false, CaveSurface.FLOOR), SurfaceRules.ifTrue(SurfaceRules.isBiome(NSBiomes.ASPEN_FOREST), GRANITE)));
++            SurfaceRules.ifTrue(SurfaceRules.stoneDepthCheck(36, false, CaveSurface.FLOOR), SurfaceRules.ifTrue(isNSBiome(NSBiomes.ASPEN_FOREST), GRANITE)));
+     
+     RuleSource xericRule =
+         SurfaceRules.ifTrue(belowWater,
+             SurfaceRules.sequence(
+                 SurfaceRules.ifTrue(UNDER_FLOOR,
+                     SurfaceRules.sequence(
+-                        SurfaceRules.ifTrue(SurfaceRules.isBiome(NSBiomes.XERIC_PLAINS, NSBiomes.CEDAR_THICKET), SurfaceRules.ifTrue(noiseCondition4, travertineOrSoil)),
+-                        SurfaceRules.ifTrue(SurfaceRules.isBiome(NSBiomes.ARID_SAVANNA), SurfaceRules.ifTrue(noiseCondition4, chertOrSoil)),
+-                        SurfaceRules.ifTrue(SurfaceRules.isBiome(NSBiomes.WOODED_DRYLANDS), SurfaceRules.ifTrue(noiseCondition4, pinkSandstoneOrSoil)),
+-                        SurfaceRules.ifTrue(SurfaceRules.isBiome(NSBiomes.TUNDRA, NSBiomes.BOREAL_TAIGA), SurfaceRules.ifTrue(noiseCondition4, stoneOrMoss)),
+-                        SurfaceRules.ifTrue(SurfaceRules.isBiome(NSBiomes.SCORCHED_DUNES), SurfaceRules.sequence(SurfaceRules.ifTrue(noiseCondition4, redSandstoneOrRedSand), chertOrSoil)),
+-                        SurfaceRules.ifTrue(SurfaceRules.isBiome(NSBiomes.TROPICAL_SHORES, NSBiomes.DRYLANDS), pinkSandstoneOrPinkSand),
+-                        SurfaceRules.ifTrue(SurfaceRules.isBiome(NSBiomes.SNOWY_FIR_FOREST, NSBiomes.TUNDRA), SurfaceRules.ifTrue(noiseCondition5, stoneOrSnow)),
+-                        SurfaceRules.ifTrue(SurfaceRules.isBiome(NSBiomes.CHAPARRAL), SANDY_SOIL),
+-                        SurfaceRules.ifTrue(SurfaceRules.isBiome(NSBiomes.SLEETED_SLOPES, NSBiomes.SNOWCAPPED_RED_PEAKS), SurfaceRules.ifTrue(materialCondition7, SNOW_BLOCK)),
+-                        SurfaceRules.ifTrue(SurfaceRules.isBiome(NSBiomes.SLEETED_SLOPES, NSBiomes.SNOWCAPPED_RED_PEAKS, NSBiomes.DUSTY_SLOPES, NSBiomes.RED_PEAKS),
++                        SurfaceRules.ifTrue(isNSBiome(NSBiomes.XERIC_PLAINS, NSBiomes.CEDAR_THICKET), SurfaceRules.ifTrue(noiseCondition4, travertineOrSoil)),
++                        SurfaceRules.ifTrue(isNSBiome(NSBiomes.ARID_SAVANNA), SurfaceRules.ifTrue(noiseCondition4, chertOrSoil)),
++                        SurfaceRules.ifTrue(isNSBiome(NSBiomes.WOODED_DRYLANDS), SurfaceRules.ifTrue(noiseCondition4, pinkSandstoneOrSoil)),
++                        SurfaceRules.ifTrue(isNSBiome(NSBiomes.TUNDRA, NSBiomes.BOREAL_TAIGA), SurfaceRules.ifTrue(noiseCondition4, stoneOrMoss)),
++                        SurfaceRules.ifTrue(isNSBiome(NSBiomes.SCORCHED_DUNES), SurfaceRules.sequence(SurfaceRules.ifTrue(noiseCondition4, redSandstoneOrRedSand), chertOrSoil)),
++                        SurfaceRules.ifTrue(isNSBiome(NSBiomes.TROPICAL_SHORES, NSBiomes.DRYLANDS), pinkSandstoneOrPinkSand),
++                        SurfaceRules.ifTrue(isNSBiome(NSBiomes.SNOWY_FIR_FOREST, NSBiomes.TUNDRA), SurfaceRules.ifTrue(noiseCondition5, stoneOrSnow)),
++                        SurfaceRules.ifTrue(isNSBiome(NSBiomes.CHAPARRAL), SANDY_SOIL),
++                        SurfaceRules.ifTrue(isNSBiome(NSBiomes.SLEETED_SLOPES, NSBiomes.SNOWCAPPED_RED_PEAKS), SurfaceRules.ifTrue(materialCondition7, SNOW_BLOCK)),
++                        SurfaceRules.ifTrue(isNSBiome(NSBiomes.SLEETED_SLOPES, NSBiomes.SNOWCAPPED_RED_PEAKS, NSBiomes.DUSTY_SLOPES, NSBiomes.RED_PEAKS),
+                             SurfaceRules.sequence(
+                                 SurfaceRules.ifTrue(above256, CHERT),
+                                 SurfaceRules.ifTrue(above70, SurfaceRules.bandlands()),
+@@ -163,65 +182,65 @@ public class NSSurfaceRules {
+                     )),
+                 SurfaceRules.ifTrue(SurfaceRules.stoneDepthCheck(8, true, CaveSurface.FLOOR),
+                     SurfaceRules.sequence(
+-                        SurfaceRules.ifTrue(SurfaceRules.isBiome(NSBiomes.LIVELY_DUNES, NSBiomes.BLOOMING_DUNES, NSBiomes.CHAPARRAL), SurfaceRules.bandlands()),
+-                        SurfaceRules.ifTrue(SurfaceRules.isBiome(NSBiomes.DUSTY_SLOPES, NSBiomes.RED_PEAKS), SurfaceRules.ifTrue(SurfaceRules.yBlockCheck(VerticalAnchor.absolute(256), 1), SNOW_BLOCK)),
+-                        SurfaceRules.ifTrue(SurfaceRules.isBiome(NSBiomes.SLEETED_SLOPES, NSBiomes.SNOWCAPPED_RED_PEAKS, NSBiomes.DUSTY_SLOPES, NSBiomes.RED_PEAKS),
++                        SurfaceRules.ifTrue(isNSBiome(NSBiomes.LIVELY_DUNES, NSBiomes.BLOOMING_DUNES, NSBiomes.CHAPARRAL), SurfaceRules.bandlands()),
++                        SurfaceRules.ifTrue(isNSBiome(NSBiomes.DUSTY_SLOPES, NSBiomes.RED_PEAKS), SurfaceRules.ifTrue(SurfaceRules.yBlockCheck(VerticalAnchor.absolute(256), 1), SNOW_BLOCK)),
++                        SurfaceRules.ifTrue(isNSBiome(NSBiomes.SLEETED_SLOPES, NSBiomes.SNOWCAPPED_RED_PEAKS, NSBiomes.DUSTY_SLOPES, NSBiomes.RED_PEAKS),
+                             SurfaceRules.sequence(
+                                 SurfaceRules.ifTrue(SurfaceRules.steep(), CHERT),
+                                 SurfaceRules.ifTrue(belowWater, CHERT),
+-                                SurfaceRules.ifTrue(SurfaceRules.isBiome(NSBiomes.SLEETED_SLOPES), powderSnow)
++                                SurfaceRules.ifTrue(isNSBiome(NSBiomes.SLEETED_SLOPES), powderSnow)
+                             ))
+                     )),
+                 SurfaceRules.ifTrue(DEEP_UNDER_FLOOR, SurfaceRules.sequence(
+-                    SurfaceRules.ifTrue(SurfaceRules.isBiome(NSBiomes.TROPICAL_SHORES), PINK_SANDSTONE),
+-                    SurfaceRules.ifTrue(SurfaceRules.isBiome(NSBiomes.LIVELY_DUNES, NSBiomes.BLOOMING_DUNES), SANDY_SOIL)
++                    SurfaceRules.ifTrue(isNSBiome(NSBiomes.TROPICAL_SHORES), PINK_SANDSTONE),
++                    SurfaceRules.ifTrue(isNSBiome(NSBiomes.LIVELY_DUNES, NSBiomes.BLOOMING_DUNES), SANDY_SOIL)
+                 )),
+                 SurfaceRules.ifTrue(VERY_DEEP_UNDER_FLOOR, SurfaceRules.sequence(
+-                    SurfaceRules.ifTrue(SurfaceRules.isBiome(NSBiomes.SCORCHED_DUNES), RED_SANDSTONE),
+-                    SurfaceRules.ifTrue(SurfaceRules.isBiome(NSBiomes.DRYLANDS), PINK_SANDSTONE)
++                    SurfaceRules.ifTrue(isNSBiome(NSBiomes.SCORCHED_DUNES), RED_SANDSTONE),
++                    SurfaceRules.ifTrue(isNSBiome(NSBiomes.DRYLANDS), PINK_SANDSTONE)
+                 ))
+             )
+         );
+     RuleSource chaparralRule = SurfaceRules.ifTrue(belowWater, SurfaceRules.sequence(
+-        SurfaceRules.ifTrue(SurfaceRules.ON_FLOOR, SurfaceRules.ifTrue(SurfaceRules.isBiome(NSBiomes.CHAPARRAL), SurfaceRules.ifTrue(SurfaceRules.noiseCondition(Noises.PATCH, 0.0), GRASS))),
+-        SurfaceRules.ifTrue(STONE_DEPTH_FLOOR_DOWN_1, SurfaceRules.ifTrue(SurfaceRules.isBiome(NSBiomes.CHAPARRAL), SurfaceRules.ifTrue(SurfaceRules.noiseCondition(Noises.PATCH, 0.0), DIRT)))
++        SurfaceRules.ifTrue(SurfaceRules.ON_FLOOR, SurfaceRules.ifTrue(isNSBiome(NSBiomes.CHAPARRAL), SurfaceRules.ifTrue(SurfaceRules.noiseCondition2d(Noises.PATCH, 0.0), GRASS))),
++        SurfaceRules.ifTrue(STONE_DEPTH_FLOOR_DOWN_1, SurfaceRules.ifTrue(isNSBiome(NSBiomes.CHAPARRAL), SurfaceRules.ifTrue(SurfaceRules.noiseCondition2d(Noises.PATCH, 0.0), DIRT)))
+     ));
+ 
+     RuleSource tropicalBasinRule = SurfaceRules.ifTrue(SurfaceRules.ON_FLOOR,
+         SurfaceRules.ifTrue(above60, SurfaceRules.ifTrue(SurfaceRules.not(above63),
+-                SurfaceRules.ifTrue(SurfaceRules.isBiome(NSBiomes.MARSH, NSBiomes.TROPICAL_BASIN, NSBiomes.BAMBOO_WETLANDS), SurfaceRules.ifTrue(SurfaceRules.noiseCondition(Noises.SWAMP, 0.0), WATER))))
++                SurfaceRules.ifTrue(isNSBiome(NSBiomes.MARSH, NSBiomes.TROPICAL_BASIN, NSBiomes.BAMBOO_WETLANDS), SurfaceRules.ifTrue(SurfaceRules.noiseCondition2d(Noises.SWAMP, 0.0), WATER))))
+         );
+     
+     RuleSource chalkCliffsRule = SurfaceRules.ifTrue(above65,
+         SurfaceRules.sequence(
+-            SurfaceRules.ifTrue(SurfaceRules.ON_FLOOR, SurfaceRules.ifTrue(SurfaceRules.isBiome(NSBiomes.WHITE_CLIFFS), GRASS)),
+-            SurfaceRules.ifTrue(STONE_DEPTH_FLOOR_DOWN_1, SurfaceRules.ifTrue(SurfaceRules.isBiome(NSBiomes.WHITE_CLIFFS), DIRT))
++            SurfaceRules.ifTrue(SurfaceRules.ON_FLOOR, SurfaceRules.ifTrue(isNSBiome(NSBiomes.WHITE_CLIFFS), GRASS)),
++            SurfaceRules.ifTrue(STONE_DEPTH_FLOOR_DOWN_1, SurfaceRules.ifTrue(isNSBiome(NSBiomes.WHITE_CLIFFS), DIRT))
+         )
+     );
+     RuleSource chalkUndergroundRule =
+         SurfaceRules.sequence(
+-            SurfaceRules.ifTrue(SurfaceRules.yBlockCheck(VerticalAnchor.absolute(60), -1), SurfaceRules.ifTrue(SurfaceRules.isBiome(NSBiomes.WHITE_CLIFFS), WHITE_CHALK)),
+-            SurfaceRules.ifTrue(SurfaceRules.yBlockCheck(VerticalAnchor.absolute(45), -1), SurfaceRules.ifTrue(SurfaceRules.isBiome(NSBiomes.WHITE_CLIFFS), CALCITE))
++            SurfaceRules.ifTrue(SurfaceRules.yBlockCheck(VerticalAnchor.absolute(60), -1), SurfaceRules.ifTrue(isNSBiome(NSBiomes.WHITE_CLIFFS), WHITE_CHALK)),
++            SurfaceRules.ifTrue(SurfaceRules.yBlockCheck(VerticalAnchor.absolute(45), -1), SurfaceRules.ifTrue(isNSBiome(NSBiomes.WHITE_CLIFFS), CALCITE))
+         );
+     RuleSource redwoodForestRule =
+         SurfaceRules.sequence(
+             SurfaceRules.ifTrue(STONE_DEPTH_FLOOR_DOWN_1_WITH_DEPTH,
+-                SurfaceRules.ifTrue(SurfaceRules.isBiome(NSBiomes.REDWOOD_FOREST, NSBiomes.MAPLE_WOODLANDS),
+-                    SurfaceRules.ifTrue(SurfaceRules.noiseCondition(Noises.SURFACE, 1.75 / 8.25, Double.MAX_VALUE), COARSE_DIRT))),
++                SurfaceRules.ifTrue(isNSBiome(NSBiomes.REDWOOD_FOREST, NSBiomes.MAPLE_WOODLANDS),
++                    SurfaceRules.ifTrue(SurfaceRules.noiseCondition2d(Noises.SURFACE, 1.75 / 8.25, Double.MAX_VALUE), COARSE_DIRT))),
+             SurfaceRules.ifTrue(SurfaceRules.ON_FLOOR,
+                 SurfaceRules.ifTrue(materialCondition7,
+-                    SurfaceRules.ifTrue(SurfaceRules.isBiome(NSBiomes.REDWOOD_FOREST, NSBiomes.MAPLE_WOODLANDS), SurfaceRules.sequence(
+-                        SurfaceRules.ifTrue(SurfaceRules.noiseCondition(Noises.SURFACE, -.95 / 8.25, Double.MAX_VALUE), PODZOL),
++                    SurfaceRules.ifTrue(isNSBiome(NSBiomes.REDWOOD_FOREST, NSBiomes.MAPLE_WOODLANDS), SurfaceRules.sequence(
++                        SurfaceRules.ifTrue(SurfaceRules.noiseCondition2d(Noises.SURFACE, -.95 / 8.25, Double.MAX_VALUE), PODZOL),
+                         GRASS
+                 )))),
+-            SurfaceRules.ifTrue(STONE_DEPTH_FLOOR_DOWN_1_WITH_DEPTH, SurfaceRules.ifTrue(SurfaceRules.isBiome(NSBiomes.REDWOOD_FOREST, NSBiomes.MAPLE_WOODLANDS), DIRT))
++            SurfaceRules.ifTrue(STONE_DEPTH_FLOOR_DOWN_1_WITH_DEPTH, SurfaceRules.ifTrue(isNSBiome(NSBiomes.REDWOOD_FOREST, NSBiomes.MAPLE_WOODLANDS), DIRT))
+         );
+ 
+     RuleSource alpineRule = SurfaceRules.sequence(
+-            SurfaceRules.ifTrue(STONE_DEPTH_FLOOR_DOWN_1_WITH_DEPTH, SurfaceRules.ifTrue(SurfaceRules.isBiome(NSBiomes.ALPINE_CLEARINGS, NSBiomes.ALPINE_HIGHLANDS, NSBiomes.CONIFEROUS_COVERT, NSBiomes.HEATHER_FIELDS, NSBiomes.GOLDEN_WILDS, NSBiomes.SUGI_FOREST),
++            SurfaceRules.ifTrue(STONE_DEPTH_FLOOR_DOWN_1_WITH_DEPTH, SurfaceRules.ifTrue(isNSBiome(NSBiomes.ALPINE_CLEARINGS, NSBiomes.ALPINE_HIGHLANDS, NSBiomes.CONIFEROUS_COVERT, NSBiomes.HEATHER_FIELDS, NSBiomes.GOLDEN_WILDS, NSBiomes.SUGI_FOREST),
+                 SurfaceRules.ifTrue(noiseCondition2, COARSE_DIRT))),
+             SurfaceRules.ifTrue(SurfaceRules.ON_FLOOR, SurfaceRules.ifTrue(materialCondition7,
+-                SurfaceRules.ifTrue(SurfaceRules.isBiome(NSBiomes.ALPINE_CLEARINGS, NSBiomes.ALPINE_HIGHLANDS, NSBiomes.CONIFEROUS_COVERT, NSBiomes.HEATHER_FIELDS, NSBiomes.GOLDEN_WILDS, NSBiomes.SUGI_FOREST), GRASS))));
++                SurfaceRules.ifTrue(isNSBiome(NSBiomes.ALPINE_CLEARINGS, NSBiomes.ALPINE_HIGHLANDS, NSBiomes.CONIFEROUS_COVERT, NSBiomes.HEATHER_FIELDS, NSBiomes.GOLDEN_WILDS, NSBiomes.SUGI_FOREST), GRASS))));
+ 
+     ImmutableList.Builder<RuleSource> builder = ImmutableList.builder();
+     RuleSource stratifiedDesertSurfaceRule = SurfaceRules.ifTrue(SurfaceRules.abovePreliminarySurface(), stratifiedDesertRule);
+diff --git a/common/src/main/java/net/hibiscus/naturespirit/world/carver/ReplaceableCaveCarver.java b/common/src/main/java/net/hibiscus/naturespirit/world/carver/ReplaceableCaveCarver.java
+index 022ae25..a46a342 100644
+--- a/common/src/main/java/net/hibiscus/naturespirit/world/carver/ReplaceableCaveCarver.java
++++ b/common/src/main/java/net/hibiscus/naturespirit/world/carver/ReplaceableCaveCarver.java
+@@ -89,7 +89,7 @@ public class ReplaceableCaveCarver extends WorldCarver<ReplaceableCaveCarverConf
+       } else {
+         chunk.setBlockState(pos, blockState2);
+         if (aquiferSampler.shouldScheduleFluidUpdate() && !blockState2.getFluidState().isEmpty()) {
+-          chunk.markPosForPostprocessing(pos);
++          chunk.markPosForPostProcessing(pos);
+         }
+ 
+         if (replacedGrassy.isTrue()) {
+@@ -98,7 +98,7 @@ public class ReplaceableCaveCarver extends WorldCarver<ReplaceableCaveCarverConf
+             context.topMaterial(posToBiome, chunk, tmp, !blockState2.getFluidState().isEmpty()).ifPresent((state) -> {
+               chunk.setBlockState(tmp, state);
+               if (!state.getFluidState().isEmpty()) {
+-                chunk.markPosForPostprocessing(tmp);
++                chunk.markPosForPostProcessing(tmp);
+               }
+ 
+             });
+diff --git a/common/src/main/java/net/hibiscus/naturespirit/world/carver/ReplaceableRavineCarver.java b/common/src/main/java/net/hibiscus/naturespirit/world/carver/ReplaceableRavineCarver.java
+index 548e048..6963254 100644
+--- a/common/src/main/java/net/hibiscus/naturespirit/world/carver/ReplaceableRavineCarver.java
++++ b/common/src/main/java/net/hibiscus/naturespirit/world/carver/ReplaceableRavineCarver.java
+@@ -105,7 +105,7 @@ public class ReplaceableRavineCarver extends WorldCarver<ReplaceableRavineCarver
+       } else {
+         chunk.setBlockState(pos, blockState2);
+         if (aquiferSampler.shouldScheduleFluidUpdate() && !blockState2.getFluidState().isEmpty()) {
+-          chunk.markPosForPostprocessing(pos);
++          chunk.markPosForPostProcessing(pos);
+         }
+ 
+         if (replacedGrassy.isTrue()) {
+@@ -114,7 +114,7 @@ public class ReplaceableRavineCarver extends WorldCarver<ReplaceableRavineCarver
+             context.topMaterial(posToBiome, chunk, tmp, !blockState2.getFluidState().isEmpty()).ifPresent((state) -> {
+               chunk.setBlockState(tmp, state);
+               if (!state.getFluidState().isEmpty()) {
+-                chunk.markPosForPostprocessing(tmp);
++                chunk.markPosForPostProcessing(tmp);
+               }
+ 
+             });
+diff --git a/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/acacia_bush.json b/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/acacia_bush.json
+index a25ef01..692fc02 100644
+--- a/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/acacia_bush.json
++++ b/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/acacia_bush.json
+@@ -39,6 +39,12 @@
+           "axis": "y"
+         }
+       }
++    },
++    "below_trunk_provider": {
++      "type": "minecraft:simple_state_provider",
++      "state": {
++        "Name": "minecraft:dirt"
++      }
+     }
+   }
+ }
+\ No newline at end of file
+diff --git a/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/aspen_bush.json b/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/aspen_bush.json
+index f80ea67..b72a587 100644
+--- a/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/aspen_bush.json
++++ b/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/aspen_bush.json
+@@ -59,6 +59,12 @@
+           "axis": "y"
+         }
+       }
++    },
++    "below_trunk_provider": {
++      "type": "minecraft:simple_state_provider",
++      "state": {
++        "Name": "minecraft:dirt"
++      }
+     }
+   }
+ }
+\ No newline at end of file
+diff --git a/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/aspen_tree.json b/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/aspen_tree.json
+index 67338ca..75fb3d1 100644
+--- a/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/aspen_tree.json
++++ b/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/aspen_tree.json
+@@ -52,6 +52,12 @@
+           "axis": "y"
+         }
+       }
++    },
++    "below_trunk_provider": {
++      "type": "minecraft:simple_state_provider",
++      "state": {
++        "Name": "minecraft:dirt"
++      }
+     }
+   }
+ }
+\ No newline at end of file
+diff --git a/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/aspen_tree_bees.json b/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/aspen_tree_bees.json
+index 1814c85..377a3f6 100644
+--- a/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/aspen_tree_bees.json
++++ b/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/aspen_tree_bees.json
+@@ -57,6 +57,12 @@
+           "axis": "y"
+         }
+       }
++    },
++    "below_trunk_provider": {
++      "type": "minecraft:simple_state_provider",
++      "state": {
++        "Name": "minecraft:dirt"
++      }
+     }
+   }
+ }
+\ No newline at end of file
+diff --git a/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/blue_wisteria_tree.json b/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/blue_wisteria_tree.json
+index bb209e4..7be4705 100644
+--- a/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/blue_wisteria_tree.json
++++ b/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/blue_wisteria_tree.json
+@@ -107,6 +107,12 @@
+           "axis": "y"
+         }
+       }
++    },
++    "below_trunk_provider": {
++      "type": "minecraft:simple_state_provider",
++      "state": {
++        "Name": "minecraft:dirt"
++      }
+     }
+   }
+ }
+\ No newline at end of file
+diff --git a/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/cedar_bush.json b/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/cedar_bush.json
+index f1e5480..e1de6c3 100644
+--- a/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/cedar_bush.json
++++ b/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/cedar_bush.json
+@@ -53,6 +53,12 @@
+           "axis": "y"
+         }
+       }
++    },
++    "below_trunk_provider": {
++      "type": "minecraft:simple_state_provider",
++      "state": {
++        "Name": "minecraft:dirt"
++      }
+     }
+   }
+ }
+\ No newline at end of file
+diff --git a/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/cedar_tree.json b/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/cedar_tree.json
+index 43d89ff..67d164c 100644
+--- a/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/cedar_tree.json
++++ b/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/cedar_tree.json
+@@ -52,6 +52,12 @@
+           "axis": "y"
+         }
+       }
++    },
++    "below_trunk_provider": {
++      "type": "minecraft:simple_state_provider",
++      "state": {
++        "Name": "minecraft:dirt"
++      }
+     }
+   }
+ }
+\ No newline at end of file
+diff --git a/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/coconut_tree.json b/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/coconut_tree.json
+index 5c2288d..d781b8d 100644
+--- a/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/coconut_tree.json
++++ b/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/coconut_tree.json
+@@ -52,6 +52,12 @@
+           "axis": "y"
+         }
+       }
++    },
++    "below_trunk_provider": {
++      "type": "minecraft:simple_state_provider",
++      "state": {
++        "Name": "minecraft:dirt"
++      }
+     }
+   }
+ }
+\ No newline at end of file
+diff --git a/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/cypress_tree.json b/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/cypress_tree.json
+index 6bdd42c..f470a6a 100644
+--- a/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/cypress_tree.json
++++ b/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/cypress_tree.json
+@@ -52,6 +52,12 @@
+           "axis": "y"
+         }
+       }
++    },
++    "below_trunk_provider": {
++      "type": "minecraft:simple_state_provider",
++      "state": {
++        "Name": "minecraft:dirt"
++      }
+     }
+   }
+ }
+\ No newline at end of file
+diff --git a/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/fir_tree.json b/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/fir_tree.json
+index bb3fd81..b35f97d 100644
+--- a/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/fir_tree.json
++++ b/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/fir_tree.json
+@@ -52,6 +52,12 @@
+           "axis": "y"
+         }
+       }
++    },
++    "below_trunk_provider": {
++      "type": "minecraft:simple_state_provider",
++      "state": {
++        "Name": "minecraft:dirt"
++      }
+     }
+   }
+ }
+\ No newline at end of file
+diff --git a/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/frosty_fir_tree.json b/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/frosty_fir_tree.json
+index 1b0e783..ca75459 100644
+--- a/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/frosty_fir_tree.json
++++ b/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/frosty_fir_tree.json
+@@ -52,6 +52,12 @@
+           "axis": "y"
+         }
+       }
++    },
++    "below_trunk_provider": {
++      "type": "minecraft:simple_state_provider",
++      "state": {
++        "Name": "minecraft:dirt"
++      }
+     }
+   }
+ }
+\ No newline at end of file
+diff --git a/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/frosty_redwood_tree.json b/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/frosty_redwood_tree.json
+index f1b9aac..71518bb 100644
+--- a/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/frosty_redwood_tree.json
++++ b/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/frosty_redwood_tree.json
+@@ -68,6 +68,12 @@
+           "axis": "y"
+         }
+       }
++    },
++    "below_trunk_provider": {
++      "type": "minecraft:simple_state_provider",
++      "state": {
++        "Name": "minecraft:dirt"
++      }
+     }
+   }
+ }
+\ No newline at end of file
+diff --git a/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/ghaf_tree.json b/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/ghaf_tree.json
+index 6333de0..c0046d7 100644
+--- a/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/ghaf_tree.json
++++ b/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/ghaf_tree.json
+@@ -53,6 +53,12 @@
+           "axis": "y"
+         }
+       }
++    },
++    "below_trunk_provider": {
++      "type": "minecraft:simple_state_provider",
++      "state": {
++        "Name": "minecraft:dirt"
++      }
+     }
+   }
+ }
+\ No newline at end of file
+diff --git a/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/larch_tree.json b/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/larch_tree.json
+index cf41819..a741a1b 100644
+--- a/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/larch_tree.json
++++ b/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/larch_tree.json
+@@ -52,6 +52,12 @@
+           "axis": "y"
+         }
+       }
++    },
++    "below_trunk_provider": {
++      "type": "minecraft:simple_state_provider",
++      "state": {
++        "Name": "minecraft:dirt"
++      }
+     }
+   }
+ }
+\ No newline at end of file
+diff --git a/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/large_frosty_redwood_tree.json b/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/large_frosty_redwood_tree.json
+index 78842df..cf37d21 100644
+--- a/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/large_frosty_redwood_tree.json
++++ b/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/large_frosty_redwood_tree.json
+@@ -72,6 +72,12 @@
+           "axis": "y"
+         }
+       }
++    },
++    "below_trunk_provider": {
++      "type": "minecraft:simple_state_provider",
++      "state": {
++        "Name": "minecraft:dirt"
++      }
+     }
+   }
+ }
+\ No newline at end of file
+diff --git a/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/large_redwood_tree.json b/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/large_redwood_tree.json
+index 0be216e..b825e36 100644
+--- a/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/large_redwood_tree.json
++++ b/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/large_redwood_tree.json
+@@ -101,6 +101,12 @@
+           "axis": "y"
+         }
+       }
++    },
++    "below_trunk_provider": {
++      "type": "minecraft:simple_state_provider",
++      "state": {
++        "Name": "minecraft:dirt"
++      }
+     }
+   }
+ }
+\ No newline at end of file
+diff --git a/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/mahogany_tree.json b/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/mahogany_tree.json
+index 3a6b7e4..3669bff 100644
+--- a/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/mahogany_tree.json
++++ b/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/mahogany_tree.json
+@@ -52,6 +52,12 @@
+           "axis": "y"
+         }
+       }
++    },
++    "below_trunk_provider": {
++      "type": "minecraft:simple_state_provider",
++      "state": {
++        "Name": "minecraft:dirt"
++      }
+     }
+   }
+ }
+\ No newline at end of file
+diff --git a/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/oak_bush.json b/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/oak_bush.json
+index 00a2519..a43fd78 100644
+--- a/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/oak_bush.json
++++ b/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/oak_bush.json
+@@ -40,6 +40,12 @@
+           "axis": "y"
+         }
+       }
++    },
++    "below_trunk_provider": {
++      "type": "minecraft:simple_state_provider",
++      "state": {
++        "Name": "minecraft:dirt"
++      }
+     }
+   }
+ }
+\ No newline at end of file
+diff --git a/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/olive_tree.json b/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/olive_tree.json
+index bad87f7..a7fddbe 100644
+--- a/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/olive_tree.json
++++ b/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/olive_tree.json
+@@ -59,6 +59,12 @@
+           "axis": "y"
+         }
+       }
++    },
++    "below_trunk_provider": {
++      "type": "minecraft:simple_state_provider",
++      "state": {
++        "Name": "minecraft:dirt"
++      }
+     }
+   }
+ }
+\ No newline at end of file
+diff --git a/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/orange_maple_tree.json b/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/orange_maple_tree.json
+index c43b2bc..5fbd591 100644
+--- a/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/orange_maple_tree.json
++++ b/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/orange_maple_tree.json
+@@ -100,6 +100,12 @@
+           "axis": "y"
+         }
+       }
++    },
++    "below_trunk_provider": {
++      "type": "minecraft:simple_state_provider",
++      "state": {
++        "Name": "minecraft:dirt"
++      }
+     }
+   }
+ }
+\ No newline at end of file
+diff --git a/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/palo_verde_tree.json b/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/palo_verde_tree.json
+index b246e34..d255971 100644
+--- a/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/palo_verde_tree.json
++++ b/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/palo_verde_tree.json
+@@ -54,6 +54,12 @@
+           "axis": "y"
+         }
+       }
++    },
++    "below_trunk_provider": {
++      "type": "minecraft:simple_state_provider",
++      "state": {
++        "Name": "minecraft:dirt"
++      }
+     }
+   }
+ }
+\ No newline at end of file
+diff --git a/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/pink_wisteria_tree.json b/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/pink_wisteria_tree.json
+index 9b91af6..7f6d878 100644
+--- a/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/pink_wisteria_tree.json
++++ b/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/pink_wisteria_tree.json
+@@ -107,6 +107,12 @@
+           "axis": "y"
+         }
+       }
++    },
++    "below_trunk_provider": {
++      "type": "minecraft:simple_state_provider",
++      "state": {
++        "Name": "minecraft:dirt"
++      }
+     }
+   }
+ }
+\ No newline at end of file
+diff --git a/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/purple_wisteria_tree.json b/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/purple_wisteria_tree.json
+index 617c70a..8d9f79f 100644
+--- a/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/purple_wisteria_tree.json
++++ b/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/purple_wisteria_tree.json
+@@ -107,6 +107,12 @@
+           "axis": "y"
+         }
+       }
++    },
++    "below_trunk_provider": {
++      "type": "minecraft:simple_state_provider",
++      "state": {
++        "Name": "minecraft:dirt"
++      }
+     }
+   }
+ }
+\ No newline at end of file
+diff --git a/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/red_maple_tree.json b/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/red_maple_tree.json
+index 71b09ff..831f7b2 100644
+--- a/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/red_maple_tree.json
++++ b/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/red_maple_tree.json
+@@ -100,6 +100,12 @@
+           "axis": "y"
+         }
+       }
++    },
++    "below_trunk_provider": {
++      "type": "minecraft:simple_state_provider",
++      "state": {
++        "Name": "minecraft:dirt"
++      }
+     }
+   }
+ }
+\ No newline at end of file
+diff --git a/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/redwood_tree.json b/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/redwood_tree.json
+index a53afc0..ac35335 100644
+--- a/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/redwood_tree.json
++++ b/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/redwood_tree.json
+@@ -97,6 +97,12 @@
+           "axis": "y"
+         }
+       }
++    },
++    "below_trunk_provider": {
++      "type": "minecraft:simple_state_provider",
++      "state": {
++        "Name": "minecraft:dirt"
++      }
+     }
+   }
+ }
+\ No newline at end of file
+diff --git a/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/saxaul_tree.json b/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/saxaul_tree.json
+index 6946706..98122c6 100644
+--- a/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/saxaul_tree.json
++++ b/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/saxaul_tree.json
+@@ -54,6 +54,12 @@
+           "axis": "y"
+         }
+       }
++    },
++    "below_trunk_provider": {
++      "type": "minecraft:simple_state_provider",
++      "state": {
++        "Name": "minecraft:dirt"
++      }
+     }
+   }
+ }
+\ No newline at end of file
+diff --git a/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/small_larch_tree.json b/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/small_larch_tree.json
+index 9839840..e7d74c7 100644
+--- a/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/small_larch_tree.json
++++ b/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/small_larch_tree.json
+@@ -52,6 +52,12 @@
+           "axis": "y"
+         }
+       }
++    },
++    "below_trunk_provider": {
++      "type": "minecraft:simple_state_provider",
++      "state": {
++        "Name": "minecraft:dirt"
++      }
+     }
+   }
+ }
+\ No newline at end of file
+diff --git a/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/sparse_mahogany_tree.json b/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/sparse_mahogany_tree.json
+index 9f0d892..7560b16 100644
+--- a/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/sparse_mahogany_tree.json
++++ b/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/sparse_mahogany_tree.json
+@@ -52,6 +52,12 @@
+           "axis": "y"
+         }
+       }
++    },
++    "below_trunk_provider": {
++      "type": "minecraft:simple_state_provider",
++      "state": {
++        "Name": "minecraft:dirt"
++      }
+     }
+   }
+ }
+\ No newline at end of file
+diff --git a/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/spruce_bush.json b/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/spruce_bush.json
+index ad0bc6b..22c9a60 100644
+--- a/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/spruce_bush.json
++++ b/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/spruce_bush.json
+@@ -41,6 +41,12 @@
+           "axis": "y"
+         }
+       }
++    },
++    "below_trunk_provider": {
++      "type": "minecraft:simple_state_provider",
++      "state": {
++        "Name": "minecraft:dirt"
++      }
+     }
+   }
+ }
+\ No newline at end of file
+diff --git a/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/sugi_tree.json b/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/sugi_tree.json
+index 3758770..8bdec47 100644
+--- a/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/sugi_tree.json
++++ b/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/sugi_tree.json
+@@ -52,6 +52,12 @@
+           "axis": "y"
+         }
+       }
++    },
++    "below_trunk_provider": {
++      "type": "minecraft:simple_state_provider",
++      "state": {
++        "Name": "minecraft:dirt"
++      }
+     }
+   }
+ }
+\ No newline at end of file
+diff --git a/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/white_wisteria_tree.json b/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/white_wisteria_tree.json
+index e422a08..2f0b011 100644
+--- a/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/white_wisteria_tree.json
++++ b/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/white_wisteria_tree.json
+@@ -107,6 +107,12 @@
+           "axis": "y"
+         }
+       }
++    },
++    "below_trunk_provider": {
++      "type": "minecraft:simple_state_provider",
++      "state": {
++        "Name": "minecraft:dirt"
++      }
+     }
+   }
+ }
+\ No newline at end of file
+diff --git a/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/willow_tree.json b/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/willow_tree.json
+index 8b0fab9..9294409 100644
+--- a/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/willow_tree.json
++++ b/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/willow_tree.json
+@@ -92,6 +92,12 @@
+           "axis": "y"
+         }
+       }
++    },
++    "below_trunk_provider": {
++      "type": "minecraft:simple_state_provider",
++      "state": {
++        "Name": "minecraft:dirt"
++      }
+     }
+   }
+ }
+\ No newline at end of file
+diff --git a/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/yellow_aspen_tree.json b/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/yellow_aspen_tree.json
+index 1790955..b1c9784 100644
+--- a/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/yellow_aspen_tree.json
++++ b/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/yellow_aspen_tree.json
+@@ -52,6 +52,12 @@
+           "axis": "y"
+         }
+       }
++    },
++    "below_trunk_provider": {
++      "type": "minecraft:simple_state_provider",
++      "state": {
++        "Name": "minecraft:dirt"
++      }
+     }
+   }
+ }
+\ No newline at end of file
+diff --git a/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/yellow_aspen_tree_bees.json b/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/yellow_aspen_tree_bees.json
+index 4769e1a..0104db3 100644
+--- a/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/yellow_aspen_tree_bees.json
++++ b/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/yellow_aspen_tree_bees.json
+@@ -57,6 +57,12 @@
+           "axis": "y"
+         }
+       }
++    },
++    "below_trunk_provider": {
++      "type": "minecraft:simple_state_provider",
++      "state": {
++        "Name": "minecraft:dirt"
++      }
+     }
+   }
+ }
+\ No newline at end of file
+diff --git a/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/yellow_maple_tree.json b/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/yellow_maple_tree.json
+index 07a9dbb..800e33d 100644
+--- a/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/yellow_maple_tree.json
++++ b/common/src/main/resources/data/natures_spirit/worldgen/configured_feature/yellow_maple_tree.json
+@@ -100,6 +100,12 @@
+           "axis": "y"
+         }
+       }
++    },
++    "below_trunk_provider": {
++      "type": "minecraft:simple_state_provider",
++      "state": {
++        "Name": "minecraft:dirt"
++      }
+     }
+   }
+ }
+\ No newline at end of file
+diff --git a/common/src/main/resources/resourcepacks/modified_birch_forest/data/minecraft/worldgen/configured_feature/birch.json b/common/src/main/resources/resourcepacks/modified_birch_forest/data/minecraft/worldgen/configured_feature/birch.json
+index f84f521..aa94db3 100644
+--- a/common/src/main/resources/resourcepacks/modified_birch_forest/data/minecraft/worldgen/configured_feature/birch.json
++++ b/common/src/main/resources/resourcepacks/modified_birch_forest/data/minecraft/worldgen/configured_feature/birch.json
+@@ -40,6 +40,12 @@
+           "axis": "y"
+         }
+       }
++    },
++    "below_trunk_provider": {
++      "type": "minecraft:simple_state_provider",
++      "state": {
++        "Name": "minecraft:dirt"
++      }
+     }
+   }
+-}
++}
+\ No newline at end of file
+diff --git a/common/src/main/resources/resourcepacks/modified_birch_forest/data/minecraft/worldgen/configured_feature/birch_bees_0002.json b/common/src/main/resources/resourcepacks/modified_birch_forest/data/minecraft/worldgen/configured_feature/birch_bees_0002.json
+index 5e58928..95735c6 100644
+--- a/common/src/main/resources/resourcepacks/modified_birch_forest/data/minecraft/worldgen/configured_feature/birch_bees_0002.json
++++ b/common/src/main/resources/resourcepacks/modified_birch_forest/data/minecraft/worldgen/configured_feature/birch_bees_0002.json
+@@ -45,6 +45,12 @@
+           "axis": "y"
+         }
+       }
++    },
++    "below_trunk_provider": {
++      "type": "minecraft:simple_state_provider",
++      "state": {
++        "Name": "minecraft:dirt"
++      }
+     }
+   }
+-}
++}
+\ No newline at end of file
+diff --git a/common/src/main/resources/resourcepacks/modified_birch_forest/data/minecraft/worldgen/configured_feature/birch_bees_002.json b/common/src/main/resources/resourcepacks/modified_birch_forest/data/minecraft/worldgen/configured_feature/birch_bees_002.json
+index 4cc2431..89c03b6 100644
+--- a/common/src/main/resources/resourcepacks/modified_birch_forest/data/minecraft/worldgen/configured_feature/birch_bees_002.json
++++ b/common/src/main/resources/resourcepacks/modified_birch_forest/data/minecraft/worldgen/configured_feature/birch_bees_002.json
+@@ -45,6 +45,12 @@
+           "axis": "y"
+         }
+       }
++    },
++    "below_trunk_provider": {
++      "type": "minecraft:simple_state_provider",
++      "state": {
++        "Name": "minecraft:dirt"
++      }
+     }
+   }
+-}
++}
+\ No newline at end of file
+diff --git a/common/src/main/resources/resourcepacks/modified_birch_forest/data/minecraft/worldgen/configured_feature/birch_bees_005.json b/common/src/main/resources/resourcepacks/modified_birch_forest/data/minecraft/worldgen/configured_feature/birch_bees_005.json
+index b05f197..6e82e08 100644
+--- a/common/src/main/resources/resourcepacks/modified_birch_forest/data/minecraft/worldgen/configured_feature/birch_bees_005.json
++++ b/common/src/main/resources/resourcepacks/modified_birch_forest/data/minecraft/worldgen/configured_feature/birch_bees_005.json
+@@ -45,6 +45,12 @@
+           "axis": "y"
+         }
+       }
++    },
++    "below_trunk_provider": {
++      "type": "minecraft:simple_state_provider",
++      "state": {
++        "Name": "minecraft:dirt"
++      }
+     }
+   }
+-}
++}
+\ No newline at end of file
+diff --git a/common/src/main/resources/resourcepacks/modified_birch_forest/data/minecraft/worldgen/configured_feature/super_birch_bees.json b/common/src/main/resources/resourcepacks/modified_birch_forest/data/minecraft/worldgen/configured_feature/super_birch_bees.json
+index e7f5577..cd0d657 100644
+--- a/common/src/main/resources/resourcepacks/modified_birch_forest/data/minecraft/worldgen/configured_feature/super_birch_bees.json
++++ b/common/src/main/resources/resourcepacks/modified_birch_forest/data/minecraft/worldgen/configured_feature/super_birch_bees.json
+@@ -45,6 +45,12 @@
+           "axis": "y"
+         }
+       }
++    },
++    "below_trunk_provider": {
++      "type": "minecraft:simple_state_provider",
++      "state": {
++        "Name": "minecraft:dirt"
++      }
+     }
+   }
+-}
++}
+\ No newline at end of file
+diff --git a/common/src/main/resources/resourcepacks/modified_birch_forest/data/minecraft/worldgen/configured_feature/super_birch_bees_0002.json b/common/src/main/resources/resourcepacks/modified_birch_forest/data/minecraft/worldgen/configured_feature/super_birch_bees_0002.json
+index 3f47546..b960d4c 100644
+--- a/common/src/main/resources/resourcepacks/modified_birch_forest/data/minecraft/worldgen/configured_feature/super_birch_bees_0002.json
++++ b/common/src/main/resources/resourcepacks/modified_birch_forest/data/minecraft/worldgen/configured_feature/super_birch_bees_0002.json
+@@ -45,6 +45,12 @@
+           "axis": "y"
+         }
+       }
++    },
++    "below_trunk_provider": {
++      "type": "minecraft:simple_state_provider",
++      "state": {
++        "Name": "minecraft:dirt"
++      }
+     }
+   }
+-}
++}
+\ No newline at end of file
+diff --git a/common/src/main/resources/resourcepacks/modified_birch_forest/data/natures_spirit/worldgen/configured_feature/birch_bush.json b/common/src/main/resources/resourcepacks/modified_birch_forest/data/natures_spirit/worldgen/configured_feature/birch_bush.json
+index 6bae305..1ecb457 100644
+--- a/common/src/main/resources/resourcepacks/modified_birch_forest/data/natures_spirit/worldgen/configured_feature/birch_bush.json
++++ b/common/src/main/resources/resourcepacks/modified_birch_forest/data/natures_spirit/worldgen/configured_feature/birch_bush.json
+@@ -41,6 +41,12 @@
+           "axis": "y"
+         }
+       }
++    },
++    "below_trunk_provider": {
++      "type": "minecraft:simple_state_provider",
++      "state": {
++        "Name": "minecraft:dirt"
++      }
+     }
+   }
+-}
++}
+\ No newline at end of file
+diff --git a/common/src/main/resources/resourcepacks/modified_birch_forest/data/natures_spirit/worldgen/configured_feature/birch_default.json b/common/src/main/resources/resourcepacks/modified_birch_forest/data/natures_spirit/worldgen/configured_feature/birch_default.json
+index a8f3e33..caee6f0 100644
+--- a/common/src/main/resources/resourcepacks/modified_birch_forest/data/natures_spirit/worldgen/configured_feature/birch_default.json
++++ b/common/src/main/resources/resourcepacks/modified_birch_forest/data/natures_spirit/worldgen/configured_feature/birch_default.json
+@@ -40,6 +40,12 @@
+           "axis": "y"
+         }
+       }
++    },
++    "below_trunk_provider": {
++      "type": "minecraft:simple_state_provider",
++      "state": {
++        "Name": "minecraft:dirt"
++      }
+     }
+   }
+-}
++}
+\ No newline at end of file
+diff --git a/common/src/main/resources/resourcepacks/modified_birch_forest/data/natures_spirit/worldgen/configured_feature/old_birch_bees_0002.json b/common/src/main/resources/resourcepacks/modified_birch_forest/data/natures_spirit/worldgen/configured_feature/old_birch_bees_0002.json
+index fb06c3e..0a8e56a 100644
+--- a/common/src/main/resources/resourcepacks/modified_birch_forest/data/natures_spirit/worldgen/configured_feature/old_birch_bees_0002.json
++++ b/common/src/main/resources/resourcepacks/modified_birch_forest/data/natures_spirit/worldgen/configured_feature/old_birch_bees_0002.json
+@@ -49,6 +49,12 @@
+           "axis": "y"
+         }
+       }
++    },
++    "below_trunk_provider": {
++      "type": "minecraft:simple_state_provider",
++      "state": {
++        "Name": "minecraft:dirt"
++      }
+     }
+   }
+-}
++}
+\ No newline at end of file
+diff --git a/common/src/main/resources/resourcepacks/modified_birch_forest/data/natures_spirit/worldgen/configured_feature/super_old_birch_bees_0002.json b/common/src/main/resources/resourcepacks/modified_birch_forest/data/natures_spirit/worldgen/configured_feature/super_old_birch_bees_0002.json
+index ffe2898..54da2b9 100644
+--- a/common/src/main/resources/resourcepacks/modified_birch_forest/data/natures_spirit/worldgen/configured_feature/super_old_birch_bees_0002.json
++++ b/common/src/main/resources/resourcepacks/modified_birch_forest/data/natures_spirit/worldgen/configured_feature/super_old_birch_bees_0002.json
+@@ -49,6 +49,12 @@
+           "axis": "y"
+         }
+       }
++    },
++    "below_trunk_provider": {
++      "type": "minecraft:simple_state_provider",
++      "state": {
++        "Name": "minecraft:dirt"
++      }
+     }
+   }
+-}
++}
+\ No newline at end of file
+diff --git a/common/src/main/resources/resourcepacks/modified_dark_forest/data/minecraft/worldgen/configured_feature/dark_oak.json b/common/src/main/resources/resourcepacks/modified_dark_forest/data/minecraft/worldgen/configured_feature/dark_oak.json
+index dea45d6..28e1eb4 100644
+--- a/common/src/main/resources/resourcepacks/modified_dark_forest/data/minecraft/worldgen/configured_feature/dark_oak.json
++++ b/common/src/main/resources/resourcepacks/modified_dark_forest/data/minecraft/worldgen/configured_feature/dark_oak.json
+@@ -41,6 +41,12 @@
+           "axis": "y"
+         }
+       }
++    },
++    "below_trunk_provider": {
++      "type": "minecraft:simple_state_provider",
++      "state": {
++        "Name": "minecraft:dirt"
++      }
+     }
+   }
+ }
+\ No newline at end of file
+diff --git a/common/src/main/resources/resourcepacks/modified_jungle/data/minecraft/worldgen/configured_feature/jungle_bush.json b/common/src/main/resources/resourcepacks/modified_jungle/data/minecraft/worldgen/configured_feature/jungle_bush.json
+index b10287d..3f5cf65 100644
+--- a/common/src/main/resources/resourcepacks/modified_jungle/data/minecraft/worldgen/configured_feature/jungle_bush.json
++++ b/common/src/main/resources/resourcepacks/modified_jungle/data/minecraft/worldgen/configured_feature/jungle_bush.json
+@@ -40,6 +40,12 @@
+           "axis": "y"
+         }
+       }
++    },
++    "below_trunk_provider": {
++      "type": "minecraft:simple_state_provider",
++      "state": {
++        "Name": "minecraft:dirt"
++      }
+     }
+   }
+-}
++}
+\ No newline at end of file
+diff --git a/common/src/main/resources/resourcepacks/modified_jungle/data/minecraft/worldgen/configured_feature/jungle_tree.json b/common/src/main/resources/resourcepacks/modified_jungle/data/minecraft/worldgen/configured_feature/jungle_tree.json
+index 412c7fc..7514f45 100644
+--- a/common/src/main/resources/resourcepacks/modified_jungle/data/minecraft/worldgen/configured_feature/jungle_tree.json
++++ b/common/src/main/resources/resourcepacks/modified_jungle/data/minecraft/worldgen/configured_feature/jungle_tree.json
+@@ -52,6 +52,12 @@
+           "axis": "y"
+         }
+       }
++    },
++    "below_trunk_provider": {
++      "type": "minecraft:simple_state_provider",
++      "state": {
++        "Name": "minecraft:dirt"
++      }
+     }
+   }
+-}
++}
+\ No newline at end of file
+diff --git a/common/src/main/resources/resourcepacks/modified_jungle/data/minecraft/worldgen/configured_feature/mega_jungle_tree.json b/common/src/main/resources/resourcepacks/modified_jungle/data/minecraft/worldgen/configured_feature/mega_jungle_tree.json
+index a321279..806a563 100644
+--- a/common/src/main/resources/resourcepacks/modified_jungle/data/minecraft/worldgen/configured_feature/mega_jungle_tree.json
++++ b/common/src/main/resources/resourcepacks/modified_jungle/data/minecraft/worldgen/configured_feature/mega_jungle_tree.json
+@@ -48,6 +48,12 @@
+           "axis": "y"
+         }
+       }
++    },
++    "below_trunk_provider": {
++      "type": "minecraft:simple_state_provider",
++      "state": {
++        "Name": "minecraft:dirt"
++      }
+     }
+   }
+-}
++}
+\ No newline at end of file
+diff --git a/common/src/main/resources/resourcepacks/modified_vanilla_trees/data/minecraft/worldgen/configured_feature/fancy_oak.json b/common/src/main/resources/resourcepacks/modified_vanilla_trees/data/minecraft/worldgen/configured_feature/fancy_oak.json
+index ee5f950..b9422f3 100644
+--- a/common/src/main/resources/resourcepacks/modified_vanilla_trees/data/minecraft/worldgen/configured_feature/fancy_oak.json
++++ b/common/src/main/resources/resourcepacks/modified_vanilla_trees/data/minecraft/worldgen/configured_feature/fancy_oak.json
+@@ -41,6 +41,12 @@
+           "axis": "y"
+         }
+       }
++    },
++    "below_trunk_provider": {
++      "type": "minecraft:simple_state_provider",
++      "state": {
++        "Name": "minecraft:dirt"
++      }
+     }
+   }
+-}
++}
+\ No newline at end of file
+diff --git a/common/src/main/resources/resourcepacks/modified_vanilla_trees/data/minecraft/worldgen/configured_feature/fancy_oak_bees.json b/common/src/main/resources/resourcepacks/modified_vanilla_trees/data/minecraft/worldgen/configured_feature/fancy_oak_bees.json
+index 62dca75..0813e1a 100644
+--- a/common/src/main/resources/resourcepacks/modified_vanilla_trees/data/minecraft/worldgen/configured_feature/fancy_oak_bees.json
++++ b/common/src/main/resources/resourcepacks/modified_vanilla_trees/data/minecraft/worldgen/configured_feature/fancy_oak_bees.json
+@@ -46,6 +46,12 @@
+           "axis": "y"
+         }
+       }
++    },
++    "below_trunk_provider": {
++      "type": "minecraft:simple_state_provider",
++      "state": {
++        "Name": "minecraft:dirt"
++      }
+     }
+   }
+-}
++}
+\ No newline at end of file
+diff --git a/common/src/main/resources/resourcepacks/modified_vanilla_trees/data/minecraft/worldgen/configured_feature/fancy_oak_bees_0002.json b/common/src/main/resources/resourcepacks/modified_vanilla_trees/data/minecraft/worldgen/configured_feature/fancy_oak_bees_0002.json
+index 5ac8bbc..30e51f3 100644
+--- a/common/src/main/resources/resourcepacks/modified_vanilla_trees/data/minecraft/worldgen/configured_feature/fancy_oak_bees_0002.json
++++ b/common/src/main/resources/resourcepacks/modified_vanilla_trees/data/minecraft/worldgen/configured_feature/fancy_oak_bees_0002.json
+@@ -46,6 +46,12 @@
+           "axis": "y"
+         }
+       }
++    },
++    "below_trunk_provider": {
++      "type": "minecraft:simple_state_provider",
++      "state": {
++        "Name": "minecraft:dirt"
++      }
+     }
+   }
+-}
++}
+\ No newline at end of file
+diff --git a/common/src/main/resources/resourcepacks/modified_vanilla_trees/data/minecraft/worldgen/configured_feature/fancy_oak_bees_002.json b/common/src/main/resources/resourcepacks/modified_vanilla_trees/data/minecraft/worldgen/configured_feature/fancy_oak_bees_002.json
+index 89f38b0..e29b7d6 100644
+--- a/common/src/main/resources/resourcepacks/modified_vanilla_trees/data/minecraft/worldgen/configured_feature/fancy_oak_bees_002.json
++++ b/common/src/main/resources/resourcepacks/modified_vanilla_trees/data/minecraft/worldgen/configured_feature/fancy_oak_bees_002.json
+@@ -46,6 +46,12 @@
+           "axis": "y"
+         }
+       }
++    },
++    "below_trunk_provider": {
++      "type": "minecraft:simple_state_provider",
++      "state": {
++        "Name": "minecraft:dirt"
++      }
+     }
+   }
+-}
++}
+\ No newline at end of file
+diff --git a/common/src/main/resources/resourcepacks/modified_vanilla_trees/data/minecraft/worldgen/configured_feature/fancy_oak_bees_005.json b/common/src/main/resources/resourcepacks/modified_vanilla_trees/data/minecraft/worldgen/configured_feature/fancy_oak_bees_005.json
+index f8b0797..ae31b81 100644
+--- a/common/src/main/resources/resourcepacks/modified_vanilla_trees/data/minecraft/worldgen/configured_feature/fancy_oak_bees_005.json
++++ b/common/src/main/resources/resourcepacks/modified_vanilla_trees/data/minecraft/worldgen/configured_feature/fancy_oak_bees_005.json
+@@ -46,6 +46,12 @@
+           "axis": "y"
+         }
+       }
++    },
++    "below_trunk_provider": {
++      "type": "minecraft:simple_state_provider",
++      "state": {
++        "Name": "minecraft:dirt"
++      }
+     }
+   }
+-}
++}
+\ No newline at end of file
+diff --git a/fabric/build.gradle b/fabric/build.gradle
+index ae85405..ee13998 100644
+--- a/fabric/build.gradle
++++ b/fabric/build.gradle
+@@ -20,8 +20,8 @@ dependencies {
+     compileOnly("com.terraformersmc:modmenu:${project.modmenu_version}")
+     localRuntime("com.terraformersmc:modmenu:${project.modmenu_version}")
+ 
+-    localRuntime("mezz.jei:jei-${minecraft_version}-fabric:${jei_version}")
+-    localRuntime("curse.maven:jade-324717:8048381")
++    // localRuntime("mezz.jei:jei-${minecraft_version}-fabric:${jei_version}")
++    // localRuntime("curse.maven:jade-324717:8048381")
+ }
+ 
+ loom {
+diff --git a/gradle.properties b/gradle.properties
+index af00eca..4b5eb30 100644
+--- a/gradle.properties
++++ b/gradle.properties
+@@ -7,24 +7,24 @@ group=net.hibiscus
+ java_version=25
+ 
+ # Common
+-minecraft_version=26.1.2
++minecraft_version=26.2
+ mod_name=Nature's Spirit
+ mod_author=Team Hibiscus
+ mod_id=natures_spirit
+ license=All Rights Reserved
+ credits=
+ description=A mod to expand Minecraft's nature!
+-minecraft_version_range=[26.1.2, 26.2)
++minecraft_version_range=[26.2, 27)
+ ## This is the version of minecraft that the 'common' project uses, you can find a list of all versions here
+ ## https://projects.neoforged.net/neoforged/neoform
+-neo_form_version=26.1.2-1
++neo_form_version=26.2-1
+ 
+ # Fabric, see https://fabricmc.net/develop/ for new versions
+-fabric_version=0.155.2+26.1.2
++fabric_version=0.158.0+26.2
+ fabric_loader_version=0.19.3
+ 
+ # NeoForge, see https://projects.neoforged.net/neoforged/neoforge for new versions
+-neoforge_version=26.1.2.94
++neoforge_version=26.2.0.2
+ neoforge_loader_version_range=[4,)
+ 
+ # Gradle
+@@ -45,9 +45,9 @@ modmenu_version=18.0.0-alpha.8
+ jei_version=29.6.2.31
+ 
+ # Lithostitched
+-lithostitched_version=1.7.13
+-lithostitched_mc=26.1
+-lithostitched_version_range=[1.7.13,)
++lithostitched_version=1.8.0+beta3
++lithostitched_mc=26.2
++lithostitched_version_range=[1.8.0,)
+ 
+ # Publishing
+ curseforge_id=1044992
+diff --git a/settings.gradle b/settings.gradle
+index e03ea23..75a938b 100644
+--- a/settings.gradle
++++ b/settings.gradle
+@@ -24,4 +24,4 @@ plugins {
+ rootProject.name = 'NaturesSpirit'
+ include('common')
+ include('fabric')
+-include('neoforge')
++// include('neoforge')

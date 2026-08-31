@@ -1,0 +1,27 @@
+diff --git a/buildSrc/src/main/groovy/multiloader-common.gradle b/buildSrc/src/main/groovy/multiloader-common.gradle
+index 02d972c..922e9a2 100644
+--- a/buildSrc/src/main/groovy/multiloader-common.gradle
++++ b/buildSrc/src/main/groovy/multiloader-common.gradle
+@@ -143,5 +143,9 @@ publishing {
+ // signing.keyId, signing.password, and signing.secretKeyRingFile are defined separately
+ // in my global gradle.properties for protection
+ signing {
+-    sign publishing.publications
++    // Only sign when signing credentials are present (author's global gradle.properties);
++    // allows local publishToMavenLocal without a signatory.
++    if (project.hasProperty("signing.keyId")) {
++        sign publishing.publications
++    }
+ }
+\ No newline at end of file
+diff --git a/gradle/wrapper/gradle-wrapper.properties b/gradle/wrapper/gradle-wrapper.properties
+index 63e0e83..52ad5e7 100644
+--- a/gradle/wrapper/gradle-wrapper.properties
++++ b/gradle/wrapper/gradle-wrapper.properties
+@@ -1,5 +1,5 @@
+ distributionBase=GRADLE_USER_HOME
+ distributionPath=wrapper/dists
+-distributionUrl=https\://services.gradle.org/distributions/gradle-9.2.0-bin.zip
++distributionUrl=https\://services.gradle.org/distributions/gradle-9.6.1-bin.zip
+ zipStoreBase=GRADLE_USER_HOME
+ zipStorePath=wrapper/dists
