@@ -35,6 +35,10 @@ public final class FarmAndCharmContent {
         registerPlant("wild_strawberries");
         registerPlant("wild_onions");
         registerPlant("wild_garlic");
+        registerPlant("wild_tomatoes");
+        registerPlant("wild_lettuce");
+        registerPlant("wild_oat");
+        registerPlant("wild_ribs");
 
         // Domesticated Foods & Seeds
         registerFood("barley", VEG_FOOD);

@@ -1,56 +1,64 @@
 {
-  "type": "minecraft:simple_random_selector",
+  "type": "minecraft:simple_block",
   "config": {
-    "features": [
-      {
-        "feature": {
-          "type": "minecraft:simple_block",
-          "config": {
-            "to_place": {
-              "type": "minecraft:weighted_state_provider",
-              "entries": [
-                {
-                  "data": {
-                    "Name": "farm_and_charm:wild_barley"
-                  },
-                  "weight": 3
-                },
-                {
-                  "data": {
-                    "Name": "farm_and_charm:wild_corn"
-                  },
-                  "weight": 2
-                },
-                {
-                  "data": {
-                    "Name": "farm_and_charm:wild_strawberries"
-                  },
-                  "weight": 3
-                },
-                {
-                  "data": {
-                    "Name": "farm_and_charm:wild_onions"
-                  },
-                  "weight": 2
-                },
-                {
-                  "data": {
-                    "Name": "farm_and_charm:wild_garlic"
-                  },
-                  "weight": 2
-                },
-                {
-                  "data": {
-                    "Name": "brewery:wild_hops"
-                  },
-                  "weight": 2
-                }
-              ]
-            }
-          }
+    "to_place": {
+      "type": "minecraft:weighted_state_provider",
+      "entries": [
+        {
+          "data": {
+            "Name": "farm_and_charm:wild_tomatoes"
+          },
+          "weight": 4
         },
-        "placement": []
-      }
-    ]
+        {
+          "data": {
+            "Name": "farm_and_charm:wild_lettuce"
+          },
+          "weight": 4
+        },
+        {
+          "data": {
+            "Name": "farm_and_charm:wild_corn"
+          },
+          "weight": 4
+        },
+        {
+          "data": {
+            "Name": "farm_and_charm:wild_onions"
+          },
+          "weight": 4
+        },
+        {
+          "data": {
+            "Name": "farm_and_charm:wild_strawberries"
+          },
+          "weight": 3
+        },
+        {
+          "data": {
+            "Name": "farm_and_charm:wild_barley"
+          },
+          "weight": 3
+        },
+        {
+          "data": {
+            "Name": "farm_and_charm:wild_oat"
+          },
+          "weight": 3
+        },
+        {
+          "data": {
+            "Name": "farm_and_charm:wild_ribs"
+          },
+          "weight": 3
+        },
+        {
+          "data": {
+            "Name": "candlelight:rose"
+          },
+          "weight": 3
+        }
+      ]
+    }
   }
 }

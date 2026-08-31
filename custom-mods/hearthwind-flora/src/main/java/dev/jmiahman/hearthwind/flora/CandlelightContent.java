@@ -52,6 +52,24 @@ public final class CandlelightContent {
         registerBlock("chair", SoundType.WOOD, 2.0f);
         registerBlock("table", SoundType.WOOD, 2.0f);
         registerBlock("counter", SoundType.WOOD, 2.0f);
+        registerPlant("rose");
+    }
+
+    private static void registerPlant(String name) {
+        ResourceKey<Block> bKey = ResourceKey.create(Registries.BLOCK, Identifier.fromNamespaceAndPath(MOD_ID, name));
+        Block block = new FloraPlantBlock(BlockBehaviour.Properties.of()
+                .setId(bKey)
+                .noCollision()
+                .instabreak()
+                .sound(SoundType.GRASS)
+                .offsetType(BlockBehaviour.OffsetType.XZ));
+        Registry.register(BuiltInRegistries.BLOCK, bKey, block);
+        BLOCKS.put(name, block);
+
+        ResourceKey<Item> iKey = ResourceKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath(MOD_ID, name));
+        BlockItem item = new BlockItem(block, new Item.Properties().setId(iKey));
+        Registry.register(BuiltInRegistries.ITEM, iKey, item);
+        ITEMS.put(name, item);
     }
 
     private static Item registerItem(String name) {

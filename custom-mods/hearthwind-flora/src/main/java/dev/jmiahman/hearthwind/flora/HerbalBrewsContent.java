@@ -30,9 +30,15 @@ public final class HerbalBrewsContent {
         // Herbs & Cutout Plants (with ground checks and no water placement)
         registerPlant("lavender");
         registerPlant("wild_coffee");
+        registerPlant("wild_coffee_plant");
         registerPlant("wild_yerba_mate");
         registerPlant("wild_rooibos");
         registerPlant("hibiscus");
+        registerPlant("wild_hibiscus");
+        registerPlant("wild_green_tea");
+        registerPlant("wild_black_tea");
+        registerPlant("wild_chamomile");
+        registerPlant("wild_lavender");
 
         // Leaves & Prepared Teas
         registerItem("green_tea_leaf");

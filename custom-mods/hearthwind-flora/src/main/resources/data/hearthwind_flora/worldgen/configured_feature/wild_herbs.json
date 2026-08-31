@@ -1,50 +1,58 @@
 {
-  "type": "minecraft:simple_random_selector",
+  "type": "minecraft:simple_block",
   "config": {
-    "features": [
-      {
-        "feature": {
-          "type": "minecraft:simple_block",
-          "config": {
-            "to_place": {
-              "type": "minecraft:weighted_state_provider",
-              "entries": [
-                {
-                  "data": {
-                    "Name": "herbalbrews:lavender"
-                  },
-                  "weight": 3
-                },
-                {
-                  "data": {
-                    "Name": "herbalbrews:wild_coffee"
-                  },
-                  "weight": 2
-                },
-                {
-                  "data": {
-                    "Name": "herbalbrews:wild_yerba_mate"
-                  },
-                  "weight": 2
-                },
-                {
-                  "data": {
-                    "Name": "herbalbrews:wild_rooibos"
-                  },
-                  "weight": 2
-                },
-                {
-                  "data": {
-                    "Name": "herbalbrews:hibiscus"
-                  },
-                  "weight": 2
-                }
-              ]
-            }
-          }
+    "to_place": {
+      "type": "minecraft:weighted_state_provider",
+      "entries": [
+        {
+          "data": {
+            "Name": "herbalbrews:wild_green_tea"
+          },
+          "weight": 4
         },
-        "placement": []
-      }
-    ]
+        {
+          "data": {
+            "Name": "herbalbrews:wild_black_tea"
+          },
+          "weight": 4
+        },
+        {
+          "data": {
+            "Name": "herbalbrews:wild_hibiscus"
+          },
+          "weight": 4
+        },
+        {
+          "data": {
+            "Name": "herbalbrews:wild_lavender"
+          },
+          "weight": 4
+        },
+        {
+          "data": {
+            "Name": "herbalbrews:wild_yerba_mate"
+          },
+          "weight": 3
+        },
+        {
+          "data": {
+            "Name": "herbalbrews:wild_rooibos"
+          },
+          "weight": 3
+        },
+        {
+          "data": {
+            "Name": "herbalbrews:wild_coffee_plant"
+          },
+          "weight": 3
+        },
+        {
+          "data": {
+            "Name": "herbalbrews:wild_chamomile"
+          },
+          "weight": 3
+        }
+      ]
+    }
   }
 }
