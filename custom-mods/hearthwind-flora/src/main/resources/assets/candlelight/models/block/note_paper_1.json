@@ -1,8 +1,8 @@
 {
   "credit": "Made by Satisfy",
   "textures": {
-    "particle": "candlelight:item/note_paper",
-    "layer0": "candlelight:item/note_paper"
+    "particle": "candlelight:block/note_paper",
+    "layer0": "candlelight:block/note_paper"
   },
   "elements": [
     {

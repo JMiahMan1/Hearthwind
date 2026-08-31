@@ -2,21 +2,6 @@
   "variants": {
     "": {
       "model": "farm_and_charm:block/supply_cart"
-    },
-    "facing=north": {
-      "model": "farm_and_charm:block/supply_cart"
-    },
-    "facing=south": {
-      "model": "farm_and_charm:block/supply_cart",
-      "y": 180
-    },
-    "facing=west": {
-      "model": "farm_and_charm:block/supply_cart",
-      "y": 270
-    },
-    "facing=east": {
-      "model": "farm_and_charm:block/supply_cart",
-      "y": 90
     }
   }
 }

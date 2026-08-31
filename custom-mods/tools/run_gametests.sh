@@ -27,6 +27,9 @@ echo "== building all hearthwind modules =="
 echo "== running asset and drop integrity tests =="
 python3 "$DIR/test_assets_and_drops.py"
 
+echo "== running static validity and attribute linter =="
+python3 "$DIR/lint_and_validate.py"
+
 mkdir -p "$SRV/mods"
 if [ ! -f "$SRV/fabric-server.jar" ]; then
   echo "== fetching fabric server launcher =="

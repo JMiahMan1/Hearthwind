@@ -2,21 +2,6 @@
   "variants": {
     "": {
       "model": "farm_and_charm:block/silo"
-    },
-    "facing=north": {
-      "model": "farm_and_charm:block/silo"
-    },
-    "facing=south": {
-      "model": "farm_and_charm:block/silo",
-      "y": 180
-    },
-    "facing=west": {
-      "model": "farm_and_charm:block/silo",
-      "y": 270
-    },
-    "facing=east": {
-      "model": "farm_and_charm:block/silo",
-      "y": 90
     }
   }
 }

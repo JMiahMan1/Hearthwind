@@ -482,15 +482,17 @@ public final class NaturalistEntities {
     // 5. ATTRIBUTE SUPPLIERS
     // ==========================================
     public static AttributeSupplier.Builder createHerbivoreAttributes(double maxHealth, double speed) {
-        return Mob.createMobAttributes()
+        return Animal.createAnimalAttributes()
                 .add(Attributes.MAX_HEALTH, maxHealth)
-                .add(Attributes.MOVEMENT_SPEED, speed);
+                .add(Attributes.MOVEMENT_SPEED, speed)
+                .add(Attributes.TEMPT_RANGE, 10.0);
     }
 
     public static AttributeSupplier.Builder createPredatorAttributes(double maxHealth, double speed, double attackDmg) {
-        return Mob.createMobAttributes()
+        return Animal.createAnimalAttributes()
                 .add(Attributes.MAX_HEALTH, maxHealth)
                 .add(Attributes.MOVEMENT_SPEED, speed)
-                .add(Attributes.ATTACK_DAMAGE, attackDmg);
+                .add(Attributes.ATTACK_DAMAGE, attackDmg)
+                .add(Attributes.TEMPT_RANGE, 10.0);
     }
 }

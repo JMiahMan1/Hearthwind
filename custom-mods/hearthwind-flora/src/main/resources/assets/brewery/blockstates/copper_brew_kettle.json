@@ -2,21 +2,6 @@
   "variants": {
     "": {
       "model": "brewery:block/copper_brew_kettle"
-    },
-    "facing=north": {
-      "model": "brewery:block/copper_brew_kettle"
-    },
-    "facing=south": {
-      "model": "brewery:block/copper_brew_kettle",
-      "y": 180
-    },
-    "facing=west": {
-      "model": "brewery:block/copper_brew_kettle",
-      "y": 270
-    },
-    "facing=east": {
-      "model": "brewery:block/copper_brew_kettle",
-      "y": 90
     }
   }
 }

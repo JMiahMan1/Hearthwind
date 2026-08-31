@@ -2,21 +2,6 @@
   "variants": {
     "": {
       "model": "farm_and_charm:block/butter_churn"
-    },
-    "facing=north": {
-      "model": "farm_and_charm:block/butter_churn"
-    },
-    "facing=south": {
-      "model": "farm_and_charm:block/butter_churn",
-      "y": 180
-    },
-    "facing=west": {
-      "model": "farm_and_charm:block/butter_churn",
-      "y": 270
-    },
-    "facing=east": {
-      "model": "farm_and_charm:block/butter_churn",
-      "y": 90
     }
   }
 }
