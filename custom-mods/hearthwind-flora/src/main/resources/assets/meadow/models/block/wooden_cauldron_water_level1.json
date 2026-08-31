@@ -7,6 +7,6 @@
     "bottom": "meadow:block/wooden_cauldron_bottom",
     "particle": "meadow:block/wooden_cauldron_side",
     "side": "meadow:block/wooden_cauldron_side",
-    "content": "block/water_still"
+    "content": "meadow:block/water_still"
   }
 }

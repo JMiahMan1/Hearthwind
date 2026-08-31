@@ -1,6 +1,3 @@
 {
-  "parent": "meadow:block/heart_patterned_window_inventory"
+  "parent": "minecraft:item/generated"
 }
-
-
-

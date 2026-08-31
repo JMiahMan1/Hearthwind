@@ -1,6 +1,6 @@
 {
   "credit": "Made by Satisfy",
-  "parent": "block/block",
+  "parent": "minecraft:block/block",
   "textures": {
     "2": "candlelight:block/plate_vegetable",
     "particle": "candlelight:block/plate_vegetable"

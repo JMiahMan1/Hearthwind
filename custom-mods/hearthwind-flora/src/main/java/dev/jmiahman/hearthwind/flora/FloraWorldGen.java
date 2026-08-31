@@ -20,14 +20,52 @@ public final class FloraWorldGen {
     private FloraWorldGen() {}
 
     public static void init() {
-        for (String feature : new String[] {"wild_flowers", "wild_herbs", "wild_crops", "apple_tree", "dark_cherry_tree"}) {
-            ResourceKey<PlacedFeature> placed = ResourceKey.create(Registries.PLACED_FEATURE,
-                    Identifier.fromNamespaceAndPath(HearthwindFlora.MOD_ID, feature));
-            BiomeModifications.addFeature(
-                    BiomeSelectors.foundInOverworld(),
-                    GenerationStep.Decoration.TOP_LAYER_MODIFICATION,
-                    placed);
-        }
-        HearthwindFlora.LOGGER.info("Hearthwind Flora: wild flowers, herbs, and wild crops registered across all Overworld biomes");
+        // 1. Alpine Wildflowers (Meadows, Peaks, Slopes, Alpine biomes)
+        Predicate<BiomeSelectionContext> alpineSelector = ctx ->
+                ctx.hasTag(BiomeTags.IS_HILL) || ctx.hasTag(BiomeTags.IS_MOUNTAIN) ||
+                ctx.getBiomeKey().identifier().getPath().contains("meadow") ||
+                ctx.getBiomeKey().identifier().getPath().contains("peak") ||
+                ctx.getBiomeKey().identifier().getPath().contains("slope") ||
+                ctx.getBiomeKey().identifier().getPath().contains("alpine");
+
+        addFeature("wild_flowers", alpineSelector);
+
+        // 2. Herbs & Teas (Forests, Jungles, Savannas, Taigas)
+        Predicate<BiomeSelectionContext> herbSelector = ctx ->
+                ctx.hasTag(BiomeTags.IS_FOREST) || ctx.hasTag(BiomeTags.IS_JUNGLE) ||
+                ctx.hasTag(BiomeTags.IS_SAVANNA) || ctx.hasTag(BiomeTags.IS_TAIGA) ||
+                ctx.getBiomeKey().identifier().getPath().contains("forest") ||
+                ctx.getBiomeKey().identifier().getPath().contains("jungle") ||
+                ctx.getBiomeKey().identifier().getPath().contains("savanna");
+
+        addFeature("wild_herbs", herbSelector);
+
+        // 3. Wild Crops (Plains, Meadows, River Valleys, Valleys)
+        Predicate<BiomeSelectionContext> cropSelector = ctx ->
+                ctx.hasTag(BiomeTags.IS_FOREST) || ctx.hasTag(BiomeTags.IS_RIVER) ||
+                ctx.getBiomeKey().identifier().getPath().contains("plains") ||
+                ctx.getBiomeKey().identifier().getPath().contains("meadow") ||
+                ctx.getBiomeKey().identifier().getPath().contains("river") ||
+                ctx.getBiomeKey().identifier().getPath().contains("valley");
+
+        addFeature("wild_crops", cropSelector);
+
+        // 4. Apple Trees & Dark Cherry Trees (Forests, Plains, Meadows)
+        Predicate<BiomeSelectionContext> treeSelector = ctx ->
+                ctx.hasTag(BiomeTags.IS_FOREST) ||
+                ctx.getBiomeKey().identifier().getPath().contains("plains") ||
+                ctx.getBiomeKey().identifier().getPath().contains("forest") ||
+                ctx.getBiomeKey().identifier().getPath().contains("meadow");
+
+        addFeature("apple_tree", treeSelector);
+        addFeature("dark_cherry_tree", treeSelector);
+
+        HearthwindFlora.LOGGER.info("Hearthwind Flora: Authentic biome & elevation worldgen registered!");
+    }
+
+    private static void addFeature(String featureName, Predicate<BiomeSelectionContext> selector) {
+        ResourceKey<PlacedFeature> placed = ResourceKey.create(Registries.PLACED_FEATURE,
+                Identifier.fromNamespaceAndPath(HearthwindFlora.MOD_ID, featureName));
+        BiomeModifications.addFeature(selector, GenerationStep.Decoration.TOP_LAYER_MODIFICATION, placed);
     }
 }

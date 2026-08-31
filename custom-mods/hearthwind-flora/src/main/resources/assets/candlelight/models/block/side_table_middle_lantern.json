@@ -3,7 +3,7 @@
   "textures": {
     "3": "candlelight:block/side_table_top",
     "4": "candlelight:block/side_table_connected",
-    "5": "block/lantern",
+    "5": "minecraft:block/lantern",
     "6": "candlelight:block/sideboard_top_connected",
     "particle": "candlelight:block/side_table_top"
   },

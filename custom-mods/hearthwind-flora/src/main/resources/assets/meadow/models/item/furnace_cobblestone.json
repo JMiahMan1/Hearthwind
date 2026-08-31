@@ -1,3 +1,6 @@
 {
-  "parent": "meadow:block/furnace_cobblestone_off"
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "minecraft:item/furnace"
+  }
 }

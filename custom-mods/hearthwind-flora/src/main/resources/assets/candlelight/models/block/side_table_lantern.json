@@ -4,7 +4,7 @@
     "3": "candlelight:block/side_table_top",
     "4": "candlelight:block/chair",
     "5": "candlelight:block/cabinet_top",
-    "6": "block/lantern",
+    "6": "minecraft:block/lantern",
     "particle": "candlelight:block/side_table_top"
   },
   "elements": [

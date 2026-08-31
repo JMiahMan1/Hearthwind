@@ -1,6 +1,6 @@
 {
   "credit": "Made by Satisfy",
-  "parent": "block/block",
+  "parent": "minecraft:block/block",
   "textures": {
     "1": "candlelight:block/plate_vegetable_tomato_mozzarella",
     "2": "candlelight:block/plate_vegetable",
