@@ -965,6 +965,27 @@
       "slug": "grass-overhaul",
       "action": "drop",
       "reason": "Flora ambience stuck 1.21.1"
+    },
+    {
+      "file": "terralith",
+      "slug": "terralith",
+      "action": "keep",
+      "cat": "worldgen",
+      "note": "85+ unique Overworld biomes on 26.2"
+    },
+    {
+      "file": "tectonic",
+      "slug": "tectonic",
+      "action": "keep",
+      "cat": "worldgen",
+      "note": "Realistic terrain, mountain ranges, cliffs, ocean trenches, smooth river networks"
+    },
+    {
+      "file": "lithostitched",
+      "slug": "lithostitched",
+      "action": "keep",
+      "cat": "lib",
+      "note": "Required by Terralith and Tectonic on 26.2"
     }
   ],
   "client_optional_extra_note": "All 28 client-only visual/perf mods from 3.1.2 (sodium, iris, indium, DistantHorizons, EMF/ETF, firstperson, skinlayers, presence-footsteps, sound-physics, fancymenu stack, etc.) ship as an OPTIONAL companion download, not in the server index.",
