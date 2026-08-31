@@ -105,8 +105,7 @@ public final class HearthwindSurvivalThirst {
         setHydration(player, h);
         syncToClient(player, h);
 
-        long damageIntervalTicks =
-                (long) (cfg.damageIntervalSeconds * TICK_INTERVAL / 2);
+        long damageIntervalTicks = (long) (cfg.damageIntervalSeconds * 20.0);
         UUID id = player.getUUID();
         if (h <= 0.0) {
             int currentDmgCount = damageCounters.getOrDefault(id, 0) + TICK_INTERVAL;

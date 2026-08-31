@@ -150,12 +150,7 @@ public final class HearthwindSurvivalTemperature {
         }
 
         // day/night - heat much less at night, cold much worse at night (when outside)
-        long timeOfDay;
-        try {
-            timeOfDay = (Long) player.level().getClass().getMethod("getDayTime").invoke(player.level()) % 24000L;
-        } catch (Exception e) {
-            timeOfDay = player.level().getGameTime() % 24000L;
-        }
+        long timeOfDay = player.level().getGameTime() % 24000L;
         boolean isNight = timeOfDay > 13000 && timeOfDay < 23000;
         boolean isOutside = player.level().canSeeSky(player.blockPosition());
 

@@ -36,7 +36,7 @@ public abstract class CraftingGateMixin {
 
         // Check skill craft gates (levelz/crafting parity — CRAFT_GATES)
         SkillGates.Gate skillGate = SkillGates.craftGate(result);
-        if (!SkillGates.allowed(sp, skillGate)) {
+        if (skillGate != null && !SkillGates.allowed(sp, skillGate)) {
             sp.sendOverlayMessage(Component.literal(
                     "You need " + skillGate.skill().id + " level " + skillGate.level()
                     + " to craft this."));
