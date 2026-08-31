@@ -1,0 +1,20 @@
+{
+ "replace": true,
+ "values": [
+  "minecraft:ice",
+  "minecraft:packed_ice",
+  "minecraft:blue_ice",
+  {
+   "id": "endrem:cold_eye",
+   "required": false
+  },
+  {
+   "id": "vinery:eiswein",
+   "required": false
+  },
+  {
+   "id": "endermanoverhaul:icy_pearl",
+   "required": false
+  }
+ ]
+}

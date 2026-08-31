@@ -1,0 +1,49 @@
+{
+ "replace": true,
+ "values": [
+  "minecraft:leather_helmet",
+  "minecraft:leather_chestplate",
+  "minecraft:leather_leggings",
+  "minecraft:leather_boots",
+  {
+   "id": "environmentz:wolf_helmet",
+   "required": false
+  },
+  {
+   "id": "environmentz:wolf_chestplate",
+   "required": false
+  },
+  {
+   "id": "environmentz:wolf_leggings",
+   "required": false
+  },
+  {
+   "id": "environmentz:wolf_boots",
+   "required": false
+  },
+  "immersive_armors:steampunk_helmet",
+  "immersive_armors:steampunk_chestplate",
+  "immersive_armors:steampunk_leggings",
+  "immersive_armors:steampunk_boots",
+  {
+   "id": "meadow:fur_helmet",
+   "required": false
+  },
+  {
+   "id": "meadow:fur_chestplate",
+   "required": false
+  },
+  {
+   "id": "meadow:fur_leggings",
+   "required": false
+  },
+  {
+   "id": "meadow:fur_boots",
+   "required": false
+  },
+  {
+   "id": "endermanoverhaul:snowy_hood",
+   "required": false
+  }
+ ]
+}
