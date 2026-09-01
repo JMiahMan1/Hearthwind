@@ -14,6 +14,8 @@
   "screen.hearthwind.nutrients.grains.desc": "Grains fuel long work. Low: Slowness",
   "screen.hearthwind.nutrients.proteins.desc": "Proteins rebuild strength. Low: Weakness",
   "screen.hearthwind.nutrients.sugars.desc": "Sugars provide quick stamina. Low: Exhaustion",
+  "screen.hearthwind.nutrients.balanced": "You are eating a balanced diet",
+  "screen.hearthwind.nutrients.unbalanced": "Your diet is unbalanced",
   "screen.hearthwind.thirst": "Thirst",
   "screen.hearthwind.temperature": "Temperature",
   "screen.hearthwind.skills": "Skills",

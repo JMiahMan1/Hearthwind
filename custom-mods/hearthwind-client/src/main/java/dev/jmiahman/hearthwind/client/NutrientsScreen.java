@@ -102,11 +102,11 @@ public class NutrientsScreen extends Screen {
                     Component.translatable("screen.hearthwind.nutrients." + LABEL_KEYS[i]).getString(),
                     this.x + 28, rowY + 1, INK, false);
 
-            // Segmented 140x5 Bar Background & Fill
-            graphics.blitSprite(RenderPipelines.GUI_TEXTURED, BAR_BG[i], this.x + 28, rowY + 11, 140, 5);
-            int fill = Math.min(140, Math.round(140f * level / 100f));
+            // Segmented 141x5 Bar Background & Fill (crop left portion, never squish)
+            graphics.blitSprite(RenderPipelines.GUI_TEXTURED, BAR_BG[i], this.x + 28, rowY + 11, 141, 5);
+            int fill = Math.min(141, Math.round(141f * level / 100f));
             if (fill > 0) {
-                graphics.blitSprite(RenderPipelines.GUI_TEXTURED, BAR_FILL[i], this.x + 28, rowY + 11, fill, 5);
+                graphics.blitSprite(RenderPipelines.GUI_TEXTURED, BAR_FILL[i], 0, 0, this.x + 28, rowY + 11, fill, 5, 141, 5);
             }
 
             // Numeric indicator "level/100"

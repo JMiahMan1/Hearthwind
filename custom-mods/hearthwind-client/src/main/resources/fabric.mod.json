@@ -12,6 +12,9 @@
   "entrypoints": {
     "client": [
       "dev.jmiahman.hearthwind.client.HearthwindClient"
+    ],
+    "fabric-client-gametest": [
+      "dev.jmiahman.hearthwind.client.gametest.HearthwindClientGameTests"
     ]
   },
   "depends": {
