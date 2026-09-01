@@ -56,7 +56,9 @@ public final class MeadowContent {
         registerBlock("alpine_emerald_ore", SoundType.STONE, 3.0f);
 
         // Blocks
-        registerBlock("cheese_form", SoundType.WOOD, 2.0f);
+        registerCustomBlock("cheese_form", new dev.jmiahman.hearthwind.flora.block.CheeseRackBlock(BlockBehaviour.Properties.of()
+                .setId(ResourceKey.create(Registries.BLOCK, Identifier.fromNamespaceAndPath(MOD_ID, "cheese_form")))
+                .sound(SoundType.WOOD).strength(2.0f)));
         registerBlock("wooden_cauldron", SoundType.WOOD, 2.0f);
         registerBlock("fondue_pot", SoundType.STONE, 2.5f);
         registerBlock("woodcutter", SoundType.WOOD, 2.0f);
@@ -103,5 +105,16 @@ public final class MeadowContent {
         BlockItem item = new BlockItem(block, new Item.Properties().setId(iKey));
         Registry.register(BuiltInRegistries.ITEM, iKey, item);
         ITEMS.put(name, item);
+    }
+
+    public static Block registerCustomBlock(String name, Block block) {
+        ResourceKey<Block> bKey = ResourceKey.create(Registries.BLOCK, Identifier.fromNamespaceAndPath(MOD_ID, name));
+        ResourceKey<Item> iKey = ResourceKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath(MOD_ID, name));
+        Registry.register(BuiltInRegistries.BLOCK, bKey, block);
+        Item item = new BlockItem(block, new Item.Properties().setId(iKey).useBlockDescriptionPrefix());
+        Registry.register(BuiltInRegistries.ITEM, iKey, item);
+        BLOCKS.put(name, block);
+        ITEMS.put(name, item);
+        return block;
     }
 }

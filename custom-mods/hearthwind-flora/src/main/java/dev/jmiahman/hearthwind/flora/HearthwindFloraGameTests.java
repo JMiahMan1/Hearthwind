@@ -205,4 +205,71 @@ public final class HearthwindFloraGameTests {
         helper.assertTrue(potBe instanceof dev.jmiahman.hearthwind.flora.blockentity.CookingPotBlockEntity, "potBe is CookingPotBlockEntity");
         helper.succeed();
     }
+
+    @GameTest
+    public void brewstationAndTeaKettleBlockEntities(GameTestHelper helper) {
+        var brewBlock = BuiltInRegistries.BLOCK.getValue(Identifier.fromNamespaceAndPath("brewery", "beer_barrel"));
+        var kettleBlock = BuiltInRegistries.BLOCK.getValue(Identifier.fromNamespaceAndPath("herbalbrews", "tea_kettle"));
+        helper.assertTrue(brewBlock != null && kettleBlock != null, "brew and kettle blocks exist");
+
+        var brewPos = new net.minecraft.core.BlockPos(1, 1, 1);
+        var kettlePos = new net.minecraft.core.BlockPos(1, 2, 1);
+
+        helper.setBlock(brewPos, brewBlock.defaultBlockState());
+        helper.setBlock(kettlePos, kettleBlock.defaultBlockState());
+
+        var brewBe = helper.getLevel().getBlockEntity(helper.absolutePos(brewPos));
+        var kettleBe = helper.getLevel().getBlockEntity(helper.absolutePos(kettlePos));
+
+        helper.assertTrue(brewBe instanceof dev.jmiahman.hearthwind.flora.blockentity.BrewstationBlockEntity, "brewBe is BrewstationBlockEntity");
+        helper.assertTrue(kettleBe instanceof dev.jmiahman.hearthwind.flora.blockentity.TeaKettleBlockEntity, "kettleBe is TeaKettleBlockEntity");
+        helper.succeed();
+    }
+
+    @GameTest
+    public void cheeseRackAndStorageBlockEntities(GameTestHelper helper) {
+        var cheeseBlock = BuiltInRegistries.BLOCK.getValue(Identifier.fromNamespaceAndPath("meadow", "cheese_form"));
+        var storageBlock = BuiltInRegistries.BLOCK.getValue(Identifier.fromNamespaceAndPath("vinery", "wine_box"));
+        helper.assertTrue(cheeseBlock != null && storageBlock != null, "cheese and storage blocks exist");
+
+        var cheesePos = new net.minecraft.core.BlockPos(1, 1, 1);
+        var storagePos = new net.minecraft.core.BlockPos(1, 2, 1);
+
+        helper.setBlock(cheesePos, cheeseBlock.defaultBlockState());
+        helper.setBlock(storagePos, storageBlock.defaultBlockState());
+
+        var cheeseBe = helper.getLevel().getBlockEntity(helper.absolutePos(cheesePos));
+        var storageBe = helper.getLevel().getBlockEntity(helper.absolutePos(storagePos));
+
+        helper.assertTrue(cheeseBe instanceof dev.jmiahman.hearthwind.flora.blockentity.CheeseRackBlockEntity, "cheeseBe is CheeseRackBlockEntity");
+        helper.assertTrue(storageBe instanceof dev.jmiahman.hearthwind.flora.blockentity.StorageBlockEntity, "storageBe is StorageBlockEntity");
+        helper.succeed();
+    }
+
+    @GameTest
+    public void grapevineGrowthAndHarvesting(GameTestHelper helper) {
+        var block = BuiltInRegistries.BLOCK.getValue(Identifier.fromNamespaceAndPath("vinery", "red_grapevine"));
+        helper.assertTrue(block instanceof dev.jmiahman.hearthwind.flora.block.GrapevineBlock, "red_grapevine exists");
+        var grapevineBlock = (dev.jmiahman.hearthwind.flora.block.GrapevineBlock) block;
+
+        var pos = new net.minecraft.core.BlockPos(1, 2, 1);
+        helper.setBlock(pos, grapevineBlock.defaultBlockState().setValue(dev.jmiahman.hearthwind.flora.block.GrapevineBlock.AGE, 0));
+        helper.assertTrue(helper.getBlockState(pos).getValue(dev.jmiahman.hearthwind.flora.block.GrapevineBlock.AGE) == 0, "grapevine starts at age 0");
+
+        grapevineBlock.performBonemeal(helper.getLevel(), helper.getLevel().getRandom(), helper.absolutePos(pos), helper.getBlockState(pos));
+        helper.assertTrue(helper.getBlockState(pos).getValue(dev.jmiahman.hearthwind.flora.block.GrapevineBlock.AGE) == 1, "grapevine advanced to age 1");
+
+        helper.setBlock(pos, grapevineBlock.defaultBlockState().setValue(dev.jmiahman.hearthwind.flora.block.GrapevineBlock.AGE, 3));
+        helper.assertTrue(helper.getBlockState(pos).getValue(dev.jmiahman.hearthwind.flora.block.GrapevineBlock.AGE) == 3, "grapevine is fully ripe at age 3");
+        helper.succeed();
+    }
+
+    @GameTest
+    public void chairSeatingEntity(GameTestHelper helper) {
+        var pos = new net.minecraft.core.BlockPos(1, 1, 1);
+        var player = helper.makeMockPlayer(net.minecraft.world.level.GameType.SURVIVAL);
+        boolean seated = dev.jmiahman.hearthwind.flora.block.ChairEntity.sitPlayer(helper.getLevel(), helper.absolutePos(pos), player);
+        helper.assertTrue(seated, "player successfully sat on chair");
+        helper.succeed();
+    }
 }

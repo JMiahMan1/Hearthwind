@@ -69,7 +69,11 @@ public final class VineryContent {
         registerLog("dark_cherry_wood");
         registerLog("apple_wood");
         registerBlock("dark_cherry_planks", SoundType.WOOD, 2.0f);
-        registerBlock("wine_box", SoundType.WOOD, 2.0f);
+        registerCustomBlock("wine_box", new dev.jmiahman.hearthwind.flora.block.StorageBlock(BlockBehaviour.Properties.of()
+                .setId(ResourceKey.create(Registries.BLOCK, Identifier.fromNamespaceAndPath(MOD_ID, "wine_box")))
+                .sound(SoundType.WOOD).strength(2.0f)));
+        registerCustomBlock("red_grapevine", new dev.jmiahman.hearthwind.flora.block.GrapevineBlock(BlockBehaviour.Properties.of()
+                .setId(ResourceKey.create(Registries.BLOCK, Identifier.fromNamespaceAndPath(MOD_ID, "red_grapevine"))), "red_grape"));
         registerPlant("apple_tree_sapling");
         registerPlant("apple_sapling");
         registerPlant("dark_cherry_sapling");

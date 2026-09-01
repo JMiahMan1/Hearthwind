@@ -60,8 +60,12 @@ public final class HerbalBrewsContent {
         registerFood("hibiscus_tea", TEA_FOOD);
 
         // Workstations & Blocks
-        registerBlock("tea_kettle", SoundType.METAL, 2.0f);
-        registerBlock("copper_tea_kettle", SoundType.COPPER, 2.0f);
+        registerCustomBlock("tea_kettle", new dev.jmiahman.hearthwind.flora.block.TeaKettleBlock(BlockBehaviour.Properties.of()
+                  .setId(ResourceKey.create(Registries.BLOCK, Identifier.fromNamespaceAndPath(MOD_ID, "tea_kettle")))
+                  .sound(SoundType.METAL).strength(2.0f)));
+        registerCustomBlock("copper_tea_kettle", new dev.jmiahman.hearthwind.flora.block.TeaKettleBlock(BlockBehaviour.Properties.of()
+                  .setId(ResourceKey.create(Registries.BLOCK, Identifier.fromNamespaceAndPath(MOD_ID, "copper_tea_kettle")))
+                  .sound(SoundType.COPPER).strength(2.0f)));
         registerBlock("cauldron", SoundType.METAL, 2.0f);
         registerBlock("stove", SoundType.STONE, 3.0f);
         registerItem("flask");
@@ -108,5 +112,16 @@ public final class HerbalBrewsContent {
         BlockItem item = new BlockItem(block, new Item.Properties().setId(iKey));
         Registry.register(BuiltInRegistries.ITEM, iKey, item);
         ITEMS.put(name, item);
+    }
+
+    public static Block registerCustomBlock(String name, Block block) {
+        ResourceKey<Block> bKey = ResourceKey.create(Registries.BLOCK, Identifier.fromNamespaceAndPath(MOD_ID, name));
+        ResourceKey<Item> iKey = ResourceKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath(MOD_ID, name));
+        Registry.register(BuiltInRegistries.BLOCK, bKey, block);
+        Item item = new BlockItem(block, new Item.Properties().setId(iKey).useBlockDescriptionPrefix());
+        Registry.register(BuiltInRegistries.ITEM, iKey, item);
+        BLOCKS.put(name, block);
+        ITEMS.put(name, item);
+        return block;
     }
 }

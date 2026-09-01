@@ -41,7 +41,9 @@ public final class BreweryContent {
 
         // Blocks
         registerBlock("brew_kettle", SoundType.METAL, 2.5f);
-        registerBlock("beer_barrel", SoundType.WOOD, 2.0f);
+        registerCustomBlock("beer_barrel", new dev.jmiahman.hearthwind.flora.block.BrewstationBlock(BlockBehaviour.Properties.of()
+                .setId(ResourceKey.create(Registries.BLOCK, Identifier.fromNamespaceAndPath(MOD_ID, "beer_barrel")))
+                .sound(SoundType.WOOD).strength(2.0f)));
         registerBlock("copper_brew_kettle", SoundType.METAL, 2.5f);
     }
 
@@ -65,6 +67,17 @@ public final class BreweryContent {
         ResourceKey<Block> bKey = ResourceKey.create(Registries.BLOCK, Identifier.fromNamespaceAndPath(MOD_ID, name));
         ResourceKey<Item> iKey = ResourceKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath(MOD_ID, name));
         Block block = new Block(BlockBehaviour.Properties.of().sound(sound).strength(hardness).setId(bKey));
+        Registry.register(BuiltInRegistries.BLOCK, bKey, block);
+        Item item = new BlockItem(block, new Item.Properties().setId(iKey).useBlockDescriptionPrefix());
+        Registry.register(BuiltInRegistries.ITEM, iKey, item);
+        BLOCKS.put(name, block);
+        ITEMS.put(name, item);
+        return block;
+    }
+
+    public static Block registerCustomBlock(String name, Block block) {
+        ResourceKey<Block> bKey = ResourceKey.create(Registries.BLOCK, Identifier.fromNamespaceAndPath(MOD_ID, name));
+        ResourceKey<Item> iKey = ResourceKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath(MOD_ID, name));
         Registry.register(BuiltInRegistries.BLOCK, bKey, block);
         Item item = new BlockItem(block, new Item.Properties().setId(iKey).useBlockDescriptionPrefix());
         Registry.register(BuiltInRegistries.ITEM, iKey, item);
