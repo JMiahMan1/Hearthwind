@@ -11,9 +11,9 @@ import net.minecraft.resources.Identifier;
 
 /**
  * Exact Aged EnvironmentZ 2.0.8 Thermometer Trio parity:
- * 1. Thermometer (#5): x = width/2 + 99 (hotbar right + 8), y = height - 28 (7x27 vertical tube with bulb).
- * 2. Unit Box (#6): x = width/2 + 112, y = height - 17 (12x12 beveled box with "F").
- * 3. Trend Arrow (#7): x = width/2 + 124, y = height - 18 (~15x15 chevron).
+ * 1. Thermometer: x = width/2 + 99 (hotbar right + 8), y = height - 32 (16x32 glass thermometer & reservoir).
+ * 2. Unit Box: x = width/2 + 116, y = height - 17 (12x12 beveled badge with "F").
+ * 3. Trend Arrow: x = width/2 + 129, y = height - 16 (7x9 authentic chevron).
  */
 public final class TempHud implements HudElement {
     private static final Identifier THERMOMETER_FRAME =
@@ -50,26 +50,23 @@ public final class TempHud implements HudElement {
         int width = graphics.guiWidth();
         int height = graphics.guiHeight();
 
-        // 1. Thermometer: hotbar right edge + 8 (x = width/2 + 99, y = height - 28)
+        // 1. Thermometer: hotbar right edge + 8 (x = width/2 + 99, y = height - 32)
         int tubeX = width / 2 + 99;
-        int tubeY = height - 28;
+        int tubeY = height - 32;
 
         float temp = ClientTempData.getTemperature();
-        float norm = Math.max(0f, Math.min(1f, (temp + 10f) / 20f));
-        int mercuryHeight = Math.max(1, Math.round(18f * norm));
 
-        graphics.blitSprite(RenderPipelines.GUI_TEXTURED, THERMOMETER_FRAME, tubeX, tubeY, 7, 27);
+        graphics.blitSprite(RenderPipelines.GUI_TEXTURED, THERMOMETER_FRAME, tubeX, tubeY, 16, 32);
         Identifier mercury = temp >= 0f ? MERCURY_HOT : MERCURY_COLD;
-        graphics.blitSprite(RenderPipelines.GUI_TEXTURED, mercury,
-                tubeX + 1, tubeY + 3 + (18 - mercuryHeight), 5, mercuryHeight);
+        graphics.blitSprite(RenderPipelines.GUI_TEXTURED, mercury, tubeX, tubeY, 16, 32);
 
-        // 2. Unit Box ("F"): x = width/2 + 112, y = height - 17 (12x12)
-        int boxX = width / 2 + 112;
+        // 2. Unit Box ("F"): x = width/2 + 116, y = height - 17 (12x12)
+        int boxX = width / 2 + 116;
         int boxY = height - 17;
         graphics.blitSprite(RenderPipelines.GUI_TEXTURED, UNIT_BOX_F, boxX, boxY, 12, 12);
 
-        // 3. Trend Arrow: x = width/2 + 126, y = height - 16 (7x9 native sprite)
-        int arrowX = width / 2 + 126;
+        // 3. Trend Arrow: x = width/2 + 129, y = height - 16 (7x9 native sprite)
+        int arrowX = width / 2 + 129;
         int arrowY = height - 16;
         int trend = ClientTempData.trendDirection();
         if (trend != 0) {

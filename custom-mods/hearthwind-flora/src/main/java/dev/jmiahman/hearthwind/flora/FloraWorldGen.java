@@ -67,6 +67,6 @@ public final class FloraWorldGen {
     private static void addFeature(String featureName, Predicate<BiomeSelectionContext> selector) {
         ResourceKey<PlacedFeature> placed = ResourceKey.create(Registries.PLACED_FEATURE,
                 Identifier.fromNamespaceAndPath(HearthwindFlora.MOD_ID, featureName));
-        BiomeModifications.addFeature(selector, GenerationStep.Decoration.TOP_LAYER_MODIFICATION, placed);
+        BiomeModifications.addFeature(selector, GenerationStep.Decoration.VEGETAL_DECORATION, placed);
     }
 }

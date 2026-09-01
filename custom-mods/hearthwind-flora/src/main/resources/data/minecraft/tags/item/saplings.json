@@ -1,0 +1,11 @@
+{
+  "replace": false,
+  "values": [
+    "vinery:apple_tree_sapling",
+    "vinery:apple_sapling",
+    "vinery:dark_cherry_sapling",
+    "vinery:cherry_sapling",
+    "vinery:cherry_tree_sapling",
+    "vinery:dark_cherry_tree_sapling"
+  ]
+}

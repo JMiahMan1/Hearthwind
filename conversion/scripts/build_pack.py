@@ -221,6 +221,12 @@ def main():
         # Also copy our custom jars into the plain dirs for offline installs
         custom_jars = list((ROOT / "custom-mods").rglob("hearthwind-*/build/libs/*26.2*.jar"))
         custom_jars = [j for j in custom_jars if "sources" not in j.name]
+        # smallships 26.2 port (in-house) ships to server + client like the hearthwind mods
+        custom_jars += [
+            j
+            for j in (ROOT / "custom-mods" / "smallships" / "build" / "libs").glob("smallships-26.2*.jar")
+            if "sources" not in j.name and "javadoc" not in j.name
+        ]
         for j in custom_jars:
             is_client = "hearthwind-client" in str(j)
             target_dir = cdir / "mods" if is_client else sdir / "mods"

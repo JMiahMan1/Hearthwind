@@ -21,7 +21,20 @@ echo "== assembling client gametest game dir: $WORK"
 rm -rf "$WORK"
 mkdir -p "$WORK/mods"
 
-CLIENT_MODS="$REPO/dev-client/client/mods"
+# CI/Docker (CGT_ENV=ci) provision vanilla artifacts + stage mods from the pack dist;
+# default (macOS dev host) reuses the launcher install + dev-client mod dir.
+if [ "${CGT_ENV:-}" = "ci" ]; then
+  PROV="$ROOT/.tmp/cgt-provision"
+  echo "== provisioning vanilla client artifacts (piston-meta) -> $PROV"
+  PROV_OUT=$(python3 "$DIR/provision_ci_client.py" --out "$PROV") || {
+    echo "ERROR: provisioning failed" >&2
+    exit 1
+  }
+  eval "$PROV_OUT"
+  CLIENT_MODS="${CGT_MODS_SRC:-$REPO/conversion/build/dist/client/mods}"
+else
+  CLIENT_MODS="${CGT_MODS_SRC:-$REPO/dev-client/client/mods}"
+fi
 if [ ! -d "$CLIENT_MODS" ]; then
   echo "ERROR: mod source dir not found at $CLIENT_MODS" >&2
   exit 1
@@ -34,7 +47,7 @@ if [ -z "$CGT_API" ]; then
   exit 1
 fi
 cp "$CGT_API" "$WORK/mods/"
-for j in "$ROOT"/hearthwind-*/build/libs/*26.2+0.1.0.jar; do
+for j in "$ROOT"/hearthwind-*/build/libs/*26.2+0.1.0.jar "$ROOT"/smallships/build/libs/smallships-26.2+0.1.0.jar; do
   [ -f "$j" ] || continue
   case "$j" in *sources*) continue ;; esac
   cp "$j" "$WORK/mods/"
@@ -68,13 +81,19 @@ esac
 CMD=(java "${VMARGS[@]}" -cp "$LOADER:$MIXIN:$MIXEX:$ASM$MCCP"
   net.fabricmc.loader.impl.launch.knot.KnotClient
   --username TestPlayer --version 26.2 --gameDir "$WORK"
-  --assetsDir "$HOME/Library/Application Support/minecraft/assets"
+  --assetsDir "${CGT_ASSETS_DIR:-$HOME/Library/Application Support/minecraft/assets}"
   --assetIndex "$ASSET_IDX" --uuid 00000000-0000-0000-0000-000000000000
   --accessToken 0 --versionType Hearthwind)
 
+LAUNCH=()
+if [ "${CGT_XVFB:-0}" = "1" ]; then
+  LAUNCH=(xvfb-run -a -s "-screen 0 1280x800x24")
+  export LIBGL_ALWAYS_SOFTWARE=1
+fi
+
 echo "== launching client gametest run (log: $LOG)"
 : > "$LOG"
-nohup "${CMD[@]}" > "$LOG" 2>&1 < /dev/null &
+nohup "${LAUNCH[@]}" "${CMD[@]}" > "$LOG" 2>&1 < /dev/null &
 CPID=$!
 
 ELAPSED=0

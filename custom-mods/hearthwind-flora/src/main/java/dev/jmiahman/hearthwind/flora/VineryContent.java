@@ -65,7 +65,11 @@ public final class VineryContent {
         registerBlock("dark_cherry_planks", SoundType.WOOD, 2.0f);
         registerBlock("wine_box", SoundType.WOOD, 2.0f);
         registerPlant("apple_tree_sapling");
+        registerPlant("apple_sapling");
         registerPlant("dark_cherry_sapling");
+        registerPlant("cherry_sapling");
+        registerPlant("cherry_tree_sapling");
+        registerPlant("dark_cherry_tree_sapling");
     }
 
     private static void registerPlant(String name) {

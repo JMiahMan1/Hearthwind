@@ -55,10 +55,22 @@ def window_geom():
 
 
 def build_classpath():
-    vjson = json.loads(
-        (pathlib.Path.home() / "Library/Application Support/minecraft/versions/26.2/26.2.json").read_text()
+    # Env overrides let CI/Docker (no macOS launcher install) supply piston-provisioned
+    # artifacts; defaults keep the local launcher behavior.
+    vjson_path = os.environ.get("CGT_VJSON") or str(
+        pathlib.Path.home() / "Library/Application Support/minecraft/versions/26.2/26.2.json"
     )
-    libs_root = pathlib.Path.home() / "Library/Application Support/minecraft/libraries"
+    vjson = json.loads(pathlib.Path(vjson_path).read_text())
+    libs_root = pathlib.Path(
+        os.environ.get("CGT_LIBS_ROOT")
+        or (pathlib.Path.home() / "Library/Application Support/minecraft/libraries")
+    )
+    rule_os = os.environ.get("CGT_RULE_OS", "osx")
+    natives_classes = [
+        n
+        for n in os.environ.get("CGT_NATIVES", "natives-macos,natives-macos-arm64").split(",")
+        if n
+    ]
 
     def rule_ok(rules):
         if not rules:
@@ -69,7 +81,7 @@ def build_classpath():
             if feats and not all(feats.values()):
                 continue
             os_c = r.get("os", {})
-            if os_c.get("name") not in (None, "osx"):
+            if os_c.get("name") not in (None, rule_os):
                 continue
             arch = os_c.get("arch")
             if arch and arch != os.uname().machine:
@@ -86,7 +98,7 @@ def build_classpath():
             p = libs_root / art["path"]
             if p.exists():
                 cp.append(str(p))
-        for cls in ("natives-macos", "natives-macos-arm64"):
+        for cls in natives_classes:
             c = lib.get("downloads", {}).get("classifiers", {}).get(cls)
             if c and c.get("path"):
                 p = libs_root / c["path"]
@@ -106,7 +118,7 @@ def build_classpath():
     asm = ""
     for name in ("asm", "asm-tree", "asm-commons", "asm-util", "asm-analysis"):
         asm += first(f"org.ow2.asm/{name}/9*/*/asm*9*.jar") + ":"
-    game_jar = str(
+    game_jar = os.environ.get("CGT_GAME_JAR") or str(
         pathlib.Path.home() / "Library/Application Support/minecraft/versions/26.2/26.2.jar"
     )
     cp.append(game_jar)
