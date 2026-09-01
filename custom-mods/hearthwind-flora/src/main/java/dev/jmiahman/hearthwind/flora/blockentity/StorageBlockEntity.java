@@ -43,13 +43,34 @@ public class StorageBlockEntity extends BlockEntity {
             for (int i = 0; i < items.size(); i++) {
                 if (items.get(i).isEmpty()) {
                     items.set(i, held.split(1));
-                    setChanged();
-                    if (level != null) level.playSound(null, worldPosition, SoundEvents.DISPENSER_DISPENSE, SoundSource.BLOCKS, 0.8f, 1.4f);
                     return InteractionResult.SUCCESS;
                 }
             }
         }
 
         return InteractionResult.PASS;
+    }
+
+    public NonNullList<ItemStack> getInventory() {
+        return items;
+    }
+
+    public int size() {
+        return items.size();
+    }
+
+    @Override
+    public net.minecraft.network.protocol.Packet<net.minecraft.network.protocol.game.ClientGamePacketListener> getUpdatePacket() {
+        return net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket.create(this);
+    }
+
+    @Override
+    protected void saveAdditional(ValueOutput output) {
+        super.saveAdditional(output);
+    }
+
+    @Override
+    protected void loadAdditional(ValueInput input) {
+        super.loadAdditional(input);
     }
 }

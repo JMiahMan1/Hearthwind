@@ -138,6 +138,7 @@ public class HearthwindClient implements ClientModInitializer {
             BlockTargetHud.register();
             NutrientsKey.init();
             dev.jmiahman.hearthwind.client.render.FaunaEntityRenderer.registerAll();
+            dev.jmiahman.hearthwind.client.render.FloraBlockEntityRenderers.registerAll();
 
             net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback.EVENT.register((stack, tooltipContext, tooltipType, lines) -> {
                 ClientSkillGates.Requirement req = ClientSkillGates.getItemRequirement(stack);

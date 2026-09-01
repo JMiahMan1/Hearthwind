@@ -32,6 +32,7 @@ subprojects {
 		dependencies {
 			implementation project(':hearthwind-survival')
 			implementation project(':hearthwind-world')
+			implementation project(':hearthwind-flora')
 		}
 	}
 	if (project.name == 'hearthwind-primitive') {

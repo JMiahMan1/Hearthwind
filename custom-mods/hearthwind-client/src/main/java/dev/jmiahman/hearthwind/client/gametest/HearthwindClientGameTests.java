@@ -19,10 +19,14 @@ import net.fabricmc.fabric.api.client.gametest.v1.context.TestSingleplayerContex
  * screen, screenshots it, then tears the world down.
  */
 public class HearthwindClientGameTests implements FabricClientGameTest {
+    // Software-GL (xvfb/llvmpipe in CI + docker) chunk rendering and screen
+    // transitions are far slower than the 10s default timeouts.
+    private static final int SLOW_TIMEOUT = 300;
+
     @Override
     public void runTest(ClientGameTestContext context) {
         try (TestSingleplayerContext world = context.worldBuilder().create()) {
-            world.getConnection().waitForChunksRender();
+            world.getConnection().waitForChunksRender(SLOW_TIMEOUT);
             context.waitTicks(20);
 
             context.getInput().pressKey(NutrientsKey.openNutrients);

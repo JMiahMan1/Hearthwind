@@ -57,4 +57,8 @@ public class StorageBlock extends BaseEntityBlock {
         }
         return InteractionResult.PASS;
     }
+
+    public net.minecraft.resources.Identifier type() {
+        return net.minecraft.core.registries.BuiltInRegistries.BLOCK.getKey(this);
+    }
 }
