@@ -72,7 +72,7 @@ if [ "${1:-}" != "--no-server" ]; then
   fi
 
   python3 - "$REPO" <<'EOF'
-import subprocess, sys, os, time, socket
+import subprocess, sys, os
 
 repo = sys.argv[1]
 os.makedirs(os.path.join(repo, ".tmp/logs"), exist_ok=True)
@@ -83,18 +83,13 @@ subprocess.Popen(
     start_new_session=True, cwd=os.path.join(repo, "dev-server"),
 )
 
-# Wait until port 25565 is verified active
-for _ in range(40):
-    s = socket.socket()
-    s.settimeout(1)
-    try:
-        s.connect(('127.0.0.1', 25565))
-        s.close()
-        print("Dev server is LIVE and accepting connections on 127.0.0.1:25565!")
-        sys.exit(0)
-    except Exception:
-        time.sleep(1)
-
-print("Warning: server started in background, still warming up...")
+rcon = os.path.join(repo, "custom-mods", "tools", "rcon.py")
+rc = subprocess.call([sys.executable, rcon, "127.0.0.1", "25575", "agedtest",
+                      "list", "--connect-wait", "120"])
+if rc == 0:
+    print("Dev server is LIVE (RCON ready => world fully loaded).")
+else:
+    print("Warning: server started in background, still warming up...")
+    sys.exit(rc or 1)
 EOF
 fi

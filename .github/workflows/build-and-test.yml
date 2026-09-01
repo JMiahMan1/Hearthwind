@@ -81,10 +81,7 @@ jobs:
             sleep 6
             if grep -q "Done (" boot.log; then
               for chunk in "1000 1000" "-1000 -1000"; do
-                for r in 1 2 3; do
-                  python3 "$RCON" 127.0.0.1 25575 agedtest "forceload add $chunk" && break
-                  sleep 3
-                done
+                python3 "$RCON" 127.0.0.1 25575 agedtest --connect-wait 60 "forceload add $chunk"
               done
               sleep 10
               if grep -q "Feature order cycle" boot.log; then

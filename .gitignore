@@ -15,3 +15,7 @@ dev-client/
 conversion/deps/
 custom-mods/.gametest-cache/
 custom-mods/.gametest-server/
+.mixin.out/
+cache/
+config/
+logs/

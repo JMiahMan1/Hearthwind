@@ -590,8 +590,9 @@
     {
       "file": "villagesandpillages",
       "slug": "villages-and-pillages",
-      "action": "drop",
-      "reason": "Unresolved status; village variety not core"
+      "action": "keep",
+      "cat": "structures",
+      "note": "Hostile pillages and varied villager settlements on 26.2"
     },
     {
       "file": "mns",
@@ -756,8 +757,9 @@
     {
       "file": "smallships",
       "slug": "small-ships",
-      "action": "drop",
-      "reason": "Stuck 1.21.4; ships off core loop"
+      "action": "keep",
+      "cat": "transport",
+      "note": "Sailable cogs, galleys, brigs, dhows, and drakkars for authentic sea navigation"
     },
     {
       "file": "ships",

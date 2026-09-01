@@ -52,7 +52,12 @@ for f in "$ROOT"/custom-mods/hearthwind-*/build/libs/*26.2+0.1.0.jar; do
   cp "$f" "$DST_MODS"/
 done
 echo "Client mods: $(ls "$DST_MODS"/*.jar 2>/dev/null | wc -l) jars"
-ls -1 "$DST_MODS"/hearthwind*.jar | head -n 20
+for f in "$DST_MODS"/hearthwind-*.jar; do
+  [[ -f "$f" ]] || continue
+  src="$ROOT/custom-mods/$(basename "${f%%/build/libs/*}")/build/libs/$(basename "$f")"
+  cmp -s "$src" "$f" || { echo "ERROR: $f does not match $src" >&2; exit 1; }
+done
+echo "verified hearthwind client jars match build output"
 
 # Dev server
 SRC_SRV="$ROOT/conversion/build/dist/server"
