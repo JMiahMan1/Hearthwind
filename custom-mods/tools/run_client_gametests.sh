@@ -41,7 +41,8 @@ if [ ! -d "$CLIENT_MODS" ]; then
 fi
 cp "$CLIENT_MODS"/*.jar "$WORK/mods/"
 # the FabricClientGameTestRunner entrypoint lives in the API module jar itself
-CGT_API=$(ls "$HOME/.gradle/caches/modules-2/files-2.1/net.fabricmc.fabric-api/fabric-client-gametest-api-v1/6.0.0+515ac5339e"/*/*.jar 2>/dev/null | grep -v sources | head -1)
+GRADLE_CACHE="${GRADLE_USER_HOME:-$HOME/.gradle}/caches"
+CGT_API=$(ls "$GRADLE_CACHE/modules-2/files-2.1/net.fabricmc.fabric-api/fabric-client-gametest-api-v1/6.0.0+515ac5339e"/*/*.jar 2>/dev/null | grep -v sources | head -1)
 if [ -z "$CGT_API" ]; then
   echo "ERROR: fabric-client-gametest-api-v1 jar not found in gradle cache" >&2
   exit 1

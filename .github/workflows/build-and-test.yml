@@ -15,11 +15,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up JDK 25
+      - name: Set up JDK 26
         uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: '25'
+          java-version: '26'
           cache: gradle
 
       - name: Build all modules
@@ -57,7 +57,7 @@ jobs:
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: '25'
+          java-version: '26'
       - name: Resolve deps + materialize server dir
         run: |
           python3 conversion/scripts/resolve_deps.py
@@ -107,7 +107,7 @@ jobs:
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: '25'
+          java-version: '26'
       - name: Resolve deps + build pack
         run: |
           python3 conversion/scripts/resolve_deps.py
@@ -138,4 +138,51 @@ jobs:
         with:
           name: modpacks
           path: conversion/build/dist/*.mrpack
+          retention-days: 14
+
+  # REAL client gametests under xvfb (fabric-client-gametest-api-v1): boots the
+  # full client mod set with -Dfabric.client.gametest in a throwaway game dir,
+  # asserts the suite exits clean and screenshots were produced. Dispatch-only
+  # (software-GL rendering + first-run asset download are slow).
+  client-gametest:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '26'
+          cache: gradle
+      - name: Install xvfb + Mesa GL
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            xvfb libgl1 libglu1-mesa libxcursor1 libxrandr2 libxrender1 \
+            libxi6 libxinerama1 libxxf86vm1
+      - name: Build all modules
+        working-directory: custom-mods
+        run: ./gradlew build --no-daemon --max-workers=2
+      - name: Resolve deps + materialize client mods
+        run: |
+          python3 conversion/scripts/resolve_deps.py
+          python3 conversion/scripts/build_pack.py --server-dir
+      - name: Client gametests under xvfb
+        working-directory: custom-mods
+        env:
+          CGT_ENV: ci
+          CGT_XVFB: '1'
+          CGT_TIMEOUT: '1200'
+        run: bash tools/run_client_gametests.sh --keep-dir
+      - name: Upload client gametest artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: client-gametest
+          path: |
+            .tmp/shots/cgt/*.png
+            custom-mods/.tmp/logs/cgt-client.log
+            custom-mods/.tmp/cgt-game/crash-reports/
+          if-no-files-found: warn
           retention-days: 14
