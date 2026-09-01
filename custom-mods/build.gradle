@@ -64,6 +64,10 @@ subprojects {
 				// at compile time; pin it for NutrientsKey (renamed from
 				// key-binding in the 26.2 fabric-api generation).
 				modCompileClasspath "net.fabricmc.fabric.api:fabric-key-mapping-api-v1:2.0.5+e2bdee789e"
+				// client gametest API for the NutrientsScreen scenario
+				// (version line pairs with fabric-api 0.158.0+26.2, see the
+				// aggregator POM on maven.fabricmc.net).
+				modCompileClasspath "net.fabricmc.fabric.api:fabric-client-gametest-api-v1:6.0.0+515ac5339e"
 			}
 		}
 		if (name == 'hearthwind-survival' || name == 'hearthwind-skills' || name == 'hearthwind-jobs' || name == 'hearthwind-world') {
@@ -80,6 +84,18 @@ subprojects {
 				modCompileClasspath "net.fabricmc.fabric.api:fabric-gametest-api-v1:4.0.21+4a7fa0819e"
 				// leaves-stick loot hook uses the v3 loot API
 				modCompileClasspath "net.fabricmc.fabric.api:fabric-loot-api-v3:3.0.17+06488ac19e"
+			}
+		}
+		if (name == 'smallships') {
+			dependencies {
+				modCompileClasspath "net.fabricmc.fabric.api:fabric-key-mapping-api-v1:2.0.5+e2bdee789e"
+				modCompileClasspath "net.fabricmc.fabric.api:fabric-menu-api-v1:2.0.16+086d547a9e"
+				modCompileClasspath "net.fabricmc.fabric.api:fabric-creative-tab-api-v1:5.0.14+d871b99e9e"
+				modCompileClasspath "net.fabricmc.fabric.api:fabric-particles-v1:5.0.18+d1756aa99e"
+				modCompileClasspath "net.fabricmc.fabric.api:fabric-networking-api-v1:6.3.3+72073ef09e"
+				modCompileClasspath "net.fabricmc.fabric.api:fabric-rendering-v1:25.3.2+515ac5339e"
+				// gametests (SmallshipsGameTests)
+				modCompileClasspath "net.fabricmc.fabric.api:fabric-gametest-api-v1:4.0.21+4a7fa0819e"
 			}
 		}
 	}

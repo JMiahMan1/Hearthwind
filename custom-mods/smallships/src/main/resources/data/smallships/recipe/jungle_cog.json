@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "group": "cog",
+  "pattern": [
+    "lsl",
+    "bbb"
+  ],
+  "key": {
+    "s": "smallships:sail",
+    "l": "minecraft:lead",
+    "b": "minecraft:jungle_boat"
+  },
+  "result": {
+    "count": 1,
+    "id": "smallships:jungle_cog"
+  }
+}

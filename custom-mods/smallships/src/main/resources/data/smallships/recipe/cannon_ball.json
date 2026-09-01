@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "###",
+    "#G#",
+    "###"
+  ],
+  "key": {
+    "#": "minecraft:iron_ingot",
+    "G": "minecraft:gunpowder"
+  },
+  "result": {
+    "count": 2,
+    "id": "smallships:cannon_ball"
+  }
+}
+
+

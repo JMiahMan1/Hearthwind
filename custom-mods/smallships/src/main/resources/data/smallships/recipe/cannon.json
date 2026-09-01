@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "  S",
+    "III",
+    " LL"
+  ],
+  "key": {
+    "L": "#minecraft:logs",
+    "S": "minecraft:string",
+    "I": "minecraft:iron_block"
+  },
+  "result": {
+    "count": 1,
+    "id": "smallships:cannon"
+  }
+}

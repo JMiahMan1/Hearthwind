@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "xxx",
+    "xIx",
+    "sIs"
+  ],
+  "key": {
+    "I": "#minecraft:logs",
+    "x": "#minecraft:wool",
+    "s": "minecraft:lead"
+  },
+  "result": {
+    "count": 1,
+    "id": "smallships:sail"
+  }
+}

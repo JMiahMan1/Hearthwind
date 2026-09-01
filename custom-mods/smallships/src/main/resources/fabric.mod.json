@@ -1,0 +1,44 @@
+{
+  "schemaVersion": 1,
+  "id": "smallships",
+  "version": "26.2+0.1.0",
+  "name": "Small Ships",
+  "description": "This mod adds vanilla friendly ships into Minecraft!",
+  "authors": [
+    "talhanation",
+    "metroite"
+  ],
+  "contact": {
+    "homepage": "https://www.curseforge.com/minecraft/mc-mods/small-ships"
+  },
+  "custom": {
+    "modmenu": {
+      "links": {
+        "modmenu.discord": "https://discord.gg/T3d7YkjGQk"
+      }
+    }
+  },
+  "license": "All Rights Reserved",
+  "icon": "assets/smallships/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "com.talhanation.smallships.fabric.SmallshipsModFabric"
+    ],
+    "client": [
+      "com.talhanation.smallships.fabric.client.ClientInitializer"
+    ],
+    "fabric-gametest": [
+      "com.talhanation.smallships.SmallshipsGameTests"
+    ]
+  },
+  "mixins": [
+    "smallships.mixin.json",
+    "smallships-common.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.16.0",
+    "fabric-api": "*",
+    "minecraft": ">=26.2"
+  }
+}
