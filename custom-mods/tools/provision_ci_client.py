@@ -13,6 +13,7 @@ The companion env vars are printed as shell exports on stdout so the caller can
 """
 
 import argparse
+import concurrent.futures
 import hashlib
 import json
 import os
@@ -121,6 +122,25 @@ def main():
     asset_index = out / "assets" / "indexes" / f"{ai['id']}.json"
     fetch(ai["url"], asset_index, ai.get("sha1"))
     print(f"asset index: {ai['id']}.json ({asset_index.stat().st_size} bytes)", file=sys.stderr)
+
+    # Download ALL asset objects: the vanilla client does not self-download
+    # them (that is launcher/dev-env work) and missing objects break section
+    # rendering in headless gametest runs.
+    idx = json.loads(asset_index.read_text())
+    base = "https://resources.download.minecraft.net"
+    jobs = []
+    for obj in idx.get("objects", {}).values():
+        h = obj["hash"]
+        jobs.append((f"{base}/{h[:2]}/{h}", out / "assets" / "objects" / h[:2] / h, h, obj.get("size", 0)))
+
+    done = fetched = 0
+    with concurrent.futures.ThreadPoolExecutor(max_workers=16) as pool:
+        futures = {pool.submit(fetch, u, p, s, z): p for u, p, s, z in jobs}
+        for fut in concurrent.futures.as_completed(futures):
+            if fut.result():
+                fetched += 1
+            done += 1
+    print(f"asset objects: {fetched} downloaded this run (of {len(jobs)})", file=sys.stderr)
 
     exports = {
         "CGT_VJSON": str(vjson_path),

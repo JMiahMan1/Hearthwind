@@ -1,12 +1,15 @@
 #!/usr/bin/env bash
 # Runs the client gametest suite inside a pinned linux container (java 26 +
 # xvfb + Mesa software GL) so UI testing never touches the host desktop or
-# moves the user's mouse. Uses the same run_client_gametests.sh as CI with
-# CGT_ENV=ci: vanilla artifacts are provisioned from piston-meta into
-# .tmp/cgt-provision (cached on the host repo) and mods are staged from the
-# pack dist.
+# moves the user's mouse. Same run_client_gametests.sh + CGT_ENV=ci as CI:
+# vanilla artifacts are provisioned from piston-meta into
+# custom-mods/.tmp/cgt-provision (cached) and mods are staged from the pack
+# dist plus the freshly built hearthwind-*/smallships jars.
 #
-# First container run is slow (gradle + deps land in .tmp/docker-gradle).
+# NOTE: this reuses HOST-built jars + host gradle cache (mounted read-only);
+# run ./gradlew build on the host first. Building inside the container is
+# deliberately avoided - host/container build outputs on one bind mount are
+# not safely mixable (jar-manifest rewrites fail).
 #
 # Usage: bash tools/run_client_gametests_docker.sh [--keep-dir]
 set -euo pipefail
@@ -15,12 +18,12 @@ REPO="$(cd "$DIR/../.." && pwd)"
 
 docker build -f "$DIR/docker/client-gametest.Dockerfile" -t hearthwind-client-gametest "$DIR/docker"
 
-mkdir -p "$REPO/.tmp/docker-gradle"
 exec docker run --rm \
   -v "$REPO":/work/repo \
+  -v "$HOME/.gradle:/root/.gradle:ro" \
   -w /work/repo/custom-mods \
-  -e GRADLE_USER_HOME=/work/repo/.tmp/docker-gradle \
   -e CGT_ENV=ci \
   -e CGT_XVFB=1 \
+  -e CGT_ARGS="$*" \
   hearthwind-client-gametest \
-  bash tools/run_client_gametests.sh "$@"
+  bash -lc 'bash tools/run_client_gametests.sh $CGT_ARGS'
