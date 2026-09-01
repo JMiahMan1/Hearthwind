@@ -168,35 +168,29 @@ public final class FaunaEntityRenderer {
     }
 
     // --- Fish Renderer (Bass, Catfish) ---
-    public static class FishRenderer<T extends Mob> extends MobRenderer<T, SalmonRenderState, SalmonModel> {
+    public static class BassFishRenderer<T extends Mob> extends MobRenderer<T, LivingEntityRenderState, net.minecraft.client.model.animal.fish.CodModel> {
         private final Identifier texture;
 
-        public FishRenderer(EntityRendererProvider.Context context, String name) {
-            super(context, new SalmonModel(context.bakeLayer(ModelLayers.SALMON)), 0.3f);
+        public BassFishRenderer(EntityRendererProvider.Context context, String name) {
+            super(context, new net.minecraft.client.model.animal.fish.CodModel(context.bakeLayer(ModelLayers.COD)), 0.3f);
             this.texture = getTexture(name);
         }
 
         @Override
-        public Identifier getTextureLocation(SalmonRenderState state) {
+        public Identifier getTextureLocation(LivingEntityRenderState state) {
             return this.texture;
         }
 
         @Override
-        public SalmonRenderState createRenderState() {
-            return new SalmonRenderState();
+        public LivingEntityRenderState createRenderState() {
+            return new LivingEntityRenderState();
         }
 
         @Override
-        public void extractRenderState(T entity, SalmonRenderState state, float partialTick) {
-            super.extractRenderState(entity, state, partialTick);
-            float f = 1.0F;
-            float f1 = 1.0F;
-            if (!entity.isInWater()) {
-                f = 1.3F;
-                f1 = 1.7F;
-            }
-            float f2 = f * 4.3F * net.minecraft.util.Mth.sin(f1 * 0.6F * (entity.tickCount + partialTick));
-            state.bodyRot = entity.isInWater() ? f2 : (float) Math.sin((entity.tickCount + partialTick) * 0.4f) * 15.0f;
+        protected void setupRotations(LivingEntityRenderState state, PoseStack poseStack, float bodyRot, float scale) {
+            super.setupRotations(state, poseStack, bodyRot, scale);
+            float f = 4.3F * net.minecraft.util.Mth.sin(0.6F * state.ageInTicks);
+            poseStack.mulPose(com.mojang.math.Axis.YP.rotationDegrees(f));
         }
     }
 
@@ -250,8 +244,8 @@ public final class FaunaEntityRenderer {
         register("butterfly", (ctx) -> new SerpentRenderer<>(ctx, "butterfly", 0.4f, 0.1f));
         register("firefly", (ctx) -> new SerpentRenderer<>(ctx, "firefly", 0.3f, 0.1f));
 
-        register("bass", (ctx) -> new FishRenderer<>(ctx, "bass"));
-        register("catfish", (ctx) -> new FishRenderer<>(ctx, "catfish"));
+        register("bass", (ctx) -> new BassFishRenderer<>(ctx, "bass"));
+        register("catfish", (ctx) -> new BassFishRenderer<>(ctx, "catfish"));
 
         register("snail", (ctx) -> new SerpentRenderer<>(ctx, "snail", 0.4f, 0.2f));
         register("caterpillar", (ctx) -> new SerpentRenderer<>(ctx, "caterpillar", 0.4f, 0.1f));

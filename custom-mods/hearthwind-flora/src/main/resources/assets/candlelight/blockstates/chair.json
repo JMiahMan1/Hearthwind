@@ -112,6 +112,9 @@
     "facing=east,half=upper": {
       "model": "candlelight:block/chair_top",
       "y": 90
+    },
+    "": {
+      "model": "candlelight:block/chair_1"
     }
   }
 }

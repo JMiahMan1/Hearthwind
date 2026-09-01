@@ -299,6 +299,9 @@
     "facing=west,size=4,type=middle": {
       "model": "farm_and_charm:block/feeding_trough_size_4_middle",
       "y": 270
+    },
+    "": {
+      "model": "farm_and_charm:block/feeding_trough_size_0"
     }
   }
 }

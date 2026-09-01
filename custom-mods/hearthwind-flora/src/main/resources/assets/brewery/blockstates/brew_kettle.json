@@ -239,6 +239,9 @@
     "material=netherite,liquid=beer,facing=east": {
       "model": "brewery:block/netherite_brewingstation_beer",
       "y": 90
+    },
+    "": {
+      "model": "brewery:block/wooden_brewingstation_empty"
     }
   }
 }

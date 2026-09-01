@@ -5,6 +5,9 @@
     },
     "half=upper": {
       "model": "farm_and_charm:block/wild_corn_top"
+    },
+    "": {
+      "model": "farm_and_charm:block/wild_corn_bottom"
     }
   }
 }

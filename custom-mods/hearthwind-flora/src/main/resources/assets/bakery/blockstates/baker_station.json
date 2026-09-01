@@ -64,6 +64,9 @@
         "weight": 1,
         "y": 270
       }
-    ]
+    ],
+    "": {
+      "model": "bakery:block/baker_station_0"
+    }
   }
 }

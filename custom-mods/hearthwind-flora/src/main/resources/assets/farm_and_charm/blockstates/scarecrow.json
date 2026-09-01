@@ -14,6 +14,9 @@
     "facing=west": {
       "model": "farm_and_charm:block/scarecrow",
       "y": 270
+    },
+    "": {
+      "model": "farm_and_charm:block/scarecrow"
     }
   }
 }

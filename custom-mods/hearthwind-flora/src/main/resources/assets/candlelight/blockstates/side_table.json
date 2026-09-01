@@ -480,8 +480,9 @@
     "facing=east,has_book=false,has_lamp=true,has_lantern=true,type=middle": {
       "model": "candlelight:block/side_table_connected_lamp",
       "y": 90
+    },
+    "": {
+      "model": "candlelight:block/side_table"
     }
   }
 }
-
-

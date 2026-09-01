@@ -59,6 +59,9 @@
     "facing=east,eggs=3": {
       "model": "farm_and_charm:block/chicken_coop_stage3",
       "y": 90
+    },
+    "": {
+      "model": "farm_and_charm:block/chicken_coop_stage0"
     }
   }
 }

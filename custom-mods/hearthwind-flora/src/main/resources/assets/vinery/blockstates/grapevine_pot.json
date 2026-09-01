@@ -164,6 +164,9 @@
     },
     "stage=6,type=none": {
       "model": "vinery:block/red_grapevine_pot_stage6"
+    },
+    "": {
+      "model": "vinery:block/grapevine_pot"
     }
   }
 }

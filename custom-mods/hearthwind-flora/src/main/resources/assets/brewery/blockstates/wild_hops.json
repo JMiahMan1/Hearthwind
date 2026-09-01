@@ -5,6 +5,9 @@
     },
     "half=upper": {
       "model": "brewery:block/wild_hops_top"
+    },
+    "": {
+      "model": "brewery:block/wild_hops_bottom"
     }
   }
 }

@@ -59,6 +59,9 @@
     "facing=west,fill_amount=3": {
       "model": "meadow:block/fondue_pot_3",
       "y": 270
+    },
+    "": {
+      "model": "meadow:block/fondue_pot_0"
     }
   }
 }

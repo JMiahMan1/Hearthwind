@@ -14,6 +14,9 @@
     "facing=west": {
       "model": "meadow:block/woodcutter",
       "y": 270
+    },
+    "": {
+      "model": "meadow:block/woodcutter"
     }
   }
 }

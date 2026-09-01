@@ -29,6 +29,9 @@
     "facing=west,lit=true": {
       "model": "herbalbrews:block/stove_lit",
       "y": 270
+    },
+    "": {
+      "model": "herbalbrews:block/stove"
     }
   }
 }

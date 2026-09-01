@@ -119,6 +119,9 @@
     "facing=west,stage=filled,needs_support=true": {
       "model": "candlelight:block/cooking_pot_cooking_with_support",
       "y": 270
+    },
+    "": {
+      "model": "candlelight:block/cooking_pot"
     }
   }
 }
