@@ -89,10 +89,6 @@
     "facing=west,plate=cloche": {
       "model": "candlelight:block/table_bowl_cloche",
       "y": 270
-    },
-    "": {
-      "model": "candlelight:block/table_bowl_complete",
-      "y": 90
     }
   }
 }

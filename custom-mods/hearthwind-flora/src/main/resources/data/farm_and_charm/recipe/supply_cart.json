@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "IAI",
+    "UUU",
+    "# #"
+  ],
+  "key": {
+    "#": {
+      "tag": "minecraft:planks"
+    },
+    "U": {
+      "tag": "minecraft:wooden_slabs"
+    },
+    "I": {
+      "item": "minecraft:iron_ingot"
+    },
+    "A": {
+      "item": "minecraft:chest"
+    }
+  },
+  "result": {
+    "id": "farm_and_charm:supply_cart",
+    "count": 1
+  }
+}

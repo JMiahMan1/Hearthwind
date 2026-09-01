@@ -59,9 +59,6 @@
     "facing=west,type=right": {
       "model": "meadow:block/doormat_side",
       "y": 90
-    },
-    "": {
-      "model": "meadow:block/doormat"
     }
   }
 }

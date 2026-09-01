@@ -1,3 +1,6 @@
 {
-  "parent": "meadow:block/wooden_cauldron"
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "meadow:item/wooden_cauldron"
+  }
 }

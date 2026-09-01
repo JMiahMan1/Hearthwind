@@ -74,9 +74,6 @@
     "bites=4,facing=west": {
       "model": "bakery:block/bread_crate_0",
       "y": 270
-    },
-    "": {
-      "model": "bakery:block/bread_crate_4"
     }
   }
 }

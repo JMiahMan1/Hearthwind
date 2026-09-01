@@ -11,11 +11,6 @@
     "axis=z": {
       "model": "meadow:block/pine_wood",
       "x": 90
-    },
-    "": {
-      "model": "meadow:block/pine_wood",
-      "x": 90,
-      "y": 90
     }
   }
 }

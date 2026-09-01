@@ -1,7 +1,9 @@
 {
-  "parent": "minecraft:block/cube_all",
+  "parent": "farm_and_charm:block/crafting_bowl_main",
   "textures": {
-    "all": "farm_and_charm:block/butter_churn",
-    "particle": "farm_and_charm:block/butter_churn"
-  }
+    "all": "farm_and_charm:block/crafting_bowl",
+    "particle": "farm_and_charm:block/crafting_bowl",
+    "0": "farm_and_charm:block/crafting_bowl"
+  },
+  "render_type": "translucent"
 }

@@ -47,10 +47,6 @@
     "facing=west,full=2": {
       "model": "candlelight:block/typewriter_gold_written",
       "y": 270
-    },
-    "": {
-      "model": "candlelight:block/typewriter_gold",
-      "y": 90
     }
   }
 }

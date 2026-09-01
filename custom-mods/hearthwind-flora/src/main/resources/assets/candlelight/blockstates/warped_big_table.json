@@ -31,10 +31,6 @@
     "facing=west,part=head": {
       "y": 180,
       "model": "candlelight:block/warped_big_table"
-    },
-    "": {
-      "y": 0,
-      "model": "candlelight:block/warped_big_table_adv"
     }
   }
 }

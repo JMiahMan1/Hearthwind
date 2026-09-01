@@ -14,10 +14,6 @@
     "facing=west": {
       "model": "vinery:block/mangrove_wine_rack_2",
       "y": 270
-    },
-    "": {
-      "model": "vinery:block/mangrove_wine_rack_2",
-      "y": 90
     }
   }
 }

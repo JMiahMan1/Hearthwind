@@ -29,10 +29,6 @@
     "facing=west,open=true": {
       "model": "bakery:block/cabinet_open",
       "y": 270
-    },
-    "": {
-      "model": "bakery:block/cabinet_closed",
-      "y": 90
     }
   }
 }

@@ -11,9 +11,6 @@
     },
     "age=3": {
       "model": "vinery:block/savanna_grape_bush_stage3_red"
-    },
-    "": {
-      "model": "vinery:block/savanna_grape_bush_stage0"
     }
   }
 }

@@ -15,6 +15,7 @@
       "model": "vinery:block/dark_cherry_table",
       "y": 270
     },
+
     "facing=north,type=middle": {
       "model": "vinery:block/dark_cherry_table_middle"
     },
@@ -30,6 +31,7 @@
       "model": "vinery:block/dark_cherry_table_middle",
       "y": 270
     },
+
     "facing=north,type=left": {
       "model": "vinery:block/dark_cherry_table_connected_support"
     },
@@ -45,6 +47,7 @@
       "model": "vinery:block/dark_cherry_table_connected_support",
       "y": 270
     },
+
     "facing=north,type=right": {
       "model": "vinery:block/dark_cherry_table_connected_support",
       "y": 180
@@ -59,9 +62,6 @@
     "facing=west,type=right": {
       "model": "vinery:block/dark_cherry_table_connected_support",
       "y": 90
-    },
-    "": {
-      "model": "vinery:block/dark_cherry_table"
     }
   }
 }

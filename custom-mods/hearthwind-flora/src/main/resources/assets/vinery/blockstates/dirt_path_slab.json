@@ -8,9 +8,6 @@
     },
     "type=top": {
       "model": "vinery:block/dirt_path_slab_top"
-    },
-    "": {
-      "model": "vinery:block/dirt_path_slab"
     }
   }
 }

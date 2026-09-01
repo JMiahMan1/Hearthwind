@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "fake_model=false": {
+      "model": "brewery:block/whiskey_jamesons_malt"
+    },
+    "fake_model=true": {
+      "model": "brewery:block/transparent"
+    }
+  }
+}

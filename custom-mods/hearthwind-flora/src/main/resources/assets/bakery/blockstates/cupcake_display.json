@@ -26,13 +26,6 @@
         "weight": 1,
         "y": 270
       }
-    ],
-    "": [
-      {
-        "model": "bakery:block/cupcake_display",
-        "weight": 1,
-        "y": 90
-      }
     ]
   }
 }

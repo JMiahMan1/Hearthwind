@@ -59,10 +59,6 @@
     "facing=west,fill_stage=3": {
       "model": "herbalbrews:block/jug_3",
       "y": 270
-    },
-    "": {
-      "model": "herbalbrews:block/jug_0",
-      "y": 90
     }
   }
 }

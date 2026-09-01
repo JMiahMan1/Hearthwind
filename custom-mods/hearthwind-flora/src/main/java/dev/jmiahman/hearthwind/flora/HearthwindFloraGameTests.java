@@ -159,4 +159,50 @@ public final class HearthwindFloraGameTests {
 
         helper.succeed();
     }
+
+    @GameTest
+    public void fermentationBarrelBlockEntityTicking(GameTestHelper helper) {
+        var barrelBlock = BuiltInRegistries.BLOCK.getValue(Identifier.fromNamespaceAndPath("vinery", "fermentation_barrel"));
+        helper.assertTrue(barrelBlock != null, "fermentation_barrel block exists");
+
+        var pos = new net.minecraft.core.BlockPos(1, 2, 1);
+        helper.setBlock(pos, barrelBlock.defaultBlockState());
+
+        var be = helper.getLevel().getBlockEntity(helper.absolutePos(pos));
+        helper.assertTrue(be instanceof dev.jmiahman.hearthwind.flora.blockentity.FermentationBarrelBlockEntity, "be is FermentationBarrelBlockEntity");
+        helper.succeed();
+    }
+
+    @GameTest
+    public void applePressBlockEntityInteraction(GameTestHelper helper) {
+        var pressBlock = BuiltInRegistries.BLOCK.getValue(Identifier.fromNamespaceAndPath("vinery", "apple_press"));
+        helper.assertTrue(pressBlock != null, "apple_press block exists");
+
+        var pos = new net.minecraft.core.BlockPos(1, 2, 1);
+        helper.setBlock(pos, pressBlock.defaultBlockState());
+
+        var be = helper.getLevel().getBlockEntity(helper.absolutePos(pos));
+        helper.assertTrue(be instanceof dev.jmiahman.hearthwind.flora.blockentity.ApplePressBlockEntity, "be is ApplePressBlockEntity");
+        helper.succeed();
+    }
+
+    @GameTest
+    public void cookingPotAndStoveBlockEntities(GameTestHelper helper) {
+        var potBlock = BuiltInRegistries.BLOCK.getValue(Identifier.fromNamespaceAndPath("farm_and_charm", "cooking_pot"));
+        var stoveBlock = BuiltInRegistries.BLOCK.getValue(Identifier.fromNamespaceAndPath("farm_and_charm", "stove"));
+        helper.assertTrue(potBlock != null && stoveBlock != null, "pot and stove blocks exist");
+
+        var stovePos = new net.minecraft.core.BlockPos(1, 1, 1);
+        var potPos = new net.minecraft.core.BlockPos(1, 2, 1);
+
+        helper.setBlock(stovePos, stoveBlock.defaultBlockState());
+        helper.setBlock(potPos, potBlock.defaultBlockState());
+
+        var stoveBe = helper.getLevel().getBlockEntity(helper.absolutePos(stovePos));
+        var potBe = helper.getLevel().getBlockEntity(helper.absolutePos(potPos));
+
+        helper.assertTrue(stoveBe instanceof dev.jmiahman.hearthwind.flora.blockentity.StoveBlockEntity, "stoveBe is StoveBlockEntity");
+        helper.assertTrue(potBe instanceof dev.jmiahman.hearthwind.flora.blockentity.CookingPotBlockEntity, "potBe is CookingPotBlockEntity");
+        helper.succeed();
+    }
 }

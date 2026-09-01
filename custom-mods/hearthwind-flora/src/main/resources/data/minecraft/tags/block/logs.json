@@ -1,9 +1,21 @@
 {
   "replace": false,
   "values": [
-    "vinery:apple_log",
-    "vinery:apple_wood",
-    "vinery:dark_cherry_log",
-    "vinery:dark_cherry_wood"
+    {
+      "id": "vinery:apple_log",
+      "required": false
+    },
+    {
+      "id": "vinery:apple_wood",
+      "required": false
+    },
+    {
+      "id": "vinery:dark_cherry_log",
+      "required": false
+    },
+    {
+      "id": "vinery:dark_cherry_wood",
+      "required": false
+    }
   ]
 }

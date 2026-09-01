@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:smoking",
+  "cookingtime": 300,
+  "experience": 0.35,
+  "ingredient": {
+    "item": "herbalbrews:green_tea_leaf"
+  },
+  "result": {
+    "id": "minecraft:green_dye",
+    "count": 1
+  }
+}

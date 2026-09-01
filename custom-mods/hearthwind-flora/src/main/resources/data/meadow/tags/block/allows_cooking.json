@@ -1,0 +1,21 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "meadow:stove_tiles_wood",
+      "required": false
+    },
+    {
+      "id": "meadow:stove_tiles_lid",
+      "required": false
+    },
+    {
+      "id": "meadow:stove_tiles",
+      "required": false
+    },
+    {
+      "id": "#c:allows_cooking",
+      "required": false
+    }
+  ]
+}

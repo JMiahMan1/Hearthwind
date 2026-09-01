@@ -1,7 +1,18 @@
 {
   "variants": {
-    "": {
-      "model": "meadow:block/fire_lily"
-    }
+    "": [
+      {
+        "model": "meadow:block/fire_lily_0",
+        "weight": 1
+      },
+      {
+        "model": "meadow:block/fire_lily_1",
+        "weight": 1
+      },
+      {
+        "model": "meadow:block/fire_lily_2",
+        "weight": 1
+      }
+    ]
   }
 }

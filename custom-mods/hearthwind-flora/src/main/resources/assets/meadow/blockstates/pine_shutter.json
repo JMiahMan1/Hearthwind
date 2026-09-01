@@ -179,9 +179,6 @@
     "type=middle,facing=west,open=true,left=true": {
       "model": "meadow:block/pine_shutter_middle",
       "y": 180
-    },
-    "": {
-      "model": "meadow:block/pine_shutter_single"
     }
   }
 }

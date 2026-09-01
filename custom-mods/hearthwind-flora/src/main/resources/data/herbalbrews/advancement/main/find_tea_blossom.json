@@ -1,0 +1,38 @@
+{
+  "parent": "herbalbrews:main/root",
+  "display": {
+    "icon": {
+      "id": "herbalbrews:tea_blossom",
+      "count": 1
+    },
+    "title": {
+      "translate": "herbalbrews.advancement.find_tea_blossom"
+    },
+    "description": {
+      "translate": "herbalbrews.advancement.find_tea_blossom.desc"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "tea_blossom": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "herbalbrews:tea_blossom"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "tea_blossom"
+    ]
+  ]
+}

@@ -14,10 +14,6 @@
     "facing=west": {
       "model": "vinery:block/jungle_wine_rack_1",
       "y": 270
-    },
-    "": {
-      "model": "vinery:block/jungle_wine_rack_1",
-      "y": 90
     }
   }
 }

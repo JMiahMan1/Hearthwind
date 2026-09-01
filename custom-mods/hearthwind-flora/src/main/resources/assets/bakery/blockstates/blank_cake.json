@@ -23,9 +23,6 @@
     },
     "cake=true,cookie=true,cupcake=true": {
       "model": "bakery:block/blank_cake"
-    },
-    "": {
-      "model": "bakery:block/blank_cake"
     }
   }
 }

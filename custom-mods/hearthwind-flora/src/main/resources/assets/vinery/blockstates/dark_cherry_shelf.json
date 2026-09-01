@@ -3,7 +3,7 @@
     "facing=east": {
       "model": "vinery:block/dark_cherry_shelf",
       "y": 90
-    },
+    },  
     "facing=north": {
       "model": "vinery:block/dark_cherry_shelf"
     },
@@ -14,10 +14,6 @@
     "facing=west": {
       "model": "vinery:block/dark_cherry_shelf",
       "y": 270
-    },
-    "": {
-      "model": "vinery:block/dark_cherry_shelf",
-      "y": 90
     }
   }
 }

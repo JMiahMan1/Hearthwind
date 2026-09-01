@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "vinery:red_grapejuice",
+      "required": false
+    }
+  ]
+}

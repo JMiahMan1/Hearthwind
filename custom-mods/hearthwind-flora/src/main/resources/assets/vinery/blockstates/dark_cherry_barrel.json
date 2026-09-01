@@ -51,10 +51,6 @@
       "model": "vinery:block/dark_cherry_barrel_open",
       "x": 90,
       "y": 270
-    },
-    "": {
-      "model": "vinery:block/dark_cherry_barrel_closed",
-      "x": 180
     }
   }
 }

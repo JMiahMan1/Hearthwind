@@ -1,3 +1,6 @@
 {
-  "parent": "farm_and_charm:block/roaster"
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "farm_and_charm:item/roaster"
+  }
 }

@@ -104,9 +104,6 @@
     "facing=east,painting=6": {
       "model": "candlelight:block/painting_7",
       "y": 90
-    },
-    "": {
-      "model": "candlelight:block/painting_1"
     }
   }
 }

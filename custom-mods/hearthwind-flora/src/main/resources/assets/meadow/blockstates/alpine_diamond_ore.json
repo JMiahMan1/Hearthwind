@@ -1,7 +1,10 @@
 {
   "variants": {
-    "": {
-      "model": "meadow:block/alpine_diamond_ore"
-    }
+    "": [
+      {
+        "model": "meadow:block/alpine_diamond_ore",
+        "weight": 1
+      }
+    ]
   }
 }

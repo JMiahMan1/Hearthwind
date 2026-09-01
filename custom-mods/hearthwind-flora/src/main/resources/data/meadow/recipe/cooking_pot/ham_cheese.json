@@ -1,0 +1,22 @@
+{
+  "type": "meadow:cooking",
+  "ingredients": [
+    {
+      "item": "meadow:raw_buffalo_meat"
+    },
+    {
+      "tag": "c:salts"
+    },
+    {
+      "tag": "c:cheese"
+    }
+  ],
+  "fluid_amount": 2,
+  "crafting_duration": 120,
+  "result": {
+    "id": "meadow:sausage_with_cheese",
+    "count": 2
+  }
+}
+
+

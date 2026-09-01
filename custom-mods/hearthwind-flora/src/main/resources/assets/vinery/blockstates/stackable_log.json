@@ -59,10 +59,9 @@
     "type=top,facing=west": {
       "model": "vinery:block/stackable_log_top",
       "y": 270
-    },
-    "": {
-      "model": "vinery:block/stackable_log",
-      "y": 90
     }
   }
 }
+
+
+

@@ -18,6 +18,7 @@ public class HearthwindFlora implements ModInitializer {
         FarmAndCharmContent.registerAll();
         BreweryContent.registerAll();
         NetherVineryContent.registerAll();
+        dev.jmiahman.hearthwind.flora.blockentity.FloraBlockEntities.registerAll();
         FloraWorldGen.init();
 
         LOGGER.info("Hearthwind Flora initialized: Vinery ({} items, {} blocks), Candlelight ({} items, {} blocks), Meadow ({} items, {} blocks), Bakery ({} items, {} blocks), HerbalBrews ({} items, {} blocks), Farm&Charm ({} items, {} blocks), Brewery ({} items, {} blocks), NetherVinery ({} items, {} blocks)",

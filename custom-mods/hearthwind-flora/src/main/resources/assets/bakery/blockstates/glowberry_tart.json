@@ -59,10 +59,6 @@
     "facing=west,cuts=3": {
       "model": "bakery:block/glowberry_tart_1",
       "y": 270
-    },
-    "": {
-      "model": "bakery:block/glowberry_tart_4",
-      "y": 90
     }
   }
 }

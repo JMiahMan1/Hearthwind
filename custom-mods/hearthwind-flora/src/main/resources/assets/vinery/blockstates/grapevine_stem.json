@@ -110,9 +110,6 @@
     },
     "age=4,grape=jungle_white": {
       "model": "vinery:block/grapevine_stem"
-    },
-    "": {
-      "model": "vinery:block/grapevine_stem"
     }
   }
 }

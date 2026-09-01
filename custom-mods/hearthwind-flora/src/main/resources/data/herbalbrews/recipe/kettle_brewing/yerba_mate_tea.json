@@ -1,0 +1,24 @@
+{
+  "type": "herbalbrews:kettle_brewing",
+  "experience": 0.8,
+  "crafting_duration": 35,
+  "fluid_amount": 20,
+  "heat_amount": 75,
+  "ingredients": [
+    {
+      "item": "herbalbrews:yerba_mate_leaf"
+    },
+    {
+      "item": "minecraft:sugar"
+    },
+    {
+      "item": "minecraft:glass_bottle"
+    }
+  ],
+  "result": {
+    "id": "herbalbrews:yerba_mate_tea"
+  },
+  "effect": "herbalbrews:bonding",
+  "effect_duration": 1800
+}
+

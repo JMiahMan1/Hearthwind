@@ -63,10 +63,6 @@
     "facing=west,stage=filled": {
       "model": "meadow:block/cookpot_filled",
       "y": 270
-    },
-    "": {
-      "model": "meadow:block/cookpot",
-      "y": 0
     }
   }
 }

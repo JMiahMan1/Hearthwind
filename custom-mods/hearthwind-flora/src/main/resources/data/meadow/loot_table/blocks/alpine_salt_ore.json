@@ -1,20 +1,52 @@
 {
-    "type": "minecraft:block",
-    "pools": [
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "bonus_rolls": 0.0,
+      "entries": [
         {
-            "rolls": 1.0,
-            "bonus_rolls": 0.0,
-            "entries": [
+          "type": "minecraft:alternatives",
+          "children": [
+            {
+              "type": "minecraft:item",
+              "conditions": [
                 {
-                    "type": "minecraft:item",
-                    "name": "meadow:alpine_salt"
+                  "condition": "minecraft:match_tool",
+                  "predicate": {
+                    "predicates": {
+                      "minecraft:enchantments": [
+                        {
+                          "enchantments": "minecraft:silk_touch",
+                          "levels": {
+                            "min": 1
+                          }
+                        }
+                      ]
+                    }
+                  }
                 }
-            ],
-            "conditions": [
+              ],
+              "name": "meadow:alpine_salt_ore"
+            },
+            {
+              "type": "minecraft:item",
+              "functions": [
                 {
-                    "condition": "minecraft:survives_explosion"
+                  "enchantment": "minecraft:fortune",
+                  "formula": "minecraft:ore_drops",
+                  "function": "minecraft:apply_bonus"
+                },
+                {
+                  "function": "minecraft:explosion_decay"
                 }
-            ]
+              ],
+              "name": "meadow:alpine_salt"
+            }
+          ]
         }
-    ]
+      ],
+      "rolls": 1.0
+    }
+  ],
+  "random_sequence": "meadow:blocks/alpine_salt_ore"
 }

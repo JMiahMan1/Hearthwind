@@ -29,10 +29,6 @@
     "facing=west,lit=true": {
       "model": "candlelight:block/cobblestone_stove_on",
       "y": 270
-    },
-    "": {
-      "model": "candlelight:block/cobblestone_stove",
-      "y": 90
     }
   }
 }

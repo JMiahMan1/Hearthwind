@@ -29,10 +29,6 @@
     "facing=west,open=true": {
       "model": "meadow:block/pine_wall_cabinet_open",
       "y": 270
-    },
-    "": {
-      "model": "meadow:block/pine_wall_cabinet_closed",
-      "y": 90
     }
   }
 }

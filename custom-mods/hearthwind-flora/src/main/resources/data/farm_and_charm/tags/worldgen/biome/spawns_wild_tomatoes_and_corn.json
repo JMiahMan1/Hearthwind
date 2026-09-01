@@ -1,0 +1,17 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "minecraft:plains",
+      "required": false
+    },
+    {
+      "id": "#minecraft:is_savanna",
+      "required": false
+    },
+    {
+      "id": "#minecraft:is_badlands",
+      "required": false
+    }
+  ]
+}

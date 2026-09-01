@@ -8,9 +8,6 @@
     },
     "level=3": {
       "model": "meadow:block/wooden_cauldron_powder_full"
-    },
-    "": {
-      "model": "meadow:block/wooden_cauldron_powder_level1"
     }
   }
 }

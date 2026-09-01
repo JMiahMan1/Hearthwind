@@ -1,0 +1,21 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "vinery:red_grape",
+      "required": false
+    },
+    {
+      "id": "vinery:savanna_grapes_red",
+      "required": false
+    },
+    {
+      "id": "vinery:taiga_grapes_red",
+      "required": false
+    },
+    {
+      "id": "vinery:jungle_grapes_red",
+      "required": false
+    }
+  ]
+}

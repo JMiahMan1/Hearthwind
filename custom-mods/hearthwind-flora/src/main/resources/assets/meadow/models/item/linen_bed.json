@@ -1,3 +1,6 @@
 {
-  "parent": "meadow:block/linen_bed"
+  "parent": "meadow:item/bed",
+  "textures": {
+    "0": "meadow:entity/bed/linen"
+  }
 }

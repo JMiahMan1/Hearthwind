@@ -59,9 +59,6 @@
     "facing=west,type=none": {
       "y": 270,
       "model": "meadow:block/pine_sofa_jacquard_single"
-    },
-    "": {
-      "model": "meadow:block/pine_sofa_jacquard_left"
     }
   }
 }

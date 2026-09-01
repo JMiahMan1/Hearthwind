@@ -119,9 +119,6 @@
     "facing=west,half=upper,hinge=right,open=true": {
       "model": "vinery:block/dark_cherry_door_top_right_open",
       "y": 90
-    },
-    "": {
-      "model": "vinery:block/dark_cherry_door_bottom_left"
     }
   }
 }

@@ -1,5 +1,6 @@
 {
   "variants": {
+
     "facing=north,type=none": {
       "model": "meadow:block/stone_bench"
     },
@@ -15,6 +16,7 @@
       "model": "meadow:block/stone_bench",
       "y": 270
     },
+
     "facing=north,type=middle": {
       "model": "meadow:block/stone_bench_middle"
     },
@@ -30,6 +32,7 @@
       "model": "meadow:block/stone_bench_middle",
       "y": 270
     },
+
     "facing=north,type=left": {
       "model": "meadow:block/stone_bench_side"
     },
@@ -45,6 +48,7 @@
       "model": "meadow:block/stone_bench_side",
       "y": 270
     },
+
     "facing=north,type=right": {
       "model": "meadow:block/stone_bench_side",
       "y": 180
@@ -59,9 +63,6 @@
     "facing=west,type=right": {
       "model": "meadow:block/stone_bench_side",
       "y": 90
-    },
-    "": {
-      "model": "meadow:block/stone_bench"
     }
   }
 }

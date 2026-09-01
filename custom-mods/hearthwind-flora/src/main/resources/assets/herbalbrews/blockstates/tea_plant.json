@@ -15,10 +15,6 @@
     "age=3": {
       "model": "herbalbrews:block/tea_plant_stage3",
       "weight": 1
-    },
-    "": {
-      "model": "herbalbrews:block/tea_plant_stage0",
-      "weight": 1
     }
   }
 }

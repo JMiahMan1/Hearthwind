@@ -119,9 +119,6 @@
     "stack=8,facing=west": {
       "model": "bakery:block/crusty_bread_1",
       "y": 270
-    },
-    "": {
-      "model": "bakery:block/baguette_1"
     }
   }
 }

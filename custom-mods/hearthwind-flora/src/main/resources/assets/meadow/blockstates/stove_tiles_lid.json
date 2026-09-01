@@ -15,6 +15,7 @@
       "model": "meadow:block/stove_tiles_lid",
       "y": 270
     },
+
     "facing=east,connected=true": {
       "model": "meadow:block/stove_tiles_lid_connected_bottom",
       "y": 90
@@ -29,10 +30,6 @@
     "facing=west,connected=true": {
       "model": "meadow:block/stove_tiles_lid_connected_bottom",
       "y": 270
-    },
-    "": {
-      "model": "meadow:block/stove_tiles_lid",
-      "y": 90
     }
   }
 }

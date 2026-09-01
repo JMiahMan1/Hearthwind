@@ -29,9 +29,6 @@
     "facing=east,half=lower": {
       "y": 90,
       "model": "vinery:block/dark_cherry_chair_bottom"
-    },
-    "": {
-      "model": "vinery:block/dark_cherry_chair_bottom"
     }
   }
 }

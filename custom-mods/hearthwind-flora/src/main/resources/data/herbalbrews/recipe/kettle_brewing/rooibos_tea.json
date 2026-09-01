@@ -1,0 +1,21 @@
+{
+  "type": "herbalbrews:kettle_brewing",
+  "experience": 0.8,
+  "crafting_duration": 35,
+  "fluid_amount": 20,
+  "heat_amount": 25,
+  "ingredients": [
+    {
+      "item": "herbalbrews:rooibos_leaf"
+    },
+    {
+      "item": "minecraft:glass_bottle"
+    }
+  ],
+  "result": {
+    "id": "herbalbrews:rooibos_tea"
+  },
+  "effect": "minecraft:regeneration",
+  "effect_duration": 200
+}
+

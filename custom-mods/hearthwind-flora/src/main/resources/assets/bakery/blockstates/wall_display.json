@@ -15,6 +15,7 @@
       "model": "bakery:block/wall_display",
       "y": 270
     },
+
     "facing=north,type=middle": {
       "model": "bakery:block/wall_display_connected_middle"
     },
@@ -30,6 +31,7 @@
       "model": "bakery:block/wall_display_connected_middle",
       "y": 270
     },
+
     "facing=north,type=left": {
       "model": "bakery:block/wall_display_connected_left"
     },
@@ -45,6 +47,7 @@
       "model": "bakery:block/wall_display_connected_left",
       "y": 270
     },
+
     "facing=north,type=right": {
       "model": "bakery:block/wall_display_connected_right",
       "y": 180
@@ -59,9 +62,6 @@
     "facing=west,type=right": {
       "model": "bakery:block/wall_display_connected_right",
       "y": 90
-    },
-    "": {
-      "model": "bakery:block/wall_display"
     }
   }
 }

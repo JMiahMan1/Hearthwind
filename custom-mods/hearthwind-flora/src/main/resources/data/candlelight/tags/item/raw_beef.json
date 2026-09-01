@@ -1,0 +1,13 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "candlelight:beef_tartare",
+      "required": false
+    },
+    {
+      "id": "minecraft:beef",
+      "required": false
+    }
+  ]
+}

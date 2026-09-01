@@ -5,9 +5,6 @@
     },
     "part=segment": {
       "model": "meadow:block/climbing_rope"
-    },
-    "": {
-      "model": "meadow:block/climbing_rope_top"
     }
   }
 }

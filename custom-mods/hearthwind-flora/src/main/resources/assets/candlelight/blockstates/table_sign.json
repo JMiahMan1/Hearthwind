@@ -23,12 +23,6 @@
         "model": "candlelight:block/table_sign",
         "y": 270
       }
-    ],
-    "": [
-      {
-        "model": "candlelight:block/table_sign",
-        "y": 90
-      }
     ]
   }
 }

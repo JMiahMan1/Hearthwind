@@ -149,9 +149,6 @@
     "bites=9,facing=west": {
       "model": "candlelight:block/tray",
       "y": 270
-    },
-    "": {
-      "model": "candlelight:block/fresh_garden_salad_3"
     }
   }
 }

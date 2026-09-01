@@ -1,0 +1,57 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "vinery:noir_wine",
+      "required": false
+    },
+    {
+      "id": "vinery:red_wine",
+      "required": false
+    },
+    {
+      "id": "vinery:strad_wine",
+      "required": false
+    },
+    {
+      "id": "vinery:cherry_wine",
+      "required": false
+    },
+    {
+      "id": "vinery:cristel_wine",
+      "required": false
+    },
+    {
+      "id": "vinery:lilitu_wine",
+      "required": false
+    },
+    {
+      "id": "vinery:jo_special_mixture",
+      "required": false
+    },
+    {
+      "id": "vinery:bolvar_wine",
+      "required": false
+    },
+    {
+      "id": "vinery:chorus_wine",
+      "required": false
+    },
+    {
+      "id": "vinery:magnetic_wine",
+      "required": false
+    },
+    {
+      "id": "vinery:stal_wine",
+      "required": false
+    },
+    {
+      "id": "vinery:chenet_wine",
+      "required": false
+    },
+    {
+      "id": "vinery:bottle_mojang_noir",
+      "required": false
+    }
+  ]
+}

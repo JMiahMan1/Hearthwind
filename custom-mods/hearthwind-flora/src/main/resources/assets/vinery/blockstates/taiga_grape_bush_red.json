@@ -11,9 +11,6 @@
     },
     "age=3": {
       "model": "vinery:block/taiga_grape_bush_stage3_red"
-    },
-    "": {
-      "model": "vinery:block/taiga_grape_bush_stage0"
     }
   }
 }

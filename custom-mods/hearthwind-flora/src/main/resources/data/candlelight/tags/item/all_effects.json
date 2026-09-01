@@ -1,0 +1,13 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "#candlelight:red_effect",
+      "required": false
+    },
+    {
+      "id": "#candlelight:white_effect",
+      "required": false
+    }
+  ]
+}

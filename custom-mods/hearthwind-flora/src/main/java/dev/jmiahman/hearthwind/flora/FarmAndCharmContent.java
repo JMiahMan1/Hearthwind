@@ -68,11 +68,30 @@ public final class FarmAndCharmContent {
         registerItem("fertilizer");
 
         // Workstations & Farm Blocks
+        registerCustomBlock("cooking_pot", new dev.jmiahman.hearthwind.flora.block.CookingPotBlock(BlockBehaviour.Properties.of()
+                .setId(ResourceKey.create(Registries.BLOCK, Identifier.fromNamespaceAndPath(MOD_ID, "cooking_pot")))
+                .sound(SoundType.METAL)
+                .strength(2.0f)));
+        registerCustomBlock("stove", new dev.jmiahman.hearthwind.flora.block.StoveBlock(BlockBehaviour.Properties.of()
+                .setId(ResourceKey.create(Registries.BLOCK, Identifier.fromNamespaceAndPath(MOD_ID, "stove")))
+                .sound(SoundType.STONE)
+                .strength(2.5f)));
         registerBlock("silo", SoundType.WOOD, 2.0f);
         registerBlock("roaster", SoundType.STONE, 2.5f);
         registerBlock("butter_churn", SoundType.WOOD, 2.0f);
         registerBlock("plow", SoundType.WOOD, 2.0f);
         registerBlock("supply_cart", SoundType.WOOD, 2.0f);
+    }
+
+    public static Block registerCustomBlock(String name, Block block) {
+        ResourceKey<Block> bKey = ResourceKey.create(Registries.BLOCK, Identifier.fromNamespaceAndPath(MOD_ID, name));
+        ResourceKey<Item> iKey = ResourceKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath(MOD_ID, name));
+        Registry.register(BuiltInRegistries.BLOCK, bKey, block);
+        Item item = new BlockItem(block, new Item.Properties().setId(iKey).useBlockDescriptionPrefix());
+        Registry.register(BuiltInRegistries.ITEM, iKey, item);
+        BLOCKS.put(name, block);
+        ITEMS.put(name, item);
+        return block;
     }
 
     private static void registerPlant(String name) {
@@ -106,7 +125,7 @@ public final class FarmAndCharmContent {
         ITEMS.put(name, item);
     }
 
-    private static void registerBlock(String name, SoundType sound, float hardness) {
+    private static Block registerBlock(String name, SoundType sound, float hardness) {
         ResourceKey<Block> bKey = ResourceKey.create(Registries.BLOCK, Identifier.fromNamespaceAndPath(MOD_ID, name));
         Block block = new Block(BlockBehaviour.Properties.of().setId(bKey).sound(sound).strength(hardness));
         Registry.register(BuiltInRegistries.BLOCK, bKey, block);
@@ -116,5 +135,6 @@ public final class FarmAndCharmContent {
         BlockItem item = new BlockItem(block, new Item.Properties().setId(iKey));
         Registry.register(BuiltInRegistries.ITEM, iKey, item);
         ITEMS.put(name, item);
+        return block;
     }
 }

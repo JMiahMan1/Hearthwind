@@ -59,9 +59,6 @@
     "facing=west,type=right": {
       "model": "candlelight:block/acacia_table_connected_support",
       "y": 90
-    },
-    "": {
-      "model": "candlelight:block/acacia_table"
     }
   }
 }

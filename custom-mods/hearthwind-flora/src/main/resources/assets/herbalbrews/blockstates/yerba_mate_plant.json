@@ -15,10 +15,6 @@
     "age=3": {
       "model": "herbalbrews:block/yerba_mate_plant_stage3",
       "weight": 1
-    },
-    "": {
-      "model": "herbalbrews:block/yerba_mate_plant_stage0",
-      "weight": 1
     }
   }
 }

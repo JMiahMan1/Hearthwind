@@ -1,3 +1,6 @@
 {
-  "parent": "brewery:block/wild_hops"
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "brewery:item/wild_hops"
+  }
 }

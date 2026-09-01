@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "fake_model=false": {
+      "model": "brewery:block/whiskey_ak"
+    },
+    "fake_model=true": {
+      "model": "brewery:block/transparent"
+    }
+  }
+}

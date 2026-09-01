@@ -29,10 +29,6 @@
     "facing=west,part=foot": {
       "model": "meadow:block/tweed_bed_foot",
       "y": 90
-    },
-    "": {
-      "model": "meadow:block/tweed_bed_head",
-      "y": 270
     }
   }
 }

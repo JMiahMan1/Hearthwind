@@ -23,12 +23,6 @@
         "model": "candlelight:block/bamboo_counter",
         "y": 270
       }
-    ],
-    "": [
-      {
-        "model": "candlelight:block/bamboo_counter",
-        "y": 90
-      }
     ]
   }
 }

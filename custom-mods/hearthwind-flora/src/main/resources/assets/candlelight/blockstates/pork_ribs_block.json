@@ -59,9 +59,6 @@
     "bites=3,facing=west": {
       "model": "candlelight:block/pork_ribs_0",
       "y": 270
-    },
-    "": {
-      "model": "candlelight:block/pork_ribs_3"
     }
   }
 }

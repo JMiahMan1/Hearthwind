@@ -29,9 +29,6 @@
     "facing=east,half=lower": {
       "y": 90,
       "model": "meadow:block/pine_chair_bottom"
-    },
-    "": {
-      "model": "meadow:block/pine_chair_bottom"
     }
   }
 }

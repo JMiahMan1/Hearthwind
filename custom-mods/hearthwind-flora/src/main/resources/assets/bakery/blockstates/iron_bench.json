@@ -59,9 +59,6 @@
     "facing=west,type=right": {
       "model": "bakery:block/iron_bench_extended",
       "y": 90
-    },
-    "": {
-      "model": "bakery:block/iron_bench_single"
     }
   }
 }

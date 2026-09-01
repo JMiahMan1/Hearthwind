@@ -29,10 +29,6 @@
     "facing=west,open=true": {
       "model": "candlelight:block/dark_oak_drawer_open",
       "y": 270
-    },
-    "": {
-      "model": "candlelight:block/dark_oak_drawer_closed",
-      "y": 90
     }
   }
 }

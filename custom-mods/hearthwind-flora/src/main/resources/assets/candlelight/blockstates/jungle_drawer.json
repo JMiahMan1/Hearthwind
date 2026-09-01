@@ -29,10 +29,6 @@
     "facing=west,open=true": {
       "model": "candlelight:block/jungle_drawer_open",
       "y": 270
-    },
-    "": {
-      "model": "candlelight:block/jungle_drawer_closed",
-      "y": 90
     }
   }
 }

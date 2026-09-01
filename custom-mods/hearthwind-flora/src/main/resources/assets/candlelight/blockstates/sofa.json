@@ -60,9 +60,6 @@
     "facing=west,type=right": {
       "model": "candlelight:block/sofa_side_left",
       "y": 270
-    },
-    "": {
-      "model": "candlelight:block/sofa"
     }
   }
 }

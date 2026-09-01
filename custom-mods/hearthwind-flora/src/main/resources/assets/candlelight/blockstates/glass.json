@@ -23,9 +23,6 @@
     },
     "stack=8": {
       "model": "candlelight:block/glass_1"
-    },
-    "": {
-      "model": "candlelight:block/glass_1"
     }
   }
 }

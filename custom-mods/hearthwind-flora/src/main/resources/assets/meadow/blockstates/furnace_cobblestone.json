@@ -19,8 +19,8 @@
       "model": "meadow:block/furnace_cobblestone"
     },
     "facing=south,lit=false": {
-      "model": "meadow:block/furnace_cobblestone",
-      "y": 180
+     "model": "meadow:block/furnace_cobblestone",
+     "y": 180
     },
     "facing=west,lit=false": {
       "model": "meadow:block/furnace_cobblestone",
@@ -29,9 +29,6 @@
     "facing=east,lit=false": {
       "model": "meadow:block/furnace_cobblestone",
       "y": 90
-    },
-    "": {
-      "model": "meadow:block/furnace_cobblestone"
     }
   }
 }

@@ -23,9 +23,6 @@
     },
     "stack=8": {
       "model": "candlelight:block/note_paper_8"
-    },
-    "": {
-      "model": "candlelight:block/note_paper_1"
     }
   }
 }

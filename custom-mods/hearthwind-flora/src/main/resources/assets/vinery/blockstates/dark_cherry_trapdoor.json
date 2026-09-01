@@ -53,9 +53,6 @@
     "facing=west,half=top,open=true": {
       "model": "vinery:block/dark_cherry_trapdoor_open",
       "y": 270
-    },
-    "": {
-      "model": "vinery:block/dark_cherry_trapdoor_bottom"
     }
   }
 }

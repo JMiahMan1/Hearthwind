@@ -1,0 +1,49 @@
+{
+  "parent": "candlelight:main/write_letter",
+  "criteria": {
+    "typewriter_iron": {
+      "conditions": {
+        "location": [
+          {
+            "block": "candlelight:typewriter_iron",
+            "condition": "minecraft:block_state_property"
+          }
+        ]
+      },
+      "trigger": "minecraft:placed_block"
+    },
+    "typewriter_gold": {
+      "conditions": {
+        "location": [
+          {
+            "block": "candlelight:typewriter_gold",
+            "condition": "minecraft:block_state_property"
+          }
+        ]
+      },
+      "trigger": "minecraft:placed_block"
+    }
+  },
+  "display": {
+    "announce_to_chat": true,
+    "description": {
+      "translate": "advancement.candlelight.typewriter.desc"
+    },
+    "frame": "task",
+    "hidden": false,
+    "icon": {
+      "id": "candlelight:typewriter_gold"
+    },
+    "show_toast": true,
+    "title": {
+      "translate": "advancement.candlelight.typewriter"
+    }
+  },
+  "requirements": [
+    [
+      "typewriter_iron",
+      "typewriter_gold"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

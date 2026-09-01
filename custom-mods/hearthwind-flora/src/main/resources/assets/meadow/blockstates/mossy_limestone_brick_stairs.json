@@ -204,11 +204,6 @@
       "x": 180,
       "y": 180,
       "uvlock": true
-    },
-    "": {
-      "model": "meadow:block/mossy_limestone_brick_stairs_inner",
-      "y": 270,
-      "uvlock": true
     }
   }
 }

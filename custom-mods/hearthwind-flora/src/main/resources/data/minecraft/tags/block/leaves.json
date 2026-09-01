@@ -1,7 +1,13 @@
 {
   "replace": false,
   "values": [
-    "vinery:apple_leaves",
-    "vinery:dark_cherry_leaves"
+    {
+      "id": "vinery:apple_leaves",
+      "required": false
+    },
+    {
+      "id": "vinery:dark_cherry_leaves",
+      "required": false
+    }
   ]
 }

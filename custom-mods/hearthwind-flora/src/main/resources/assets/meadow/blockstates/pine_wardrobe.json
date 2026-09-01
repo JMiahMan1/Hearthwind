@@ -59,9 +59,6 @@
     "half=upper,facing=east,open=true": {
       "model": "meadow:block/pine_wardrobe_top_open",
       "y": 90
-    },
-    "": {
-      "model": "meadow:block/pine_wardrobe_bottom_closed"
     }
   }
 }

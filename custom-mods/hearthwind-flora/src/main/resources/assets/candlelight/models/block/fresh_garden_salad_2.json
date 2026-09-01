@@ -1,6 +1,6 @@
 {
   "credit": "Made by Satisfy",
-  "parent": "minecraft:block/block",
+  "parent": "block/block",
   "textures": {
     "1": "candlelight:block/plate_vegetable_fresh_garden_salad",
     "2": "candlelight:block/plate_vegetable",
@@ -352,7 +352,7 @@
             10,
             1
           ],
-          "texture": "#particle"
+          "texture": "#missing"
         },
         "south": {
           "uv": [
@@ -361,7 +361,7 @@
             8,
             1
           ],
-          "texture": "#particle"
+          "texture": "#missing"
         },
         "west": {
           "uv": [
@@ -370,7 +370,7 @@
             10,
             1
           ],
-          "texture": "#particle"
+          "texture": "#missing"
         },
         "up": {
           "uv": [
@@ -388,7 +388,7 @@
             8,
             10
           ],
-          "texture": "#particle"
+          "texture": "#missing"
         }
       }
     }

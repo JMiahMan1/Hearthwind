@@ -1,0 +1,32 @@
+{
+  "values": [
+    {
+      "id": "meadow:cheese_wheel",
+      "required": false
+    },
+    {
+      "id": "meadow:sheep_cheese_wheel",
+      "required": false
+    },
+    {
+      "id": "meadow:grain_cheese_wheel",
+      "required": false
+    },
+    {
+      "id": "meadow:amethyst_cheese_wheel",
+      "required": false
+    },
+    {
+      "id": "meadow:buffalo_cheese_wheel",
+      "required": false
+    },
+    {
+      "id": "meadow:goat_cheese_wheel",
+      "required": false
+    },
+    {
+      "id": "meadow:warped_cheese_wheel",
+      "required": false
+    }
+  ]
+}

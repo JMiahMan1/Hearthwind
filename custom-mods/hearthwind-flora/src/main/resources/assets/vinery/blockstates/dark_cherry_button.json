@@ -113,11 +113,6 @@
       "y": 270,
       "x": 90,
       "uvlock": true
-    },
-    "": {
-      "model": "vinery:block/dark_cherry_button",
-      "y": 270,
-      "x": 180
     }
   }
 }

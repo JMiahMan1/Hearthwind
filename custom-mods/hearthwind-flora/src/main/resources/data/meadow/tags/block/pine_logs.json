@@ -1,0 +1,21 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "meadow:pine_log",
+      "required": false
+    },
+    {
+      "id": "meadow:pine_wood",
+      "required": false
+    },
+    {
+      "id": "meadow:stripped_pine_log",
+      "required": false
+    },
+    {
+      "id": "meadow:stripped_pine_wood",
+      "required": false
+    }
+  ]
+}

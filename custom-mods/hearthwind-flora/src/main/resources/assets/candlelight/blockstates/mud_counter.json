@@ -59,9 +59,6 @@
     "facing=west,type=right": {
       "model": "candlelight:block/mud_counter_connected_right",
       "y": 90
-    },
-    "": {
-      "model": "candlelight:block/mud_counter"
     }
   }
 }

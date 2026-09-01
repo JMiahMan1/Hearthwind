@@ -29,9 +29,6 @@
     "facing=east,lit=false": {
       "model": "candlelight:block/basalt_stove_on",
       "y": 90
-    },
-    "": {
-      "model": "candlelight:block/basalt_stove_on"
     }
   }
 }

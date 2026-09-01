@@ -29,9 +29,6 @@
     "facing=east,lit=false": {
       "model": "candlelight:block/bamboo_stove",
       "y": 90
-    },
-    "": {
-      "model": "candlelight:block/bamboo_stove"
     }
   }
 }

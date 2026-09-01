@@ -1,0 +1,49 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "candlelight:cobblestone_stove",
+      "required": false
+    },
+    {
+      "id": "candlelight:end_stove",
+      "required": false
+    },
+    {
+      "id": "candlelight:granite_stove",
+      "required": false
+    },
+    {
+      "id": "candlelight:stone_bricks_stove",
+      "required": false
+    },
+    {
+      "id": "candlelight:mud_stove",
+      "required": false
+    },
+    {
+      "id": "candlelight:deepslate_stove",
+      "required": false
+    },
+    {
+      "id": "candlelight:sandstone_stove",
+      "required": false
+    },
+    {
+      "id": "candlelight:red_nether_bricks_stove",
+      "required": false
+    },
+    {
+      "id": "candlelight:quartz_stove",
+      "required": false
+    },
+    {
+      "id": "candlelight:basalt_stove",
+      "required": false
+    },
+    {
+      "id": "candlelight:bamboo_stove",
+      "required": false
+    }
+  ]
+}

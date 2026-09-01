@@ -44,9 +44,6 @@
     "facing=west,type=right": {
       "model": "candlelight:block/sideboard_connected_right",
       "y": 270
-    },
-    "": {
-      "model": "candlelight:block/sideboard"
     }
   }
 }

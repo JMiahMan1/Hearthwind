@@ -31,10 +31,6 @@
     "facing=west,part=head": {
       "y": 180,
       "model": "vinery:block/dark_cherry_big_table"
-    },
-    "": {
-      "y": 0,
-      "model": "vinery:block/dark_cherry_big_table_adv"
     }
   }
 }

@@ -1,0 +1,13 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "minecraft:wolf",
+      "required": false
+    },
+    {
+      "id": "doggytalents:dog",
+      "required": false
+    }
+  ]
+}

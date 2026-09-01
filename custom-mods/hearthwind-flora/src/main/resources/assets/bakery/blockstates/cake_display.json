@@ -59,9 +59,6 @@
     "facing=west,type=right": {
       "model": "bakery:block/cake_display_connected_right",
       "y": 90
-    },
-    "": {
-      "model": "bakery:block/cake_display"
     }
   }
 }

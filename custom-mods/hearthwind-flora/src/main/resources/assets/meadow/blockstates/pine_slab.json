@@ -8,9 +8,6 @@
     },
     "type=top": {
       "model": "meadow:block/pine_slab_top"
-    },
-    "": {
-      "model": "meadow:block/pine_slab"
     }
   }
 }

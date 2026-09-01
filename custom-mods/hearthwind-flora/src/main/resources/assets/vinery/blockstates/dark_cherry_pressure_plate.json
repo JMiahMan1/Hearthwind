@@ -5,9 +5,6 @@
     },
     "powered=true": {
       "model": "vinery:block/dark_cherry_pressure_plate_down"
-    },
-    "": {
-      "model": "vinery:block/dark_cherry_pressure_plate"
     }
   }
 }

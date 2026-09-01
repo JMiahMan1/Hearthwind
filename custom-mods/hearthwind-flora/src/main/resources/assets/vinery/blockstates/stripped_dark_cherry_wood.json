@@ -11,11 +11,6 @@
     "axis=z": {
       "model": "vinery:block/stripped_dark_cherry_wood",
       "x": 90
-    },
-    "": {
-      "model": "vinery:block/stripped_dark_cherry_wood",
-      "x": 90,
-      "y": 90
     }
   }
 }

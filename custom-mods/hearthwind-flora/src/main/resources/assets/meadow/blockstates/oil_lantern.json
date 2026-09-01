@@ -5,9 +5,6 @@
     },
     "hanging=true": {
       "model": "meadow:block/oil_lantern_hanging"
-    },
-    "": {
-      "model": "meadow:block/oil_lantern"
     }
   }
 }

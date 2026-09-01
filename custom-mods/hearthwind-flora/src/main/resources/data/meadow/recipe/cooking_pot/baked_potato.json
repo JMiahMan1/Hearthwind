@@ -1,0 +1,17 @@
+{
+  "type": "meadow:cooking",
+  "ingredients": [
+    {
+      "item": "minecraft:potato"
+    },
+    {
+      "tag": "c:salts"
+    }
+  ],
+  "fluid_amount": 10,
+  "crafting_duration": 30,
+  "result": {
+    "id": "minecraft:baked_potato",
+    "count": 4
+  }
+}

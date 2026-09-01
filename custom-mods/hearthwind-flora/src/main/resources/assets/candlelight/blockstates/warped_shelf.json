@@ -14,10 +14,6 @@
     "facing=west": {
       "model": "candlelight:block/warped_shelf",
       "y": 270
-    },
-    "": {
-      "model": "candlelight:block/warped_shelf",
-      "y": 90
     }
   }
 }

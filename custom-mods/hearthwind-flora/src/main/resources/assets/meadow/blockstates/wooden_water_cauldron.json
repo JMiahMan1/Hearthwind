@@ -8,9 +8,6 @@
     },
     "level=3": {
       "model": "meadow:block/wooden_cauldron_water_full"
-    },
-    "": {
-      "model": "meadow:block/wooden_cauldron_water_level1"
     }
   }
 }

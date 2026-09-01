@@ -29,9 +29,6 @@
     "facing=east,half=lower": {
       "y": 90,
       "model": "candlelight:block/warped_chair"
-    },
-    "": {
-      "model": "candlelight:block/warped_chair"
     }
   }
 }

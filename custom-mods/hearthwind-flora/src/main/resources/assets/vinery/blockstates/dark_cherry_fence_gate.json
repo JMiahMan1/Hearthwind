@@ -75,11 +75,6 @@
       "uvlock": true,
       "y": 90,
       "model": "vinery:block/dark_cherry_fence_gate_wall_open"
-    },
-    "": {
-      "uvlock": true,
-      "y": 270,
-      "model": "vinery:block/dark_cherry_fence_gate"
     }
   }
 }

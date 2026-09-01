@@ -1,0 +1,57 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "vinery:mellohi_wine",
+      "required": false
+    },
+    {
+      "id": "vinery:glowing_wine",
+      "required": false
+    },
+    {
+      "id": "vinery:solaris_wine",
+      "required": false
+    },
+    {
+      "id": "vinery:creepers_crush",
+      "required": false
+    },
+    {
+      "id": "vinery:kelp_cider",
+      "required": false
+    },
+    {
+      "id": "vinery:eiswein",
+      "required": false
+    },
+    {
+      "id": "vinery:aegis_wine",
+      "required": false
+    },
+    {
+      "id": "vinery:villagers_fright",
+      "required": false
+    },
+    {
+      "id": "vinery:clark_wine",
+      "required": false
+    },
+    {
+      "id": "vinery:jellie_wine",
+      "required": false
+    },
+    {
+      "id": "vinery:apple_cider",
+      "required": false
+    },
+    {
+      "id": "vinery:apple_wine",
+      "required": false
+    },
+    {
+      "id": "vinery:mead",
+      "required": false
+    }
+  ]
+}

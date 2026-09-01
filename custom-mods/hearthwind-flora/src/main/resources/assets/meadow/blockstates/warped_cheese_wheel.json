@@ -15,6 +15,7 @@
       "model": "meadow:block/warped_cheese_wheel_0",
       "y": 270
     },
+
     "facing=east,cuts=1": {
       "model": "meadow:block/warped_cheese_wheel_1",
       "y": 90
@@ -30,6 +31,7 @@
       "model": "meadow:block/warped_cheese_wheel_1",
       "y": 270
     },
+
     "facing=east,cuts=2": {
       "model": "meadow:block/warped_cheese_wheel_2",
       "y": 90
@@ -45,6 +47,7 @@
       "model": "meadow:block/warped_cheese_wheel_2",
       "y": 270
     },
+
     "facing=east,cuts=3": {
       "model": "meadow:block/warped_cheese_wheel_3",
       "y": 90
@@ -59,10 +62,6 @@
     "facing=west,cuts=3": {
       "model": "meadow:block/warped_cheese_wheel_3",
       "y": 270
-    },
-    "": {
-      "model": "meadow:block/warped_cheese_wheel_0",
-      "y": 90
     }
   }
 }

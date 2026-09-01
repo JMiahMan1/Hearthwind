@@ -119,9 +119,6 @@
     "facing=west,stage=filled,needs_support=true": {
       "model": "bakery:block/small_cooking_pot_cooking_with_support",
       "y": 270
-    },
-    "": {
-      "model": "bakery:block/small_cooking_pot"
     }
   }
 }

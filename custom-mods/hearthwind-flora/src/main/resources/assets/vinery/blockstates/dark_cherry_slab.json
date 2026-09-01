@@ -8,9 +8,6 @@
     },
     "type=top": {
       "model": "vinery:block/dark_cherry_slab_top"
-    },
-    "": {
-      "model": "vinery:block/dark_cherry_slab"
     }
   }
 }

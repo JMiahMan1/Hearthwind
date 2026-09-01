@@ -59,9 +59,6 @@
     "facing=west,type=right": {
       "model": "candlelight:block/granite_counter_connected",
       "y": 90
-    },
-    "": {
-      "model": "candlelight:block/granite_counter"
     }
   }
 }

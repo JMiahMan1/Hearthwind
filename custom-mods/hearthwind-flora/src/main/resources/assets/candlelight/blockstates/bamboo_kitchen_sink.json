@@ -59,9 +59,6 @@
     "half=upper,filled=true,facing=west": {
       "model": "candlelight:block/kitchen_sink_faucet",
       "y": 270
-    },
-    "": {
-      "model": "candlelight:block/bamboo_kitchen_sink_bottom"
     }
   }
 }

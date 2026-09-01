@@ -59,9 +59,6 @@
     "facing=west,fill_level=3": {
       "model": "meadow:block/milk_can_3",
       "y": 270
-    },
-    "": {
-      "model": "meadow:block/milk_can_0"
     }
   }
 }

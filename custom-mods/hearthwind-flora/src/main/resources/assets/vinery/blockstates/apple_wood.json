@@ -11,11 +11,6 @@
     "axis=z": {
       "model": "vinery:block/apple_wood",
       "x": 90
-    },
-    "": {
-      "model": "vinery:block/apple_wood",
-      "x": 90,
-      "y": 90
     }
   }
 }

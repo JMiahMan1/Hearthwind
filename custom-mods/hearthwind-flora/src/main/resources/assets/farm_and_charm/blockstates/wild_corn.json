@@ -1,7 +1,10 @@
 {
   "variants": {
-    "": {
-      "model": "farm_and_charm:block/wild_corn"
+    "half=lower": {
+      "model": "farm_and_charm:block/wild_corn_bottom"
+    },
+    "half=upper": {
+      "model": "farm_and_charm:block/wild_corn_top"
     }
   }
 }

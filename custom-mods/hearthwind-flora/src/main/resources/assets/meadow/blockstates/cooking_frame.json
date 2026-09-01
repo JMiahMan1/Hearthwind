@@ -29,9 +29,6 @@
     "facing=west,half=upper": {
       "model": "meadow:block/cooking_frame_upper",
       "y": 270
-    },
-    "": {
-      "model": "meadow:block/cooking_frame_lower"
     }
   }
 }

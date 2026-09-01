@@ -64,10 +64,6 @@
       "model": "meadow:block/reclaimed_pine_trapdoor_open",
       "x": 180,
       "y": 90
-    },
-    "": {
-      "model": "meadow:block/reclaimed_pine_trapdoor_bottom",
-      "y": 90
     }
   }
 }

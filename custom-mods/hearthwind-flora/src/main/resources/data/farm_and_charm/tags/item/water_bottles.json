@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "#c:water_bottles",
+      "required": false
+    }
+  ]
+}

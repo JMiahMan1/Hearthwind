@@ -14,10 +14,6 @@
     "facing=west": {
       "model": "meadow:block/wheelbarrow",
       "y": 270
-    },
-    "": {
-      "model": "meadow:block/wheelbarrow",
-      "y": 90
     }
   }
 }

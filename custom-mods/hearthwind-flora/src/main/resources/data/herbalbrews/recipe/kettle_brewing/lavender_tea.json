@@ -1,0 +1,23 @@
+{
+  "type": "herbalbrews:kettle_brewing",
+  "experience": 0.8,
+  "crafting_duration": 60,
+  "fluid_amount": 20,
+  "heat_amount": 0,
+  "ingredients": [
+    {
+      "item": "herbalbrews:lavender_blossom"
+    },
+    {
+      "item": "minecraft:sugar"
+    },
+    {
+      "item": "minecraft:glass_bottle"
+    }
+  ],
+  "result": {
+    "id": "herbalbrews:lavender_tea"
+  },
+  "effect": "herbalbrews:feral",
+  "effect_duration": 1800
+}

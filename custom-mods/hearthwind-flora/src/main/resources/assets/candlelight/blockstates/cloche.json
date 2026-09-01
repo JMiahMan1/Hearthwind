@@ -14,10 +14,6 @@
     "facing=west": {
       "model": "candlelight:block/cloche",
       "y": 270
-    },
-    "": {
-      "model": "candlelight:block/cloche",
-      "y": 90
     }
   }
 }

@@ -29,9 +29,6 @@
     "facing=west,open=true": {
       "model": "bakery:block/breadbox_open",
       "y": 270
-    },
-    "": {
-      "model": "bakery:block/breadbox_closed"
     }
   }
 }

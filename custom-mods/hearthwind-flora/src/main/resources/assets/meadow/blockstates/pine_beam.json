@@ -11,11 +11,6 @@
     "axis=z": {
       "model": "meadow:block/pine_beam_horizontal",
       "x": 90
-    },
-    "": {
-      "model": "meadow:block/pine_beam_horizontal",
-      "x": 90,
-      "y": 90
     }
   }
 }

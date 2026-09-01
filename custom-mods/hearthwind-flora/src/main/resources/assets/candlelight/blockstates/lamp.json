@@ -5,9 +5,6 @@
     },
     "hanging=true": {
       "model": "candlelight:block/lamp_hanging"
-    },
-    "": {
-      "model": "candlelight:block/lamp"
     }
   }
 }

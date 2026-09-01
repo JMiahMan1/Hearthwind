@@ -23,9 +23,6 @@
     },
     "stack=8": {
       "model": "candlelight:block/wine_glass_1"
-    },
-    "": {
-      "model": "candlelight:block/wine_glass_1"
     }
   }
 }

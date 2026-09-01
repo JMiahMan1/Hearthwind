@@ -239,9 +239,6 @@
     "facing=west,connected_down=true,connected_up=true,lit=true,top=true": {
       "model": "meadow:block/stove_tiles_wood_on_connected",
       "y": 270
-    },
-    "": {
-      "model": "meadow:block/stove_tiles_wood"
     }
   }
 }

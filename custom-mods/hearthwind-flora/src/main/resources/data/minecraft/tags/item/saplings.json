@@ -1,11 +1,29 @@
 {
   "replace": false,
   "values": [
-    "vinery:apple_tree_sapling",
-    "vinery:apple_sapling",
-    "vinery:dark_cherry_sapling",
-    "vinery:cherry_sapling",
-    "vinery:cherry_tree_sapling",
-    "vinery:dark_cherry_tree_sapling"
+    {
+      "id": "vinery:apple_tree_sapling",
+      "required": false
+    },
+    {
+      "id": "vinery:apple_sapling",
+      "required": false
+    },
+    {
+      "id": "vinery:dark_cherry_sapling",
+      "required": false
+    },
+    {
+      "id": "vinery:cherry_sapling",
+      "required": false
+    },
+    {
+      "id": "vinery:cherry_tree_sapling",
+      "required": false
+    },
+    {
+      "id": "vinery:dark_cherry_tree_sapling",
+      "required": false
+    }
   ]
 }

@@ -5,9 +5,6 @@
     },
     "powered=true": {
       "model": "meadow:block/pine_pressure_plate_down"
-    },
-    "": {
-      "model": "meadow:block/pine_pressure_plate"
     }
   }
 }

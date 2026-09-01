@@ -59,9 +59,6 @@
     "facing=west,type=right": {
       "model": "meadow:block/pine_dresser_connected_right",
       "y": 90
-    },
-    "": {
-      "model": "meadow:block/pine_dresser_single"
     }
   }
 }

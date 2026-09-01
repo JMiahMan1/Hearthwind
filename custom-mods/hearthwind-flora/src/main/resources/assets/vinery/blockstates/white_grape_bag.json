@@ -14,10 +14,6 @@
     "facing=west": {
       "model": "vinery:block/white_grape_bag",
       "y": 270
-    },
-    "": {
-      "model": "vinery:block/white_grape_bag",
-      "y": 90
     }
   }
 }

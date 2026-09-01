@@ -204,11 +204,6 @@
       "x": 180,
       "y": 180,
       "uvlock": true
-    },
-    "": {
-      "model": "vinery:block/dark_cherry_stairs_inner",
-      "y": 270,
-      "uvlock": true
     }
   }
 }

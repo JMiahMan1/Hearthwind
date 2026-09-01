@@ -8,9 +8,6 @@
     },
     "type=top": {
       "model": "meadow:block/mossy_limestone_brick_slab_top"
-    },
-    "": {
-      "model": "meadow:block/mossy_limestone_brick_slab"
     }
   }
 }

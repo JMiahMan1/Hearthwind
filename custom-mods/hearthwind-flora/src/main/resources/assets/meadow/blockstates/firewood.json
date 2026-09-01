@@ -15,6 +15,7 @@
       "model": "meadow:block/firewood_pile_chopped",
       "y": 270
     },
+
     "facing=east,stage=1": {
       "model": "meadow:block/firewood_pile_small",
       "y": 90
@@ -30,6 +31,7 @@
       "model": "meadow:block/firewood_pile_small",
       "y": 270
     },
+
     "facing=east,stage=2": {
       "model": "meadow:block/firewood_pile_medium",
       "y": 90
@@ -45,6 +47,7 @@
       "model": "meadow:block/firewood_pile_medium",
       "y": 270
     },
+
     "facing=east,stage=3": {
       "model": "meadow:block/firewood_pile_large",
       "y": 90
@@ -59,10 +62,6 @@
     "facing=west,stage=3": {
       "model": "meadow:block/firewood_pile_large",
       "y": 270
-    },
-    "": {
-      "model": "meadow:block/firewood_pile_chopped",
-      "y": 90
     }
   }
 }

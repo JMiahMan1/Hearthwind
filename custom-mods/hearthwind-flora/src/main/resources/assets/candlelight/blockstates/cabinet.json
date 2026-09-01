@@ -29,10 +29,6 @@
     "facing=west,open=true": {
       "model": "candlelight:block/cabinet_open",
       "y": 270
-    },
-    "": {
-      "model": "candlelight:block/cabinet_closed",
-      "y": 90
     }
   }
 }

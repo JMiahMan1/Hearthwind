@@ -5,9 +5,6 @@
     },
     "fake_model=true": {
       "model": "vinery:block/transparent"
-    },
-    "": {
-      "model": "vinery:block/red_wine"
     }
   }
 }

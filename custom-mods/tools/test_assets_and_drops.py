@@ -131,8 +131,14 @@ for ns, name in registered_blocks:
         try:
             with open(all_blockstates[(ns, name)]) as fp:
                 data = json.load(fp)
-            if "variants" in data and "" not in data["variants"]:
-                errors.append(f"BLOCKSTATE MISSING DEFAULT VARIANT \"\": {ns}:{name}")
+            if "variants" in data:
+                if len(data["variants"]) == 0:
+                    errors.append(f"BLOCKSTATE HAS EMPTY VARIANTS: {ns}:{name}")
+            elif "multipart" in data:
+                if len(data["multipart"]) == 0:
+                    errors.append(f"BLOCKSTATE HAS EMPTY MULTIPART: {ns}:{name}")
+            else:
+                errors.append(f"BLOCKSTATE MISSING VARIANTS OR MULTIPART: {ns}:{name}")
         except Exception as e:
             errors.append(f"INVALID BLOCKSTATE JSON: {ns}:{name} -> {e}")
 

@@ -1,0 +1,17 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "#c:rings",
+      "required": false
+    },
+    {
+      "id": "candlelight:gold_ring",
+      "required": false
+    },
+    {
+      "id": "candlelight:chocolate_mousse",
+      "required": false
+    }
+  ]
+}

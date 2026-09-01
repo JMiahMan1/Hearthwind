@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "vinery:white_taiga_grapejuice",
+      "required": false
+    }
+  ]
+}

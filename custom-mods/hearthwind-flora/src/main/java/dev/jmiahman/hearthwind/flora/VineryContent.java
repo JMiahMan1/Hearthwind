@@ -54,8 +54,14 @@ public final class VineryContent {
 
         // Blocks
         registerBlock("grapevine_pot", SoundType.STONE, 1.0f);
-        registerBlock("fermentation_barrel", SoundType.WOOD, 2.0f);
-        registerBlock("apple_press", SoundType.WOOD, 2.0f);
+        registerCustomBlock("fermentation_barrel", new dev.jmiahman.hearthwind.flora.block.FermentationBarrelBlock(BlockBehaviour.Properties.of()
+                .setId(ResourceKey.create(Registries.BLOCK, Identifier.fromNamespaceAndPath(MOD_ID, "fermentation_barrel")))
+                .sound(SoundType.WOOD)
+                .strength(2.0f)));
+        registerCustomBlock("apple_press", new dev.jmiahman.hearthwind.flora.block.ApplePressBlock(BlockBehaviour.Properties.of()
+                .setId(ResourceKey.create(Registries.BLOCK, Identifier.fromNamespaceAndPath(MOD_ID, "apple_press")))
+                .sound(SoundType.WOOD)
+                .strength(2.0f)));
         registerFruitLeaves("dark_cherry_leaves", () -> ITEMS.getOrDefault("cherry", net.minecraft.world.item.Items.SWEET_BERRIES));
         registerFruitLeaves("apple_leaves", () -> net.minecraft.world.item.Items.APPLE);
         registerLog("dark_cherry_log");
@@ -103,6 +109,17 @@ public final class VineryContent {
         Registry.register(BuiltInRegistries.ITEM, key, item);
         ITEMS.put(name, item);
         return item;
+    }
+
+    public static Block registerCustomBlock(String name, Block block) {
+        ResourceKey<Block> bKey = ResourceKey.create(Registries.BLOCK, Identifier.fromNamespaceAndPath(MOD_ID, name));
+        ResourceKey<Item> iKey = ResourceKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath(MOD_ID, name));
+        Registry.register(BuiltInRegistries.BLOCK, bKey, block);
+        Item item = new BlockItem(block, new Item.Properties().setId(iKey).useBlockDescriptionPrefix());
+        Registry.register(BuiltInRegistries.ITEM, iKey, item);
+        BLOCKS.put(name, block);
+        ITEMS.put(name, item);
+        return block;
     }
 
     private static Block registerBlock(String name, SoundType sound, float hardness) {

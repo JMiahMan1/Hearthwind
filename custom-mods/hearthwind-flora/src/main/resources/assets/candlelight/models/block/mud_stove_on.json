@@ -8,8 +8,8 @@
     "7": "candlelight:block/mud_stove_top",
     "8": "candlelight:block/furnace_lit_inside_bottom",
     "9": "candlelight:block/furnace_lit_grate",
-    "10": "minecraft:block/fire_0",
-    "11": "minecraft:block/fire_1",
+    "10": "block/fire_0",
+    "11": "block/fire_1",
     "particle": "candlelight:block/mud_stove_side"
   },
   "elements": [
@@ -84,12 +84,12 @@
     {
       "name": "inner_block",
       "from": [
-        2,
+        14,
         1,
         0
       ],
       "to": [
-        14,
+        2,
         16,
         13.01
       ],
