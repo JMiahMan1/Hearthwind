@@ -41,13 +41,16 @@ public final class FloraWorldGen {
 
         addFeature("wild_herbs", herbSelector);
 
-        // 3. Wild Crops (Plains, Meadows, River Valleys, Valleys)
+        // 3. Wild Crops (Plains, Meadows, Valleys, Forests)
         Predicate<BiomeSelectionContext> cropSelector = ctx ->
-                ctx.hasTag(BiomeTags.IS_FOREST) || ctx.hasTag(BiomeTags.IS_RIVER) ||
+                (ctx.hasTag(BiomeTags.IS_FOREST) ||
                 ctx.getBiomeKey().identifier().getPath().contains("plains") ||
                 ctx.getBiomeKey().identifier().getPath().contains("meadow") ||
-                ctx.getBiomeKey().identifier().getPath().contains("river") ||
-                ctx.getBiomeKey().identifier().getPath().contains("valley");
+                ctx.getBiomeKey().identifier().getPath().contains("valley")) &&
+                !ctx.hasTag(BiomeTags.IS_RIVER) &&
+                !ctx.hasTag(BiomeTags.IS_OCEAN) &&
+                !ctx.getBiomeKey().identifier().getPath().contains("river") &&
+                !ctx.getBiomeKey().identifier().getPath().contains("ocean");
 
         addFeature("wild_crops", cropSelector);
 
