@@ -119,5 +119,9 @@ if [ "$SHOTS" -ge 1 ]; then
   cp "$WORK"/screenshots/*.png "$REPO/.tmp/shots/cgt/" 2>/dev/null
   echo "screenshots preserved in .tmp/shots/cgt/"
 fi
-[ "$KEEP" -eq 1 ] || rm -rf "$WORK"
+if [ "$RC" -eq 0 ] && [ "$KEEP" -eq 0 ]; then
+  rm -rf "$WORK"
+else
+  echo "game dir kept for inspection: $WORK"
+fi
 exit "$RC"
