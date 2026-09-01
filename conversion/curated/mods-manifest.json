@@ -181,14 +181,16 @@
     {
       "file": "medievalweapons",
       "slug": "medievalweapons",
-      "action": "drop",
-      "reason": "Stuck pre-1.21.2; core moves into aged-primitive weapon tiers later"
+      "action": "keep",
+      "reason": "Stuck pre-1.21.2; core moves into aged-primitive weapon tiers later",
+      "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
     },
     {
       "file": "amarite",
       "slug": "amarite",
-      "action": "drop",
-      "reason": "Stuck 1.20.1; niche single sword"
+      "action": "keep",
+      "reason": "Stuck 1.20.1; niche single sword",
+      "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
     },
     {
       "file": "tiered",
@@ -199,38 +201,44 @@
     {
       "file": "inmis",
       "slug": "inmis",
-      "action": "drop",
-      "reason": "Backpack slots stuck; use vanilla bundle rework in 26.x"
+      "action": "keep",
+      "reason": "Backpack slots stuck; use vanilla bundle rework in 26.x",
+      "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
     },
     {
       "file": "inmisaddon",
       "slug": "inmisaddon",
-      "action": "drop",
-      "reason": "Depends on Inmis"
+      "action": "keep",
+      "reason": "Depends on Inmis",
+      "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
     },
     {
       "file": "backslot",
       "slug": "backslot",
-      "action": "drop",
-      "reason": "Stuck; cosmetic slot"
+      "action": "keep",
+      "reason": "Stuck; cosmetic slot",
+      "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
     },
     {
       "file": "backslotaddon",
       "slug": "backslotaddon",
-      "action": "drop",
-      "reason": "Depends on backslot"
+      "action": "keep",
+      "reason": "Depends on backslot",
+      "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
     },
     {
       "file": "trinkets",
       "slug": "trinkets",
-      "action": "drop",
-      "reason": "Accessory API stalled at 1.21.1 ecosystem; no kept mod requires it after trims"
+      "action": "keep",
+      "reason": "Accessory API stalled at 1.21.1 ecosystem; no kept mod requires it after trims",
+      "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
     },
     {
       "file": "revive",
       "slug": "revive",
-      "action": "drop",
-      "reason": "Stuck; revisit if co-op demand emerges"
+      "action": "rebuild",
+      "reason": "Stuck; revisit if co-op demand emerges",
+      "note": "Rebuilt natively in hearthwind-survival downed/revive mechanics"
     },
     {
       "file": "rpgdifficulty",
@@ -304,20 +312,23 @@
     {
       "file": "smitherz",
       "slug": "smitherz",
-      "action": "drop",
-      "reason": "Nice-to-have; fold upgrade concept into aged-primitive"
+      "action": "keep",
+      "reason": "Nice-to-have; fold upgrade concept into aged-primitive",
+      "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
     },
     {
       "file": "travelerz",
       "slug": "travelerz",
-      "action": "drop",
-      "reason": "Map pins; vanilla 26.x locator bar covers most"
+      "action": "keep",
+      "reason": "Map pins; vanilla 26.x locator bar covers most",
+      "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
     },
     {
       "file": "libz",
       "slug": "libz",
-      "action": "drop",
-      "reason": "Library for z-series mods being replaced"
+      "action": "keep",
+      "reason": "Library for z-series mods being replaced",
+      "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
     },
     {
       "file": "fabric-seasons",
@@ -334,8 +345,9 @@
     {
       "file": "time-and-wind",
       "slug": "time-and-wind",
-      "action": "drop",
-      "reason": "Day-length tuning; not mission-critical"
+      "action": "keep",
+      "reason": "Day-length tuning; not mission-critical",
+      "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
     },
     {
       "file": "crop_growth_modifier",
@@ -367,20 +379,23 @@
     {
       "file": "naturalist",
       "slug": "naturalist",
-      "action": "drop",
-      "reason": "Ambience animals"
+      "action": "rebuild",
+      "reason": "Ambience animals",
+      "note": "Rebuilt natively in hearthwind-world (fauna, waterfowl, ducks, bears, aquatic life, ice spawning)"
     },
     {
       "file": "creeperoverhaul",
       "slug": "creeper-overhaul",
-      "action": "drop",
-      "reason": "Cosmetic variants"
+      "action": "keep",
+      "reason": "Cosmetic variants",
+      "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
     },
     {
       "file": "endermanoverhaul",
       "slug": "enderman-overhaul",
-      "action": "drop",
-      "reason": "Cosmetic variants"
+      "action": "keep",
+      "reason": "Cosmetic variants",
+      "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
     },
     {
       "file": "Boids",
@@ -397,20 +412,23 @@
     {
       "file": "adventurez",
       "slug": "adventurez",
-      "action": "drop",
-      "reason": "Boss/mob pack stuck; off core loop"
+      "action": "keep",
+      "reason": "Boss/mob pack stuck; off core loop",
+      "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
     },
     {
       "file": "astrocraft",
       "slug": "astrocraft",
-      "action": "drop",
-      "reason": "Aliens; tonally off-mission"
+      "action": "keep",
+      "reason": "Aliens; tonally off-mission",
+      "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
     },
     {
       "file": "fleshz",
       "slug": "fleshz",
-      "action": "drop",
-      "reason": "Mob pack stuck"
+      "action": "keep",
+      "reason": "Mob pack stuck",
+      "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
     },
     {
       "file": "YungsApi",
@@ -524,44 +542,51 @@
     {
       "file": "Dungeon Now Loading",
       "slug": "dungeon-now-loading",
-      "action": "drop",
-      "reason": "Stuck 1.20.1; overlap with kept structure set"
+      "action": "keep",
+      "reason": "Stuck 1.20.1; overlap with kept structure set",
+      "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
     },
     {
       "file": "dungeons+-1.8.4b",
       "slug": "dungeons-plus",
-      "action": "drop",
-      "reason": "Overlap; verify status before reconsidering"
+      "action": "keep",
+      "reason": "Overlap; verify status before reconsidering",
+      "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
     },
     {
       "file": "desert-dungeon",
       "slug": "desert-dungeon",
-      "action": "drop",
-      "reason": "Small niche dungeon"
+      "action": "keep",
+      "reason": "Small niche dungeon",
+      "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
     },
     {
       "file": "dungeonz",
       "slug": "dungeonz",
-      "action": "drop",
-      "reason": "Small niche dungeon"
+      "action": "keep",
+      "reason": "Small niche dungeon",
+      "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
     },
     {
       "file": "u_desert",
       "slug": "u-desert",
-      "action": "drop",
-      "reason": "Niche desert structures"
+      "action": "keep",
+      "reason": "Niche desert structures",
+      "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
     },
     {
       "file": "underground-jungle",
       "slug": "underground-jungle",
-      "action": "drop",
-      "reason": "Stuck 1.20.1; big worldgen risk"
+      "action": "keep",
+      "reason": "Stuck 1.20.1; big worldgen risk",
+      "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
     },
     {
       "file": "spirder-caves",
       "slug": "spider-caves",
-      "action": "drop",
-      "reason": "Unresolved/niche"
+      "action": "keep",
+      "reason": "Unresolved/niche",
+      "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
     },
     {
       "file": "tru.e-ending",
@@ -572,20 +597,23 @@
     {
       "file": "betterendcitiesvanilla",
       "slug": "vanilla-end-city-overhaul",
-      "action": "drop",
-      "reason": "Tiny tweak datapack-style"
+      "action": "keep",
+      "reason": "Tiny tweak datapack-style",
+      "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
     },
     {
       "file": "profundis",
       "slug": "profundis",
-      "action": "drop",
-      "reason": "Cave biomes stuck; snapshot worldgen churn"
+      "action": "keep",
+      "reason": "Cave biomes stuck; snapshot worldgen churn",
+      "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
     },
     {
       "file": "lukis-grand-capitals",
       "slug": "lukis-grand-capitals",
-      "action": "drop",
-      "reason": "Structure pack stuck"
+      "action": "keep",
+      "reason": "Structure pack stuck",
+      "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
     },
     {
       "file": "villagesandpillages",
@@ -597,14 +625,16 @@
     {
       "file": "mns",
       "slug": "mns",
-      "action": "drop",
-      "reason": "Large structure pack overlap"
+      "action": "keep",
+      "reason": "Large structure pack overlap",
+      "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
     },
     {
       "file": "mes",
       "slug": "moogs-endless-structures",
-      "action": "drop",
-      "reason": "Overlap"
+      "action": "keep",
+      "reason": "Overlap",
+      "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
     },
     {
       "file": "endrem",
@@ -623,92 +653,107 @@
     {
       "file": "paxi",
       "slug": "paxi",
-      "action": "drop",
-      "reason": "Ship aged datapack natively in world/datapacks instead"
+      "action": "rebuild",
+      "reason": "Ship aged datapack natively in world/datapacks instead",
+      "note": "Rebuilt natively as 26.x deterministic world datapack in conversion/datapacks/hearthwind"
     },
     {
       "file": "letsdo-API",
       "slug": "do-api",
-      "action": "drop",
-      "reason": "Whole LetsDo family stuck (~1.21.1); food ambience not core loop; revisit when updated"
+      "action": "rebuild",
+      "reason": "Whole LetsDo family stuck (~1.21.1); food ambience not core loop; revisit when updated",
+      "note": "Rebuilt natively in hearthwind-flora module with zero-bloat 26.2 items, blocks, crops, and recipes"
     },
     {
       "file": "letsdo-bakery",
       "slug": "lets-do-bakery",
-      "action": "drop",
-      "reason": "LetsDo family"
+      "action": "rebuild",
+      "reason": "LetsDo family",
+      "note": "Rebuilt natively in hearthwind-flora module with zero-bloat 26.2 items, blocks, crops, and recipes"
     },
     {
       "file": "letsdo-brewery",
       "slug": "lets-do-brewery",
-      "action": "drop",
-      "reason": "LetsDo family"
+      "action": "rebuild",
+      "reason": "LetsDo family",
+      "note": "Rebuilt natively in hearthwind-flora module with zero-bloat 26.2 items, blocks, crops, and recipes"
     },
     {
       "file": "letsdo-candlelight",
       "slug": "lets-do-candlelight",
-      "action": "drop",
-      "reason": "LetsDo family"
+      "action": "rebuild",
+      "reason": "LetsDo family",
+      "note": "Rebuilt natively in hearthwind-flora module with zero-bloat 26.2 items, blocks, crops, and recipes"
     },
     {
       "file": "letsdo-farm_and_charm",
       "slug": "lets-do-farm-charm",
-      "action": "drop",
-      "reason": "LetsDo family"
+      "action": "rebuild",
+      "reason": "LetsDo family",
+      "note": "Rebuilt natively in hearthwind-flora module with zero-bloat 26.2 items, blocks, crops, and recipes"
     },
     {
       "file": "letsdo-meadow",
       "slug": "lets-do-meadow",
-      "action": "drop",
-      "reason": "LetsDo family"
+      "action": "rebuild",
+      "reason": "LetsDo family",
+      "note": "Rebuilt natively in hearthwind-flora module with zero-bloat 26.2 items, blocks, crops, and recipes"
     },
     {
       "file": "letsdo-vinery",
       "slug": "lets-do-vinery",
-      "action": "drop",
-      "reason": "LetsDo family"
+      "action": "rebuild",
+      "reason": "LetsDo family",
+      "note": "Rebuilt natively in hearthwind-flora module with zero-bloat 26.2 items, blocks, crops, and recipes"
     },
     {
       "file": "letsdo-nethervinery",
       "slug": "create-nether-vinery",
-      "action": "drop",
-      "reason": "LetsDo family"
+      "action": "rebuild",
+      "reason": "LetsDo family",
+      "note": "Rebuilt natively in hearthwind-flora module with zero-bloat 26.2 items, blocks, crops, and recipes"
     },
     {
       "file": "letsdo-herbalbrews",
       "slug": "herbal-brews",
-      "action": "drop",
-      "reason": "LetsDo family"
+      "action": "rebuild",
+      "reason": "LetsDo family",
+      "note": "Rebuilt natively in hearthwind-flora module with zero-bloat 26.2 items, blocks, crops, and recipes"
     },
     {
       "file": "emi-letsdo-compat",
       "slug": "emi-letsdo-compat",
-      "action": "drop",
-      "reason": "Depends on LetsDo"
+      "action": "keep",
+      "reason": "Depends on LetsDo",
+      "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
     },
     {
       "file": "sushi_bar",
       "slug": "sushi-bar",
-      "action": "drop",
-      "reason": "Food ambience niche"
+      "action": "keep",
+      "reason": "Food ambience niche",
+      "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
     },
     {
       "file": "another_furniture",
       "slug": "another-furniture",
-      "action": "drop",
-      "reason": "Decor; stuck 1.21.1"
+      "action": "keep",
+      "reason": "Decor; stuck 1.21.1",
+      "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
     },
     {
       "file": "chipped",
       "slug": "chipped",
-      "action": "drop",
-      "reason": "Decor variants; heavy recipe bloat"
+      "action": "keep",
+      "reason": "Decor variants; heavy recipe bloat",
+      "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
     },
     {
       "file": "bbb",
       "slug": "barrels-bins-and-boxes",
-      "action": "drop",
-      "reason": "Decor storage"
+      "action": "keep",
+      "reason": "Decor storage",
+      "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
     },
     {
       "file": "chalk",
@@ -726,8 +771,9 @@
     {
       "file": "connectiblechains",
       "slug": "connectible-chains",
-      "action": "drop",
-      "reason": "Cosmetic physics"
+      "action": "keep",
+      "reason": "Cosmetic physics",
+      "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
     },
     {
       "file": "jumpoverfences",
@@ -745,8 +791,9 @@
     {
       "file": "villager-transportation",
       "slug": "villager-transportation",
-      "action": "drop",
-      "reason": "QOL nicety stuck"
+      "action": "keep",
+      "reason": "QOL nicety stuck",
+      "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
     },
     {
       "file": "superbsteeds",
@@ -764,32 +811,37 @@
     {
       "file": "ships",
       "slug": "ships",
-      "action": "drop",
-      "reason": "Big ships; same"
+      "action": "keep",
+      "reason": "Big ships; same",
+      "note": "Standalone 26.2 port in custom-mods/smallships"
     },
     {
       "file": "niftycarts",
       "slug": "niftycarts",
-      "action": "drop",
-      "reason": "Carts niche; config existed but non-core"
+      "action": "keep",
+      "reason": "Carts niche; config existed but non-core",
+      "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
     },
     {
       "file": "immersive_aircraft",
       "slug": "immersive-aircraft",
-      "action": "drop",
-      "reason": "Planes vs medieval realism"
+      "action": "keep",
+      "reason": "Planes vs medieval realism",
+      "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
     },
     {
       "file": "villagerfix",
       "slug": "villager-fix",
-      "action": "drop",
-      "reason": "Unresolved; vanilla trading fine"
+      "action": "keep",
+      "reason": "Unresolved; vanilla trading fine",
+      "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
     },
     {
       "file": "smarterfarmers",
       "slug": "smarter-farmers",
-      "action": "drop",
-      "reason": "Farmer AI nicety; tied to farm&charm ecosystem"
+      "action": "keep",
+      "reason": "Farmer AI nicety; tied to farm&charm ecosystem",
+      "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
     },
     {
       "file": "exposure",
@@ -808,14 +860,16 @@
     {
       "file": "surveyor",
       "slug": "surveyor-map-framework",
-      "action": "drop",
-      "reason": "Atlas framework lib; only if antique atlas needs it"
+      "action": "keep",
+      "reason": "Atlas framework lib; only if antique atlas needs it",
+      "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
     },
     {
       "file": "lavender",
       "slug": "lavender",
-      "action": "drop",
-      "reason": "Guidebook lib for cut mods"
+      "action": "keep",
+      "reason": "Guidebook lib for cut mods",
+      "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
     },
     {
       "file": "scholar",
@@ -826,8 +880,9 @@
     {
       "file": "Pockets",
       "slug": "pockets",
-      "action": "drop",
-      "reason": "Micro-storage niche"
+      "action": "keep",
+      "reason": "Micro-storage niche",
+      "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
     },
     {
       "file": "ExtendedDrawers",
@@ -838,8 +893,9 @@
     {
       "file": "extendeddrawersaddon",
       "slug": "extended-drawers-add-on",
-      "action": "drop",
-      "reason": "Depends on ExtendedDrawers"
+      "action": "keep",
+      "reason": "Depends on ExtendedDrawers",
+      "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
     },
     {
       "file": "reciperemover",
@@ -858,20 +914,23 @@
     {
       "file": "couplings",
       "slug": "couplings",
-      "action": "drop",
-      "reason": "Double doors; vanilla parity coming"
+      "action": "keep",
+      "reason": "Double doors; vanilla parity coming",
+      "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
     },
     {
       "file": "async-locator",
       "slug": "async-locator",
-      "action": "drop",
-      "reason": "Vanilla /locate fast on modern MC"
+      "action": "keep",
+      "reason": "Vanilla /locate fast on modern MC",
+      "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
     },
     {
       "file": "memoryleakfix",
       "slug": "memoryleakfix",
-      "action": "drop",
-      "reason": "Obsolete on modern JVM/MC"
+      "action": "keep",
+      "reason": "Obsolete on modern JVM/MC",
+      "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
     },
     {
       "file": "modernfix",
@@ -890,8 +949,9 @@
     {
       "file": "DEUF_Refabricated",
       "slug": "entity-collision-fps-fix",
-      "action": "drop",
-      "reason": "Client perf fix era; modern MC improved"
+      "action": "keep",
+      "reason": "Client perf fix era; modern MC improved",
+      "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
     },
     {
       "file": "geckolib",
@@ -910,8 +970,9 @@
     {
       "file": "moonlight",
       "slug": "moonlight",
-      "action": "drop",
-      "reason": "Lib for Let's Do family"
+      "action": "keep",
+      "reason": "Lib for Let's Do family",
+      "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
     },
     {
       "file": "resourcefullib",
@@ -929,26 +990,30 @@
     {
       "file": "athena",
       "slug": "athena-ctm",
-      "action": "drop",
-      "reason": "CTM lib for chipped/connected textures; client decor"
+      "action": "keep",
+      "reason": "CTM lib for chipped/connected textures; client decor",
+      "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
     },
     {
       "file": "arrp",
       "slug": "arrp",
-      "action": "drop",
-      "reason": "Runtime resource pack gen lib for cut mods"
+      "action": "keep",
+      "reason": "Runtime resource pack gen lib for cut mods",
+      "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
     },
     {
       "file": "MRU",
       "slug": "mru",
-      "action": "drop",
-      "reason": "Lib for cut structure mods"
+      "action": "keep",
+      "reason": "Lib for cut structure mods",
+      "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
     },
     {
       "file": "OctoLib",
       "slug": "octolib",
-      "action": "drop",
-      "reason": "Lib for cut mods"
+      "action": "keep",
+      "reason": "Lib for cut mods",
+      "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
     },
     {
       "file": "tcdcommons",
@@ -979,8 +1044,9 @@
     {
       "file": "Grass_Overhaul",
       "slug": "grass-overhaul",
-      "action": "drop",
-      "reason": "Flora ambience stuck 1.21.1"
+      "action": "keep",
+      "reason": "Flora ambience stuck 1.21.1",
+      "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
     },
     {
       "file": "terralith",
