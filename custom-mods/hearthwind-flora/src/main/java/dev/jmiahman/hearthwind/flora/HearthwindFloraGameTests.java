@@ -272,4 +272,30 @@ public final class HearthwindFloraGameTests {
         helper.assertTrue(seated, "player successfully sat on chair");
         helper.succeed();
     }
+
+    @GameTest
+    public void floraStatusEffectsRegistered(GameTestHelper helper) {
+        helper.assertTrue(FloraStatusEffects.JELLIE != null, "vinery:jellie effect exists");
+        helper.assertTrue(FloraStatusEffects.SUGAR_RUSH != null, "bakery:sugar_rush effect exists");
+        helper.assertTrue(FloraStatusEffects.INTOXICATION != null, "brewery:intoxication effect exists");
+        helper.assertTrue(FloraStatusEffects.WELL_SERVED != null, "candlelight:well_served effect exists");
+        helper.assertTrue(FloraStatusEffects.FARMERS_BLESSING != null, "farm_and_charm:farmers_blessing effect exists");
+        helper.assertTrue(FloraStatusEffects.LIFELEECH != null, "herbalbrews:lifeleech effect exists");
+        helper.succeed();
+    }
+
+    @GameTest
+    public void waterSprinklerHydration(GameTestHelper helper) {
+        var sprinklerPos = new net.minecraft.core.BlockPos(2, 2, 2);
+        var farmPos = new net.minecraft.core.BlockPos(2, 1, 3);
+
+        helper.setBlock(farmPos, net.minecraft.world.level.block.Blocks.FARMLAND.defaultBlockState().setValue(net.minecraft.world.level.block.state.properties.BlockStateProperties.MOISTURE, 0));
+        helper.assertTrue(helper.getBlockState(farmPos).getValue(net.minecraft.world.level.block.state.properties.BlockStateProperties.MOISTURE) == 0, "farmland starts dry");
+
+        dev.jmiahman.hearthwind.flora.blockentity.FarmMachineryBlockEntities.WaterSprinklerBlockEntity.hydrateArea(
+                helper.getLevel(), helper.absolutePos(sprinklerPos));
+
+        helper.assertTrue(helper.getBlockState(farmPos).getValue(net.minecraft.world.level.block.state.properties.BlockStateProperties.MOISTURE) == 7, "farmland was hydrated by sprinkler");
+        helper.succeed();
+    }
 }

@@ -77,6 +77,12 @@ public final class FarmAndCharmContent {
                 .sound(SoundType.STONE)
                 .strength(2.5f)));
         registerBlock("silo", SoundType.WOOD, 2.0f);
+        registerBlock("water_sprinkler", SoundType.METAL, 2.0f);
+        registerBlock("feeding_trough", SoundType.WOOD, 2.0f);
+        registerBlock("chicken_coop", SoundType.WOOD, 2.0f);
+        registerBlock("mincer", SoundType.METAL, 2.0f);
+        registerBlock("crafting_bowl", SoundType.WOOD, 1.0f);
+        registerBlock("scarecrow", SoundType.WOOD, 1.0f);
         registerBlock("roaster", SoundType.STONE, 2.5f);
         registerBlock("butter_churn", SoundType.WOOD, 2.0f);
         registerBlock("plow", SoundType.WOOD, 2.0f);

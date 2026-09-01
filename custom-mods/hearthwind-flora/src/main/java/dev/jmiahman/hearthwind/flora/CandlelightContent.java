@@ -47,6 +47,8 @@ public final class CandlelightContent {
 
         // Blocks
         registerBlock("cooking_pan", SoundType.METAL, 2.0f);
+        registerBlock("dinner_bell", SoundType.METAL, 2.0f);
+        registerBlock("table_set", SoundType.WOOD, 1.0f);
         registerBlock("cooking_pot", SoundType.METAL, 2.0f);
         registerBlock("side_table", SoundType.WOOD, 2.0f);
         registerBlock("chair", SoundType.WOOD, 2.0f);

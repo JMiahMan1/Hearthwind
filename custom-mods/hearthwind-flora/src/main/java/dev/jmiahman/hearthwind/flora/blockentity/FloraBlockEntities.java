@@ -7,6 +7,7 @@ import dev.jmiahman.hearthwind.flora.FarmAndCharmContent;
 import dev.jmiahman.hearthwind.flora.BreweryContent;
 import dev.jmiahman.hearthwind.flora.HerbalBrewsContent;
 import dev.jmiahman.hearthwind.flora.MeadowContent;
+import dev.jmiahman.hearthwind.flora.CandlelightContent;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
@@ -23,6 +24,11 @@ public final class FloraBlockEntities {
     public static BlockEntityType<TeaKettleBlockEntity> TEA_KETTLE;
     public static BlockEntityType<CheeseRackBlockEntity> CHEESE_RACK;
     public static BlockEntityType<StorageBlockEntity> STORAGE;
+
+    public static BlockEntityType<FarmMachineryBlockEntities.WaterSprinklerBlockEntity> SPRINKLER;
+    public static BlockEntityType<FarmMachineryBlockEntities.FeedingTroughBlockEntity> FEEDING_TROUGH;
+    public static BlockEntityType<FarmMachineryBlockEntities.ChickenCoopBlockEntity> CHICKEN_COOP;
+    public static BlockEntityType<FarmMachineryBlockEntities.DinnerBellBlockEntity> DINNER_BELL;
 
     public static void registerAll() {
         FERMENTATION_BARREL = register("vinery", "fermentation_barrel",
@@ -56,6 +62,22 @@ public final class FloraBlockEntities {
         STORAGE = register("vinery", "storage",
                 StorageBlockEntity::new,
                 VineryContent.BLOCKS.get("wine_box"));
+
+        SPRINKLER = register("farm_and_charm", "sprinkler",
+                FarmMachineryBlockEntities.WaterSprinklerBlockEntity::new,
+                FarmAndCharmContent.BLOCKS.get("water_sprinkler"));
+
+        FEEDING_TROUGH = register("farm_and_charm", "feeding_trough",
+                FarmMachineryBlockEntities.FeedingTroughBlockEntity::new,
+                FarmAndCharmContent.BLOCKS.get("feeding_trough"));
+
+        CHICKEN_COOP = register("farm_and_charm", "chicken_coop",
+                FarmMachineryBlockEntities.ChickenCoopBlockEntity::new,
+                FarmAndCharmContent.BLOCKS.get("chicken_coop"));
+
+        DINNER_BELL = register("candlelight", "dinner_bell",
+                FarmMachineryBlockEntities.DinnerBellBlockEntity::new,
+                CandlelightContent.BLOCKS.get("dinner_bell"));
     }
 
     private static <T extends net.minecraft.world.level.block.entity.BlockEntity> BlockEntityType<T> register(
