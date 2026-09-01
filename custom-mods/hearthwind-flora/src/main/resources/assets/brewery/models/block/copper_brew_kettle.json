@@ -2,5 +2,6 @@
   "parent": "minecraft:block/cube_all",
   "textures": {
     "all": "brewery:block/copper_brew_kettle"
-  }
+  },
+  "render_type": "minecraft:cutout"
 }

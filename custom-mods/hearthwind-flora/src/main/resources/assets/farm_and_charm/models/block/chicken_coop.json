@@ -1,3 +1,4 @@
 {
-  "parent": "farm_and_charm:block/chicken_coop_stage0"
+  "parent": "farm_and_charm:block/chicken_coop_stage0",
+  "render_type": "minecraft:cutout"
 }

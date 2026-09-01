@@ -152,5 +152,6 @@
         1
       ]
     }
-  ]
+  ],
+  "render_type": "minecraft:cutout"
 }

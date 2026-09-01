@@ -3,5 +3,6 @@
   "textures": {
     "0": "bakery:block/jar_sweetberry_jam",
     "particle": "bakery:block/jar_sweetberry_jam"
-  }
+  },
+  "render_type": "minecraft:cutout"
 }

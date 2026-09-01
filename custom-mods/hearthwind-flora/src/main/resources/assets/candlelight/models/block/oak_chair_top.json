@@ -1,5 +1,6 @@
 {
   "textures": {
     "particle": "candlelight:block/oak_cabinet_top"
-  }
+  },
+  "render_type": "minecraft:cutout"
 }

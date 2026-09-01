@@ -2,5 +2,6 @@
   "parent": "minecraft:block/cube_all",
   "textures": {
     "all": "meadow:block/pine_table"
-  }
+  },
+  "render_type": "minecraft:cutout"
 }

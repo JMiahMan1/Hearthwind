@@ -2,5 +2,6 @@
   "parent": "meadow:block/template_bed_head",
   "textures": {
     "bed": "meadow:entity/bed/warped"
-  }
+  },
+  "render_type": "minecraft:cutout"
 }

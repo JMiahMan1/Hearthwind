@@ -8,5 +8,6 @@
     "5": "meadow:block/pine_sofa_side",
     "6": "meadow:block/pine_sofa_warped_top",
     "particle": "meadow:block/pine_sofa_warped_front"
-  }
+  },
+  "render_type": "minecraft:cutout"
 }

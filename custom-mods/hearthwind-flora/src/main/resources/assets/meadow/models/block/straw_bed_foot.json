@@ -2,5 +2,6 @@
   "parent": "meadow:block/template_bed_foot",
   "textures": {
     "bed": "meadow:entity/bed/straw"
-  }
+  },
+  "render_type": "minecraft:cutout"
 }

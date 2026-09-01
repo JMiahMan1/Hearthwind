@@ -1,3 +1,4 @@
 {
-  "parent": "vinery:block/empty_red_vine"
+  "parent": "vinery:block/empty_red_vine",
+  "render_type": "minecraft:cutout"
 }

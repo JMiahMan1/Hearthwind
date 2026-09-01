@@ -3,5 +3,6 @@
   "textures": {
     "all": "farm_and_charm:block/roaster",
     "particle": "farm_and_charm:block/roaster"
-  }
+  },
+  "render_type": "minecraft:cutout"
 }

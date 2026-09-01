@@ -3,5 +3,6 @@
   "textures": {
     "4": "farm_and_charm:block/lettuce_stage1_1",
     "particle": "farm_and_charm:block/lettuce_stage1_1"
-  }
+  },
+  "render_type": "minecraft:cutout"
 }

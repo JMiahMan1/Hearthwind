@@ -2,5 +2,6 @@
   "parent": "minecraft:block/cube_all",
   "textures": {
     "all": "vinery:block/empty_red_vine"
-  }
+  },
+  "render_type": "minecraft:cutout"
 }

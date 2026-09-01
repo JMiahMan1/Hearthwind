@@ -651,5 +651,6 @@
         6
       ]
     }
-  ]
+  ],
+  "render_type": "minecraft:cutout"
 }

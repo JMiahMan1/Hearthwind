@@ -1,7 +1,8 @@
 {
-	"parent": "vinery:block/template_lattice",
-	"textures": {
-		"0": "vinery:block/lattice/jungle_lattice",
-		"particle": "vinery:block/lattice/jungle_lattice"
-	}
+  "parent": "vinery:block/template_lattice",
+  "textures": {
+    "0": "vinery:block/lattice/jungle_lattice",
+    "particle": "vinery:block/lattice/jungle_lattice"
+  },
+  "render_type": "minecraft:cutout"
 }

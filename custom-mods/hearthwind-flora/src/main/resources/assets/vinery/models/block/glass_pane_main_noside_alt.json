@@ -2,5 +2,6 @@
   "parent": "minecraft:block/template_glass_pane_noside_alt",
   "textures": {
     "pane": "vinery:block/window_main"
-  }
+  },
+  "render_type": "minecraft:cutout"
 }

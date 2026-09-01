@@ -13,5 +13,6 @@
     "19": "brewery:block/brewing_station/copper/copper_brewing_station_whistle_top",
     "20": "brewery:block/brewing_station/copper/copper_brewing_station_whistle_bottom",
     "particle": "brewery:block/brewing_station/copper/copper_brewing_station_inside_1"
-  }
+  },
+  "render_type": "minecraft:cutout"
 }

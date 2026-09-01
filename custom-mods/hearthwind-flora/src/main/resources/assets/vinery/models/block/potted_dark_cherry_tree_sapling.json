@@ -2,5 +2,6 @@
   "parent": "minecraft:block/cube_all",
   "textures": {
     "all": "vinery:block/potted_dark_cherry_tree_sapling"
-  }
+  },
+  "render_type": "minecraft:cutout"
 }

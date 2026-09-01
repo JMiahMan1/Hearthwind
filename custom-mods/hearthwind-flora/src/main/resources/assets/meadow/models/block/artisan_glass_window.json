@@ -5,5 +5,6 @@
     "particle": "meadow:block/artisan_glass_window_pane",
     "side": "meadow:block/artisan_glass_window_pane",
     "end": "meadow:block/ornate_glass_window_top"
-  }
+  },
+  "render_type": "minecraft:cutout"
 }

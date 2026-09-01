@@ -3,5 +3,6 @@
   "textures": {
     "4": "brewery:block/hops_top_stage3",
     "particle": "brewery:block/hops_top_stage3"
-  }
+  },
+  "render_type": "minecraft:cutout"
 }

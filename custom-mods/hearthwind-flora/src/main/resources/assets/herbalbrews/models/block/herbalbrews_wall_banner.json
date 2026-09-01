@@ -2,5 +2,6 @@
   "parent": "minecraft:block/cube_all",
   "textures": {
     "all": "herbalbrews:block/herbalbrews_wall_banner"
-  }
+  },
+  "render_type": "minecraft:cutout"
 }

@@ -5,5 +5,6 @@
     "1": "block/dirt",
     "2": "farm_and_charm:block/window_sill",
     "particle": "farm_and_charm:block/window_sill"
-  }
+  },
+  "render_type": "minecraft:cutout"
 }

@@ -2,5 +2,6 @@
   "parent": "minecraft:block/cross",
   "textures": {
     "cross": "farm_and_charm:block/wild_ribwort"
-  }
+  },
+  "render_type": "minecraft:cutout"
 }

@@ -5,5 +5,5 @@
     "particle": "minecraft:block/spruce_planks",
     "0": "minecraft:block/spruce_planks"
   },
-  "render_type": "translucent"
+  "render_type": "minecraft:cutout"
 }

@@ -2,5 +2,6 @@
   "parent": "minecraft:block/cube_all",
   "textures": {
     "all": "bakery:block/sweetberry_jam"
-  }
+  },
+  "render_type": "minecraft:cutout"
 }

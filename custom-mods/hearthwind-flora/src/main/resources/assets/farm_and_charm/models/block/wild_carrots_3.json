@@ -2,5 +2,6 @@
   "parent": "minecraft:block/crop",
   "textures": {
     "crop": "farm_and_charm:block/wild_carrots_3"
-  }
+  },
+  "render_type": "minecraft:cutout"
 }

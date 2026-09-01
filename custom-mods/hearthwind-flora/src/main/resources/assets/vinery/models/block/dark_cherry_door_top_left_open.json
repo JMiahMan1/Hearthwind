@@ -1,7 +1,8 @@
 {
-	"parent": "minecraft:block/door_top_left_open",
-	"textures": {
-		"top": "vinery:block/dark_cherry_door_top",
-		"bottom": "vinery:block/dark_cherry_door_top"
-	}
+  "parent": "minecraft:block/door_top_left_open",
+  "textures": {
+    "top": "vinery:block/dark_cherry_door_top",
+    "bottom": "vinery:block/dark_cherry_door_top"
+  },
+  "render_type": "minecraft:cutout"
 }

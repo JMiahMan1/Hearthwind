@@ -2,5 +2,6 @@
   "parent": "minecraft:block/flower_pot_cross",
   "textures": {
     "plant": "herbalbrews:block/wild_rooibos_plant"
-  }
+  },
+  "render_type": "minecraft:cutout"
 }

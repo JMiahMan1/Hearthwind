@@ -2,5 +2,6 @@
   "parent": "minecraft:block/cube_all",
   "textures": {
     "all": "brewery:block/beer_barrel"
-  }
+  },
+  "render_type": "minecraft:cutout"
 }

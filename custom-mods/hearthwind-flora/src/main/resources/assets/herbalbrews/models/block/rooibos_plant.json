@@ -2,5 +2,6 @@
   "parent": "minecraft:block/cube_all",
   "textures": {
     "all": "herbalbrews:block/rooibos_plant"
-  }
+  },
+  "render_type": "minecraft:cutout"
 }

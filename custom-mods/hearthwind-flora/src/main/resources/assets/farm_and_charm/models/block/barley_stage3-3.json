@@ -2,5 +2,6 @@
   "parent": "farm_and_charm:block/template_tall_crop",
   "textures": {
     "crop": "farm_and_charm:block/barley_stage3-3"
-  }
+  },
+  "render_type": "minecraft:cutout"
 }

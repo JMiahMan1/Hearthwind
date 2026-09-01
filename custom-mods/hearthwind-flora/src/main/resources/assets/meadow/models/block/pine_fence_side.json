@@ -2,5 +2,6 @@
   "parent": "minecraft:block/fence_side",
   "textures": {
     "texture": "meadow:block/reclaimed_pine_planks"
-  }
+  },
+  "render_type": "minecraft:cutout"
 }

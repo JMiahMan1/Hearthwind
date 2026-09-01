@@ -1,6 +1,7 @@
 {
-	"parent": "minecraft:block/cube_all",
-	"textures": {
-		"all": "vinery:block/dark_cherry_leaves_0"
-	}
+  "parent": "minecraft:block/cube_all",
+  "textures": {
+    "all": "vinery:block/dark_cherry_leaves_0"
+  },
+  "render_type": "minecraft:cutout_mipped"
 }

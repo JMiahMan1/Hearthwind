@@ -8,5 +8,6 @@
     "particle": "meadow:block/wooden_cauldron_side",
     "side": "meadow:block/wooden_cauldron_side",
     "content": "block/water_still"
-  }
+  },
+  "render_type": "minecraft:cutout"
 }

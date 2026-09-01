@@ -2,5 +2,6 @@
   "parent": "minecraft:block/cube_all",
   "textures": {
     "all": "meadow:block/roasted_buffalo_ham"
-  }
+  },
+  "render_type": "minecraft:cutout"
 }

@@ -2,5 +2,6 @@
   "parent": "minecraft:block/cube_all",
   "textures": {
     "all": "candlelight:block/painting"
-  }
+  },
+  "render_type": "minecraft:cutout"
 }

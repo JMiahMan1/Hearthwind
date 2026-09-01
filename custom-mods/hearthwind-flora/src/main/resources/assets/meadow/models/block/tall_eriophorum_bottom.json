@@ -2,5 +2,6 @@
   "parent": "minecraft:block/cross",
   "textures": {
     "cross": "meadow:block/tall_eriophorum_bottom"
-  }
+  },
+  "render_type": "minecraft:cutout"
 }

@@ -2,5 +2,6 @@
   "parent": "minecraft:block/cube_all",
   "textures": {
     "all": "candlelight:block/tomato_mozzarella_block"
-  }
+  },
+  "render_type": "minecraft:cutout"
 }

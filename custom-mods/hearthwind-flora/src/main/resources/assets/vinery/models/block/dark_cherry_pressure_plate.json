@@ -1,7 +1,8 @@
 {
-	"credit": "Made by Satisfy",
-	"parent": "minecraft:block/pressure_plate_up",
-	"textures": {
-		"texture": "vinery:block/dark_cherry_pressure_plate"
-	}
+  "credit": "Made by Satisfy",
+  "parent": "minecraft:block/pressure_plate_up",
+  "textures": {
+    "texture": "vinery:block/dark_cherry_pressure_plate"
+  },
+  "render_type": "minecraft:cutout"
 }

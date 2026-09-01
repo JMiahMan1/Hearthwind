@@ -2,5 +2,6 @@
   "parent": "minecraft:block/cube_all",
   "textures": {
     "all": "nethervinery:block/warped_grapevine_pot"
-  }
+  },
+  "render_type": "minecraft:cutout"
 }

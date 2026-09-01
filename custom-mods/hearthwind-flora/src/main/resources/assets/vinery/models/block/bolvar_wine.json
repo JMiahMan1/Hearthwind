@@ -1,7 +1,8 @@
 {
-	"parent": "vinery:block/template_small_wine_bottle",
-	"textures": {
-		"small_wine_bottle": "vinery:block/wine/bolvar_wine",
-		"particle": "vinery:block/wine/bolvar_wine"
-	}
+  "parent": "vinery:block/template_small_wine_bottle",
+  "textures": {
+    "small_wine_bottle": "vinery:block/wine/bolvar_wine",
+    "particle": "vinery:block/wine/bolvar_wine"
+  },
+  "render_type": "minecraft:cutout"
 }

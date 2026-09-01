@@ -2,5 +2,6 @@
   "parent": "minecraft:block/cube_all",
   "textures": {
     "all": "meadow:block/amethyst_cheese_wheel"
-  }
+  },
+  "render_type": "minecraft:cutout"
 }

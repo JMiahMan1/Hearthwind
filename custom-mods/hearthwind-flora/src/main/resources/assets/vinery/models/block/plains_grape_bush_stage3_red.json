@@ -2,5 +2,6 @@
   "parent": "minecraft:block/cross",
   "textures": {
     "cross": "vinery:block/plains_grape_bush_stage3_red"
-  }
+  },
+  "render_type": "minecraft:cutout"
 }

@@ -1,6 +1,7 @@
 {
-	"parent": "minecraft:block/cube_all",
-	"textures": {
-		"all": "vinery:block/grapevine_leaves"
-	}
+  "parent": "minecraft:block/cube_all",
+  "textures": {
+    "all": "vinery:block/grapevine_leaves"
+  },
+  "render_type": "minecraft:cutout_mipped"
 }

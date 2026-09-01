@@ -1,5 +1,6 @@
 {
-	"textures": {
-		"particle": "bakery:block/iron_chair"
-	}
+  "textures": {
+    "particle": "bakery:block/iron_chair"
+  },
+  "render_type": "minecraft:cutout"
 }

@@ -8,5 +8,6 @@
     "6": "meadow:block/pine_sofa_chambray_back",
     "7": "meadow:block/pine_sofa_chambray_top",
     "particle": "meadow:block/pine_sofa_chambray_front"
-  }
+  },
+  "render_type": "minecraft:cutout"
 }

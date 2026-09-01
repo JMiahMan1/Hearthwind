@@ -4,5 +4,6 @@
     "0": "farm_and_charm:block/jug",
     "tea": "farm_and_charm:block/ribwort_tea",
     "particle": "farm_and_charm:block/jug"
-  }
+  },
+  "render_type": "minecraft:cutout"
 }

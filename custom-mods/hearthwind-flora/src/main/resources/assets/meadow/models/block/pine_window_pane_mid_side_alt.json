@@ -3,5 +3,6 @@
   "textures": {
     "pane": "meadow:block/pine_window_pane_middle",
     "edge": "meadow:block/pine_window_pane_side"
-  }
+  },
+  "render_type": "minecraft:cutout"
 }

@@ -236,5 +236,6 @@
       }
     }
   ],
-  "display": {}
+  "display": {},
+  "render_type": "minecraft:cutout"
 }

@@ -2,5 +2,6 @@
   "parent": "minecraft:block/cross",
   "textures": {
     "cross": "meadow:block/small_fir_bottom"
-  }
+  },
+  "render_type": "minecraft:cutout"
 }

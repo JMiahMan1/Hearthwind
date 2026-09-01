@@ -2,5 +2,6 @@
   "parent": "minecraft:block/cube_all",
   "textures": {
     "all": "candlelight:block/beef_wellington_block"
-  }
+  },
+  "render_type": "minecraft:cutout"
 }

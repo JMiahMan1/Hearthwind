@@ -1,8 +1,9 @@
 {
-	"parent": "meadow:block/template_fray_carpet",
-	"textures": {
-		"1": "meadow:block/pine_sofa_tweed_back",
-		"2": "meadow:block/tweed_wool",
-		"particle": "meadow:block/tweed_wool"
-	}
+  "parent": "meadow:block/template_fray_carpet",
+  "textures": {
+    "1": "meadow:block/pine_sofa_tweed_back",
+    "2": "meadow:block/tweed_wool",
+    "particle": "meadow:block/tweed_wool"
+  },
+  "render_type": "minecraft:cutout"
 }

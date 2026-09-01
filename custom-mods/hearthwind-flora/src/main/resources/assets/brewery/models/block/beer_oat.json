@@ -4,5 +4,6 @@
     "0": "brewery:block/beer_mug",
     "1": "brewery:block/beer_oat",
     "particle": "brewery:block/beer_mug"
-  }
+  },
+  "render_type": "minecraft:cutout"
 }

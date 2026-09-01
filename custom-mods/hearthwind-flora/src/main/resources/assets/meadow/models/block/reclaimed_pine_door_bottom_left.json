@@ -3,5 +3,6 @@
   "textures": {
     "top": "meadow:block/reclaimed_pine_door_top",
     "bottom": "meadow:block/reclaimed_pine_door_bottom"
-  }
+  },
+  "render_type": "minecraft:cutout"
 }

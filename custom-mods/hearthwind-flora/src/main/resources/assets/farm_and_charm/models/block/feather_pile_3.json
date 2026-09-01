@@ -3,5 +3,6 @@
   "textures": {
     "0": "farm_and_charm:block/feather_pile_3",
     "particle": "farm_and_charm:block/feather_pile_3"
-  }
+  },
+  "render_type": "minecraft:cutout"
 }

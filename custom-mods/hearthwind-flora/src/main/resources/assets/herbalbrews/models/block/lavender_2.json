@@ -1,7 +1,7 @@
-
 {
   "parent": "minecraft:block/cross",
   "textures": {
     "cross": "herbalbrews:block/lavender"
-  }
+  },
+  "render_type": "minecraft:cutout"
 }

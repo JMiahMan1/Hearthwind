@@ -5,5 +5,5 @@
     "particle": "farm_and_charm:block/crafting_bowl",
     "0": "farm_and_charm:block/crafting_bowl"
   },
-  "render_type": "translucent"
+  "render_type": "minecraft:cutout"
 }

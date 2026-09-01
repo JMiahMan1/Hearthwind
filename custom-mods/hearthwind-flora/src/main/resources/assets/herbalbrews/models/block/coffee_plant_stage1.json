@@ -2,5 +2,6 @@
   "parent": "herbalbrews:block/template_cross_crop",
   "textures": {
     "cross": "herbalbrews:block/coffee_plant_stage1"
-  }
+  },
+  "render_type": "minecraft:cutout"
 }

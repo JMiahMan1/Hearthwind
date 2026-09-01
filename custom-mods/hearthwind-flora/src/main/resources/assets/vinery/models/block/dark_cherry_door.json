@@ -2,5 +2,6 @@
   "parent": "minecraft:block/cube_all",
   "textures": {
     "all": "vinery:block/dark_cherry_door"
-  }
+  },
+  "render_type": "minecraft:cutout"
 }

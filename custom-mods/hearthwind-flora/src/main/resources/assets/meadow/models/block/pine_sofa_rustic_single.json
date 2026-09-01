@@ -8,5 +8,6 @@
     "6": "meadow:block/pine_sofa_rustic_back",
     "7": "meadow:block/pine_sofa_rustic_top",
     "particle": "meadow:block/pine_sofa_rustic_front"
-  }
+  },
+  "render_type": "minecraft:cutout"
 }

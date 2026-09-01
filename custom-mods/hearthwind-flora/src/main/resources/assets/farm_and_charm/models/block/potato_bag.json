@@ -6,5 +6,6 @@
     "7": "farm_and_charm:block/bag_side",
     "8": "farm_and_charm:block/bag_top_potato",
     "particle": "farm_and_charm:block/bag_top_potato"
-  }
+  },
+  "render_type": "minecraft:cutout"
 }

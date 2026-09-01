@@ -1,5 +1,6 @@
 {
   "textures": {
     "particle": "minecraft:block/iron_bars"
-  }
+  },
+  "render_type": "minecraft:cutout"
 }

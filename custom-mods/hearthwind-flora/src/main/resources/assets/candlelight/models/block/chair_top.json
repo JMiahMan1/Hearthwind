@@ -1,5 +1,6 @@
 {
   "textures": {
     "particle": "candlelight:block/cabinet_front_closed"
-  }
+  },
+  "render_type": "minecraft:cutout"
 }

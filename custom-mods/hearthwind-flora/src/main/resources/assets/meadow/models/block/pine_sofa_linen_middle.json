@@ -6,5 +6,6 @@
     "9": "meadow:block/pine_table_middle",
     "12": "meadow:block/pine_sofa_side",
     "particle": "meadow:block/pine_sofa_linen_front"
-  }
+  },
+  "render_type": "minecraft:cutout"
 }
