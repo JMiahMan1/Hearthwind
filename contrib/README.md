@@ -63,6 +63,31 @@ This directory tracks third-party mods that are modified, ported, or maintained 
   - `conversion/vendored/medieval_buildings-fabric-1.2.0+26.2.jar`
   - `conversion/vendored/tru.e-ending-1.1.4d+26.2.jar`
 
+### 7. Rebuild pipeline (`contrib/port_tools/patched_rebuild.py`)
+
+Every mod above now has a **reproducible, offline-friendly rebuild**:
+
+1. `contrib/<mod>/build_*.sh` downloads the pinned upstream 26.1 jar from
+   Modrinth (cached under `contrib/port_tools/.upstream-cache/`).
+2. `patched_rebuild.py` unpacks it into a scratch git repo, applies
+   `contrib/<mod>/patches/26.2-port.patch` with `git apply --binary`
+   (the patch carries the compiled-class payloads for The Lost Castle's
+   `TLCProcessors`/`FoundationProcessor` - no upstream source build
+   needed, since upstream publishes no 26.x source branch), and repacks a
+   deterministic jar (sorted entries, fixed timestamps).
+3. Rebuilds are verified byte-identical, entry-for-entry, against the
+   shipped `conversion/vendored/` jars.
+
+Patch scope summary (verified by upstream-vs-ported jar diff):
+- **birds-boids**: `fabric.mod.json` only (version suffix, `minecraft: ~26.2`).
+- **medieval-buildings**: `fabric.mod.json` only (zero class changes).
+- **the-lost-castle**: `fabric.mod.json` + `TLCProcessors` (processor
+  registration Codec-lambda -> direct MapCodec in
+  `BuiltInRegistries.STRUCTURE_PROCESSOR`) + `FoundationProcessor`
+  (implements `StructureProcessor` with `mapCodec()`).
+- **true-ending**: byte-identical upstream repackage (datapack-style,
+  version-agnostic; no patch).
+
 ## Delivery Flow
 1. Contrib jars are built and placed into `conversion/vendored/`.
 2. `conversion/scripts/build_pack.py` bundles them into the distribution `.mrpack` metadata and `dist/server/mods/`.

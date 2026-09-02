@@ -1,0 +1,172 @@
+diff --git a/com/teamremastered/tlc/processors/FoundationProcessor.class b/com/teamremastered/tlc/processors/FoundationProcessor.class
+index efd6b3be1b8f768ebab99226875cf6c141848378..5ed01f94f7525842dba319f20be50d5925b03d3d 100644
+GIT binary patch
+delta 764
+zcmZ8fO-~b16g_V`?X=U^p-e}#v=nMV`+=6$50uubSc)I5t~9|-twW<w>>yO58`+S!
+z(gdFi690oyy8toa2e|Vm_(zEMHH{EvaqrE2=bU@rnfEuhX;pq7?Ck@npr%8COM}Yc
+zhKC`z+<4u{t~A=uvJajvH|-9Cr?}K!>XaB<$<!ksyzptzIsD*)t23g`C#Q877|;;p
+z7=+1S9E#K$o#!O6)@Uy}FM1MXDPeJ(z>s+CpAUH9GHI1C$1oz|t3PdwAf{oIV+?VI
+zxXAIi(0J9OA;EB8#I3olx?g<Yo4VU}7MnK1L{en=xXSQG773-85zMG;)qSo)sUXVg
+z+Ykd^U32W_`ugmOW49RFPKuW-A{GJ<#h5Q8-WeHjU_^y&{1ip=GrKJQn8Tx2bXxT)
+zM;22-ObvKY)Nu_Z4c9qt;AU43g_v4qctT6nJ`IM*$BKwqP0Dw~wv|@zF~r0dE4D!v
+zR2`@FY87#kRKReWVpy6W?=H=x-Z<3?Cg7o({szS})ES}7D7(`;VBe`=I7?9;qen|3
+zMKlSG_Mz$zXy1+?X+B`~_0t5(V3MMwBxsUC*`L`(AhZ9z^)Y{xDTzY_J%{ssLWHtL
+zU02wB92g1e(yKmDE+ao$W+QYQYLE@N|5wcSR-j40;9c0k$u2^BI0ft?+J$y_XZcux
+p0OWgfAy2h}3%E#G+E<|7B}`)mv(z!^>=x!QPxflJaTisD{{e6hXfyx-
+
+literal 6369
+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
+B!)5>g
+
+diff --git a/com/teamremastered/tlc/registries/TLCProcessors.class b/com/teamremastered/tlc/registries/TLCProcessors.class
+index e1f4b99d008cec8ea3c8b72840f81350de2db4a1..fd581352477caaab6201f2700165253677eaf9cf 100644
+GIT binary patch
+delta 251
+zcmaFNe}{wX)W2Q(7#JAb7>qY^O=4s;ojjLOe6lf%++=xXy~$Qg3)t8h)EF5QC*NUF
+z<mP11V9;b|(Bfgxo;-ummzOg*Gd(Y{q_ilNks)UCZ5Aaa8y~2C8&;Ogyv&lxoUBUq
+z42nQ~Oh8K*88{iV8RUSp4v@#hpbNx|46F=nKvEAVA`7G$fi$bub_T|cU=8{}5+u#Q
+zzzx)F09R_vzzh^)U=ZKLz%IluB)Ee?coT!<4hH!H462(M)DfDw7=%Gq^D~Gs2msA7
+J1hSbJi~tcGCJq1q
+
+literal 2019
+zcmb_d-BQ~|6#f<r!a`FVCv8Li8WNJ4v}KdD>7OVq2-7$*He(xlnOWq;h)7zGv?fE}
+zq3_bti)M1s2k7*fIz5t&v5iS*I=S%5d-m-4`Of*y{`JqBKLHd`F)@Kj0~rfbm}bZw
+ziX*{&5w>`B?@+p$VS2?2J-x~>Sy<Z5Vg^|QriEEp3_O&Y2VN-MNbGCwsz~xkw!BzJ
+zo{af=$Mbb5to0=fm+Ot%j?>tw6<=)Es!p+9uhtlDmd6<CT|2f7yvK0cRRPyh1d$9x
+ztYsvdT>CC}R2XX!>Uah@ijhP!$TM8oSDmmaw5P%s?MS&Yj#Xsh3f?#HfrSromEq2?
+z(@4gu6Okq_HD##1eNRS-p-2T45y-eLT)7rDw}n1ncvdK%K~<-8!<KzsvNV#{I2U#n
+z*Kpmy4GTAMi!i+)(E(f=WoP>|r<g+AtnO4c)*7X1Wf0WHi1Sw}@|)b3N7C=EEg5pE
+zRL9jFs+*QU+ZS5K$AoUcDW~p1-&5nbE$vy{#)5%67Vct^;rcLyX#<?rjbWx6a{^<l
+zFcQs>sy%Wz7N-GtyS-^Iofl<sA0HbiSXjaXh9?(**>8!MZ}uCdpDDwXQ{5;!40p?k
+zfj}K5jEH6A3E%rU?JB+{+Ky^U*Ul4@KDF=}mg%0Gh!}PYqosc*=rd&NUMmzy!5DrS
+zLG4|*SV<Ee!?U*|X0O@|nFJ4pxiSreN+;NpQA6zcB*~YREBswS@X@{}%;*D;n)lH~
+z4lnBW#8EPl$dNCCy{1?s{%g-&e8_N*VE^xeQDd&Ses8Lo^_29RUK;2Svz8Nv(@b1f
+zN)t~+drRsA)r@oadTtuuo5b56EPR#j)=fCrFi^Cxi63dUoJ|KWJW?+uFQ>th39&C+
+zt)gRw*<f(@_uxqBUFv##D#E5O<HfR4FFWlqb7p`CLl;xZ{;$KX%RyJ?4G+?<cj^e=
+zuX|cjk*rb}%E<9W9Lw0iGpf!xOva^Wpv-XV?W*)Db+Nz#6=8x1NX$saCw)2XCh!m$
+z`cH2ft&d2;>C5Ol_23V%-%^#wv?j-ZiO*@Zx(fILPiU9Lm;KAjm?R01KY@{-%U^np
+z%O{wBjgNjxEHNaOl7|$S!zJW$X3`WSPaNM!tpb@7-21h!-SunHYx+&!%R)~x`v#u?
+nzhnN)_^J9Nz9kbAu(3klB;Yj)?K`Z}?<q-4l9ccqTbTbBEO=Av
+
+diff --git a/fabric.mod.json b/fabric.mod.json
+index c30d8ba..7516ed7 100644
+--- a/fabric.mod.json
++++ b/fabric.mod.json
+@@ -1,35 +1,34 @@
+ {
+-    "schemaVersion": 1,
+-    "id": "tlc",
+-    "version": "2.1.1",
+-    "name": "The Lost Castle",
+-    "description": "Former structure of End Remastered, The Lost Castle introduces an enormous castle that you'll be able to find with the help of a map given by a journeyman cartographer.",
+-    "authors": [
+-        "Jack Bagel"
+-    ],
+-    "contact": {
+-        "homepage": "https://fabricmc.net/",
+-        "sources": "https://github.com/FabricMC/fabric-example-mod"
+-    },
+-    "license": "GNU LGPLv3",
+-    "icon": "tlc.png",
+-    "environment": "*",
+-    "entrypoints": {
+-        "main": [
+-            "com.teamremastered.tlc.TheLostCastleFabric"
+-        ]
+-    },
+-    "mixins": [
+-        "tlc.mixins.json"
+-    ],
+-    "depends": {
+-        "fabricloader": ">=0.19.2",
+-        "fabric-api": "*",
+-        "minecraft": "~26.1",
+-        "java": ">=25"
+-    },
+-    "suggests": {
+-        "another-mod": "*"
+-    }
+-}
+-  
+\ No newline at end of file
++  "schemaVersion": 1,
++  "id": "tlc",
++  "version": "2.1.1+26.2",
++  "name": "The Lost Castle",
++  "description": "Former structure of End Remastered, The Lost Castle introduces an enormous castle that you'll be able to find with the help of a map given by a journeyman cartographer.",
++  "authors": [
++    "Jack Bagel"
++  ],
++  "contact": {
++    "homepage": "https://fabricmc.net/",
++    "sources": "https://github.com/FabricMC/fabric-example-mod"
++  },
++  "license": "GNU LGPLv3",
++  "icon": "tlc.png",
++  "environment": "*",
++  "entrypoints": {
++    "main": [
++      "com.teamremastered.tlc.TheLostCastleFabric"
++    ]
++  },
++  "mixins": [
++    "tlc.mixins.json"
++  ],
++  "depends": {
++    "fabricloader": ">=0.19.2",
++    "fabric-api": "*",
++    "minecraft": "~26.2",
++    "java": ">=25"
++  },
++  "suggests": {
++    "another-mod": "*"
++  }
++}
+\ No newline at end of file
