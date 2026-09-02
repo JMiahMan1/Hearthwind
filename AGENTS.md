@@ -75,7 +75,8 @@ How far CI can go:
 cd custom-mods && bash tools/run_gametests.sh [--keep-server]
 # -> builds all modules, boots a throwaway 26.2 server, runs every @GameTest,
 #    prints "gametests: N/M passed", exits nonzero on failure
-#    (198 gametests green: survival + skills + jobs + primitive + world + flora + client)
+#    (204 server gametests green: survival + skills + jobs + primitive + world + flora + smallships;
+#    client gametests PASS: nutrients + screens tour + diet + mining gate arc + pack-server connect + biome temp)
 ```
 
 REAL-CLIENT gametests (fabric-client-gametest-api-v1, headless, no
