@@ -15,10 +15,10 @@ dev-client/
 conversion/deps/
 custom-mods/.gametest-cache/
 custom-mods/.gametest-server/
-.mixin.out/
-cache/
-config/
-logs/
+/custom-mods/.mixin.out/
+/custom-mods/cache/
+/custom-mods/config/
+/custom-mods/logs/
 custom-mods/eula.txt
 custom-mods/server.properties
 custom-mods/usercache.json
