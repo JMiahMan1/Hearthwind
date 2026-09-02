@@ -227,6 +227,15 @@ def main():
             for j in (ROOT / "custom-mods" / "smallships" / "build" / "libs").glob("smallships-26.2*.jar")
             if "sources" not in j.name and "javadoc" not in j.name
         ]
+        # In-house 26.2 ports of third-party mods (letsdo-* ports, villagesandpillages)
+        for mod in ("villagesandpillages", "letsdo-vinery", "letsdo-meadow", "letsdo-bakery",
+                    "letsdo-candlelight", "letsdo-brewery", "letsdo-herbalbrews",
+                    "letsdo-farm-and-charm"):
+            custom_jars += [
+                j
+                for j in (ROOT / "custom-mods" / mod / "build" / "libs").glob("*26.2*.jar")
+                if "sources" not in j.name and "javadoc" not in j.name
+            ]
         for j in custom_jars:
             is_client = "hearthwind-client" in str(j)
             target_dir = cdir / "mods" if is_client else sdir / "mods"
