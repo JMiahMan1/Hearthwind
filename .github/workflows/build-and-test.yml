@@ -47,9 +47,9 @@ jobs:
           retention-days: 14
 
   # Boot smoke test of a full pack server (mods + migrated datapack).
-  # Requires conversion artifacts; enable when resolve_deps is wired to CI.
+  # Also exercises live content probes: custom items and ship entities
+  # must construct server-side (summon + if-entity assertions).
   boot-smoke:
-    if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
@@ -90,7 +90,24 @@ jobs:
               if grep -q "Error upgrading chunk" boot.log; then
                 echo "FAIL: chunk feature upgrade error"; tail -50 boot.log; exit 1
               fi
-              echo "boot-smoke OK: Done + fresh-chunk forceload clean"
+              # Content probes: forceloaded block coords are 1000,1000 ->
+              # chunk 62,62. Summon a modded item + a ship entity inside the
+              # loaded chunk and assert existence via 'say' log markers
+              # (RCON alone cannot signal command failure).
+              python3 "$RCON" 127.0.0.1 25575 agedtest --connect-wait 60 \
+                "execute positioned 1000.0 80.0 1000.0 run summon item ~ ~ ~ {Item:{id:\"earlystage:rock\",count:1}}" \
+                "execute positioned 1000.0 80.0 1000.0 run execute if entity @e[type=item] run say PROBE_ITEM_OK" \
+                "execute positioned 1000.0 80.0 1000.0 run summon smallships:cog ~ ~ ~ {NoAI:1b}" \
+                "execute positioned 1000.0 80.0 1000.0 run execute if entity @e[type=smallships:cog] run say PROBE_COG_OK" \
+                "kill @e[type=item]" "kill @e[type=smallships:cog]"
+              sleep 2
+              if ! grep -q "PROBE_ITEM_OK" boot.log; then
+                echo "FAIL: earlystage:rock item probe did not assert"; tail -50 boot.log; exit 1
+              fi
+              if ! grep -q "PROBE_COG_OK" boot.log; then
+                echo "FAIL: smallships:cog entity probe did not assert"; tail -50 boot.log; exit 1
+              fi
+              echo "boot-smoke OK: Done + fresh-chunk forceload clean + content probes"
               exit 0
             fi
           done
@@ -142,10 +159,9 @@ jobs:
 
   # REAL client gametests under xvfb (fabric-client-gametest-api-v1): boots the
   # full client mod set with -Dfabric.client.gametest in a throwaway game dir,
-  # asserts the suite exits clean and screenshots were produced. Dispatch-only
-  # (software-GL rendering + first-run asset download are slow).
+  # asserts the suite exits clean and screenshots were produced. Runs on push
+  # (software-GL rendering; asset provisioning ~500MB per run).
   client-gametest:
-    if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:

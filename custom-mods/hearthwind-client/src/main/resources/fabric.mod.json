@@ -13,9 +13,14 @@
     "client": [
       "dev.jmiahman.hearthwind.client.HearthwindClient"
     ],
-    "fabric-client-gametest": [
-      "dev.jmiahman.hearthwind.client.gametest.HearthwindClientGameTests"
-    ]
+  "fabric-client-gametest": [
+    "dev.jmiahman.hearthwind.client.gametest.HearthwindClientGameTests",
+    "dev.jmiahman.hearthwind.client.gametest.ScreensTourGameTests",
+    "dev.jmiahman.hearthwind.client.gametest.DietGameTests",
+    "dev.jmiahman.hearthwind.client.gametest.MiningGameTests",
+    "dev.jmiahman.hearthwind.client.gametest.PackServerConnectGameTests",
+    "dev.jmiahman.hearthwind.client.gametest.BiomeTempGameTests"
+  ]
   },
   "depends": {
     "fabricloader": ">=0.19.3",

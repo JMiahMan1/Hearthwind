@@ -19,3 +19,11 @@ custom-mods/.gametest-server/
 cache/
 config/
 logs/
+custom-mods/eula.txt
+custom-mods/server.properties
+custom-mods/usercache.json
+custom-mods/ops.json
+custom-mods/whitelist.json
+custom-mods/banned-ips.json
+custom-mods/banned-players.json
+custom-mods/world/

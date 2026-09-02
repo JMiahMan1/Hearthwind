@@ -61,6 +61,13 @@ pauseOnLostFocus:false
 skipMultiplayerWarning:true
 EOF
 
+# Pre-agree the EULA for the gametest dedicated server. It runs with the
+# JVM's process cwd (NOT --gameDir), and owo-lib's Eula mixin falls back to
+# an interactive System.in prompt which the framework's 10s server-start
+# watchdog times out - so write eula.txt to BOTH places.
+printf 'eula=true\n' > "$WORK/eula.txt"
+printf 'eula=true\n' > ./eula.txt
+
 echo "== resolving minecraft classpath"
 CPINFO=$(CGT_TOOLS="$DIR" python3 - <<'PY'
 import os, sys

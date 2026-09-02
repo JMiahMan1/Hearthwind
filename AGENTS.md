@@ -78,6 +78,21 @@ cd custom-mods && bash tools/run_gametests.sh [--keep-server]
 #    (198 gametests green: survival + skills + jobs + primitive + world + flora + client)
 ```
 
+REAL-CLIENT gametests (fabric-client-gametest-api-v1, headless, no
+window/mouse takeover - runs under xvfb in docker or CI):
+
+```bash
+cd custom-mods && bash tools/run_client_gametests_docker.sh
+#    (or CGT_XVFB=1 bash tools/run_client_gametests.sh on linux)
+# -> one client boot, then every registered 'fabric-client-gametest'
+#    entrypoint class runs in sequence: nutrients screen, screens tour
+#    (inventory/N/K/J/P), diet loop (eat apple -> server nutrient assert),
+#    mining loop (job join -> mine -> skills+jobs XP asserts), dedicated
+#    pack-server connect (registry negotiation), desert temperature.
+#    Screenshots land in .tmp/shots/cgt/; exit code is the verdict.
+#    waitFor* TIMEOUTS ARE TICKS (20/s) - use minutes, not seconds.
+```
+
 Gotchas learned the hard way:
 
 - The maven `fabric-api` jar is THIN (no nested modules) - the runner
@@ -129,6 +144,17 @@ python3 ../custom-mods/tools/rcon.py 127.0.0.1 25575 agedtest "summon item ~ ~ ~
   alive for entity/effect checks.
 - Stale jars copied into `mods/` have caused false failures - after
   resource edits, REBUILD before recopying.
+- NEVER replace mod jars under a RUNNING server - lazy class loading then
+  reads a mix of old/new jar bytes; first touch of the swapped class dies
+  with `ExceptionInInitializerError` and every later use is poisoned
+  (`NoClassDefFoundError: Could not initialize class X`) until restart.
+  Restart the server after every jar deploy, then verify.
+- RCON probes: `/forceload add` takes BLOCK coords (chunk = coord/16,
+  logged as `Marked chunk [x, z]`); summon into unloaded chunks silently
+  discards the entity ("Summoned new X" prints anyway). Probe inside the
+  forceloaded chunk with `execute positioned <x> <y> <z> run ...`, and
+  assert existence via `execute if entity ... run say MARKER` + log grep
+  (the RCON protocol cannot signal command failure).
 - JDT/LSP phantom Java errors happen; gradle build is the authority.
 - RCON properties are the VANILLA names: `enable-rcon=true`,
   `rcon.port`, `rcon.password`. Fabric-style `rcon.enabled` lines are
