@@ -1,7 +1,0 @@
-{
-  "parent": "minecraft:block/cross",
-  "textures": {
-    "cross": "meadow:block/tall_eriophorum_top"
-  },
-  "render_type": "minecraft:cutout"
-}

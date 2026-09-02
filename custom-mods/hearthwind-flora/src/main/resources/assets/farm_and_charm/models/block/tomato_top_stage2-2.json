@@ -1,8 +1,0 @@
-{
-  "parent": "farm_and_charm:block/template_cross_crop",
-  "textures": {
-    "4": "farm_and_charm:block/tomato_top_stage2_2",
-    "particle": "farm_and_charm:block/tomato_top_stage2_2"
-  },
-  "render_type": "minecraft:cutout"
-}

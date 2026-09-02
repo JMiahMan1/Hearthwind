@@ -1,7 +1,0 @@
-{
-  "parent": "minecraft:block/cube_all",
-  "textures": {
-    "all": "bakery:block/apple_jam"
-  },
-  "render_type": "minecraft:cutout"
-}

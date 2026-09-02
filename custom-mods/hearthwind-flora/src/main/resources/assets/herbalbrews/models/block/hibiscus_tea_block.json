@@ -1,7 +1,0 @@
-{
-  "parent": "minecraft:block/cube_all",
-  "textures": {
-    "all": "herbalbrews:block/hibiscus_tea_block"
-  },
-  "render_type": "minecraft:cutout"
-}

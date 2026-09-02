@@ -1,8 +1,0 @@
-{
-  "parent": "farm_and_charm:block/template_cross_crop",
-  "textures": {
-    "4": "brewery:block/hops_top_stage0",
-    "particle": "brewery:block/hops_top_stage0"
-  },
-  "render_type": "minecraft:cutout"
-}

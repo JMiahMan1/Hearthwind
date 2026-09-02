@@ -1,7 +1,0 @@
-{
-  "parent": "minecraft:block/cube_all",
-  "textures": {
-    "all": "vinery:block/vinery_wall_standard"
-  },
-  "render_type": "minecraft:cutout"
-}

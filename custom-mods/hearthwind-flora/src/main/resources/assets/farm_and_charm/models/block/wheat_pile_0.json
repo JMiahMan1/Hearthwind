@@ -1,8 +1,0 @@
-{
-  "parent": "farm_and_charm:block/template_pile",
-  "textures": {
-    "0": "farm_and_charm:block/wheat_pile_0",
-    "particle": "farm_and_charm:block/wheat_pile_0"
-  },
-  "render_type": "minecraft:cutout"
-}

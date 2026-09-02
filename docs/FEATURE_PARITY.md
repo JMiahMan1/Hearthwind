@@ -23,7 +23,7 @@ over (with reason)
 | tiered | Random gear tiers | `data/tiered` 199 files | ✅ | 199 affixes + equipment reforge recipes loaded into `TierRegistry` |
 | fabric-seasons + seasonhud + crop-growth-modifier | Seasons & crops | `hearthwind-world`, `config/hearthwind_world.json` | ✅ | 18-day seasons, top-left SeasonHUD widget (`[Icon] Season, Day N/18`), 15 per-crop growth multipliers, winter snow layering |
 | revive | Downed & Revive | `ReviveManager`, `hearthwind-survival` | ✅ | 60s bleedout crawl state, call for help, 3s team revive channel |
-| let's do family | Agriculture suite | `hearthwind-flora` | ✅ | Farm & Charm, Vinery, Candlelight, Meadow, HerbalBrews, Brewery, Nether Vinery crops and stations |
+| let's do family | Agriculture suite | `letsdo-*` (external repo) | ✅ | Farm & Charm, Vinery, Candlelight, Meadow, HerbalBrews, Brewery, Nether Vinery crops and stations |
 
 ## Contrib Ports (Vendored 26.2 Builds)
 

@@ -1,9 +1,0 @@
-{
-  "parent": "meadow:block/template_fray_carpet",
-  "textures": {
-    "1": "meadow:block/pine_sofa_warped_back",
-    "2": "meadow:block/warped_wool",
-    "particle": "meadow:block/warped_wool"
-  },
-  "render_type": "minecraft:cutout"
-}

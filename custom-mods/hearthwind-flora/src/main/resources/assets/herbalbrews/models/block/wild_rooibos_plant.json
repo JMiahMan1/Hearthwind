@@ -1,7 +1,0 @@
-{
-  "parent": "minecraft:block/cross",
-  "textures": {
-    "cross": "herbalbrews:block/wild_rooibos_plant"
-  },
-  "render_type": "minecraft:cutout"
-}

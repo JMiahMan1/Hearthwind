@@ -1,7 +1,0 @@
-{
-  "parent": "minecraft:block/cube_all",
-  "textures": {
-    "all": "candlelight:block/pork_ribs_block"
-  },
-  "render_type": "minecraft:cutout"
-}

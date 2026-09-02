@@ -1,7 +1,0 @@
-{
-  "parent": "minecraft:block/cube_all",
-  "textures": {
-    "all": "meadow:block/cheese_tart"
-  },
-  "render_type": "minecraft:cutout"
-}

@@ -65,7 +65,7 @@ Eight optional professions (Miner, Farmer, Fisher, Warrior, Smither, Brewer, Bui
 
 ## Flora, Crops, Agriculture & Wildlife (Complete Aged Parity)
 
-- **Wild Crops & Farming (`hearthwind-flora` & Let's Do Family)**:
+- **Wild Crops & Farming (Let's Do Family, `letsdo-*`)**:
   - **Farm & Charm**: Wild Barley, Wild Corn, Wild Strawberries, Wild Onions, Wild Garlic scattered in Overworld biomes. Harvesting yields seeds and produce for flour, dough, oatmeal, ribs, and soup. Crafting stations (Silo, Roaster, Butter Churn, Plow, Supply Cart).
   - **Vinery**: Grape varieties (Red, White, Taiga, Savanna, Jungle) and seeds for wine making. Fermentation Barrels, Grapevine Pots, Apple Press, and Dark Cherry wood.
   - **Candlelight**: Tomatoes, Lettuce, Broccoli, and seeds. Cooking Pan and Pot for multi-ingredient meals (pasta, lasagna, beef tartare).

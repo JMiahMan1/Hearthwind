@@ -1,8 +1,0 @@
-{
-  "parent": "minecraft:block/inner_stairs",
-  "textures": {
-    "bottom": "meadow:block/reclaimed_pine_planks",
-    "top": "meadow:block/reclaimed_pine_planks",
-    "side": "meadow:block/reclaimed_pine_planks"
-  }
-}

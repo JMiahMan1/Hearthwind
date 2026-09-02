@@ -1,7 +1,0 @@
-{
-  "parent": "minecraft:block/cube_all",
-  "textures": {
-    "all": "candlelight:block/candlelight_wall_banner"
-  },
-  "render_type": "minecraft:cutout"
-}

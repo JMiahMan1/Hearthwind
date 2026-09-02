@@ -1,7 +1,0 @@
-{
-  "parent": "minecraft:block/cube_all",
-  "textures": {
-    "all": "meadow:block/cooking_frame"
-  },
-  "render_type": "minecraft:cutout"
-}

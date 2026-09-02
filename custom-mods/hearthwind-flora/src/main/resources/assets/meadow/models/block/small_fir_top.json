@@ -1,7 +1,0 @@
-{
-  "parent": "minecraft:block/cross",
-  "textures": {
-    "cross": "meadow:block/small_fir_top"
-  },
-  "render_type": "minecraft:cutout"
-}

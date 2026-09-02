@@ -1,7 +1,0 @@
-{
-  "parent": "minecraft:block/cube_all",
-  "textures": {
-    "all": "meadow:block/reclaimed_pine_door"
-  },
-  "render_type": "minecraft:cutout"
-}

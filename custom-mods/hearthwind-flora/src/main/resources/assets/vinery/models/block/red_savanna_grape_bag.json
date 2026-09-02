@@ -1,7 +1,0 @@
-{
-  "parent": "minecraft:block/cube_all",
-  "textures": {
-    "all": "vinery:block/red_savanna_grape_bag"
-  },
-  "render_type": "minecraft:cutout"
-}

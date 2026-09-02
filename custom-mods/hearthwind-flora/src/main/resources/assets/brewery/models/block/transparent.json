@@ -1,7 +1,0 @@
-{
-  "parent": "minecraft:block/cube_all",
-  "textures": {
-    "all": "brewery:block/transparent"
-  },
-  "render_type": "minecraft:cutout"
-}

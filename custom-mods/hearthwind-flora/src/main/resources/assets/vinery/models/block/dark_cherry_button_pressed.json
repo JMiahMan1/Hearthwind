@@ -1,8 +1,0 @@
-{
-  "credit": "Made by Satisfy",
-  "parent": "minecraft:block/button_pressed",
-  "textures": {
-    "texture": "vinery:block/dark_cherry_planks"
-  },
-  "render_type": "minecraft:cutout"
-}

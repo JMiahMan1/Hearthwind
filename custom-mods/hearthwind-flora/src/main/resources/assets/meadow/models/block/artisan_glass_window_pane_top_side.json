@@ -1,8 +1,0 @@
-{
-  "parent": "minecraft:block/template_glass_pane_side",
-  "textures": {
-    "pane": "meadow:block/artisan_glass_window_pane_top",
-    "edge": "meadow:block/artisan_glass_window_pane_side"
-  },
-  "render_type": "minecraft:cutout"
-}

@@ -1,7 +1,0 @@
-{
-  "parent": "farm_and_charm:block/template_tall_crop",
-  "textures": {
-    "crop": "farm_and_charm:block/oat_stage3_1"
-  },
-  "render_type": "minecraft:cutout"
-}

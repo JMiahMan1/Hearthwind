@@ -52,7 +52,7 @@ rm -rf "$SRV/mods" && mkdir -p "$SRV/mods"
 cp "$DIR/../../dev-server/mods/"*.jar "$SRV/mods/" 2>/dev/null || true
 cp "$DIR/../../conversion/vendored/"*.jar "$SRV/mods/" 2>/dev/null || true
 # Ensure fresh custom builds overwrite any stale jars
-find hearthwind-survival hearthwind-skills hearthwind-jobs hearthwind-primitive hearthwind-world hearthwind-flora hearthwind-client -name "*.jar" \
+find hearthwind-survival hearthwind-skills hearthwind-jobs hearthwind-primitive hearthwind-world hearthwind-client -name "*.jar" \
      -path "*build/libs/*" ! -name "*-sources.jar" -exec cp {} "$SRV/mods/" \;
 # Install gametest harness
 cp "$CACHE/fabric-gametest-api-v1.jar" "$SRV/mods/"

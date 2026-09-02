@@ -1,9 +1,0 @@
-{
-  "replace": false,
-  "values": [
-    {
-      "id": "#c:cooked_pork",
-      "required": false
-    }
-  ]
-}

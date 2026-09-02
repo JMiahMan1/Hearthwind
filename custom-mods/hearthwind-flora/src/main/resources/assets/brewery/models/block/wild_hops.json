@@ -1,7 +1,0 @@
-{
-  "parent": "minecraft:block/cross",
-  "textures": {
-    "cross": "brewery:block/wild_hops"
-  },
-  "render_type": "minecraft:cutout"
-}

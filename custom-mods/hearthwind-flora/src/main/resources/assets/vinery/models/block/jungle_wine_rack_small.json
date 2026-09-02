@@ -1,6 +1,0 @@
-{
-  "parent": "minecraft:block/cube_all",
-  "textures": {
-    "all": "vinery:block/jungle_wine_rack_small"
-  }
-}

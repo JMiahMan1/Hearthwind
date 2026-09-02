@@ -1,7 +1,0 @@
-{
-  "parent": "block/cube_all",
-  "textures": {
-    "all": "farm_and_charm:block/straw_stable_floor"
-  },
-  "render_type": "minecraft:cutout"
-}

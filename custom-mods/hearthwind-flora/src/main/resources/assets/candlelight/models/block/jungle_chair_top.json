@@ -1,6 +1,0 @@
-{
-  "textures": {
-    "particle": "candlelight:block/jungle_cabinet_side"
-  },
-  "render_type": "minecraft:cutout"
-}

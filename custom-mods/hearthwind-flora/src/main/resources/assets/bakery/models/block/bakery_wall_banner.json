@@ -1,7 +1,0 @@
-{
-  "parent": "minecraft:block/cube_all",
-  "textures": {
-    "all": "bakery:block/bakery_wall_banner"
-  },
-  "render_type": "minecraft:cutout"
-}

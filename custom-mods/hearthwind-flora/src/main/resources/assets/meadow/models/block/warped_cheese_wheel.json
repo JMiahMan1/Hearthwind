@@ -1,7 +1,0 @@
-{
-  "parent": "minecraft:block/cube_all",
-  "textures": {
-    "all": "meadow:block/warped_cheese_wheel"
-  },
-  "render_type": "minecraft:cutout"
-}

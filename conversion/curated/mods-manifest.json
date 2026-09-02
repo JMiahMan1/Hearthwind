@@ -662,63 +662,63 @@
       "slug": "do-api",
       "action": "rebuild",
       "reason": "Whole LetsDo family stuck (~1.21.1); food ambience not core loop; revisit when updated",
-      "note": "Rebuilt natively in hearthwind-flora module with zero-bloat 26.2 items, blocks, crops, and recipes"
+      "note": "Rebuilt natively in letsdo-* ports (external repo ../Hearthwind-flora) module with zero-bloat 26.2 items, blocks, crops, and recipes"
     },
     {
       "file": "letsdo-bakery",
       "slug": "lets-do-bakery",
       "action": "rebuild",
       "reason": "LetsDo family",
-      "note": "Rebuilt natively in hearthwind-flora module with zero-bloat 26.2 items, blocks, crops, and recipes"
+      "note": "Rebuilt natively in letsdo-* ports (external repo ../Hearthwind-flora) module with zero-bloat 26.2 items, blocks, crops, and recipes"
     },
     {
       "file": "letsdo-brewery",
       "slug": "lets-do-brewery",
       "action": "rebuild",
       "reason": "LetsDo family",
-      "note": "Rebuilt natively in hearthwind-flora module with zero-bloat 26.2 items, blocks, crops, and recipes"
+      "note": "Rebuilt natively in letsdo-* ports (external repo ../Hearthwind-flora) module with zero-bloat 26.2 items, blocks, crops, and recipes"
     },
     {
       "file": "letsdo-candlelight",
       "slug": "lets-do-candlelight",
       "action": "rebuild",
       "reason": "LetsDo family",
-      "note": "Rebuilt natively in hearthwind-flora module with zero-bloat 26.2 items, blocks, crops, and recipes"
+      "note": "Rebuilt natively in letsdo-* ports (external repo ../Hearthwind-flora) module with zero-bloat 26.2 items, blocks, crops, and recipes"
     },
     {
       "file": "letsdo-farm_and_charm",
       "slug": "lets-do-farm-charm",
       "action": "rebuild",
       "reason": "LetsDo family",
-      "note": "Rebuilt natively in hearthwind-flora module with zero-bloat 26.2 items, blocks, crops, and recipes"
+      "note": "Rebuilt natively in letsdo-* ports (external repo ../Hearthwind-flora) module with zero-bloat 26.2 items, blocks, crops, and recipes"
     },
     {
       "file": "letsdo-meadow",
       "slug": "lets-do-meadow",
       "action": "rebuild",
       "reason": "LetsDo family",
-      "note": "Rebuilt natively in hearthwind-flora module with zero-bloat 26.2 items, blocks, crops, and recipes"
+      "note": "Rebuilt natively in letsdo-* ports (external repo ../Hearthwind-flora) module with zero-bloat 26.2 items, blocks, crops, and recipes"
     },
     {
       "file": "letsdo-vinery",
       "slug": "lets-do-vinery",
       "action": "rebuild",
       "reason": "LetsDo family",
-      "note": "Rebuilt natively in hearthwind-flora module with zero-bloat 26.2 items, blocks, crops, and recipes"
+      "note": "Rebuilt natively in letsdo-* ports (external repo ../Hearthwind-flora) module with zero-bloat 26.2 items, blocks, crops, and recipes"
     },
     {
       "file": "letsdo-nethervinery",
       "slug": "create-nether-vinery",
       "action": "rebuild",
       "reason": "LetsDo family",
-      "note": "Rebuilt natively in hearthwind-flora module with zero-bloat 26.2 items, blocks, crops, and recipes"
+      "note": "Rebuilt natively in letsdo-* ports (external repo ../Hearthwind-flora) module with zero-bloat 26.2 items, blocks, crops, and recipes"
     },
     {
       "file": "letsdo-herbalbrews",
       "slug": "herbal-brews",
       "action": "rebuild",
       "reason": "LetsDo family",
-      "note": "Rebuilt natively in hearthwind-flora module with zero-bloat 26.2 items, blocks, crops, and recipes"
+      "note": "Rebuilt natively in letsdo-* ports (external repo ../Hearthwind-flora) module with zero-bloat 26.2 items, blocks, crops, and recipes"
     },
     {
       "file": "emi-letsdo-compat",

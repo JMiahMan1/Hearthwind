@@ -1,6 +1,0 @@
-{
-  "textures": {
-    "particle": "candlelight:block/bamboo_cabinet_top"
-  },
-  "render_type": "minecraft:cutout"
-}

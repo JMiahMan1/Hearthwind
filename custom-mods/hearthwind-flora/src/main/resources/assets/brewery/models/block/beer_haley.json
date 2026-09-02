@@ -1,9 +1,0 @@
-{
-  "parent": "brewery:block/template_beer_mug",
-  "textures": {
-    "0": "brewery:block/beer_haley",
-    "1": "brewery:block/beer_haley",
-    "particle": "brewery:block/beer_haley"
-  },
-  "render_type": "minecraft:cutout"
-}

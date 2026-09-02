@@ -1,7 +1,0 @@
-{
-  "parent": "minecraft:block/cross",
-  "textures": {
-    "cross": "meadow:block/saxifrage_1"
-  },
-  "render_type": "minecraft:cutout"
-}

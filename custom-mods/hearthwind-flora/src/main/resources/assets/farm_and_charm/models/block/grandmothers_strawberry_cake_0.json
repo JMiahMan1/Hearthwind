@@ -1,7 +1,0 @@
-{
-  "credit": "Made by Satisfy",
-  "textures": {
-    "particle": "farm_and_charm:block/grandmothers_strawberry_cake_bottom"
-  },
-  "render_type": "minecraft:cutout"
-}

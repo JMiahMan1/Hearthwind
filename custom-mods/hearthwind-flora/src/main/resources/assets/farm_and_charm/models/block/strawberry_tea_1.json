@@ -1,9 +1,0 @@
-{
-  "parent": "farm_and_charm:block/template_tea_stage1",
-  "textures": {
-    "0": "farm_and_charm:block/jug",
-    "tea": "farm_and_charm:block/strawberry_tea",
-    "particle": "farm_and_charm:block/jug"
-  },
-  "render_type": "minecraft:cutout"
-}

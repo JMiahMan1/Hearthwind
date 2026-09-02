@@ -1,6 +1,0 @@
-{
-  "parent": "minecraft:block/cube_all",
-  "textures": {
-    "all": "nethervinery:block/crimson_grapevine_pot"
-  }
-}

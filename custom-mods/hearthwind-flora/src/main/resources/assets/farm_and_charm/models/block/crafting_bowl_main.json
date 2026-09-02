@@ -1,7 +1,0 @@
-{
-  "credit": "Made by Satisfy",
-  "textures": {
-    "particle": "farm_and_charm:block/crafting_bowl"
-  },
-  "render_type": "minecraft:cutout"
-}

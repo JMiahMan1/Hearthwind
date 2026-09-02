@@ -1,6 +1,0 @@
-{
-  "textures": {
-    "particle": "candlelight:block/crimson_cabinet_side"
-  },
-  "render_type": "minecraft:cutout"
-}

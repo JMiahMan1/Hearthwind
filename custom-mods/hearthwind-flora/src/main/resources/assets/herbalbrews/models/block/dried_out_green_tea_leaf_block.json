@@ -1,6 +1,0 @@
-{
-  "parent": "minecraft:block/cube_all",
-  "textures": {
-    "all": "herbalbrews:block/dried_out_green_tea_leaf_block"
-  }
-}

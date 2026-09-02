@@ -1,8 +1,0 @@
-{
-  "credit": "Made by Satisfy",
-  "parent": "minecraft:block/cross",
-  "textures": {
-    "cross": "vinery:block/dark_cherry_sapling"
-  },
-  "render_type": "minecraft:cutout"
-}

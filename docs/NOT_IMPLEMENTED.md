@@ -25,7 +25,7 @@
    - `hearthwind-jobs`: Replaces `jobs-addon` (8 jobs, `/job` commands, job ladders, Age gating).
    - `hearthwind-primitive`: Replaces `earlystage`, `tiered`, `reciperemover` (sieve, knapping, surface rock/flint, equipment affixes).
    - `hearthwind-world`: Replaces `fabric-seasons`, `seasonhud`, `crop_growth_modifier`, `endrem`, `herdspanic`, `villager-transportation`.
-   - `hearthwind-flora`: In-house implementation of the Let's Do agriculture suite (Farm & Charm, Vinery, Candlelight, Meadow, HerbalBrews, Brewery, Nether Vinery crops, blocks, and recipes).
+   - `hearthwind-flora` (archived to `../Hearthwind-flora`): In-house implementation of the Let's Do agriculture suite (Farm & Charm, Vinery, Candlelight, Meadow, HerbalBrews, Brewery, Nether Vinery crops, blocks, and recipes). Replaced in-tree by `letsdo-*` ports.
 
 ---
 
