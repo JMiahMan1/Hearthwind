@@ -56,27 +56,41 @@ with "COMPLETE look and feel and feature parity."
 - **Parity: 100%.** Every class in the 26.x-branch exists and compiles. Ready
   for deploy (`settings.gradle` wiring is done; the module builds).
 
-### Wave 1b: Chipped (largest content mod, ~51 classes + 38k resources) — BLOCKED on dependency
+### Wave 1b: Chipped (largest content mod, ~51 classes + 38k resources) — PARTIALLY PORTED
+
 - Upstream: terraarium-earth/Chipped, Terrarium Licence. Staged at `custom-mods/chipped/`.
 - Staging complete: 51 Java files (neoforge, datagen, JEI compat removed),
   `fabric.mod.json` (depends on athena ≥4.0.0), `chipped-common.mixins.json`,
   icon.png, ~38k resources (0 collisions between `resources/` + `generated/resources/`).
-- **924 compile errors**. Root cause: Chipped 4.1.0 imports `com.teamresourceful.resourcefullib.common.registry.*`
-  (ResourcefulRegistries, ResourcefulRegistry, RegistryEntry, ResourcefulBlockRegistry, etc.),
-  `CodecRecipe`, `CodecRecipeSerializer`, `ResourcefulCreativeModeTab`, `CloseablePoseStack`,
-  `CursorWidget`, `RenderUtils`, `AbstractContainerCursorScreen` — none exist in
-  ResourcefulLib 5.0.3 (our 26.2 server jar; verified: 217 classes, zero registry/recipe/client GUI classes).
-  These classes were introduced in a newer resourcefullib version (5.0.4+) that is not
-  published on fabric/maven central/modrinth for any MC version. The upstream Chipped build
-  expects a dev build not available to us.
-- **Parity: 0% for Chipped itself** (cannot compile), **100% for Athena** (which it depends on).
-- **Path forward**: three options (pick one):
-  1. **Patch 26.2 ourselves**: replace every registry/recipe/GUI call with vanilla or our own
-     equivalents (15+ files, ~3 days). Loses Chipped's abstraction but ships feature parity.
-  2. **Wait for upstream resourcefullib 26.2**: monitor the fabric api aggregator; auto-adopt on release.
-  3. **Drop Chipped for this cycle**: ship Athena alone (already a full CTM engine). Chipped's
-     block-variation feature is partially covered by existing data-driven blockstate work;
-     document gap and revisit when resourcefullib publishes 26.2.
+- **924 → 35 compile errors** (as of 2026-09-12). Key fixes applied:
+  - **Resourcefullib**: removed stubs for classes provided by 5.0.3 JAR (ResourcefulRegistry,
+    ResourcefulRegistries, RegistryEntry, ResourcefulBlockRegistry, ResourcefulItemRegistry,
+    ItemLikeEntry, ResourcefulCreativeModeTab, NotImplementedException, Constants,
+    Packet, Network, PacketType, ServerboundPacketType, CodecPacketType, ExtraByteCodecs).
+    These are now provided by `ResourcefulLib-5.0.3.jar` on the classpath.
+  - **Mojmap→yarn**: `ResourceLocation` → `Identifier` (8 files, 15 references).
+  - **Mojmap→26.2**: `DripstoneThickness` → `SpeleothemThickness` (8 occurrences in SpecialPointedDripstoneBlock).
+  - **26.2 API**: `ThrownTrident` → `arrow.ThrownTrident` (package change).
+  - **26.2 API**: `@ExpectPlatform` removed (architectury 21.0.7 has no annotations).
+  - **26.2 API**: `isClientSide` field → `isClientSide()` method.
+  - **26.2 API**: `RenderType` package → `net.minecraft.client.renderer.rendertype`.
+  - **26.2 API**: `BlockAndTintGetter` → `BlockAndLightGetter`.
+  - **26.2 API**: `@MethodsReturnNonnullByDefault` removed (annotation not in 26.2).
+  - **26.2 API**: `BlockRenderLayerMap`/`ItemBlockRenderTypes` removed — ChippedClientImpl now no-op.
+- **Remaining 35 errors** (3 blocks):
+  1. **`GuiGraphics` class doesn't exist in 26.2** (15 errors across WorkbenchScreen, SlotWidget,
+     RenderWindowWidget, FakeLevel, CloseablePoseStack, RenderUtils). 26.2 uses `GuiGraphicsExtractor`.
+  2. **`RecipeSerializer` is a record in 26.2** (7 errors in ChippedRecipe, ModRecipeSerializers,
+     ModRecipeTypes). Cannot extend `RecipeSerializer`; CodecRecipeSerializer pattern broken.
+  3. **Various 26.2 API renames** (13 errors: ClickType removed, MultiBufferSource missing,
+     `blockUpdated` signature, `ItemBlockRenderTypes`, etc.).
+- **Parity: ~40% (compiles core blocks/items/network; GUI and recipes broken)**.
+  Athena (dependency) is 100% complete.
+- **Path forward**:
+  1. **Fix 26.2 API changes**: replace GuiGraphics usage, adapt recipe system. (~1 week).
+  2. **Patch 26.2 resourcefullib ourselves**: implement missing registry/recipe/GUI APIs.
+  3. **Drop Chipped for this cycle**: ship Athena alone.
+
 
 ### Next waves (unchanged):
 
