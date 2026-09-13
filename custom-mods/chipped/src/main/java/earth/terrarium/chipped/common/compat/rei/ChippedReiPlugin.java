@@ -16,7 +16,7 @@
 //import net.minecraft.client.Minecraft;
 //import net.minecraft.core.registries.BuiltInRegistries;
 //import net.minecraft.network.chat.Component;
-//import net.minecraft.resources.ResourceLocation;
+//import net.minecraft.resources.Identifier;
 //import net.minecraft.world.item.Item;
 //import net.minecraft.world.item.crafting.Ingredient;
 //import net.minecraft.world.item.crafting.RecipeManager;
@@ -94,7 +94,7 @@
 //                // Register the palette group for this base item.
 //                registry.group(
 //                    // Create a new resource location for this palette's REI group.
-//                    ResourceLocation.fromNamespaceAndPath(Chipped.MOD_ID, "palettes/"
+//                    Identifier.fromNamespaceAndPath(Chipped.MOD_ID, "palettes/"
 //                        + BuiltInRegistries.ITEM.getKey(baseItem).getPath()
 //                        + "/"
 //                        + paletteIndex

@@ -1,7 +1,6 @@
 package earth.terrarium.chipped.common.blocks;
 
 import com.google.common.annotations.VisibleForTesting;
-import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleOptions;
@@ -12,7 +11,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntitySelector;
 import net.minecraft.world.entity.item.FallingBlockEntity;
 import net.minecraft.world.entity.projectile.Projectile;
-import net.minecraft.world.entity.projectile.ThrownTrident;
+import net.minecraft.world.entity.projectile.arrow.ThrownTrident;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
@@ -24,7 +23,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
-import net.minecraft.world.level.block.state.properties.DripstoneThickness;
+import net.minecraft.world.level.block.state.properties.SpeleothemThickness;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
@@ -45,11 +44,9 @@ import java.util.Random;
 import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 
-@MethodsReturnNonnullByDefault
-@SuppressWarnings("deprecation")
 public class SpecialPointedDripstoneBlock extends Block implements Fallable, SimpleWaterloggedBlock {
     public static final EnumProperty<Direction> TIP_DIRECTION = BlockStateProperties.VERTICAL_DIRECTION;
-    public static final EnumProperty<DripstoneThickness> THICKNESS = BlockStateProperties.DRIPSTONE_THICKNESS;
+    public static final EnumProperty<SpeleothemThickness> THICKNESS = BlockStateProperties.SPELEOTHEM_THICKNESS;
     public static final BooleanProperty WATERLOGGED;
     private static final VoxelShape TIP_MERGE_SHAPE;
     private static final VoxelShape TIP_SHAPE_UP;
@@ -61,7 +58,7 @@ public class SpecialPointedDripstoneBlock extends Block implements Fallable, Sim
 
     public SpecialPointedDripstoneBlock(BlockBehaviour.Properties properties) {
         super(properties);
-        this.registerDefaultState(this.stateDefinition.any().setValue(TIP_DIRECTION, Direction.UP).setValue(THICKNESS, DripstoneThickness.TIP).setValue(WATERLOGGED, false));
+        this.registerDefaultState(this.stateDefinition.any().setValue(TIP_DIRECTION, Direction.UP).setValue(THICKNESS, SpeleothemThickness.TIP).setValue(WATERLOGGED, false));
     }
 
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
@@ -92,8 +89,8 @@ public class SpecialPointedDripstoneBlock extends Block implements Fallable, Sim
 
                 return state;
             } else {
-                boolean bl = state.getValue(THICKNESS) == DripstoneThickness.TIP_MERGE;
-                DripstoneThickness dripstoneThickness = calculateDripstoneThickness(level, currentPos, direction2, bl);
+                boolean bl = state.getValue(THICKNESS) == SpeleothemThickness.TIP_MERGE;
+                SpeleothemThickness dripstoneThickness = calculateSpeleothemThickness(level, currentPos, direction2, bl);
                 return state.setValue(THICKNESS, dripstoneThickness);
             }
         }
@@ -108,7 +105,7 @@ public class SpecialPointedDripstoneBlock extends Block implements Fallable, Sim
     }
 
     public void fallOn(Level level, BlockState state, BlockPos pos, Entity entity, float fallDistance) {
-        if (state.getValue(TIP_DIRECTION) == Direction.UP && state.getValue(THICKNESS) == DripstoneThickness.TIP) {
+        if (state.getValue(TIP_DIRECTION) == Direction.UP && state.getValue(THICKNESS) == SpeleothemThickness.TIP) {
             entity.causeFallDamage(fallDistance + 2.0F, 2.0F, level.damageSources().stalagmite());
         } else {
             super.fallOn(level, state, pos, entity, fallDistance);
@@ -191,7 +188,7 @@ public class SpecialPointedDripstoneBlock extends Block implements Fallable, Sim
             return null;
         } else {
             boolean bl = !context.isSecondaryUseActive();
-            DripstoneThickness dripstoneThickness = calculateDripstoneThickness(levelAccessor, blockPos, direction2, bl);
+            SpeleothemThickness dripstoneThickness = calculateSpeleothemThickness(levelAccessor, blockPos, direction2, bl);
             return dripstoneThickness == null ? null : this.defaultBlockState().setValue(TIP_DIRECTION, direction2).setValue(THICKNESS, dripstoneThickness).setValue(WATERLOGGED, levelAccessor.getFluidState(blockPos).getType() == Fluids.WATER);
         }
     }
@@ -206,19 +203,19 @@ public class SpecialPointedDripstoneBlock extends Block implements Fallable, Sim
     }
 
     public @NotNull VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
-        DripstoneThickness dripstoneThickness = state.getValue(THICKNESS);
+        SpeleothemThickness dripstoneThickness = state.getValue(THICKNESS);
         VoxelShape voxelShape;
-        if (dripstoneThickness == DripstoneThickness.TIP_MERGE) {
+        if (dripstoneThickness == SpeleothemThickness.TIP_MERGE) {
             voxelShape = TIP_MERGE_SHAPE;
-        } else if (dripstoneThickness == DripstoneThickness.TIP) {
+        } else if (dripstoneThickness == SpeleothemThickness.TIP) {
             if (state.getValue(TIP_DIRECTION) == Direction.DOWN) {
                 voxelShape = TIP_SHAPE_DOWN;
             } else {
                 voxelShape = TIP_SHAPE_UP;
             }
-        } else if (dripstoneThickness == DripstoneThickness.FRUSTUM) {
+        } else if (dripstoneThickness == SpeleothemThickness.FRUSTUM) {
             voxelShape = FRUSTUM_SHAPE;
-        } else if (dripstoneThickness == DripstoneThickness.MIDDLE) {
+        } else if (dripstoneThickness == SpeleothemThickness.MIDDLE) {
             voxelShape = MIDDLE_SHAPE;
         } else {
             voxelShape = BASE_SHAPE;
@@ -321,12 +318,12 @@ public class SpecialPointedDripstoneBlock extends Block implements Fallable, Sim
         if (isUnmergedTipWithDirection(blockState, direction.getOpposite())) {
             createMergedTips(blockState, server, blockPos);
         } else if (blockState.isAir() || blockState.is(Blocks.WATER)) {
-            createDripstone(server, blockPos, direction, DripstoneThickness.TIP);
+            createDripstone(server, blockPos, direction, SpeleothemThickness.TIP);
         }
 
     }
 
-    private static void createDripstone(LevelAccessor level, BlockPos pos, Direction direction, DripstoneThickness thickness) {
+    private static void createDripstone(LevelAccessor level, BlockPos pos, Direction direction, SpeleothemThickness thickness) {
         if (level.getBlockState(pos).getBlock() instanceof SpecialPointedDripstoneBlock block) {
             BlockState blockState = block.defaultBlockState().setValue(TIP_DIRECTION, direction).setValue(THICKNESS, thickness).setValue(WATERLOGGED, level.getFluidState(pos).getType() == Fluids.WATER);
             level.setBlock(pos, blockState, Block.UPDATE_ALL);
@@ -344,8 +341,8 @@ public class SpecialPointedDripstoneBlock extends Block implements Fallable, Sim
             blockPos = pos.below();
         }
 
-        createDripstone(level, blockPos2, Direction.DOWN, DripstoneThickness.TIP_MERGE);
-        createDripstone(level, blockPos, Direction.UP, DripstoneThickness.TIP_MERGE);
+        createDripstone(level, blockPos2, Direction.DOWN, SpeleothemThickness.TIP_MERGE);
+        createDripstone(level, blockPos, Direction.UP, SpeleothemThickness.TIP_MERGE);
     }
 
     @SuppressWarnings("deprecation")
@@ -386,26 +383,26 @@ public class SpecialPointedDripstoneBlock extends Block implements Fallable, Sim
         return direction;
     }
 
-    private static DripstoneThickness calculateDripstoneThickness(LevelReader level, BlockPos pos, Direction dir, boolean isTipMerge) {
+    private static SpeleothemThickness calculateSpeleothemThickness(LevelReader level, BlockPos pos, Direction dir, boolean isTipMerge) {
         Direction direction = dir.getOpposite();
         BlockState blockState = level.getBlockState(pos.relative(dir));
         if (isPointedDripstoneWithDirection(blockState, direction)) {
-            return !isTipMerge && blockState.getValue(THICKNESS) != DripstoneThickness.TIP_MERGE ? DripstoneThickness.TIP : DripstoneThickness.TIP_MERGE;
+            return !isTipMerge && blockState.getValue(THICKNESS) != SpeleothemThickness.TIP_MERGE ? SpeleothemThickness.TIP : SpeleothemThickness.TIP_MERGE;
         } else if (!isPointedDripstoneWithDirection(blockState, dir)) {
-            return DripstoneThickness.TIP;
+            return SpeleothemThickness.TIP;
         } else {
-            DripstoneThickness dripstoneThickness = blockState.getValue(THICKNESS);
-            if (dripstoneThickness != DripstoneThickness.TIP && dripstoneThickness != DripstoneThickness.TIP_MERGE) {
+            SpeleothemThickness dripstoneThickness = blockState.getValue(THICKNESS);
+            if (dripstoneThickness != SpeleothemThickness.TIP && dripstoneThickness != SpeleothemThickness.TIP_MERGE) {
                 BlockState blockState2 = level.getBlockState(pos.relative(direction));
-                return !isPointedDripstoneWithDirection(blockState2, dir) ? DripstoneThickness.BASE : DripstoneThickness.MIDDLE;
+                return !isPointedDripstoneWithDirection(blockState2, dir) ? SpeleothemThickness.BASE : SpeleothemThickness.MIDDLE;
             } else {
-                return DripstoneThickness.FRUSTUM;
+                return SpeleothemThickness.FRUSTUM;
             }
         }
     }
 
     public static boolean canDrip(BlockState state) {
-        return isStalactite(state) && state.getValue(THICKNESS) == DripstoneThickness.TIP && !(Boolean) state.getValue(WATERLOGGED);
+        return isStalactite(state) && state.getValue(THICKNESS) == SpeleothemThickness.TIP && !(Boolean) state.getValue(WATERLOGGED);
     }
 
     private static boolean canTipGrow(BlockState state, ServerLevel level, BlockPos pos) {
@@ -435,8 +432,8 @@ public class SpecialPointedDripstoneBlock extends Block implements Fallable, Sim
         if (!(state.getBlock() instanceof SpecialPointedDripstoneBlock)) {
             return false;
         } else {
-            DripstoneThickness dripstoneThickness = state.getValue(THICKNESS);
-            return dripstoneThickness == DripstoneThickness.TIP || isTipMerge && dripstoneThickness == DripstoneThickness.TIP_MERGE;
+            SpeleothemThickness dripstoneThickness = state.getValue(THICKNESS);
+            return dripstoneThickness == SpeleothemThickness.TIP || isTipMerge && dripstoneThickness == SpeleothemThickness.TIP_MERGE;
         }
     }
 

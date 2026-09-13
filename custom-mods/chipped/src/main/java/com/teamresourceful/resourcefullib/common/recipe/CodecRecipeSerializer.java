@@ -1,7 +1,9 @@
 package com.teamresourceful.resourcefullib.common.recipe;
 
-import net.minecraft.world.item.crafting.Recipe;
-import net.minecraft.world.item.crafting.RecipeSerializer;
+import com.mojang.serialization.MapCodec;
+import com.teamresourceful.bytecodecs.base.ByteCodec;
+import net.minecraft.world.item.crafting.RecipeType;
 
-public class CodecRecipeSerializer<T extends Recipe<?>> extends RecipeSerializer<T> {
+public class CodecRecipeSerializer<T> {
+    public CodecRecipeSerializer(RecipeType<T> type, MapCodec<T> codec, ByteCodec<T> networkCodec) {}
 }

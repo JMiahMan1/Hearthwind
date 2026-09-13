@@ -23,7 +23,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.worldgen.features.CaveFeatures;
 import net.minecraft.data.worldgen.features.TreeFeatures;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.ColorRGBA;
 import net.minecraft.world.entity.EntityType;
@@ -49,7 +49,7 @@ public class ModBlocks {
     public static final ResourcefulRegistry<Block> BLOCKS = ResourcefulRegistries.create(BuiltInRegistries.BLOCK, Chipped.MOD_ID);
     public static final ResourcefulBlockRegistry BENCHES = ResourcefulRegistries.createForBlocks(BLOCKS);
 
-    public static final TagKey<Block> SOUL_SAND_TAG = TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath(Chipped.MOD_ID, "soul_sand"));
+    public static final TagKey<Block> SOUL_SAND_TAG = TagKey.create(Registries.BLOCK, Identifier.fromNamespaceAndPath(Chipped.MOD_ID, "soul_sand"));
 
     public static final RegistryEntry<Block> BOTANIST_WORKBENCH = BENCHES.register("botanist_workbench", WorkbenchBlock::new, () -> BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_PLANKS).noOcclusion());
     public static final RegistryEntry<Block> GLASSBLOWER = BENCHES.register("glassblower", WorkbenchBlock::new, () -> BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_PLANKS).noOcclusion());

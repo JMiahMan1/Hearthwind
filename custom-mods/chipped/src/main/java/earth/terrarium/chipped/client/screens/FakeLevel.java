@@ -4,17 +4,14 @@ import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.teamresourceful.resourcefullib.common.exceptions.NotImplementedException;
-import dev.architectury.injectables.annotations.ExpectPlatform;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.block.BlockRenderDispatcher;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.level.BlockAndTintGetter;
+import net.minecraft.world.level.BlockAndLightGetter;
 import net.minecraft.world.level.ColorResolver;
 import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.level.block.Blocks;
@@ -28,7 +25,7 @@ import org.joml.Vector3f;
 import java.util.Objects;
 import java.util.Set;
 
-public class FakeLevel implements BlockAndTintGetter {
+public class FakeLevel implements BlockAndLightGetter {
     @Nullable
     private BlockState state;
     @Nullable
@@ -127,8 +124,6 @@ public class FakeLevel implements BlockAndTintGetter {
         Lighting.setupFor3DItems();
     }
 
-    @ExpectPlatform
     public static void renderBatched(BlockRenderDispatcher dispatcher, BlockState state, BlockPos pos, BlockAndTintGetter level, PoseStack poseStack, VertexConsumer consumer, boolean checkSides, RandomSource random, RenderType type) {
-        throw new NotImplementedException();
     }
 }

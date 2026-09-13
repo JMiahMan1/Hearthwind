@@ -9,7 +9,7 @@ import com.teamresourceful.resourcefullib.common.network.base.ServerboundPacketT
 import com.teamresourceful.resourcefullib.common.network.defaults.CodecPacketType;
 import earth.terrarium.chipped.Chipped;
 import earth.terrarium.chipped.common.menus.WorkbenchMenu;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
@@ -30,7 +30,7 @@ public record ServerboundCraftPacket(
 
         public Type() {
             super(
-                ResourceLocation.fromNamespaceAndPath(Chipped.MOD_ID, "craft"),
+                Identifier.fromNamespaceAndPath(Chipped.MOD_ID, "craft"),
                 ObjectByteCodec.create(
                     ExtraByteCodecs.ITEM_STACK.fieldOf(ServerboundCraftPacket::stack),
                     ByteCodec.BOOLEAN.fieldOf(ServerboundCraftPacket::replaceAll),

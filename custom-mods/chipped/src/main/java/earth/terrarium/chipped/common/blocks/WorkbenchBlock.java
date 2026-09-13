@@ -52,7 +52,7 @@ public class WorkbenchBlock extends HorizontalDirectionalBlock {
 
     @Override
     public @NotNull BlockState playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
-        if (level.isClientSide) {
+        if (level.isClientSide()) {
             super.playerWillDestroy(level, pos, state, player);
             return state;
         }
@@ -80,7 +80,7 @@ public class WorkbenchBlock extends HorizontalDirectionalBlock {
     @Override
     public void setPlacedBy(Level level, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
         super.setPlacedBy(level, pos, state, placer, stack);
-        if (!level.isClientSide) {
+        if (!level.isClientSide()) {
             BlockPos blockpos = pos.relative(state.getValue(FACING).getClockWise());
             level.setBlock(blockpos, state.setValue(MODEL_TYPE, WorkbenchModelType.SIDE), Block.UPDATE_ALL);
             level.blockUpdated(pos, Blocks.AIR);

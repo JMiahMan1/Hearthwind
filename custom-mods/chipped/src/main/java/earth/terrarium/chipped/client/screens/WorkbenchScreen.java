@@ -15,7 +15,7 @@ import net.minecraft.client.gui.layouts.GridLayout;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Inventory;
@@ -32,31 +32,31 @@ import java.util.List;
 import java.util.Objects;
 
 public class WorkbenchScreen extends AbstractContainerCursorScreen<WorkbenchMenu> {
-    private static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(Chipped.MOD_ID, "textures/gui/container/workbench.png");
+    private static final Identifier TEXTURE = Identifier.fromNamespaceAndPath(Chipped.MOD_ID, "textures/gui/container/workbench.png");
 
     public static final WidgetSprites SINGLE_BLOCK_BUTTON_SPRITES = new WidgetSprites(
-        ResourceLocation.fromNamespaceAndPath(Chipped.MOD_ID, "single_block_button"),
-        ResourceLocation.fromNamespaceAndPath(Chipped.MOD_ID, "single_block_button_highlighted")
+        Identifier.fromNamespaceAndPath(Chipped.MOD_ID, "single_block_button"),
+        Identifier.fromNamespaceAndPath(Chipped.MOD_ID, "single_block_button_highlighted")
     );
 
     public static final WidgetSprites HORIZONTAL_BLOCKS_BUTTON_SPRITES = new WidgetSprites(
-        ResourceLocation.fromNamespaceAndPath(Chipped.MOD_ID, "horizontal_blocks_button"),
-        ResourceLocation.fromNamespaceAndPath(Chipped.MOD_ID, "horizontal_blocks_button_highlighted")
+        Identifier.fromNamespaceAndPath(Chipped.MOD_ID, "horizontal_blocks_button"),
+        Identifier.fromNamespaceAndPath(Chipped.MOD_ID, "horizontal_blocks_button_highlighted")
     );
 
     public static final WidgetSprites VERTICAL_BLOCKS_BUTTON_SPRITES = new WidgetSprites(
-        ResourceLocation.fromNamespaceAndPath(Chipped.MOD_ID, "vertical_blocks_button"),
-        ResourceLocation.fromNamespaceAndPath(Chipped.MOD_ID, "vertical_blocks_button_highlighted")
+        Identifier.fromNamespaceAndPath(Chipped.MOD_ID, "vertical_blocks_button"),
+        Identifier.fromNamespaceAndPath(Chipped.MOD_ID, "vertical_blocks_button_highlighted")
     );
 
     public static final WidgetSprites TWO_BY_TWO_BUTTON_SPRITES = new WidgetSprites(
-        ResourceLocation.fromNamespaceAndPath(Chipped.MOD_ID, "two_by_two_button"),
-        ResourceLocation.fromNamespaceAndPath(Chipped.MOD_ID, "two_by_two_button_highlighted")
+        Identifier.fromNamespaceAndPath(Chipped.MOD_ID, "two_by_two_button"),
+        Identifier.fromNamespaceAndPath(Chipped.MOD_ID, "two_by_two_button_highlighted")
     );
 
     public static final WidgetSprites BUTTON_SPRITES = new WidgetSprites(
-        ResourceLocation.fromNamespaceAndPath(Chipped.MOD_ID, "button"),
-        ResourceLocation.fromNamespaceAndPath(Chipped.MOD_ID, "button_highlighted")
+        Identifier.fromNamespaceAndPath(Chipped.MOD_ID, "button"),
+        Identifier.fromNamespaceAndPath(Chipped.MOD_ID, "button_highlighted")
     );
 
     public static final int YELLOW = 0x70FFFF00;

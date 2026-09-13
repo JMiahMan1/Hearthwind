@@ -9,7 +9,7 @@ import com.teamresourceful.resourcefullib.common.registry.builtin.base.ItemLikeE
 import earth.terrarium.chipped.Chipped;
 import earth.terrarium.chipped.common.items.WorkbenchItem;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
@@ -22,7 +22,7 @@ public class ModItems {
     public static final ResourcefulItemRegistry BENCHES = ResourcefulRegistries.createForItems(ITEMS);
 
     public static final ResourcefulRegistry<CreativeModeTab> TABS = ResourcefulRegistries.create(BuiltInRegistries.CREATIVE_MODE_TAB, Chipped.MOD_ID);
-    public static final RegistryEntry<CreativeModeTab> TAB = TABS.register("main", () -> new ResourcefulCreativeModeTab(ResourceLocation.fromNamespaceAndPath(Chipped.MOD_ID, "main"))
+    public static final RegistryEntry<CreativeModeTab> TAB = TABS.register("main", () -> new ResourcefulCreativeModeTab(Identifier.fromNamespaceAndPath(Chipped.MOD_ID, "main"))
         .setItemIcon(() -> ModItems.BOTANIST_WORKBENCH.get())
         .addRegistry(ITEMS)
         .build());

@@ -1,10 +1,9 @@
 package earth.terrarium.chipped.client;
 
-import com.teamresourceful.resourcefullib.common.exceptions.NotImplementedException;
 import com.teamresourceful.resourcefullib.common.registry.ResourcefulRegistry;
-import dev.architectury.injectables.annotations.ExpectPlatform;
+import earth.terrarium.chipped.client.fabric.ChippedClientImpl;
 import earth.terrarium.chipped.common.registry.ModBlocks;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.world.level.block.Block;
 
 import java.util.function.Supplier;
@@ -115,11 +114,10 @@ public class ChippedClient {
     }
 
     private static void createSetRenderType(ResourcefulRegistry<Block> registry, RenderType type) {
-        registry.getEntries().forEach(b -> registerBlockRenderType(type, b));
+        registry.getEntries().forEach(b -> ChippedClientImpl.registerBlockRenderType(type, b));
     }
 
-    @ExpectPlatform
     public static void registerBlockRenderType(RenderType type, Supplier<Block> block) {
-        throw new NotImplementedException();
+        ChippedClientImpl.registerBlockRenderType(type, block);
     }
 }
