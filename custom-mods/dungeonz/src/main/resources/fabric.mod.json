@@ -1,1 +1,52 @@
-{"schemaVersion": 1, "id": "dungeonz", "version": "${version}", "name": "DungeonZ", "description": "This mod adds the basement for creating and exploring dungeons", "authors": ["Globox_Z", "Zura"], "license": "MIT", "icon": "assets/dungeonz/icon.png", "environment": "*", "entrypoints": {"main": ["net.dungeonz.DungeonzMain"], "client": ["net.dungeonz.DungeonzClient"], "modmenu": ["net.dungeonz.config.ModMenuIntegration"], "emi": ["net.dungeonz.compat.DungeonEmiPlugin"], "rei_client": ["net.dungeonz.compat.DungeonReiPlugin"]}, "mixins": ["dungeonz.mixins.json"], "depends": {"java": ">=21", "minecraft": ">=1.21.3", "fabric-api": "*", "fabricloader": ">=0.19.3"}, "custom": {"mc-publish": {"modrinth": "11jwniuC", "curseforge": 864150}}}
+{
+  "schemaVersion": 1,
+  "id": "dungeonz",
+  "version": "${version}",
+  "name": "DungeonZ",
+  "description": "This mod adds the basement for creating and exploring dungeons",
+  "authors": [
+    "Globox_Z",
+    "Zura"
+  ],
+  "contact": {
+    "homepage": "https://www.curseforge.com/minecraft/mc-mods/dungeonz",
+    "sources": "https://github.com/Globox1997/Dungeonz",
+    "issues": "https://github.com/Globox1997/Dungeonz/issues"
+  },
+  "license": "MIT",
+  "icon": "assets/dungeonz/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "net.dungeonz.DungeonzMain"
+    ],
+    "client": [
+      "net.dungeonz.DungeonzClient"
+    ],
+    "modmenu": [
+      "net.dungeonz.config.ModMenuIntegration"
+    ],
+    "emi": [
+      "net.dungeonz.compat.DungeonEmiPlugin"
+    ],
+    "rei_client": [
+      "net.dungeonz.compat.DungeonReiPlugin"
+    ]
+  },
+  "mixins": [
+    "dungeonz.mixins.json"
+  ],
+  "depends": {
+    "java": ">=21",
+    "minecraft": ">=1.21.3",
+    "fabric-api": "*",
+    "fabricloader": ">=0.19.3",
+    "cloth-config": "*"
+  },
+  "custom": {
+    "mc-publish": {
+      "modrinth": "11jwniuC",
+      "curseforge": 864150
+    }
+  }
+}

@@ -1,0 +1,36 @@
+# dungeonz 26.2 port patch
+# Upstream: Globox1997/Dungeonz dungeonz-1.3.0+1.21.1 (MIT) -> Hearthwind 26.2 Fabric-only staging baseline
+# Files: 1 modified (fabric metadata only); Java/assets are pristine upstream in this staging commit.
+# Staging maps upstream root (net/, assets/, fabric.mod.json, dungeonz.mixins.json, icon.png)
+# into the Gradle module layout (src/main/java, src/main/resources).
+# Baseline compile (when wired): ~2,942 errors, dominated by intermediary (class_*) names
+# that still must be mapped to 26.2 yarn.
+# Added files:
+#   + patches/26.2-port.patch
+# Removed files:
+#   (none yet; NeoForge/multiloader removals, if any, will be listed here)
+# Binary files (listed, content not embedded):
+#   (none changed yet)
+#
+--- unified diff (text files only) ---
+--- a/dungeonz-1.3.0/fabric.mod.json
++++ b/dungeonz/src/main/resources/fabric.mod.json
+@@ -38,14 +38,11 @@
+   ],
+   "depends": {
+     "java": ">=21",
+-    "minecraft": ">=${minecraft_version}",
+-    "fabric-api": ">=${fabric_version}",
+-    "fabricloader": ">=${loader_version}",
+-    "cloth-config2": ">=${cloth_config_version}"
++    "minecraft": ">=1.21.3",
++    "fabric-api": "*",
++    "fabricloader": ">=0.19.3",
++    "cloth-config": "*"
+   },
+-  "suggests": {
+-    "another-mod": "*"
+-  },
+   "custom": {
+     "mc-publish": {
+       "modrinth": "11jwniuC",
