@@ -14,7 +14,8 @@
 # This script only swaps files under <instance>/minecraft/mods/.
 
 set -u
-cd "$(dirname "$0")/.." || exit 1
+DIR="$(cd "$(dirname "$0")" && pwd)"
+cd "$DIR/.." || exit 1
 
 INST_ROOT="$HOME/Library/Application Support/PrismLauncher/instances"
 INSTANCES="Hearthwind-Full Hearthwind-Minimal Hearthwind-Dev-Client"
@@ -57,3 +58,12 @@ for moddir in hearthwind-* letsdo-* smallships villagesandpillages athena chippe
   done
 done
 echo "prism: $replaced updated, $added added, $skipped unbuilt"
+
+# Self-test every managed instance: entrypoints, mixins, and dependency
+# presence are verified statically so a bad deploy fails here, not at launch.
+fail=0
+for inst in $INSTANCES; do
+  python3 "$DIR/verify_prism.py" "$inst" || fail=1
+done
+[ "$fail" = 0 ] || { echo "prism verify FAILED"; exit 1; }
+echo "prism verify: all instances OK"

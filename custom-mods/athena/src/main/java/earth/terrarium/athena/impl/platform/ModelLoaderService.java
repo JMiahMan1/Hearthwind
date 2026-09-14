@@ -12,6 +12,8 @@ public interface ModelLoaderService {
     AthenaUnbakedModelLoader register(Identifier type, AthenaModelFactory factory);
 
     static ModelLoaderService create() {
-        throw new AssertionError("Failed to create ModelLoaderService, no implementation found");
+        // Fabric-only fork: architectury's @ExpectPlatform transformer is not
+        // on the classpath, so wire the Fabric implementation directly.
+        return new ModelLoaderServiceFabricImpl();
     }
 }

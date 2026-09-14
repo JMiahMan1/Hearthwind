@@ -56,6 +56,12 @@ with "COMPLETE look and feel and feature parity."
   DefaultModels, AthenaModelFactory, AthenaBakedModel, AthenaUnbakedModelLoader.
 - **Parity: 100%.** Every class in the 26.x-branch exists and compiles. Ready
   for deploy (`settings.gradle` wiring is done; the module builds).
+- **Live-test fix (2026-09-14)**: Prism client crashed at startup
+  (`ModelLoaderService.create()` AssertionError) — architectury's
+  `@ExpectPlatform` transformer is absent, so the Fabric-only fork now wires
+  `ModelLoaderServiceFabricImpl` directly. `tools/verify_prism.py` added and
+  hooked into `tools/update_prism.sh`: every refresh statically checks all
+  instance jars (entrypoints, mixin classes, dependency presence).
 
 ### Wave 1b: Chipped (largest content mod, ~51 classes + 38k resources) — DONE
 
