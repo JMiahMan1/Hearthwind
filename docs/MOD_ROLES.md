@@ -11,7 +11,8 @@ Status snapshot (resolver run against target `26.2`):
 
 | Disposition | Count | 26.2 status |
 |---|---|---|
-| keep | 50 | 34 resolve (`ok:exact`), 16 missing for target |
+| keep | 50 | 34 resolve (`ok:exact`), 16 missing for target;
+    athena and chipped now have working 26.2 ports |
 | rebuild (our modules/datapacks) | 15 | n/a - shipped or planned in-house |
 | client-optional | 7 | packaged for the client bundle only |
 | drop | 78 | not shipped (reasons below) |
@@ -130,11 +131,11 @@ Grouped:
   niche (Yungs/DnT/formations/hopo). De-kludge: count per need goes down.
 - **Let's Do family (all 12)**: food/crop ambience (bakery, brewery,
   vinery, candlelight, meadow, farm-charm, herbal-brews + do-api,
-  moonlight, athena). Duplicates diet/farming identity we own;
+  moonlight). Duplicates diet/farming identity we own;
   ~1.21.1-stuck. Farming depth comes from seasons + diet + jobs.
-- **Decor/transport bloat** (another-furniture, chipped,
-  barrels-bins-and-boxes, chalk-colorful-addon, connectible-chains,
-  villager-transportation, small-ships, ships, niftycarts,
+  **athena**: DONE (port compiles, boots); no longer blocks.
+- **Decor/transport bloat** (another-furniture, barrels-bins-and-boxes,
+  chalk-colorful-addon, connectible-chains, villager-transportation,
   immersive-aircraft, extended-drawers + addon, grass-overhaul):
   furniture/recipe-count inflation or tonal break (aircraft). Effect:
   tighter block palette, craft count stays meaningful.

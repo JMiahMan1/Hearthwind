@@ -2,14 +2,11 @@ package earth.terrarium.chipped.client.screens;
 
 import earth.terrarium.chipped.Chipped;
 import earth.terrarium.chipped.common.menus.WorkbenchMenu;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
-import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
@@ -34,23 +31,23 @@ public class SlotWidget extends AbstractWidget {
     }
 
     @Override
-    protected void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-        graphics.blit(RenderType::guiTextured, TEXTURE, getX(), getY(), 0, 0, 18, 18, 18, 18);
+    protected void extractWidgetRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
+        graphics.blit(net.minecraft.client.renderer.RenderPipelines.GUI_TEXT, TEXTURE, getX(), getY(), 0, 0, 18, 18, 18, 18);
 
         boolean isHighlighted = isMouseOver(mouseX, mouseY);
         if (isHighlighted) {
-            graphics.blitSprite(RenderType::guiTextured, SLOT_HIGHLIGHT_BACK_SPRITE, getX() + 1, getY() + 1, 24, 24);
+            graphics.blitSprite(net.minecraft.client.renderer.RenderPipelines.GUI_TEXT, SLOT_HIGHLIGHT_BACK_SPRITE, getX() + 1, getY() + 1, 24, 24);
         }
-        graphics.renderItem(stack, getX() + 1, getY() + 1);
-        if (isMouseOver(mouseX, mouseY)) {
-            graphics.blitSprite(RenderType::guiTextured, SLOT_HIGHLIGHT_FRONT_SPRITE, getX() + 1, getY() + 1, 24, 24);
+        graphics.item(stack, getX() + 1, getY() + 1);
+        if (isHighlighted) {
+            graphics.blitSprite(net.minecraft.client.renderer.RenderPipelines.GUI_TEXT, SLOT_HIGHLIGHT_FRONT_SPRITE, getX() + 1, getY() + 1, 24, 24);
         }
     }
 
-    public void renderTooltip(GuiGraphics graphics, Font font, int mouseX, int mouseY) {
+    public void renderTooltip(GuiGraphicsExtractor graphics, Font font, int mouseX, int mouseY) {
         if (isMouseOver(mouseX, mouseY)) {
             if (!stack.isEmpty()) {
-                graphics.renderTooltip(font, Screen.getTooltipFromItem(Minecraft.getInstance(), stack), stack.getTooltipImage(), mouseX, mouseY);
+                graphics.setTooltipForNextFrame(font, stack, mouseX, mouseY);
             }
         }
     }
@@ -64,11 +61,13 @@ public class SlotWidget extends AbstractWidget {
     protected void updateWidgetNarration(NarrationElementOutput narrationElementOutput) {}
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+    public boolean mouseClicked(MouseButtonEvent event, boolean inside) {
+        double mouseX = event.x();
+        double mouseY = event.y();
         if (this.isMouseOver(mouseX, mouseY)) {
             if (stack.isEmpty() || mouseY < minY || mouseY > maxY) return false;
             menu.setChosenStack(stack);
         }
-        return super.mouseClicked(mouseX, mouseY, button);
+        return super.mouseClicked(event, inside);
     }
 }

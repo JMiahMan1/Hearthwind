@@ -1,0 +1,38 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "net.dungeonz.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "MinecraftServerMixin",
+    "ServerPlayerEntityMixin",
+    "PlayerManagerMixin",
+    "PlayerEntityMixin",
+    "ServerPlayerInteractionManagerMixin",
+    "misc.MobEntityMixin",
+    "misc.ExplosionMixin",
+    "misc.EnderPearlEntityMixin",
+    "misc.WardenEntityMixin",
+    "misc.FallingBlockEntityMixin",
+    "block.VineBlockMixin",
+    "block.SaplingBlockMixin",
+    "block.AbstractPlantStemBlockMixin",
+    "block.SugarCaneBlockMixin",
+    "block.CropBlockMixin",
+    "block.BambooBlockMixin",
+    "block.StemBlockMixin",
+    "block.SpreadableBlockMixin",
+    "block.FireBlockMixin",
+    "block.CartographyTableBlockMixin",
+    "item.SpawnEggItemMixin",
+    "item.BoneMealItemMixin"
+  ],
+  "client": [
+    "client.MinecraftClientMixin",
+    "client.ClientPlayerEntityMixin",
+    "client.InGameHudMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

@@ -486,7 +486,7 @@ public class SpecialPointedDripstoneBlock extends Block implements Fallable, Sim
 
     private static Fluid getDripFluid(Level level, Fluid fluid) {
         if (fluid.isSame(Fluids.EMPTY)) {
-            return level.dimensionType().ultraWarm() ? Fluids.LAVA : Fluids.WATER;
+            return level.dimension() == Level.NETHER ? Fluids.LAVA : Fluids.WATER;
         } else {
             return fluid;
         }

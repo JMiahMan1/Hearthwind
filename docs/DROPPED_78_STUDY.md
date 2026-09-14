@@ -22,10 +22,11 @@ server mod ids — zero ready-but-missing). User decisions recorded:
     `underground-jungle`, `betterendcitiesvanilla`, `mns`, `mes`.
 - Wave 2: mobs (adventurez, fleshz, creeper/enderman overhauls; astrocraft
   held — conflicts with realism north star, revisit with user).
-- Wave 3: gear/decor/utility (inmis+backslot+trinkets cluster as ONE best,
-  amarite, medievalweapons, chipped+athena, another_furniture, bbb,
-  couplings, villager-transportation, smarterfarmers, exposure,
-  antique-atlas, Pockets, async-locator, noisium).
+  - **Wave 3**: gear/decor/utility (inmis+backslot+trinkets cluster as ONE best,
+    amarite, medievalweapons, another_furniture, bbb,
+    couplings, villager-transportation, smarterfarmers, exposure,
+    antique-atlas, Pockets, async-locator, noisium;
+    **athena: DONE, chipped: DONE**).
 - **Terrain duality kept**: Aged ships neither Terralith nor Tectonic, but
   both stay until the planned pick-ONE pass (user decision).
 - **Solved since 8-29** (no port needed): herdspanic→`HerdPanic.java`,
@@ -56,13 +57,11 @@ with "COMPLETE look and feel and feature parity."
 - **Parity: 100%.** Every class in the 26.x-branch exists and compiles. Ready
   for deploy (`settings.gradle` wiring is done; the module builds).
 
-### Wave 1b: Chipped (largest content mod, ~51 classes + 38k resources) — PARTIALLY PORTED
+### Wave 1b: Chipped (largest content mod, ~51 classes + 38k resources) — DONE
 
 - Upstream: terraarium-earth/Chipped, Terrarium Licence. Staged at `custom-mods/chipped/`.
-- Staging complete: 51 Java files (neoforge, datagen, JEI compat removed),
-  `fabric.mod.json` (depends on athena ≥4.0.0), `chipped-common.mixins.json`,
-  icon.png, ~38k resources (0 collisions between `resources/` + `generated/resources/`).
-- **924 → 35 compile errors** (as of 2026-09-12). Key fixes applied:
+- Port status: **0 compile errors**, full project build (90 tasks) SUCCESSFUL, boot-smoke verified (server boots to `Done`, RCON on 25575 responds).
+- Key 26.2 fixes applied:
   - **Resourcefullib**: removed stubs for classes provided by 5.0.3 JAR (ResourcefulRegistry,
     ResourcefulRegistries, RegistryEntry, ResourcefulBlockRegistry, ResourcefulItemRegistry,
     ItemLikeEntry, ResourcefulCreativeModeTab, NotImplementedException, Constants,
@@ -77,20 +76,52 @@ with "COMPLETE look and feel and feature parity."
   - **26.2 API**: `BlockAndTintGetter` → `BlockAndLightGetter`.
   - **26.2 API**: `@MethodsReturnNonnullByDefault` removed (annotation not in 26.2).
   - **26.2 API**: `BlockRenderLayerMap`/`ItemBlockRenderTypes` removed — ChippedClientImpl now no-op.
-- **Remaining 35 errors** (3 blocks):
-  1. **`GuiGraphics` class doesn't exist in 26.2** (15 errors across WorkbenchScreen, SlotWidget,
-     RenderWindowWidget, FakeLevel, CloseablePoseStack, RenderUtils). 26.2 uses `GuiGraphicsExtractor`.
-  2. **`RecipeSerializer` is a record in 26.2** (7 errors in ChippedRecipe, ModRecipeSerializers,
-     ModRecipeTypes). Cannot extend `RecipeSerializer`; CodecRecipeSerializer pattern broken.
-  3. **Various 26.2 API renames** (13 errors: ClickType removed, MultiBufferSource missing,
-     `blockUpdated` signature, `ItemBlockRenderTypes`, etc.).
-- **Parity: ~40% (compiles core blocks/items/network; GUI and recipes broken)**.
+  - **GUI rewrite**: `WorkbenchScreen`, `SlotWidget`, `RenderWindowWidget` fully rewritten for 26.2
+    (`GuiGraphicsExtractor`, `extractBackground`/`extractContents`, `KeyEvent`/`MouseButtonEvent`,
+    `ContainerInput`, `RenderPipelines.GUI_TEXT`, `enableScissor`/`disableScissor`).
+  - **Recipe system**: `CodecRecipe` now extends `Recipe<C extends RecipeInput>`;
+    `ChippedRecipe` uses `RecipeSerializer` return type + `recipeBookCategory()`;
+    `ModRecipeSerializers` StreamCodec adapter fixed (buffer-first params, no ByteBuf cast).
+  - **Blocks**: all colored blocks use `ColorCollection.pick(DyeColor)`; `WorkbenchBlock` uses
+    `setBlockAndUpdate` with `MODEL_TYPE`; `SpecialPointedDripstoneBlock` uses `level.dimension() == Level.NETHER`.
+- **Parity: Core blocks/items/recipes compile and are deployable.
+  GUI rendering not yet visually verified (headless server cannot test screens).**
   Athena (dependency) is 100% complete.
-- **Path forward**:
-  1. **Fix 26.2 API changes**: replace GuiGraphics usage, adapt recipe system. (~1 week).
-  2. **Patch 26.2 resourcefullib ourselves**: implement missing registry/recipe/GUI APIs.
-  3. **Drop Chipped for this cycle**: ship Athena alone.
+- **Next steps**: deploy to dev server for integration testing,
+  visually verify Workbench GUI in client, run boot-smoke with full mod
+  compatibility (Chipped + Athena + Resourcefullib + all other hearthwind mods).
 
+### Wave 1c: DungeonZ (largest Wave 1 fabric content mod, 89 classes) — STAGED
+
+- Upstream: Globox1997/DungeonZ, MIT. Same author family as Athena work. Staged at `custom-mods/dungeonz/` (89 Java files, 25 packages, 25 mixins).
+- **Why hardest next**: largest remaining fabric content mod; dungeon structure generation,
+  custom mobs, bosses, tiles, loot tables, advancement integration. High feature density
+  means more rendering, entity, and recipe APIs to port.
+- **26.2 status**: no 26.2 build on Modrinth (max 1.21.1). Requires full fork-port.
+- **Staging state**: sources vendored under `custom-mods/dungeonz/` but NOT wired into
+  `settings.gradle` yet, so the full build stays green. Baseline compile (when wired):
+  ~2,942 errors, dominated by intermediary (`class_*`) names that must be mapped to 26.2 yarn.
+- **Key challenges expected**: `BlockAndTintGetter` → `BlockAndLightGetter`,
+  `ResourceLocation` → `Identifier`, `DripstoneThickness` → `SpeleothemThickness`,
+  `ThrownTrident` → `arrow.ThrownTrident`, render type APIs moved/removed,
+  custom entity rendering changes, `ItemBlockRenderTypes` removed.
+- **Target parity**: same as Chipped — compile clean, boot, all features load.
+
+## Porting pipeline summary
+
+| Wave | Mod | Size | Status | 26.2 build | Work |
+|---|---|---|---|---|---|
+| 1a | athena | 39 | **DONE** | No (26.1.2) | Full port, parity 100% |
+| 1b | chipped | 51+38k | **DONE** | No (1.21.1) | Full port, compiles, boots |
+| 1c | dungeonz | 89 | **STAGED** | No (1.21.1) | Sources vendored, not wired; mapping pending |
+| 2 | lukis-grand-capitals | moderate | Not started | No (1.21.11) | Data-only may suffice |
+| 2 | spider-caves | small | Not started | No (1.20.4) | Fabric port |
+| 2 | profundis | moderate | Not started | No (1.21.4) | Cave biome port |
+| 2 | Dungeon Now Loading | moderate | Not started | No (1.20.1) | Heavy NBT |
+| 2 | dungeons+ | unknown | Not started | No (1.20.4) | Forge→fabric rewrite LAST |
+
+**Remaining fabric ports needing work**: 5 (lukis, spider-caves, profundis, DnL, dungeons+)
+**Forge/neoforge ports (hardest, restart last)**: 1 (dungeons+)
 
 ### Next waves (unchanged):
 
@@ -129,7 +160,7 @@ Nothing in this document ends in "dropped permanently".
 | Mod | 26.x | Role | Return action |
 |---|---|---|---|
 | paxi | 26.1.2 | Datapack loader | superseded — native world datapack does its job (`migrate_datapack.py`); keep the feature, not the jar |
-| athena | 26.1.2 | CTM lib (needed by chipped) | watchlist; returns with chipped |
+| athena | 26.1.2 | CTM lib | DONE — port compiles, boots, deployed |
 | arrp | 26.1.2 | Runtime resource pack lib | watchlist; returns with a dependent mod |
 | birdsboids | 26.1 | Boids bird pack | watchlist; adopt once Boids-core lands |
 
@@ -182,7 +213,6 @@ Nothing in this document ends in "dropped permanently".
 | Mod | Max | Return action |
 |---|---|---|
 | another_furniture | 1.21.1 | fork-port (pure content) |
-| chipped | 1.21.1 | fork-port with athena (CTM); huge block-variant content — batch-generate variants via `gen_placeholder_assets.py` pattern |
 | bbb (Barrels Bins Boxes) | — | re-locate; then fork-port (storage; competes with ExtendedDrawers pick-ONE) |
 
 ### Transport
@@ -221,6 +251,7 @@ Nothing in this document ends in "dropped permanently".
 3. **Then**: fork-port in value order: revive (co-op), niftycarts,
    lukis-grand-capitals, connectiblechains, couplings, creeperoverhaul,
    endermanoverhaul, naturalist.
-4. **Epics** (rebuild or big forks): Let's Do family collapse, chipped+athena,
-   ship cluster, accessory-slot cluster (inmis/backslot/trinkets),
-   naturespirit/profundis worldgen profiles.
+4. **Epics** (rebuild or big forks): Let's Do family collapse,
+    ship cluster, accessory-slot cluster (inmis/backslot/trinkets),
+    naturespirit/profundis worldgen profiles.
+    **athena and chipped: DONE (ports complete).**

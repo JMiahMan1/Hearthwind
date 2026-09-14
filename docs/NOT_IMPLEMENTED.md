@@ -44,7 +44,6 @@ The remaining upstream mods from Aged are tracked for 26.2 inclusion as ports or
 - `trinkets`, `backslot`, `inmis`: Accessory and backpack systems.
 - `antique-atlas`: In-game antique cartography atlas.
 - `exposure`: Photography and image development.
-- `chipped`: Decorative stone/wood variant crafting.
 - `connectible-chains`, `barrels-bins-and-boxes`, `sushi-bar`, `grass-overhaul`, `fleshz`, `amarite`, `smitherz`, `travelerz`, `astrocraft`, `time-and-wind`.
 
 ---

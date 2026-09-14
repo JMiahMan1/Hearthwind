@@ -154,6 +154,6 @@ Eight optional professions (Miner, Farmer, Fisher, Warrior, Smither, Brewer, Bui
 ### 26.2 Port Status
 - Verified 2026-09-11: `./gradlew build` green; server gametests **257/257 passed** (container); client gametests **PASS** (container, 14 screenshots).
 - `letsdo-*` family builds green in-tree (candlelight/meadow API errors resolved since the last audit).
-- Wave-1 contrib ports (2026-09-12): Athena done (0 compile errors, all 39 classes + CTM rendering complete, `settings.gradle` wired, ready for deploy). Chipped: staged (51 classes + 38k resources, 0 resource collisions) but **blocked** — depends on resourcefullib 5.0.x+ which is not published on fabric/maven central/modrinth for any MC version. 924 compile errors from missing registry/recipe/GUI classes. Options: (1) patch 26.2 ourselves (~3 days, loses abstraction), (2) wait for upstream, (3) drop for this cycle (Athena alone is a full CTM engine). See `docs/DROPPED_78_STUDY.md`.
+- Wave-1 contrib ports (2026-09-12): Athena done (0 compile errors, all 39 classes + CTM rendering complete, `settings.gradle` wired, ready for deploy). Chipped done (0 compile errors, full build successful, boot-smoke verified: server boots to `Done`, RCON responds).
 - Mechanical Age (Create wind/water wheels, smithing 18 / builder 3 preview): not started - Create is not in the pack yet, so there is nothing to gate.
 

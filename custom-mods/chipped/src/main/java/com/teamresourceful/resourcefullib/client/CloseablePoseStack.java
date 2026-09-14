@@ -1,14 +1,9 @@
 package com.teamresourceful.resourcefullib.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.gui.GuiGraphics;
 
 public class CloseablePoseStack implements AutoCloseable {
     private final PoseStack pose;
-
-    public CloseablePoseStack(GuiGraphics graphics) {
-        this.pose = graphics.pose();
-    }
 
     public CloseablePoseStack(PoseStack pose) {
         this.pose = pose;
@@ -36,6 +31,6 @@ public class CloseablePoseStack implements AutoCloseable {
 
     @Override
     public void close() {
-        // no-op: pose stack is managed by GuiGraphics
+        // no-op: pose stack managed externally
     }
 }

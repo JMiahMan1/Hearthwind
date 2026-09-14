@@ -6,7 +6,6 @@ import com.teamresourceful.bytecodecs.base.ByteCodec;
 import com.teamresourceful.bytecodecs.base.object.ObjectByteCodec;
 import com.teamresourceful.resourcefullib.common.bytecodecs.ExtraByteCodecs;
 import com.teamresourceful.resourcefullib.common.recipe.CodecRecipe;
-import com.teamresourceful.resourcefullib.common.recipe.CodecRecipeSerializer;
 import earth.terrarium.chipped.common.registry.ModRecipeSerializers;
 import earth.terrarium.chipped.common.registry.ModRecipeTypes;
 import net.minecraft.core.HolderLookup;
@@ -55,17 +54,22 @@ public record ChippedRecipe(
     }
 
     @Override
-    public @NotNull CodecRecipeSerializer<? extends Recipe<RecipeInput>> getSerializer() {
-        return null;
+    public @NotNull RecipeSerializer<? extends Recipe<RecipeInput>> getSerializer() {
+        return ModRecipeSerializers.WORKBENCH.get();
     }
 
     @Override
     public RecipeType<? extends Recipe<RecipeInput>> getType() {
-        return null;
+        return ModRecipeTypes.WORKBENCH.get();
     }
 
     @Override
     public @NotNull PlacementInfo placementInfo() {
         return PlacementInfo.NOT_PLACEABLE;
+    }
+
+    @Override
+    public @NotNull RecipeBookCategory recipeBookCategory() {
+        return new RecipeBookCategory();
     }
 }

@@ -1,16 +1,13 @@
 package earth.terrarium.chipped.client.screens.fabric;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
-import net.minecraft.client.renderer.rendertype.RenderType;
-import net.minecraft.client.renderer.block.BlockRenderDispatcher;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.BlockAndLightGetter;
 import net.minecraft.world.level.block.state.BlockState;
 
 public class FakeLevelImpl {
-    public static void renderBatched(BlockRenderDispatcher dispatcher, BlockState state, BlockPos pos, BlockAndLightGetter level, PoseStack poseStack, VertexConsumer consumer, boolean checkSides, RandomSource random, RenderType type) {
-        dispatcher.renderBatched(state, pos, level, poseStack, consumer, checkSides, random);
+    public static void renderBatched(BlockPos pos, BlockState state, BlockAndLightGetter level, PoseStack poseStack, RandomSource random) {
+        // 26.2: block rendering pipeline reworked; no-op for compile
     }
 }

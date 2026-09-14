@@ -176,8 +176,8 @@ in-game HUD is not FancyMenu. Our HUD is therefore the right architecture.
    sight is required, at most `max_count` blocks of one type contribute
    (campfire max_count 2), and the value falls off with distance
    (campfire +3 / +2 / +1). Being enclosed adds `roomHeatFactor` × the heat
-   sum, so fires indoors matter far more. Chipped-compat entries (~97% of
-   the corpus) are skipped since we don't ship Chipped.
+sum, so fires indoors matter far more. Chipped-compat entries (~97% of
+    the corpus) are skipped since Chipped is now ported but not yet in the pack.
    Two **deliberate deviations**, recorded here so they are choices and not
    accidents: our body temperature drifts toward a continuous biome target
    (Aged accumulates integer deltas against band-quantised rows), and the

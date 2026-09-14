@@ -1,25 +1,28 @@
 package earth.terrarium.chipped.client.screens;
 
-import com.teamresourceful.resourcefullib.client.screens.AbstractContainerCursorScreen;
 import com.teamresourceful.resourcefullib.client.utils.RenderUtils;
 import earth.terrarium.chipped.Chipped;
 import earth.terrarium.chipped.common.menus.WorkbenchMenu;
 import earth.terrarium.chipped.common.network.NetworkHandler;
 import earth.terrarium.chipped.common.network.ServerboundCraftPacket;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.components.WidgetSprites;
 import net.minecraft.client.gui.layouts.GridLayout;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
@@ -31,7 +34,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class WorkbenchScreen extends AbstractContainerCursorScreen<WorkbenchMenu> {
+public class WorkbenchScreen extends AbstractContainerScreen<WorkbenchMenu> {
     private static final Identifier TEXTURE = Identifier.fromNamespaceAndPath(Chipped.MOD_ID, "textures/gui/container/workbench.png");
 
     public static final WidgetSprites SINGLE_BLOCK_BUTTON_SPRITES = new WidgetSprites(
@@ -80,9 +83,7 @@ public class WorkbenchScreen extends AbstractContainerCursorScreen<WorkbenchMenu
     protected RenderWindowWidget.Mode mode = RenderWindowWidget.Mode.TWO_BY_TWO;
 
     public WorkbenchScreen(WorkbenchMenu container, Inventory inventory, Component title) {
-        super(container, inventory, title);
-        this.imageWidth = 256;
-        this.imageHeight = 256;
+        super(container, inventory, title, 256, 256);
         this.titleLabelX = 88;
         this.titleLabelY = 14;
         this.inventoryLabelY = 155;
@@ -147,7 +148,7 @@ public class WorkbenchScreen extends AbstractContainerCursorScreen<WorkbenchMenu
             for (int j = 0; j < rows; j++) {
                 int index = i + j * 9;
                 var stack = results.size() > index ? results.get(index) : ItemStack.EMPTY;
-                SlotWidget slot = addWidget(new SlotWidget(stack, menu, top + 40, top + 141));
+                SlotWidget slot = addRenderableWidget(new SlotWidget(stack, menu, top + 40, top + 141));
                 grid.addChild(slot, j, i);
                 slotWidgets.add(slot);
             }
@@ -156,21 +157,21 @@ public class WorkbenchScreen extends AbstractContainerCursorScreen<WorkbenchMenu
     }
 
     @Override
-    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-        super.render(graphics, mouseX, mouseY, partialTick);
-        renderTooltip(graphics, mouseX, mouseY);
+    public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
+        super.extractRenderState(graphics, mouseX, mouseY, partialTick);
     }
 
     @Override
-    public void renderBackground(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-        super.renderBackground(graphics, mouseX, mouseY, partialTick);
+    public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
         int left = (width - imageWidth) / 2;
         int top = (height - imageHeight) / 2;
-        grid.setY(top + 41 - (int) scrollAmount);
-        try (var ignored = RenderUtils.createScissorBox(Objects.requireNonNull(minecraft), graphics.pose(), left + 84, top + 40, 163, 109)) {
+        graphics.enableScissor(left + 84, top + 40, left + 84 + 163, top + 40 + 109);
+        try {
             for (var widget : slotWidgets) {
-                widget.renderWidget(graphics, mouseX, mouseY, partialTick);
+                widget.extractWidgetRenderState(graphics, mouseX, mouseY, partialTick);
             }
+        } finally {
+            graphics.disableScissor();
         }
 
         for (var widget : slotWidgets) {
@@ -179,12 +180,12 @@ public class WorkbenchScreen extends AbstractContainerCursorScreen<WorkbenchMenu
     }
 
     @Override
-    protected void renderBg(GuiGraphics graphics, float partialTick, int mouseX, int mouseY) {
+    public void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
         int left = (width - imageWidth) / 2;
         int top = (height - imageHeight) / 2;
-        graphics.blit(RenderType::guiTextured, TEXTURE, left, top, 0, 0, imageWidth, imageHeight, imageWidth, imageHeight);
-        graphics.drawString(font, PREVIEW_TEXT, left + 11, top + 14, 0x404040, false);
-        graphics.drawCenteredString(font, hasShiftDown() ? CRAFT_ALL_TEXT : CRAFT_TEXT, left + 45, top + 106, 0x404040);
+        graphics.blit(RenderPipelines.GUI_TEXT, TEXTURE, left, top, 0, 0, imageWidth, imageHeight, imageWidth, imageHeight);
+        graphics.text(font, PREVIEW_TEXT, left + 11, top + 14, 0x404040);
+        graphics.centeredText(font, hasShiftDown() ? CRAFT_ALL_TEXT : CRAFT_TEXT, left + 45, top + 106, 0x404040);
 
         var stack = menu.chosenStack();
         if (stack.isEmpty()) return;
@@ -209,7 +210,7 @@ public class WorkbenchScreen extends AbstractContainerCursorScreen<WorkbenchMenu
     }
 
     @Override
-    protected void slotClicked(Slot slot, int slotId, int mouseButton, ClickType type) {
+    protected void slotClicked(Slot slot, int slotId, int mouseButton, ContainerInput type) {
         super.slotClicked(slot, slotId, mouseButton, type);
         addSlotWidgets();
         searchBox.setEditable(!menu.selectedStack().isEmpty());
@@ -218,27 +219,30 @@ public class WorkbenchScreen extends AbstractContainerCursorScreen<WorkbenchMenu
     }
 
     @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+    public boolean keyPressed(KeyEvent event) {
+        int keyCode = event.key();
+        int scanCode = event.scancode();
+        int modifiers = event.modifiers();
         if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
             onClose();
             return true;
         }
 
         if (getFocused() == searchBox) {
-            return searchBox.keyPressed(keyCode, scanCode, modifiers)
+            return searchBox.keyPressed(event)
                 || searchBox.canConsumeInput()
-                || super.keyPressed(keyCode, scanCode, modifiers);
+                || super.keyPressed(event);
         }
 
-        return super.keyPressed(keyCode, scanCode, modifiers);
+        return super.keyPressed(event);
     }
 
     @Override
-    public boolean mouseReleased(double mouseX, double mouseY, int button) {
+    public boolean mouseReleased(MouseButtonEvent event) {
         if (getFocused() != searchBox) {
             setFocused(null);
         }
-        return super.mouseReleased(mouseX, mouseY, button);
+        return super.mouseReleased(event);
     }
 
     @Override
@@ -277,5 +281,9 @@ public class WorkbenchScreen extends AbstractContainerCursorScreen<WorkbenchMenu
         }
         BlockState state = block.defaultBlockState();
         return state.isAir() ? null : state;
+    }
+
+    private boolean hasShiftDown() {
+        return false;
     }
 }

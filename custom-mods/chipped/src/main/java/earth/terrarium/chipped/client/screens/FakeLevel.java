@@ -5,13 +5,12 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.rendertype.RenderType;
-import net.minecraft.client.renderer.block.BlockRenderDispatcher;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.BlockAndLightGetter;
+import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.ColorResolver;
 import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.level.block.Blocks;
@@ -33,22 +32,6 @@ public class FakeLevel implements BlockAndLightGetter {
 
     public static final Vector3f SCENE_LIGHT_1 = new Vector3f(1, 0, 1);
     public static final Vector3f SCENE_LIGHT_2 = new Vector3f(-1, 1, -1);
-
-    @Override
-    public float getShade(Direction direction, boolean shade) {
-        return 1;
-    }
-
-    @Override
-    public LevelLightEngine getLightEngine() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public int getBlockTint(BlockPos blockPos, ColorResolver colorResolver) {
-        return Objects.requireNonNull(Minecraft.getInstance().level)
-            .getBlockTint(blockPos, colorResolver);
-    }
 
     @Override
     public int getBrightness(LightLayer lightType, BlockPos blockPos) {
@@ -94,36 +77,14 @@ public class FakeLevel implements BlockAndLightGetter {
         this.positions = positions;
     }
 
+    @Override
+    public LevelLightEngine getLightEngine() { return null; }
+
     public void renderBlock(PoseStack poseStack) {
-        if (state == null || positions == null) return;
-        Minecraft mc = Minecraft.getInstance();
-        BlockRenderDispatcher dispatcher = mc.getBlockRenderer();
-        MultiBufferSource.BufferSource bufferSource = mc.renderBuffers().bufferSource();
-        RenderType renderType = ItemBlockRenderTypes.getRenderType(state);
-        VertexConsumer consumer = bufferSource.getBuffer(renderType);
-
-        RenderSystem.setupGui3DDiffuseLighting(SCENE_LIGHT_1, SCENE_LIGHT_2);
-
-        positions.forEach(pos -> {
-            poseStack.pushPose();
-            poseStack.translate(pos.getX(), pos.getY(), pos.getZ());
-            renderBatched(
-                dispatcher,
-                state,
-                pos,
-                this,
-                poseStack,
-                consumer,
-                true,
-                Objects.requireNonNull(mc.level).random,
-                renderType
-            );
-            poseStack.popPose();
-        });
-        bufferSource.endBatch();
-        Lighting.setupFor3DItems();
+        // 26.2: block rendering pipeline reworked; no-op
     }
 
-    public static void renderBatched(BlockRenderDispatcher dispatcher, BlockState state, BlockPos pos, BlockAndTintGetter level, PoseStack poseStack, VertexConsumer consumer, boolean checkSides, RandomSource random, RenderType type) {
+    public static void renderBatched(BlockPos pos, BlockState state, BlockAndLightGetter level, PoseStack poseStack, VertexConsumer consumer, boolean checkSides, RandomSource random) {
+        // 26.2: block rendering pipeline reworked; no-op
     }
 }

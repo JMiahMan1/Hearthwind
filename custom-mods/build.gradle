@@ -29,6 +29,9 @@ subprojects {
 
 	tasks.withType(JavaCompile).configureEach {
 		it.options.release = 25
+		// letsdo-* ports surface hundreds of errors at once; raise javac's
+		// default 100-error cap so baselines are complete.
+		it.options.compilerArgs.addAll(['-Xmaxerrs', '5000'])
 	}
 
 	// hearthwind-client needs survival's ThirstSyncPayload at compile and
@@ -69,11 +72,47 @@ subprojects {
 	if (project.name.startsWith('letsdo-') && project.name != 'letsdo-farm-and-charm') {
 		dependencies {
 			implementation project(':letsdo-farm-and-charm')
+			// Sobriety flag lives in survival config; letsdo ports read it
+			// (guarded at runtime so standalone installs keep full content).
+			implementation project(':hearthwind-survival')
 		}
 	}
-	if (project.name == 'letsdo-candlelight' || project.name == 'letsdo-brewery') {
+	if (project.name == 'letsdo-nethervinery') {
 		dependencies {
 			implementation project(':letsdo-vinery')
+		}
+	}
+	if (project.name == 'letsdo-farm-and-charm' || project.name == 'letsdo-bakery' || project.name == 'letsdo-vinery' || project.name == 'letsdo-brewery' || project.name == 'letsdo-candlelight' || project.name == 'letsdo-herbalbrews' || project.name == 'letsdo-meadow' || project.name == 'letsdo-nethervinery') {
+		dependencies {
+			implementation files("${rootDir}/../dev-server/mods/rei-26.2.820-fabric.jar")
+			implementation files("${rootDir}/../dev-server/mods/cloth-basic-math-0.6.1.jar")
+			implementation files("${rootDir}/../dev-server/mods/modmenu-20.0.1.jar")
+		}
+	}
+	if (project.name.startsWith('letsdo-')) {
+		// Single letsdo wiring block (kept pre-afterEvaluate so Loom
+		// resolves the mod compile classpath before task graph calc).
+		// Full module set lives here; do NOT duplicate in afterEvaluate.
+		dependencies {
+			modCompileClasspath "dev.architectury:architectury:21.0.7"
+			modCompileClasspath "dev.architectury:architectury-fabric:21.0.7"
+			modCompileClasspath "me.shedaniel.cloth:cloth-config-fabric:19.0.147"
+			modCompileClasspath "net.fabricmc.fabric.api:fabric-object-builder-api-v1:24.1.0+6fcd5f039e"
+			modCompileClasspath "net.fabricmc.fabric.api:fabric-resource-loader-v1:2.0.13+9edec1269e"
+			modCompileClasspath "net.fabricmc.fabric.api:fabric-lifecycle-events-v1:4.1.3+4575b05f9e"
+			modCompileClasspath "net.fabricmc.fabric.api:fabric-rendering-v1:25.3.2+515ac5339e"
+			modCompileClasspath files("${rootDir}/../dev-server/mods/modmenu-20.0.1.jar")
+		}
+	}
+	if (project.name in ['athena', 'chipped']) {
+		dependencies {
+			modCompileClasspath "dev.architectury:architectury:21.0.7"
+			modCompileClasspath "dev.architectury:architectury-fabric:21.0.7"
+			modCompileClasspath files("${rootDir}/../dev-server/mods/ResourcefulLib-5.0.3.jar")
+			modCompileClasspath files("${rootDir}/../conversion/vendored/resourcefullib-bytecodecs/bytecodecs-1.1.3.jar")
+			modCompileClasspath files("${rootDir}/../conversion/vendored/resourcefullib-bytecodecs/yabn-1.0.3.jar")
+			implementation files("${rootDir}/../dev-server/mods/ResourcefulLib-5.0.3.jar")
+			implementation files("${rootDir}/../conversion/vendored/resourcefullib-bytecodecs/bytecodecs-1.1.3.jar")
 		}
 	}
 
@@ -90,7 +129,7 @@ subprojects {
 				modCompileClasspath "net.fabricmc.fabric.api:fabric-client-gametest-api-v1:6.0.0+515ac5339e"
 			}
 		}
-		if (name == 'hearthwind-survival' || name == 'hearthwind-skills' || name == 'hearthwind-jobs' || name == 'hearthwind-world') {
+		if (name == 'hearthwind-survival' || name == 'hearthwind-skills' || name == 'hearthwind-jobs' || name == 'hearthwind-world' || name.startsWith('letsdo-')) {
 			dependencies {
 				// fabric-api aggregator POM hides module classes at compile
 				// time; pin gametest API for @GameTest compilation.
@@ -113,22 +152,17 @@ subprojects {
 				modCompileClasspath "net.fabricmc.fabric.api:fabric-creative-tab-api-v1:5.0.14+d871b99e9e"
 				modCompileClasspath "net.fabricmc.fabric.api:fabric-particles-v1:5.0.18+d1756aa99e"
 				modCompileClasspath "net.fabricmc.fabric.api:fabric-networking-api-v1:6.3.3+72073ef09e"
-				modCompileClasspath "net.fabricmc.fabric.api:fabric-rendering-v1:25.3.2+515ac5339e"
+			modCompileClasspath "net.fabricmc.fabric.api:fabric-rendering-v1:25.3.2+515ac5339e"
+			modCompileClasspath "net.fabricmc.fabric.api:fabric-networking-api-v1:6.3.3+72073ef09e"
 				// gametests (SmallshipsGameTests)
 				modCompileClasspath "net.fabricmc.fabric.api:fabric-gametest-api-v1:4.0.21+4a7fa0819e"
 			}
 		}
 		if (name.startsWith('letsdo-')) {
-			dependencies {
-				modCompileClasspath "dev.architectury:architectury:21.0.7"
-				modCompileClasspath "dev.architectury:architectury-fabric:21.0.7"
-				modCompileClasspath "me.shedaniel.cloth:cloth-config-fabric:19.0.147"
-				modCompileClasspath "net.fabricmc.fabric.api:fabric-object-builder-api-v1:24.1.0+6fcd5f039e"
-				modCompileClasspath "net.fabricmc.fabric.api:fabric-resource-loader-v1:2.0.13+9edec1269e"
-				modCompileClasspath "net.fabricmc.fabric.api:fabric-lifecycle-events-v1:4.1.3+4575b05f9e"
-				modCompileClasspath "net.fabricmc.fabric.api:fabric-rendering-v1:25.3.2+515ac5339e"
-				modCompileClasspath files("${rootDir}/../dev-server/mods/modmenu-20.0.1.jar")
-			}
+			// Duplicate of the pre-afterEvaluate letsdo block retained for
+			// documentation only. Loom resolves the mod compile classpath
+			// before afterEvaluate, so adding a second copy here would just
+			// double the deps; do NOT re-add dependencies here.
 		}
 	}
 
