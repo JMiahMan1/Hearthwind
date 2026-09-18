@@ -114,9 +114,11 @@ jobs:
           tail -50 boot.log; exit 1
 
   # Full pack packaging: resolve Modrinth index, materialize dist trees,
-  # and upload the .mrpack artifacts (server + client). Dispatch-only.
+  # and upload the .mrpack artifacts (server + client). Runs on every push
+  # build so each build has a Prism-ready download (Add Instance > Import);
+  # skipped on PRs to save CI minutes (PRs still get compile + gametests).
   package:
-    if: github.event_name == 'workflow_dispatch'
+    if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
@@ -156,6 +158,30 @@ jobs:
           name: modpacks
           path: conversion/build/dist/*.mrpack
           retention-days: 14
+
+  # Permanent, login-free downloads: on version tags (v*) publish the
+  # Prism-ready .mrpack files to a GitHub Release so users can download
+  # and import them without digging through workflow artifacts.
+  release:
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: [package]
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: modpacks
+          path: mrpacks
+      - name: Publish Prism-ready .mrpack files to GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          ls -lh mrpacks/*.mrpack
+          gh release create "${{ github.ref_name }}" mrpacks/*.mrpack \
+            --title "Hearthwind ${{ github.ref_name }}" \
+            --notes "Prism-ready downloads: grab a .mrpack below and import it via Prism Launcher > Add Instance > Import. Artifacts expire; release files do not."
 
   # REAL client gametests under xvfb (fabric-client-gametest-api-v1): boots the
   # full client mod set with -Dfabric.client.gametest in a throwaway game dir,

@@ -154,10 +154,13 @@ bash tools/run_gametests.sh --client   # boots real client, drives inventory/HUD
 ```
 
 Pushing to GitHub runs the same suites plus artifact uploads automatically
-(`.github/workflows/build-and-test.yml`): headless `build-gametest` on every
-push, optional `client-gametest` + `boot-smoke` on dispatch. See
-`AGENTS.md` ("CI") for how far automated testing goes, including scripted
-real-client tests and interactive tunnel sessions.
+(`.github/workflows/build-and-test.yml`): headless `build-gametest` and
+Prism-ready `.mrpack` packaging (`modpacks` artifact) on every push,
+`client-gametest` on every push, optional `boot-smoke` on dispatch.
+Pushing a version tag (`v*`) additionally publishes the `.mrpack` files
+to a GitHub Release for login-free download. See `AGENTS.md` ("CI")
+for how far automated testing goes, including scripted real-client
+tests and interactive tunnel sessions.
 
 ## Packaging notes (maintainers)
 
@@ -165,5 +168,5 @@ real-client tests and interactive tunnel sessions.
   `conversion/build/resolved.json`; rerun `resolve_deps.py` after
   editing `conversion/curated/mods-manifest.json`.
 - Our custom mods are NOT in the Modrinth index - they are built from
-  this repo. Release flow = tag -> GHA artifacts -> attach to a GitHub
-  release together with the `.mrpack`.
+  this repo. Release flow = push a `v*` tag -> the `release` job attaches
+  the `.mrpack` files to a GitHub Release automatically.
