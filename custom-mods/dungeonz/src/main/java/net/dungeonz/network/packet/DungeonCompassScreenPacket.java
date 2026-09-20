@@ -1,23 +1,23 @@
 package net.dungeonz.network.packet;
 
 import java.util.List;
-import net.minecraft.class_2540;
-import net.minecraft.class_2960;
-import net.minecraft.class_8710;
-import net.minecraft.class_9129;
-import net.minecraft.class_9139;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.Identifier;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 
-public record DungeonCompassScreenPacket(String dungeonType, List<String> dungeonIdList) implements class_8710 {
+public record DungeonCompassScreenPacket(String dungeonType, List<String> dungeonIdList) implements CustomPacketPayload {
 
-    public static final class_8710.class_9154<DungeonCompassScreenPacket> PACKET_ID = new class_8710.class_9154<>(class_2960.method_60655("dungeonz", "dungeon_compass_screen_packet"));
+    public static final CustomPacketPayload.Type<DungeonCompassScreenPacket> PACKET_ID = new CustomPacketPayload.Type<>(Identifier.fromNamespaceAndPath("dungeonz", "dungeon_compass_screen_packet"));
 
-    public static final class_9139<class_9129, DungeonCompassScreenPacket> PACKET_CODEC = class_9139.method_56438((value, buf) -> {
-        buf.method_10814(value.dungeonType);
-        buf.method_34062(value.dungeonIdList, class_2540::method_10814);
-    }, buf -> new DungeonCompassScreenPacket(buf.method_19772(), buf.method_34066(class_2540::method_19772)));
+    public static final StreamCodec<RegistryFriendlyByteBuf, DungeonCompassScreenPacket> PACKET_CODEC = StreamCodec.ofMember((value, buf) -> {
+        buf.writeUtf(value.dungeonType);
+        buf.writeCollection(value.dungeonIdList, FriendlyByteBuf::writeUtf);
+    }, buf -> new DungeonCompassScreenPacket(buf.readUtf(), buf.readList(FriendlyByteBuf::readUtf)));
 
     @Override
-    public class_9154<? extends class_8710> method_56479() {
+    public Type<? extends CustomPacketPayload> type() {
         return PACKET_ID;
     }
 

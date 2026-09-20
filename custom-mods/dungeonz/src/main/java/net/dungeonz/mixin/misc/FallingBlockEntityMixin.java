@@ -2,10 +2,10 @@ package net.dungeonz.mixin.misc;
 
 import net.dungeonz.init.DimensionInit;
 import net.dungeonz.util.DungeonHelper;
-import net.minecraft.class_1297;
-import net.minecraft.class_1299;
-import net.minecraft.class_1540;
-import net.minecraft.class_1937;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.item.FallingBlockEntity;
+import net.minecraft.world.level.Level;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -13,10 +13,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
-@Mixin(class_1540.class)
-public abstract class FallingBlockEntityMixin extends class_1297 {
+@Mixin(FallingBlockEntity.class)
+public abstract class FallingBlockEntityMixin extends Entity {
 
-    public FallingBlockEntityMixin(class_1299<?> type, class_1937 world) {
+    public FallingBlockEntityMixin(EntityType<?> type, Level world) {
         super(type, world);
     }
 

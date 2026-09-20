@@ -10,100 +10,98 @@ import net.dungeonz.block.entity.DungeonPortalEntity;
 import net.dungeonz.init.BlockInit;
 import net.dungeonz.network.DungeonServerPacket;
 import net.dungeonz.util.DungeonHelper;
-import net.minecraft.class_1269;
-import net.minecraft.class_1297;
-import net.minecraft.class_1657;
-import net.minecraft.class_1922;
-import net.minecraft.class_1936;
-import net.minecraft.class_1937;
-import net.minecraft.class_2237;
-import net.minecraft.class_2338;
-import net.minecraft.class_2402;
-import net.minecraft.class_2464;
-import net.minecraft.class_2586;
-import net.minecraft.class_2591;
-import net.minecraft.class_2680;
-import net.minecraft.class_3222;
-import net.minecraft.class_3610;
-import net.minecraft.class_3611;
-import net.minecraft.class_3965;
-import net.minecraft.class_5558;
-import net.partyaddon.access.GroupManagerAccess;
-import net.partyaddon.network.PartyAddonServerPacket;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.InsideBlockEffectApplier;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.BaseEntityBlock;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.block.LiquidBlockContainer;
+import net.minecraft.world.level.block.RenderShape;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.level.material.FluidState;
+import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
 
-public class DungeonPortalBlock extends class_2237 implements class_2402 {
+public class DungeonPortalBlock extends BaseEntityBlock implements LiquidBlockContainer {
 
-    public static final MapCodec<DungeonPortalBlock> field_46280 = DungeonPortalBlock.method_54094(DungeonPortalBlock::new);
+    public static final MapCodec<DungeonPortalBlock> CODEC = DungeonPortalBlock.simpleCodec(DungeonPortalBlock::new);
 
-    public DungeonPortalBlock(class_2251 settings) {
+    public DungeonPortalBlock(Properties settings) {
         super(settings);
     }
 
     @Override
-    public class_2586 method_10123(class_2338 pos, class_2680 state) {
+    public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
         return new DungeonPortalEntity(pos, state);
     }
 
     @Override
-    public class_2464 method_9604(class_2680 state) {
-        return class_2464.field_11456;
+    public RenderShape getRenderShape(BlockState state) {
+        // 26.x: ENTITYBLOCK_ANIMATED is gone; vanilla EndPortalBlock is INVISIBLE with a BER.
+        return RenderShape.INVISIBLE;
     }
 
     @Override
-    public class_1269 method_55766(class_2680 state, class_1937 world, class_2338 pos, class_1657 player, class_3965 hit) {
-        if (player.method_37908().method_8321(pos) != null && player.method_37908().method_8321(pos) instanceof DungeonPortalEntity dungeonPortalEntity) {
+    public InteractionResult useWithoutItem(BlockState state, Level world, BlockPos pos, Player player, BlockHitResult hit) {
+        if (player.level().getBlockEntity(pos) != null && player.level().getBlockEntity(pos) instanceof DungeonPortalEntity dungeonPortalEntity) {
             if (isOtherDungeonPortalBlockNearby(world, pos)) {
                 dungeonPortalEntity = getMainDungeonPortalEntity(world, pos);
                 pos = getMainDungeonPortalBlockPos(world, pos);
             }
-            if (player.method_7338() && (dungeonPortalEntity.getDungeon() == null || player.method_5715())) {
-                if (!world.method_8608()) {
-                    DungeonServerPacket.writeS2COpenOpScreenPacket((class_3222) player, dungeonPortalEntity, null);
+            if (player.canUseGameMasterBlocks() && (dungeonPortalEntity.getDungeon() == null || player.isShiftKeyDown())) {
+                if (!world.isClientSide()) {
+                    DungeonServerPacket.writeS2COpenOpScreenPacket((ServerPlayer) player, dungeonPortalEntity, null);
                 }
-                return class_1269.method_29236(world.method_8608());
+                return (world.isClientSide() ? InteractionResult.SUCCESS : InteractionResult.CONSUME);
             } else if (dungeonPortalEntity.getDungeon() != null) {
-                if (!world.method_8608()) {
-                    if (DungeonzMain.isPartyAddonLoaded) {
-                        PartyAddonServerPacket.writeS2CSyncGroupManagerPacket((class_3222) player, ((GroupManagerAccess) player).getGroupManager());
-                    }
-                    player.method_17355(state.method_26196(world, pos));
+                if (!world.isClientSide()) {
+                    player.openMenu(state.getMenuProvider(world, pos));
                 }
-                return class_1269.method_29236(world.method_8608());
+                return (world.isClientSide() ? InteractionResult.SUCCESS : InteractionResult.CONSUME);
             }
         }
-        return super.method_55766(state, world, pos, player, hit);
+        return super.useWithoutItem(state, world, pos, player, hit);
     }
 
     @Override
-    public void method_9548(class_2680 state, class_1937 world, class_2338 pos, class_1297 entity) {
-        if (!world.method_8608() && !entity.method_5765() && !entity.method_5782() && entity.method_5822(false) && entity instanceof class_3222) {
-            if (!entity.method_30230()) {
+    public void entityInside(BlockState state, Level world, BlockPos pos, Entity entity, InsideBlockEffectApplier effectApplier, boolean isPrecise) {
+        if (!world.isClientSide() && !entity.isPassenger() && !entity.isVehicle() && entity.canUsePortal(false) && entity instanceof ServerPlayer) {
+            if (!entity.isOnPortalCooldown()) {
                 if (isOtherDungeonPortalBlockNearby(world, pos)) {
                     pos = getMainDungeonPortalBlockPos(world, pos);
                 }
-                DungeonHelper.teleportDungeon((class_3222) entity, pos, entity.method_5667());
-                entity.method_30229();
+                DungeonHelper.teleportDungeon((ServerPlayer) entity, pos, entity.getUUID());
+                entity.setPortalCooldown();
             }
         }
     }
 
     @Override
-    protected boolean method_22358(class_2680 state, class_3611 fluid) {
+    protected boolean canBeReplaced(BlockState state, Fluid fluid) {
         return false;
     }
 
     @Override
     @Nullable
-    public <T extends class_2586> class_5558<T> method_31645(class_1937 world, class_2680 state, class_2591<T> type) {
-        return DungeonGateBlock.method_31618(type, BlockInit.DUNGEON_PORTAL_ENTITY, world.method_8608() ? DungeonPortalEntity::clientTick : DungeonPortalEntity::serverTick);
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level world, BlockState state, BlockEntityType<T> type) {
+        return DungeonGateBlock.createTickerHelper(type, BlockInit.DUNGEON_PORTAL_ENTITY, world.isClientSide() ? DungeonPortalEntity::clientTick : DungeonPortalEntity::serverTick);
     }
 
-    public static boolean isOtherDungeonPortalBlockNearby(class_1937 world, class_2338 pos) {
-        for (class_2338 checkPos : class_2338.method_25996(pos, 1, 1, 1)) {
+    public static boolean isOtherDungeonPortalBlockNearby(Level world, BlockPos pos) {
+        for (BlockPos checkPos : BlockPos.withinManhattan(pos, 1, 1, 1)) {
             if (checkPos.equals(pos)) {
                 continue;
             }
-            if (world.method_8320(checkPos).method_27852(BlockInit.DUNGEON_PORTAL)) {
+            if (world.getBlockState(checkPos).is(BlockInit.DUNGEON_PORTAL)) {
                 return true;
             }
         }
@@ -111,53 +109,53 @@ public class DungeonPortalBlock extends class_2237 implements class_2402 {
     }
 
     @Nullable
-    public static class_2338 getMainDungeonPortalBlockPos(class_1937 world, class_2338 pos) {
-        class_2338 checkPos = new class_2338(pos);
+    public static BlockPos getMainDungeonPortalBlockPos(Level world, BlockPos pos) {
+        BlockPos checkPos = new BlockPos(pos);
         for (int i = 1; i < 30; i++) {
-            if (world.method_8320(checkPos.method_10089(1)).method_27852(BlockInit.DUNGEON_PORTAL)) {
-                checkPos = checkPos.method_10089(1);
+            if (world.getBlockState(checkPos.east(1)).is(BlockInit.DUNGEON_PORTAL)) {
+                checkPos = checkPos.east(1);
             } else {
                 break;
             }
         }
         for (int i = 1; i < 30; i++) {
-            if (world.method_8320(checkPos.method_10077(1)).method_27852(BlockInit.DUNGEON_PORTAL)) {
-                checkPos = checkPos.method_10077(1);
+            if (world.getBlockState(checkPos.south(1)).is(BlockInit.DUNGEON_PORTAL)) {
+                checkPos = checkPos.south(1);
             } else {
                 break;
             }
         }
         for (int i = 1; i < 30; i++) {
-            if (world.method_8320(checkPos.method_10087(1)).method_27852(BlockInit.DUNGEON_PORTAL)) {
-                checkPos = checkPos.method_10087(1);
+            if (world.getBlockState(checkPos.below(1)).is(BlockInit.DUNGEON_PORTAL)) {
+                checkPos = checkPos.below(1);
             } else {
                 break;
             }
         }
-        return world.method_8321(checkPos) instanceof DungeonPortalEntity dungeonPortalEntity ? dungeonPortalEntity.method_11016() : null;
+        return world.getBlockEntity(checkPos) instanceof DungeonPortalEntity dungeonPortalEntity ? dungeonPortalEntity.getBlockPos() : null;
     }
 
     @Nullable
-    public static DungeonPortalEntity getMainDungeonPortalEntity(class_1937 world, class_2338 pos) {
+    public static DungeonPortalEntity getMainDungeonPortalEntity(Level world, BlockPos pos) {
         if (getMainDungeonPortalBlockPos(world, pos) != null) {
-            return (DungeonPortalEntity) world.method_8321(getMainDungeonPortalBlockPos(world, pos));
+            return (DungeonPortalEntity) world.getBlockEntity(getMainDungeonPortalBlockPos(world, pos));
         }
         return null;
     }
 
     @Override
-    protected MapCodec<? extends class_2237> method_53969() {
-        return field_46280;
+    protected MapCodec<? extends BaseEntityBlock> codec() {
+        return CODEC;
     }
 
     // Used for not getting removed by water
     @Override
-    public boolean method_10310(@Nullable class_1657 player, class_1922 world, class_2338 pos, class_2680 state, class_3611 fluid) {
+    public boolean canPlaceLiquid(@Nullable LivingEntity player, BlockGetter world, BlockPos pos, BlockState state, Fluid fluid) {
         return false;
     }
 
     @Override
-    public boolean method_10311(class_1936 world, class_2338 pos, class_2680 state, class_3610 fluidState) {
+    public boolean placeLiquid(LevelAccessor world, BlockPos pos, BlockState state, FluidState fluidState) {
         return false;
     }
 }

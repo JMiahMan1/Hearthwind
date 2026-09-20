@@ -1,17 +1,17 @@
 package net.dungeonz.access;
 
-import net.minecraft.class_2338;
-import net.minecraft.class_3218;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
 import org.jetbrains.annotations.Nullable;
 
 public interface ServerPlayerAccess {
 
-    public void setDungeonInfo(class_3218 world, class_2338 portalPos, class_2338 playerPos);
+    public void setDungeonInfo(ServerLevel world, BlockPos portalPos, BlockPos playerPos);
 
     @Nullable
-    public class_3218 getOldServerWorld();
+    public ServerLevel getOldServerWorld();
 
-    public class_2338 getDungeonPortalBlockPos();
+    public BlockPos getDungeonPortalBlockPos();
 
-    public class_2338 getDungeonSpawnBlockPos();
+    public BlockPos getDungeonSpawnBlockPos();
 }

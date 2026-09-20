@@ -16,7 +16,9 @@
   "mixins": ["chipped-common.mixins.json"],
   "entrypoints": {
     "main": ["earth.terrarium.chipped.fabric.ChippedFabric"],
-    "client": ["earth.terrarium.chipped.client.fabric.ChippedClientFabric"]
+    "client": ["earth.terrarium.chipped.client.fabric.ChippedClientFabric"],
+    "fabric-gametest": ["earth.terrarium.chipped.ChippedWorkbenchGameTests"],
+    "fabric-client-gametest": ["earth.terrarium.chipped.client.ChippedWorkbenchClientGameTests"]
   },
   "depends": {
     "fabric-api": "*",

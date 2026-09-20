@@ -1,7 +1,10 @@
 package earth.terrarium.chipped.common.blocks;
 
 import com.mojang.serialization.MapCodec;
+import com.teamresourceful.resourcefullib.common.registry.RegistryEntry;
 import earth.terrarium.chipped.common.menus.WorkbenchMenuProvider;
+import earth.terrarium.chipped.common.recipes.ChippedRecipe;
+import earth.terrarium.chipped.common.registry.ModRecipeTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.util.StringRepresentable;
@@ -10,6 +13,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.*;
@@ -27,8 +31,15 @@ public class WorkbenchBlock extends HorizontalDirectionalBlock {
 
     public static final EnumProperty<WorkbenchModelType> MODEL_TYPE = EnumProperty.create("model", WorkbenchModelType.class);
 
+    private final RegistryEntry<RecipeType<ChippedRecipe>> recipeType;
+
     public WorkbenchBlock(Properties properties) {
+        this(ModRecipeTypes.BOTANIST_WORKBENCH, properties);
+    }
+
+    public WorkbenchBlock(RegistryEntry<RecipeType<ChippedRecipe>> recipeType, Properties properties) {
         super(properties);
+        this.recipeType = recipeType;
         this.registerDefaultState(this.stateDefinition.any()
             .setValue(FACING, Direction.NORTH)
             .setValue(MODEL_TYPE, WorkbenchModelType.MAIN));
@@ -46,8 +57,12 @@ public class WorkbenchBlock extends HorizontalDirectionalBlock {
 
     @Override
     protected @NotNull InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
-        player.openMenu(new WorkbenchMenuProvider(getName()));
+        player.openMenu(new WorkbenchMenuProvider(pos, getName()));
         return InteractionResult.SUCCESS;
+    }
+
+    public RecipeType<ChippedRecipe> recipeType() {
+        return recipeType.get();
     }
 
     @Override

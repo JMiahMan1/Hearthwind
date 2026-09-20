@@ -1,24 +1,24 @@
 package net.dungeonz.network.packet;
 
 import java.util.List;
-import net.minecraft.class_2540;
-import net.minecraft.class_2960;
-import net.minecraft.class_8710;
-import net.minecraft.class_9129;
-import net.minecraft.class_9139;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.Identifier;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 
-public record DungeonInfoPacket(List<Integer> breakableBlockIdList, List<Integer> placeableBlockIdList, boolean allowElytra) implements class_8710 {
+public record DungeonInfoPacket(List<Integer> breakableBlockIdList, List<Integer> placeableBlockIdList, boolean allowElytra) implements CustomPacketPayload {
 
-    public static final class_8710.class_9154<DungeonInfoPacket> PACKET_ID = new class_8710.class_9154<>(class_2960.method_60655("dungeonz", "dungeon_info_packet"));
+    public static final CustomPacketPayload.Type<DungeonInfoPacket> PACKET_ID = new CustomPacketPayload.Type<>(Identifier.fromNamespaceAndPath("dungeonz", "dungeon_info_packet"));
 
-    public static final class_9139<class_9129, DungeonInfoPacket> PACKET_CODEC = class_9139.method_56438((value, buf) -> {
-        buf.method_34062(value.breakableBlockIdList, class_2540::method_53002);
-        buf.method_34062(value.placeableBlockIdList, class_2540::method_53002);
-        buf.method_52964(value.allowElytra);
-    }, buf -> new DungeonInfoPacket(buf.method_34066(class_2540::readInt), buf.method_34066(class_2540::readInt), buf.readBoolean()));
+    public static final StreamCodec<RegistryFriendlyByteBuf, DungeonInfoPacket> PACKET_CODEC = StreamCodec.ofMember((value, buf) -> {
+        buf.writeCollection(value.breakableBlockIdList, FriendlyByteBuf::writeInt);
+        buf.writeCollection(value.placeableBlockIdList, FriendlyByteBuf::writeInt);
+        buf.writeBoolean(value.allowElytra);
+    }, buf -> new DungeonInfoPacket(buf.readList(FriendlyByteBuf::readInt), buf.readList(FriendlyByteBuf::readInt), buf.readBoolean()));
 
     @Override
-    public class_9154<? extends class_8710> method_56479() {
+    public Type<? extends CustomPacketPayload> type() {
         return PACKET_ID;
     }
 

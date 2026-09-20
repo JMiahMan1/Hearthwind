@@ -5,42 +5,45 @@ import java.util.function.UnaryOperator;
 
 import net.dungeonz.item.*;
 import net.dungeonz.item.component.DungeonCompassComponent;
-import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
-import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
-import net.minecraft.class_1761;
-import net.minecraft.class_1792;
-import net.minecraft.class_1799;
-import net.minecraft.class_1802;
-import net.minecraft.class_2378;
-import net.minecraft.class_2561;
-import net.minecraft.class_2960;
-import net.minecraft.class_5321;
-import net.minecraft.class_7923;
-import net.minecraft.class_7924;
-import net.minecraft.class_9331;
+import net.fabricmc.fabric.api.creativetab.v1.FabricCreativeModeTab;
+import net.fabricmc.fabric.api.creativetab.v1.CreativeModeTabEvents;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.core.Registry;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.core.component.DataComponentType;
 
 public class ItemInit {
 
     // Item Group
-    public static final class_5321<class_1761> DUNGEONZ_ITEM_GROUP = class_5321.method_29179(class_7924.field_44688, class_2960.method_60655("dungeonz", "item_group"));
+    public static final ResourceKey<CreativeModeTab> DUNGEONZ_ITEM_GROUP = ResourceKey.create(Registries.CREATIVE_MODE_TAB, Identifier.fromNamespaceAndPath("dungeonz", "item_group"));
 
     // Component
-    public static final class_9331<DungeonCompassComponent> DUNGEON_COMPASS_DATA = registerComponent("fill_level",
-            builder -> builder.method_57881(DungeonCompassComponent.CODEC).method_57882(DungeonCompassComponent.PACKET_CODEC));
+    public static final DataComponentType<DungeonCompassComponent> DUNGEON_COMPASS_DATA = registerComponent("fill_level",
+            builder -> builder.persistent(DungeonCompassComponent.CODEC).networkSynchronized(DungeonCompassComponent.PACKET_CODEC));
 
-    public static final List<class_1799> REQUIRED_DUNGEON_COMPASS_CALIBRATION_ITEMS = List.of(new class_1799(class_1802.field_27063, 3));
+    public static List<ItemStack> getRequiredDungeonCompassCalibrationItems() {
+        return List.of(new ItemStack(Items.AMETHYST_SHARD, 3));
+    }
 
-    public static final class_1792 DUNGEON_COMPASS = new DungeonCompassItem(new class_1792.class_1793().method_7889(1));
+    public static final Item DUNGEON_COMPASS = new DungeonCompassItem(new Item.Properties().stacksTo(1)
+            .setId(ResourceKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath("dungeonz", "dungeon_compass"))));
 
-    private static <T> class_9331<T> registerComponent(String id, UnaryOperator<class_9331.class_9332<T>> builderOperator) {
-        return class_2378.method_10226(class_7923.field_49658, id, builderOperator.apply(class_9331.method_57873()).method_57880());
+    private static <T> DataComponentType<T> registerComponent(String id, UnaryOperator<DataComponentType.Builder<T>> builderOperator) {
+        return Registry.register(BuiltInRegistries.DATA_COMPONENT_TYPE, id, builderOperator.apply(DataComponentType.builder()).build());
     }
 
     public static void init() {
-        class_2378.method_39197(class_7923.field_44687, DUNGEONZ_ITEM_GROUP,
-                FabricItemGroup.builder().method_47320(() -> new class_1799(DUNGEON_COMPASS)).method_47321(class_2561.method_43471("item.dungeonz.item_group")).method_47324());
-        class_2378.method_10230(class_7923.field_41178, class_2960.method_60655("dungeonz", "dungeon_compass"), DUNGEON_COMPASS);
-        ItemGroupEvents.modifyEntriesEvent(DUNGEONZ_ITEM_GROUP).register(entries -> entries.method_45421(DUNGEON_COMPASS));
+        Registry.register(BuiltInRegistries.CREATIVE_MODE_TAB, DUNGEONZ_ITEM_GROUP,
+                FabricCreativeModeTab.builder().icon(() -> new ItemStack(DUNGEON_COMPASS)).title(Component.translatable("item.dungeonz.item_group")).build());
+        Registry.register(BuiltInRegistries.ITEM, Identifier.fromNamespaceAndPath("dungeonz", "dungeon_compass"), DUNGEON_COMPASS);
+        CreativeModeTabEvents.modifyOutputEvent(DUNGEONZ_ITEM_GROUP).register(output -> output.accept(DUNGEON_COMPASS));
     }
 
 }

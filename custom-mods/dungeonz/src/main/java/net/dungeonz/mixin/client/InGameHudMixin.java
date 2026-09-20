@@ -8,10 +8,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import net.dungeonz.access.InGameHudAccess;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_329;
+import net.minecraft.client.gui.Gui;
 
 @Environment(EnvType.CLIENT)
-@Mixin(class_329.class)
+@Mixin(Gui.class)
 public abstract class InGameHudMixin implements InGameHudAccess {
 
     private int dungeonCountdownTicks = 0;

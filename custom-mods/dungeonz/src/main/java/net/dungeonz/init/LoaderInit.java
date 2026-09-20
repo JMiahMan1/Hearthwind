@@ -2,11 +2,11 @@ package net.dungeonz.init;
 
 import net.dungeonz.data.DungeonLoader;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
-import net.minecraft.class_3264;
+import net.minecraft.server.packs.PackType;
 
 public class LoaderInit {
 
     public static void init() {
-        ResourceManagerHelper.get(class_3264.field_14190).registerReloadListener(new DungeonLoader());
+        ResourceManagerHelper.get(PackType.SERVER_DATA).registerReloadListener(new DungeonLoader());
     }
 }

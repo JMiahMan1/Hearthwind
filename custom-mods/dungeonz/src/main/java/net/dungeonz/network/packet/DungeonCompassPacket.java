@@ -1,20 +1,20 @@
 package net.dungeonz.network.packet;
 
-import net.minecraft.class_2960;
-import net.minecraft.class_8710;
-import net.minecraft.class_9129;
-import net.minecraft.class_9139;
+import net.minecraft.resources.Identifier;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 
-public record DungeonCompassPacket(String dungeonType) implements class_8710 {
+public record DungeonCompassPacket(String dungeonType) implements CustomPacketPayload {
 
-    public static final class_8710.class_9154<DungeonCompassPacket> PACKET_ID = new class_8710.class_9154<>(class_2960.method_60655("dungeonz", "dungeon_compass_packet"));
+    public static final CustomPacketPayload.Type<DungeonCompassPacket> PACKET_ID = new CustomPacketPayload.Type<>(Identifier.fromNamespaceAndPath("dungeonz", "dungeon_compass_packet"));
 
-    public static final class_9139<class_9129, DungeonCompassPacket> PACKET_CODEC = class_9139.method_56438((value, buf) -> {
-        buf.method_10814(value.dungeonType);
-    }, buf -> new DungeonCompassPacket(buf.method_19772()));
+    public static final StreamCodec<RegistryFriendlyByteBuf, DungeonCompassPacket> PACKET_CODEC = StreamCodec.ofMember((value, buf) -> {
+        buf.writeUtf(value.dungeonType);
+    }, buf -> new DungeonCompassPacket(buf.readUtf()));
 
     @Override
-    public class_9154<? extends class_8710> method_56479() {
+    public Type<? extends CustomPacketPayload> type() {
         return PACKET_ID;
     }
 

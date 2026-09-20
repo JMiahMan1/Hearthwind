@@ -1,6 +1,6 @@
 package earth.terrarium.chipped.client.screens;
 
-import com.teamresourceful.resourcefullib.client.utils.RenderUtils;
+import com.mojang.blaze3d.platform.InputConstants;
 import earth.terrarium.chipped.Chipped;
 import earth.terrarium.chipped.common.menus.WorkbenchMenu;
 import earth.terrarium.chipped.common.network.NetworkHandler;
@@ -94,13 +94,15 @@ public class WorkbenchScreen extends AbstractContainerScreen<WorkbenchMenu> {
     protected void init() {
         super.init();
 
+        String filter = searchBox == null ? "" : searchBox.getValue();
         searchBox = addRenderableWidget(new EditBox(font, leftPos + 105, topPos + 27, 115, 11, Component.empty()));
         searchBox.setTextColor(-1);
         searchBox.setTextColorUneditable(-1);
         searchBox.setBordered(false);
         searchBox.setMaxLength(50);
+        searchBox.setValue(filter);
         searchBox.setResponder(this::onSearchBarChanged);
-        searchBox.setEditable(false);
+        searchBox.setEditable(!menu.selectedStack().isEmpty());
 
         addRenderableWidget(new ImageButton(leftPos + 9, topPos + 121,
             18, 18,
@@ -139,33 +141,28 @@ public class WorkbenchScreen extends AbstractContainerScreen<WorkbenchMenu> {
         slotWidgets.forEach(this::removeWidget);
         slotWidgets.clear();
 
-        int left = (width - imageWidth) / 2;
-        int top = (height - imageHeight) / 2;
-        grid = new GridLayout(left + 85, top + 41);
+        int left = leftPos;
+        int top = topPos;
+        grid = new GridLayout(left + 85, top + WorkbenchGrid.TOP);
         var results = menu.results();
-        int rows = Math.max(6, Mth.ceil(results.size() / 9f));
-        for (int i = 0; i < 9; i++) {
+        int rows = WorkbenchGrid.rows(results.size());
+        for (int i = 0; i < WorkbenchGrid.COLUMNS; i++) {
             for (int j = 0; j < rows; j++) {
-                int index = i + j * 9;
+                int index = WorkbenchGrid.index(i, j);
                 var stack = results.size() > index ? results.get(index) : ItemStack.EMPTY;
-                SlotWidget slot = addRenderableWidget(new SlotWidget(stack, menu, top + 40, top + 141));
+                SlotWidget slot = addWidget(new SlotWidget(stack, menu, top + WorkbenchGrid.CLIP_TOP, top + WorkbenchGrid.CLIP_BOTTOM));
                 grid.addChild(slot, j, i);
                 slotWidgets.add(slot);
             }
         }
         grid.arrangeElements();
+        setScrollAmount(scrollAmount);
     }
 
     @Override
     public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
         super.extractRenderState(graphics, mouseX, mouseY, partialTick);
-    }
-
-    @Override
-    public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
-        int left = (width - imageWidth) / 2;
-        int top = (height - imageHeight) / 2;
-        graphics.enableScissor(left + 84, top + 40, left + 84 + 163, top + 40 + 109);
+        graphics.enableScissor(leftPos + 84, topPos + 40, leftPos + 247, topPos + 149);
         try {
             for (var widget : slotWidgets) {
                 widget.extractWidgetRenderState(graphics, mouseX, mouseY, partialTick);
@@ -181,11 +178,12 @@ public class WorkbenchScreen extends AbstractContainerScreen<WorkbenchMenu> {
 
     @Override
     public void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
-        int left = (width - imageWidth) / 2;
-        int top = (height - imageHeight) / 2;
-        graphics.blit(RenderPipelines.GUI_TEXT, TEXTURE, left, top, 0, 0, imageWidth, imageHeight, imageWidth, imageHeight);
-        graphics.text(font, PREVIEW_TEXT, left + 11, top + 14, 0x404040);
-        graphics.centeredText(font, hasShiftDown() ? CRAFT_ALL_TEXT : CRAFT_TEXT, left + 45, top + 106, 0x404040);
+        int left = leftPos;
+        int top = topPos;
+        graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, left, top, 0, 0, imageWidth, imageHeight, imageWidth, imageHeight);
+        super.extractContents(graphics, mouseX, mouseY, partialTick);
+        graphics.text(font, PREVIEW_TEXT, left + 11, top + 14, 0xFF404040);
+        graphics.centeredText(font, hasShiftDown() ? CRAFT_ALL_TEXT : CRAFT_TEXT, left + 45, top + 106, 0xFF404040);
 
         var stack = menu.chosenStack();
         if (stack.isEmpty()) return;
@@ -211,11 +209,12 @@ public class WorkbenchScreen extends AbstractContainerScreen<WorkbenchMenu> {
 
     @Override
     protected void slotClicked(Slot slot, int slotId, int mouseButton, ContainerInput type) {
+        menu.setFilter(searchBox.getValue());
+        menu.selectStack(slotId);
         super.slotClicked(slot, slotId, mouseButton, type);
+        scrollAmount = 0;
         addSlotWidgets();
         searchBox.setEditable(!menu.selectedStack().isEmpty());
-        scrollAmount = 0;
-        menu.setFilter(searchBox.getValue());
     }
 
     @Override
@@ -253,17 +252,18 @@ public class WorkbenchScreen extends AbstractContainerScreen<WorkbenchMenu> {
     }
 
     protected void setScrollAmount(double amount) {
-        int rows = Mth.ceil(menu.results().size() / 9f);
-        scrollAmount = Mth.clamp(amount, 0, rows * 18 - 108);
+        scrollAmount = WorkbenchGrid.clampScroll(amount, menu.results().size());
+        if (grid != null) grid.setY(WorkbenchGrid.gridY(topPos, scrollAmount));
     }
 
     public void craft() {
-        if (!menu.selectedStack().isEmpty()) {
+        if (menu.canCraft()) {
             NetworkHandler.CHANNEL.sendToServer(new ServerboundCraftPacket(menu.chosenStack(), hasShiftDown()));
             Objects.requireNonNull(minecraft).getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_STONECUTTER_TAKE_RESULT, 1, 1));
             menu.reset();
-            addSlotWidgets();
             scrollAmount = 0;
+            addSlotWidgets();
+            searchBox.setEditable(false);
             setFocused(null);
         }
     }
@@ -284,6 +284,7 @@ public class WorkbenchScreen extends AbstractContainerScreen<WorkbenchMenu> {
     }
 
     private boolean hasShiftDown() {
-        return false;
+        return InputConstants.isKeyDown(minecraft.getWindow(), GLFW.GLFW_KEY_LEFT_SHIFT)
+            || InputConstants.isKeyDown(minecraft.getWindow(), GLFW.GLFW_KEY_RIGHT_SHIFT);
     }
 }

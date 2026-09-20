@@ -4,43 +4,57 @@ import net.dungeonz.block.entity.DungeonSpawnerEntity;
 import net.dungeonz.block.logic.DungeonSpawnerLogic;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_1297;
-import net.minecraft.class_3532;
-import net.minecraft.class_4587;
-import net.minecraft.class_4597;
-import net.minecraft.class_5614;
-import net.minecraft.class_7833;
-import net.minecraft.class_827;
-import net.minecraft.class_898;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.util.Mth;
+import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
+import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import net.minecraft.client.renderer.blockentity.SpawnerRenderer;
+import net.minecraft.client.renderer.blockentity.state.SpawnerRenderState;
+import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
+import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
+import net.minecraft.world.phys.Vec3;
+import org.jspecify.annotations.Nullable;
 
 @Environment(EnvType.CLIENT)
-public class DungeonSpawnerRenderer implements class_827<DungeonSpawnerEntity> {
-    private final class_898 entityRenderDispatcher;
+public class DungeonSpawnerRenderer implements BlockEntityRenderer<DungeonSpawnerEntity, SpawnerRenderState> {
+    private final EntityRenderDispatcher entityRenderer;
 
-    public DungeonSpawnerRenderer(class_5614.class_5615 ctx) {
-        this.entityRenderDispatcher = ctx.method_43334();
+    public DungeonSpawnerRenderer(BlockEntityRendererProvider.Context ctx) {
+        this.entityRenderer = ctx.entityRenderer();
     }
 
     @Override
-    public void render(DungeonSpawnerEntity dungeonSpawnerEntity, float f, class_4587 matrixStack, class_4597 vertexConsumerProvider, int i, int j) {
-        matrixStack.method_22903();
-        matrixStack.method_22904(0.5, 0.0, 0.5);
-        DungeonSpawnerLogic dungeonSpawnerLogic = dungeonSpawnerEntity.getLogic();
-        class_1297 entity = dungeonSpawnerLogic.getRenderedEntity(dungeonSpawnerEntity.method_10997());
-        if (entity != null) {
-            float g = 0.53125f;
-            float h = Math.max(entity.method_17681(), entity.method_17682());
-            if ((double) h > 1.0) {
-                g /= h;
+    public SpawnerRenderState createRenderState() {
+        return new SpawnerRenderState();
+    }
+
+    @Override
+    public void extractRenderState(DungeonSpawnerEntity blockEntity, SpawnerRenderState state, float partialTicks, Vec3 cameraPosition,
+            ModelFeatureRenderer.@Nullable CrumblingOverlay breakProgress) {
+        BlockEntityRenderer.super.extractRenderState(blockEntity, state, partialTicks, cameraPosition, breakProgress);
+        if (blockEntity.getLevel() != null) {
+            DungeonSpawnerLogic logic = blockEntity.getLogic();
+            Entity entity = logic.getRenderedEntity(blockEntity.getLevel());
+            if (entity != null) {
+                state.displayEntity = this.entityRenderer.extractEntity(entity, partialTicks);
+                state.displayEntity.lightCoords = state.lightCoords;
+                state.spin = (float) Mth.lerp(partialTicks, logic.randomParticleValueTwo(), logic.randomParticleValueOne()) * 10.0F;
+                state.scale = 0.53125F;
+                float maxLength = Math.max(entity.getBbWidth(), entity.getBbHeight());
+                if (maxLength > 1.0F) {
+                    state.scale /= maxLength;
+                }
             }
-            matrixStack.method_22904(0.0, 0.4f, 0.0);
-            matrixStack.method_22907(
-                    class_7833.field_40716.rotationDegrees((float) class_3532.method_16436((double) f, dungeonSpawnerLogic.randomParticleValueTwo(), dungeonSpawnerLogic.randomParticleValueOne()) * 10.0f));
-            matrixStack.method_22904(0.0, -0.2f, 0.0);
-            matrixStack.method_22907(class_7833.field_40714.rotationDegrees(-30.0f));
-            matrixStack.method_22905(g, g, g);
-            this.entityRenderDispatcher.method_3954(entity, 0.0, 0.0, 0.0, 0.0f, f, matrixStack, vertexConsumerProvider, i);
         }
-        matrixStack.method_22909();
+    }
+
+    @Override
+    public void submit(SpawnerRenderState state, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, CameraRenderState camera) {
+        if (state.displayEntity != null) {
+            SpawnerRenderer.submitEntityInSpawner(poseStack, submitNodeCollector, state.displayEntity, this.entityRenderer, state.spin, state.scale, camera);
+        }
     }
 }

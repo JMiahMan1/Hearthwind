@@ -1,25 +1,25 @@
 package net.dungeonz.network.packet;
 
-import net.minecraft.class_2338;
-import net.minecraft.class_2960;
-import net.minecraft.class_8710;
-import net.minecraft.class_9129;
-import net.minecraft.class_9139;
+import net.minecraft.core.BlockPos;
+import net.minecraft.resources.Identifier;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 
-public record DungeonOpScreenPacket(class_2338 blockPos, String blockIdOrDungeonType, String particleEffectOrDifficulty, String unlockItem) implements class_8710 {
+public record DungeonOpScreenPacket(BlockPos blockPos, String blockIdOrDungeonType, String particleEffectOrDifficulty, String unlockItem) implements CustomPacketPayload {
 
-    public static final class_8710.class_9154<DungeonOpScreenPacket> PACKET_ID = new class_8710.class_9154<>(class_2960.method_60655("dungeonz", "dungeon_op_screen_packet"));
+    public static final CustomPacketPayload.Type<DungeonOpScreenPacket> PACKET_ID = new CustomPacketPayload.Type<>(Identifier.fromNamespaceAndPath("dungeonz", "dungeon_op_screen_packet"));
 
-    public static final class_9139<class_9129, DungeonOpScreenPacket> PACKET_CODEC = class_9139.method_56438((value, buf) -> {
+    public static final StreamCodec<RegistryFriendlyByteBuf, DungeonOpScreenPacket> PACKET_CODEC = StreamCodec.ofMember((value, buf) -> {
 
-        buf.method_10807(value.blockPos);
-        buf.method_10814(value.blockIdOrDungeonType);
-        buf.method_10814(value.particleEffectOrDifficulty);
-        buf.method_10814(value.unlockItem);
-    }, buf -> new DungeonOpScreenPacket(buf.method_10811(), buf.method_19772(), buf.method_19772(), buf.method_19772()));
+        buf.writeBlockPos(value.blockPos);
+        buf.writeUtf(value.blockIdOrDungeonType);
+        buf.writeUtf(value.particleEffectOrDifficulty);
+        buf.writeUtf(value.unlockItem);
+    }, buf -> new DungeonOpScreenPacket(buf.readBlockPos(), buf.readUtf(), buf.readUtf(), buf.readUtf()));
 
     @Override
-    public class_9154<? extends class_8710> method_56479() {
+    public Type<? extends CustomPacketPayload> type() {
         return PACKET_ID;
     }
 

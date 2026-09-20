@@ -52,13 +52,13 @@ public class ModBlocks {
 
     public static final TagKey<Block> SOUL_SAND_TAG = TagKey.create(Registries.BLOCK, Identifier.fromNamespaceAndPath(Chipped.MOD_ID, "soul_sand"));
 
-    public static final RegistryEntry<Block> BOTANIST_WORKBENCH = BENCHES.register("botanist_workbench", WorkbenchBlock::new, () -> BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_PLANKS).noOcclusion());
-    public static final RegistryEntry<Block> GLASSBLOWER = BENCHES.register("glassblower", WorkbenchBlock::new, () -> BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_PLANKS).noOcclusion());
-    public static final RegistryEntry<Block> CARPENTERS_TABLE = BENCHES.register("carpenters_table", WorkbenchBlock::new, () -> BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_PLANKS).noOcclusion());
-    public static final RegistryEntry<Block> LOOM_TABLE = BENCHES.register("loom_table", WorkbenchBlock::new, () -> BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_PLANKS).noOcclusion());
-    public static final RegistryEntry<Block> MASON_TABLE = BENCHES.register("mason_table", WorkbenchBlock::new, () -> BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_PLANKS).noOcclusion());
-    public static final RegistryEntry<Block> ALCHEMY_BENCH = BENCHES.register("alchemy_bench", WorkbenchBlock::new, () -> BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_PLANKS).noOcclusion());
-    public static final RegistryEntry<Block> TINKERING_TABLE = BENCHES.register("tinkering_table", WorkbenchBlock::new, () -> BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_PLANKS).noOcclusion());
+    public static final RegistryEntry<Block> BOTANIST_WORKBENCH = BENCHES.register("botanist_workbench", properties -> new WorkbenchBlock(ModRecipeTypes.BOTANIST_WORKBENCH, properties), () -> BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_PLANKS).noOcclusion());
+    public static final RegistryEntry<Block> GLASSBLOWER = BENCHES.register("glassblower", properties -> new WorkbenchBlock(ModRecipeTypes.GLASSBLOWER, properties), () -> BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_PLANKS).noOcclusion());
+    public static final RegistryEntry<Block> CARPENTERS_TABLE = BENCHES.register("carpenters_table", properties -> new WorkbenchBlock(ModRecipeTypes.CARPENTERS_TABLE, properties), () -> BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_PLANKS).noOcclusion());
+    public static final RegistryEntry<Block> LOOM_TABLE = BENCHES.register("loom_table", properties -> new WorkbenchBlock(ModRecipeTypes.LOOM_TABLE, properties), () -> BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_PLANKS).noOcclusion());
+    public static final RegistryEntry<Block> MASON_TABLE = BENCHES.register("mason_table", properties -> new WorkbenchBlock(ModRecipeTypes.MASON_TABLE, properties), () -> BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_PLANKS).noOcclusion());
+    public static final RegistryEntry<Block> ALCHEMY_BENCH = BENCHES.register("alchemy_bench", properties -> new WorkbenchBlock(ModRecipeTypes.ALCHEMY_BENCH, properties), () -> BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_PLANKS).noOcclusion());
+    public static final RegistryEntry<Block> TINKERING_TABLE = BENCHES.register("tinkering_table", properties -> new WorkbenchBlock(ModRecipeTypes.TINKERING_TABLE, properties), () -> BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_PLANKS).noOcclusion());
 
     public static final ChippedPaletteRegistry AMETHYST_BLOCK = createRegistry(Blocks.AMETHYST_BLOCK, Palettes.STONE);
     public static final ChippedPaletteRegistry COAL_BLOCK = createRegistry(Blocks.COAL_BLOCK, Palettes.STONE);
@@ -72,6 +72,10 @@ public class ModBlocks {
     public static final ChippedPaletteRegistry NETHERITE_BLOCK = createRegistry(Blocks.NETHERITE_BLOCK, Palettes.NETHERITE_BLOCK);
     public static final ChippedPaletteRegistry SPONGE = createRegistry(Blocks.SPONGE, Palettes.SPONGE, SpongeBlock::new);
     public static final ChippedPaletteRegistry GLOWSTONE = createRegistry(Blocks.GLOWSTONE, Palettes.GLOWSTONE);
+    public static final ChippedPaletteRegistry WAXED_COPPER_BLOCK = createRegistry(Blocks.COPPER_BLOCK.waxed().unaffected(), Palettes.COPPER_BLOCK);
+    public static final ChippedPaletteRegistry WAXED_EXPOSED_COPPER = createRegistry(Blocks.COPPER_BLOCK.waxed().exposed(), Palettes.COPPER_BLOCK);
+    public static final ChippedPaletteRegistry WAXED_WEATHERED_COPPER = createRegistry(Blocks.COPPER_BLOCK.waxed().weathered(), Palettes.COPPER_BLOCK);
+    public static final ChippedPaletteRegistry WAXED_OXIDIZED_COPPER = createRegistry(Blocks.COPPER_BLOCK.waxed().oxidized(), Palettes.COPPER_BLOCK);
 
     public static final ChippedPaletteRegistry BLUE_ICE = createRegistry(Blocks.BLUE_ICE, Palettes.STONE);
     public static final ChippedPaletteRegistry DIRT = createRegistry(Blocks.DIRT, Palettes.STONE);

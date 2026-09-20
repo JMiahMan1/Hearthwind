@@ -1,7 +1,9 @@
 package earth.terrarium.chipped.common.menus;
 
+import earth.terrarium.chipped.common.blocks.WorkbenchBlock;
+import earth.terrarium.chipped.common.recipes.ChippedRecipe;
 import earth.terrarium.chipped.common.registry.ModMenuTypes;
-import earth.terrarium.chipped.common.registry.ModRecipeTypes;
+import net.minecraft.core.BlockPos;
 import net.minecraft.util.StringUtil;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
@@ -11,6 +13,7 @@ import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingInput;
+import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -22,6 +25,7 @@ import java.util.Locale;
 public class WorkbenchMenu extends AbstractContainerMenu {
     protected final Inventory inventory;
     protected final Level level;
+    protected final RecipeType<ChippedRecipe> recipeType;
 
     private int selectedStackId;
     private ItemStack selectedStack = ItemStack.EMPTY;
@@ -30,10 +34,15 @@ public class WorkbenchMenu extends AbstractContainerMenu {
     private String filter;
     private final List<ItemStack> results = new ArrayList<>();
 
-    public WorkbenchMenu(int containerId, Inventory inventory) {
+    public WorkbenchMenu(int containerId, Inventory inventory, BlockPos pos) {
+        this(containerId, inventory, getRecipeFromPos(inventory.player.level(), pos));
+    }
+
+    public WorkbenchMenu(int containerId, Inventory inventory, RecipeType<ChippedRecipe> recipeType) {
         super(ModMenuTypes.WORKBENCH.get(), containerId);
         this.inventory = inventory;
         this.level = inventory.player.level();
+        this.recipeType = recipeType;
         addPlayerInvSlots();
     }
 
@@ -85,45 +94,31 @@ public class WorkbenchMenu extends AbstractContainerMenu {
     public void updateResults(@Nullable String filter) {
         if (selectedStack.isEmpty()) return;
         this.filter = filter;
+        if (recipeType == null) {
+            reset();
+            return;
+        }
         CraftingInput craftingInput = CraftingInput.of(1, 1, List.of(selectedStack));
 
-//
-//
-//        level.getRecipeManager()
-//            .getRecipeFor(ModRecipeTypes.WORKBENCH.get(), craftingInput, level).ifPresentOrElse(recipe -> {
-//                results.clear();
-//                recipe.value().getResults(craftingInput.getItem(0)).forEach(result -> {
-//                    if (filter == null
-//                        || StringUtil.isBlank(filter)
-//                        || result.getDisplayName().getString().toLowerCase(Locale.ROOT).contains(filter.toLowerCase(Locale.ROOT))) {
-//                        results.add(result);
-//                    }
-//                });
-//            }, this::reset);
+        level.recipeAccess().getSynchronizedRecipes()
+            .getFirstMatch(recipeType, craftingInput, level).ifPresentOrElse(recipe -> {
+                results.clear();
+                recipe.value().getResults(craftingInput.getItem(0)).forEach(result -> {
+                    if (filter == null
+                        || StringUtil.isBlank(filter)
+                        || result.getDisplayName().getString().toLowerCase(Locale.ROOT).contains(filter.toLowerCase(Locale.ROOT))) {
+                        results.add(result);
+                    }
+                });
+            }, this::reset);
+    }
+
+    public boolean canCraft() {
+        return !selectedStack.isEmpty() && results.stream().anyMatch(result -> ItemStack.isSameItemSameComponents(result, chosenStack));
     }
 
     public void craft(ItemStack stack, boolean replaceAll) {
-        if (stack.isEmpty()) return;
-
-        boolean canCraft = false;
-        for (var result : results) {
-            if (ItemStack.isSameItemSameComponents(result, stack)) {
-                canCraft = true;
-                break;
-            }
-        }
-        if (!canCraft) return;
-
-        inventory.setItem(selectedStackId, stack.copyWithCount(inventory.getItem(selectedStackId).getCount()));
-        if (replaceAll) {
-            for (int i = 0; i < inventory.getContainerSize(); i++) {
-                if (ItemStack.isSameItem(inventory.getItem(i), selectedStack)) {
-                    inventory.setItem(i, stack.copyWithCount(inventory.getItem(i).getCount()));
-                }
-            }
-        }
-
-        reset();
+        if (WorkbenchCrafting.replace(inventory, selectedStackId, selectedStack, stack, results, replaceAll)) reset();
     }
 
     public void reset() {
@@ -153,8 +148,20 @@ public class WorkbenchMenu extends AbstractContainerMenu {
         return level;
     }
 
+    public RecipeType<ChippedRecipe> recipeType() {
+        return recipeType;
+    }
+
     public void setFilter(@Nullable String filter) {
         this.filter = filter;
+    }
+
+    protected static RecipeType<ChippedRecipe> getRecipeFromPos(Level level, BlockPos pos) {
+        if (level == null || pos == null) return null;
+        if (level.getBlockState(pos).getBlock() instanceof WorkbenchBlock workbench) {
+            return workbench.recipeType();
+        }
+        return null;
     }
 
     private static class InventorySlot extends Slot {

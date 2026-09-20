@@ -23,25 +23,28 @@
     "client": [
       "net.dungeonz.DungeonzClient"
     ],
+    "fabric-client-gametest": [
+      "net.dungeonz.DungeonZClientGameTests"
+    ],
     "modmenu": [
       "net.dungeonz.config.ModMenuIntegration"
     ],
-    "emi": [
-      "net.dungeonz.compat.DungeonEmiPlugin"
-    ],
-    "rei_client": [
-      "net.dungeonz.compat.DungeonReiPlugin"
+    "fabric-gametest": [
+      "net.dungeonz.DungeonZGameTests"
     ]
   },
   "mixins": [
     "dungeonz.mixins.json"
   ],
   "depends": {
-    "java": ">=21",
-    "minecraft": ">=1.21.3",
+    "java": ">=25",
+    "minecraft": "~26.2",
     "fabric-api": "*",
     "fabricloader": ">=0.19.3",
     "cloth-config": "*"
+  },
+  "suggests": {
+    "hearthwind_skills": "*"
   },
   "custom": {
     "mc-publish": {

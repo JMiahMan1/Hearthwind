@@ -6,30 +6,32 @@ import org.spongepowered.asm.mixin.Mutable;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import net.dungeonz.init.DimensionInit;
-import net.minecraft.class_1927;
-import net.minecraft.class_1927.class_4179;
-import net.minecraft.class_1937;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.Explosion;
+import net.minecraft.world.level.Explosion.BlockInteraction;
+import net.minecraft.world.level.ServerExplosion;
 
-@Mixin(class_1927.class)
+// 26.x: Explosion is now an interface; block breaking runs in ServerExplosion.
+// Same behavior as before: explosions inside the dungeon dimension keep blocks.
+@Mixin(ServerExplosion.class)
 public class ExplosionMixin {
 
     @Shadow
-    @Mutable
     @Final
-    private class_1937 world;
+    private ServerLevel level;
 
     @Shadow
     @Mutable
     @Final
-    private class_4179 destructionType;
+    private BlockInteraction blockInteraction;
 
-    @Inject(method = "affectWorld", at = @At("HEAD"))
-    private void affectWorldMixin(boolean particles, CallbackInfo info) {
-        if (world.method_27983() == DimensionInit.DUNGEON_WORLD) {
-            destructionType = class_4179.field_40878;
+    @Inject(method = "explode", at = @At("HEAD"))
+    private void affectWorldMixin(CallbackInfoReturnable<Integer> info) {
+        if (level.dimension() == DimensionInit.DUNGEON_WORLD) {
+            blockInteraction = BlockInteraction.KEEP;
         }
     }
 

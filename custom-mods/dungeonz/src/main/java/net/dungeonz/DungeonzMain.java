@@ -26,9 +26,10 @@ public class DungeonzMain implements ModInitializer {
 
     public static final Logger LOGGER = LogManager.getLogger("DungeonZ");
 
-    public static final boolean isPartyAddonLoaded = FabricLoader.getInstance().isModLoaded("partyaddon");
-    public static final boolean isRpgDifficultyLoaded = FabricLoader.getInstance().isModLoaded("rpgdifficulty");
-    public static final boolean isLevelZLoaded = FabricLoader.getInstance().isModLoaded("levelz");
+    public static final boolean isHearthwindSkillsLoaded = FabricLoader.getInstance().isModLoaded("hearthwind_skills");
+    public static final boolean isPartyAddonLoaded = isHearthwindSkillsLoaded || FabricLoader.getInstance().isModLoaded("partyaddon");
+    public static final boolean isRpgDifficultyLoaded = isHearthwindSkillsLoaded || FabricLoader.getInstance().isModLoaded("rpgdifficulty");
+    public static final boolean isLevelZLoaded = isHearthwindSkillsLoaded || FabricLoader.getInstance().isModLoaded("levelz");
 
     public static final List<Dungeon> DUNGEONS = new ArrayList<Dungeon>();
 

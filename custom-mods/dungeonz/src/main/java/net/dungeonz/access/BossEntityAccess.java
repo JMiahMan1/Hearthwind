@@ -1,8 +1,8 @@
 package net.dungeonz.access;
 
-import net.minecraft.class_2338;
+import net.minecraft.core.BlockPos;
 
 public interface BossEntityAccess {
 
-    public void setBoss(class_2338 portalPos, String worldRegistryKey);
+    public void setBoss(BlockPos portalPos, String worldRegistryKey);
 }

@@ -5,18 +5,19 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
-import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.dungeonz.DungeonzMain;
 import net.dungeonz.dungeon.Dungeon;
 import net.dungeonz.init.ConfigInit;
 import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
-import net.minecraft.class_1299;
-import net.minecraft.class_2487;
-import net.minecraft.class_2522;
-import net.minecraft.class_2960;
-import net.minecraft.class_3300;
-import net.minecraft.class_7923;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.TagParser;
+import net.minecraft.resources.Identifier;
+import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.core.registries.BuiltInRegistries;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.InputStream;
@@ -31,15 +32,15 @@ import java.util.List;
 public class DungeonLoader implements SimpleSynchronousResourceReloadListener {
 
     @Override
-    public class_2960 getFabricId() {
-        return class_2960.method_60655("dungeonz", "dungeon_loader");
+    public Identifier getFabricId() {
+        return Identifier.fromNamespaceAndPath("dungeonz", "dungeon_loader");
     }
 
     @Override
-    public void method_14491(class_3300 manager) {
-        manager.method_14488("dungeon", id -> id.method_12832().endsWith(".json")).forEach((id, resourceRef) -> {
+    public void onResourceManagerReload(ResourceManager manager) {
+        manager.listResources("dungeon", id -> id.getPath().endsWith(".json")).forEach((id, resourceRef) -> {
             try {
-                InputStream stream = resourceRef.method_14482();
+                InputStream stream = resourceRef.open();
                 JsonObject data = JsonParser.parseReader(new InputStreamReader(stream)).getAsJsonObject();
 
                 String dungeonTypeId = data.get("dungeon_type").getAsString();
@@ -55,8 +56,8 @@ public class DungeonLoader implements SimpleSynchronousResourceReloadListener {
                 boolean keepInventory = data.has("keep_inventory") ? data.get("keep_inventory").getAsBoolean() : false;
                 boolean allowEnderPearl = data.has("ender_pearl") ? data.get("ender_pearl").getAsBoolean() : false;
                 boolean allowPositiveEffects = data.has("positive_effects") ? data.get("positive_effects").getAsBoolean() : false;
-                class_2960 dungeonBackgroundId = data.has("background_texture") && !data.get("background_texture").getAsString().isEmpty() ? class_2960.method_60654(data.get("background_texture").getAsString()) : null;
-                class_2960 dungeonStructurePoolId = class_2960.method_60654(data.get("dungeon_structure_pool_id").getAsString());
+                Identifier dungeonBackgroundId = data.has("background_texture") && !data.get("background_texture").getAsString().isEmpty() ? Identifier.parse(data.get("background_texture").getAsString()) : null;
+                Identifier dungeonStructurePoolId = Identifier.parse(data.get("dungeon_structure_pool_id").getAsString());
 
                 List<String> difficulties = new ArrayList<String>();
                 // Use LinkedHashMap to preserve insertion order from JSON
@@ -98,33 +99,33 @@ public class DungeonLoader implements SimpleSynchronousResourceReloadListener {
                 JsonObject blockObject = data.get("blocks").getAsJsonObject();
                 Iterator<String> blockIterator = blockObject.keySet().iterator();
 
-                HashMap<Integer, List<class_1299<?>>> blockIdEntityMap = new HashMap<Integer, List<class_1299<?>>>();
+                HashMap<Integer, List<EntityType<?>>> blockIdEntityMap = new HashMap<Integer, List<EntityType<?>>>();
                 HashMap<Integer, HashMap<String, Float>> blockIdEntitySpawnChance = new HashMap<Integer, HashMap<String, Float>>();
                 HashMap<Integer, Integer> blockIdBlockReplacement = new HashMap<Integer, Integer>();
                 int bossBlockId = -1;
                 int bossLootBlockId = -1;
                 int exitBlockId = -1;
-                class_1299<?> bossEntityType = null;
-                class_2487 bossNbtCompound = null;
+                EntityType<?> bossEntityType = null;
+                CompoundTag bossNbtCompound = null;
 
                 while (blockIterator.hasNext()) {
                     String block = blockIterator.next();
-                    if (class_7923.field_41175.method_10223(class_2960.method_60654(block)).toString().equals("Block{minecraft:air}")) {
+                    if (BuiltInRegistries.BLOCK.get(Identifier.parse(block)).map(ref -> ref.value()).orElse(Blocks.AIR) == Blocks.AIR) {
                         DungeonzMain.LOGGER.warn("{} is not a valid block identifier", block);
                         continue;
                     }
-                    int rawBlockId = class_7923.field_41175.method_10206(class_7923.field_41175.method_10223(class_2960.method_60654(block)));
+                    int rawBlockId = BuiltInRegistries.BLOCK.getId(BuiltInRegistries.BLOCK.get(Identifier.parse(block)).map(ref -> ref.value()).orElse(Blocks.AIR));
 
                     JsonObject specificBlockObject = blockObject.get(block).getAsJsonObject();
 
                     if (specificBlockObject.has("spawns")) {
-                        List<class_1299<?>> entityTypes = new ArrayList<class_1299<?>>();
+                        List<EntityType<?>> entityTypes = new ArrayList<EntityType<?>>();
                         for (int i = 0; i < specificBlockObject.get("spawns").getAsJsonArray().size(); i++) {
-                            if (!class_7923.field_41177.method_10250(class_2960.method_60654(specificBlockObject.get("spawns").getAsJsonArray().get(i).getAsString()))) {
+                            if (!BuiltInRegistries.ENTITY_TYPE.containsKey(Identifier.parse(specificBlockObject.get("spawns").getAsJsonArray().get(i).getAsString()))) {
                                 DungeonzMain.LOGGER.warn("{} is not a valid entity identifier", specificBlockObject.get("spawns").getAsJsonArray().get(i).getAsString());
                                 continue;
                             }
-                            entityTypes.add(class_7923.field_41177.method_10223(class_2960.method_60654(specificBlockObject.get("spawns").getAsJsonArray().get(i).getAsString())));
+                            entityTypes.add(BuiltInRegistries.ENTITY_TYPE.get(Identifier.parse(specificBlockObject.get("spawns").getAsJsonArray().get(i).getAsString())).map(ref -> ref.value()).orElse(null));
                         }
                         blockIdEntityMap.put(rawBlockId, entityTypes);
 
@@ -135,10 +136,10 @@ public class DungeonLoader implements SimpleSynchronousResourceReloadListener {
                         blockIdEntitySpawnChance.put(rawBlockId, difficultyChance);
 
                     } else if (specificBlockObject.has("boss_entity")) {
-                        if (!class_7923.field_41177.method_10250(class_2960.method_60654(specificBlockObject.get("boss_entity").getAsString()))) {
+                        if (!BuiltInRegistries.ENTITY_TYPE.containsKey(Identifier.parse(specificBlockObject.get("boss_entity").getAsString()))) {
                             DungeonzMain.LOGGER.warn("{} is not a valid entity identifier", specificBlockObject.get("boss_entity").getAsString());
                         }
-                        bossEntityType = class_7923.field_41177.method_10223(class_2960.method_60654(specificBlockObject.get("boss_entity").getAsString()));
+                        bossEntityType = BuiltInRegistries.ENTITY_TYPE.get(Identifier.parse(specificBlockObject.get("boss_entity").getAsString())).map(ref -> ref.value()).orElse(null);
                         bossNbtCompound = tryReadNbtData(specificBlockObject);
                         bossBlockId = rawBlockId;
                     } else if (specificBlockObject.has("exit_block") && specificBlockObject.get("exit_block").getAsBoolean()) {
@@ -150,12 +151,12 @@ public class DungeonLoader implements SimpleSynchronousResourceReloadListener {
                     }
 
                     if (!specificBlockObject.get("replace").isJsonNull()) {
-                        class_2960 blockIdentifier = class_2960.method_60654(specificBlockObject.get("replace").getAsString());
-                        if (!blockIdentifier.toString().equals("minecraft:air") && class_7923.field_41175.method_10223(blockIdentifier).toString().equals("Block{minecraft:air}")) {
+                        Identifier blockIdentifier = Identifier.parse(specificBlockObject.get("replace").getAsString());
+                        if (!blockIdentifier.toString().equals("minecraft:air") && BuiltInRegistries.BLOCK.get(blockIdentifier).map(ref -> ref.value()).orElse(Blocks.AIR) == Blocks.AIR) {
                             DungeonzMain.LOGGER.warn("{} is not a valid block identifier", specificBlockObject.get("replace").getAsString());
                             continue;
                         }
-                        blockIdBlockReplacement.put(rawBlockId, class_7923.field_41175.method_10206(class_7923.field_41175.method_10223(blockIdentifier)));
+                        blockIdBlockReplacement.put(rawBlockId, BuiltInRegistries.BLOCK.getId(BuiltInRegistries.BLOCK.get(blockIdentifier).map(ref -> ref.value()).orElse(Blocks.AIR)));
                     } else {
                         blockIdBlockReplacement.put(rawBlockId, -1);
                     }
@@ -168,34 +169,34 @@ public class DungeonLoader implements SimpleSynchronousResourceReloadListener {
 
                 while (spawnerIterator.hasNext()) {
                     String entityString = spawnerIterator.next();
-                    class_2960 entityIdentifier = class_2960.method_60654(entityString);
+                    Identifier entityIdentifier = Identifier.parse(entityString);
 
-                    if (class_7923.field_41177.method_10223(entityIdentifier).toString().equals("entity.minecraft.pig")) {
+                    if (!BuiltInRegistries.ENTITY_TYPE.containsKey(entityIdentifier)) {
                         DungeonzMain.LOGGER.warn("{} is not a valid entity identifier", entityString);
                         continue;
                     }
-                    spawnerEntityIdCountMap.put(class_7923.field_41177.method_10206(class_7923.field_41177.method_10223(entityIdentifier)), spawnerObject.get(entityString).getAsInt());
+                    spawnerEntityIdCountMap.put(BuiltInRegistries.ENTITY_TYPE.getId(BuiltInRegistries.ENTITY_TYPE.get(entityIdentifier).map(ref -> ref.value()).orElse(null)), spawnerObject.get(entityString).getAsInt());
                 }
                 List<Integer> breakableBlockIds = new ArrayList<Integer>();
                 if (data.has("breakable")) {
                     for (int i = 0; i < data.get("breakable").getAsJsonArray().size(); i++) {
-                        class_2960 blockIdentifier = class_2960.method_60654(data.get("breakable").getAsJsonArray().get(i).getAsString());
-                        if (class_7923.field_41175.method_10223(blockIdentifier).toString().equals("Block{minecraft:air}")) {
+                        Identifier blockIdentifier = Identifier.parse(data.get("breakable").getAsJsonArray().get(i).getAsString());
+                        if (BuiltInRegistries.BLOCK.get(blockIdentifier).map(ref -> ref.value()).orElse(Blocks.AIR) == Blocks.AIR) {
                             DungeonzMain.LOGGER.warn("{} is not a valid block identifier", data.get("breakable").getAsJsonArray().get(i).getAsString());
                             continue;
                         }
-                        breakableBlockIds.add(class_7923.field_41175.method_10206(class_7923.field_41175.method_10223(blockIdentifier)));
+                        breakableBlockIds.add(BuiltInRegistries.BLOCK.getId(BuiltInRegistries.BLOCK.get(blockIdentifier).map(ref -> ref.value()).orElse(Blocks.AIR)));
                     }
                 }
                 List<Integer> placeableBlockIds = new ArrayList<Integer>();
                 if (data.has("placeable")) {
                     for (int i = 0; i < data.get("placeable").getAsJsonArray().size(); i++) {
-                        class_2960 blockIdentifier = class_2960.method_60654(data.get("placeable").getAsJsonArray().get(i).getAsString());
-                        if (class_7923.field_41175.method_10223(blockIdentifier).toString().equals("Block{minecraft:air}")) {
+                        Identifier blockIdentifier = Identifier.parse(data.get("placeable").getAsJsonArray().get(i).getAsString());
+                        if (BuiltInRegistries.BLOCK.get(blockIdentifier).map(ref -> ref.value()).orElse(Blocks.AIR) == Blocks.AIR) {
                             DungeonzMain.LOGGER.warn("{} is not a valid block identifier", data.get("placeable").getAsJsonArray().get(i).getAsString());
                             continue;
                         }
-                        placeableBlockIds.add(class_7923.field_41175.method_10206(class_7923.field_41175.method_10223(blockIdentifier)));
+                        placeableBlockIds.add(BuiltInRegistries.BLOCK.getId(BuiltInRegistries.BLOCK.get(blockIdentifier).map(ref -> ref.value()).orElse(Blocks.AIR)));
                     }
                 }
 
@@ -214,12 +215,12 @@ public class DungeonLoader implements SimpleSynchronousResourceReloadListener {
                     HashMap<Integer, Integer> requiredItemCountMap = new HashMap<>();
 
                     for (String itemString : requiredObject.get(difficulty).getAsJsonObject().keySet()) {
-                        class_2960 itemIdentifier = class_2960.method_60654(itemString);
-                        if (class_7923.field_41178.method_10223(itemIdentifier).toString().equals("air")) {
+                        Identifier itemIdentifier = Identifier.parse(itemString);
+                        if (BuiltInRegistries.ITEM.get(itemIdentifier).map(ref -> ref.value()).orElse(Items.AIR) == Items.AIR) {
                             DungeonzMain.LOGGER.warn("{} is not a valid item identifier", itemString);
                             continue;
                         }
-                        requiredItemCountMap.put(class_7923.field_41178.method_10206(class_7923.field_41178.method_10223(itemIdentifier)), requiredObject.get(difficulty).getAsJsonObject().get(itemString).getAsInt());
+                        requiredItemCountMap.put(BuiltInRegistries.ITEM.getId(BuiltInRegistries.ITEM.get(itemIdentifier).map(ref -> ref.value()).orElse(Items.AIR)), requiredObject.get(difficulty).getAsJsonObject().get(itemString).getAsInt());
                     }
                     difficultyRequiredItemCountMap.put(difficulty, requiredItemCountMap);
                 }
@@ -244,10 +245,10 @@ public class DungeonLoader implements SimpleSynchronousResourceReloadListener {
     }
 
     @Nullable
-    private static class_2487 tryReadNbtData(JsonObject json) {
+    private static CompoundTag tryReadNbtData(JsonObject json) {
         if (json.has("data") && json.get("data") != null && !json.get("data").getAsString().equals("")) {
             try {
-                return new class_2522(new StringReader(json.get("data").getAsString())).method_10727();
+                return TagParser.parseCompoundFully(json.get("data").getAsString());
             } catch (CommandSyntaxException e) {
                 e.printStackTrace();
                 throw new JsonParseException("Failed to load nbt data of json object " + json);

@@ -1,0 +1,16 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        " e ",
+        "ede",
+        " e "
+    ],
+    "key": {
+        "d": "minecraft:compass",
+        "e": "minecraft:emerald"
+    },
+    "result": {
+        "id": "dungeonz:dungeon_compass",
+        "count": 1
+    }
+}

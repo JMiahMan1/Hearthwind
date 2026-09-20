@@ -2,7 +2,9 @@ package earth.terrarium.chipped.client;
 
 import com.teamresourceful.resourcefullib.common.registry.ResourcefulRegistry;
 import earth.terrarium.chipped.client.fabric.ChippedClientImpl;
+import earth.terrarium.chipped.client.screens.ChippedBlockPreviewRenderer;
 import earth.terrarium.chipped.common.registry.ModBlocks;
+import net.fabricmc.fabric.api.client.rendering.v1.PictureInPictureRendererRegistry;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.world.level.block.Block;
 
@@ -12,6 +14,7 @@ public class ChippedClient {
 
     public static void init() {
         registerRenderTypes();
+        PictureInPictureRendererRegistry.register(context -> new ChippedBlockPreviewRenderer());
     }
 
     private static void registerRenderTypes() {

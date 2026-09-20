@@ -4,212 +4,221 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-
-import net.dungeonz.DungeonzMain;
 import net.dungeonz.init.DimensionInit;
 import net.dungeonz.network.DungeonClientPacket;
 import net.dungeonz.util.InventoryHelper;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.fabricmc.loader.api.FabricLoader;
-import net.levelz.access.LevelManagerAccess;
-import net.levelz.level.LevelManager;
-import net.minecraft.class_1657;
-import net.minecraft.class_1661;
-import net.minecraft.class_1703;
-import net.minecraft.class_1712;
-import net.minecraft.class_1799;
-import net.minecraft.class_1802;
-import net.minecraft.class_2561;
-import net.minecraft.class_2960;
-import net.minecraft.class_310;
-import net.minecraft.class_327;
-import net.minecraft.class_332;
-import net.minecraft.class_3532;
-import net.minecraft.class_4185;
-import net.minecraft.class_465;
-import net.minecraft.class_8666;
-import net.partyaddon.access.GroupManagerAccess;
-import net.partyaddon.group.GroupManager;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.ContainerListener;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.util.ARGB;
+import net.minecraft.util.Mth;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.gui.components.WidgetSprites;
 
 @Environment(EnvType.CLIENT)
-public class DungeonPortalScreen extends class_465<DungeonPortalScreenHandler> implements class_1712 {
+public class DungeonPortalScreen extends AbstractContainerScreen<DungeonPortalScreenHandler> implements ContainerListener {
 
-    private static final class_2960 ICONS = class_2960.method_60654("dungeonz:textures/gui/dungeon_icons.png");
-    private static final class_2561 JOIN = class_2561.method_43471("dungeon.task.join");
-    private static final class_2561 LEAVE = class_2561.method_43471("dungeon.task.leave");
-    private static final class_1799 INFO_ITEMSTACK = new class_1799(class_1802.field_8573);
+    private static final Identifier ICONS = Identifier.parse("dungeonz:textures/gui/dungeon_icons.png");
+    private static final Component JOIN = Component.translatable("dungeon.task.join");
+    private static final Component LEAVE = Component.translatable("dungeon.task.leave");
+    private static final ItemStack INFO_ITEMSTACK = new ItemStack(Items.CREEPER_BANNER_PATTERN);
 
-    private final class_2960 texture;
+    private final Identifier texture;
     public DungeonDifficultyButton difficultyButton;
     private DungeonButton dungeonButton;
     private DungeonSliderButton privateButton;
-    private final class_1657 playerEntity;
+    private final Player playerEntity;
+    private boolean joinRequested;
 
-    public DungeonPortalScreen(DungeonPortalScreenHandler handler, class_1661 inventory, class_2561 title) {
-        super(handler, inventory, title);
-        this.playerEntity = inventory.field_7546;
-        texture = handler.getBackgroundId() != null ? handler.getBackgroundId() : class_2960.method_60654("dungeonz:textures/gui/dungeon_portal.png");
-        this.field_2792 = 256;
-        this.field_2779 = 222;
+    public DungeonPortalScreen(DungeonPortalScreenHandler handler, Inventory inventory, Component title) {
+        super(handler, inventory, title, 256, 222);
+        this.playerEntity = inventory.player;
+        texture = handler.getBackgroundId() != null ? handler.getBackgroundId() : Identifier.parse("dungeonz:textures/gui/dungeon_portal.png");
     }
 
     @Override
-    protected void method_25426() {
-        super.method_25426();
-        this.field_2776 = (this.field_22789 / 2 - this.field_2792 / 2);
-        this.field_2800 = (this.field_22790 / 2 - this.field_2779 / 2);
+    protected void init() {
+        super.init();
 
-        this.field_2797.method_7596(this);
+        this.menu.addSlotListener(this);
 
-        final boolean playerIsInDungeonWorld = playerEntity.method_37908().method_27983() == DimensionInit.DUNGEON_WORLD;
-        class_2561 buttonText = playerIsInDungeonWorld ? LEAVE : JOIN;
+        final boolean playerIsInDungeonWorld = playerEntity.level().dimension() == DimensionInit.DUNGEON_WORLD;
+        Component buttonText = playerIsInDungeonWorld ? LEAVE : JOIN;
 
-        this.dungeonButton = this.method_37063(new DungeonButton(this.field_2776 + this.field_2792 / 2 - 26, this.field_2800 + this.field_2779 - 28, buttonText, (button) -> {
-            if (button.field_22763) {
-                DungeonClientPacket.writeC2SDungeonTeleportPacket(this.field_22787, this.field_2797.getPos(), this.playerEntity.method_5667());
-                this.field_2797.setWaitingGroupSize(this.field_2797.getWaitingGroupSize() + 1);
-                button.field_22763 = false;
+        this.dungeonButton = this.addRenderableWidget(new DungeonButton(this.leftPos + this.imageWidth / 2 - 26, this.topPos + this.imageHeight - 28, buttonText, (button) -> {
+            if (button.active) {
+                DungeonClientPacket.writeC2SDungeonTeleportPacket(this.minecraft, this.menu.getPos(), this.playerEntity.getUUID());
+                this.joinRequested = true;
+                this.menu.setWaitingGroupSize(this.menu.getWaitingGroupSize() + 1);
+                button.active = false;
             }
         }));
-        this.difficultyButton = this.method_37063(new DungeonDifficultyButton(this.field_2776 + 144, this.field_2800 + 36, class_2561.method_30163(""), (button) -> {
-            if (button.field_22763) {
-                DungeonClientPacket.writeC2SChangeDifficultyPacket(this.field_22787, this.field_2797.getPos());
+        this.difficultyButton = this.addRenderableWidget(new DungeonDifficultyButton(this.leftPos + 144, this.topPos + 36, Component.nullToEmpty(""), (button) -> {
+            if (button.active) {
+                DungeonClientPacket.writeC2SChangeDifficultyPacket(this.minecraft, this.menu.getPos());
             }
         }));
-        this.privateButton = this.method_37063(new DungeonSliderButton(this.field_2776 + 144, this.field_2800 + 63, (button) -> {
-            if (button.field_22763) {
+        this.privateButton = this.addRenderableWidget(new DungeonSliderButton(this.leftPos + 144, this.topPos + 63, (button) -> {
+            if (button.active) {
                 ((DungeonSliderButton) button).cycleEnabled();
-                DungeonClientPacket.writeC2SChangePrivateGroupPacket(field_22787, this.field_2797.getPos(), ((DungeonSliderButton) button).isEnabled());
+                DungeonClientPacket.writeC2SChangePrivateGroupPacket(minecraft, this.menu.getPos(), ((DungeonSliderButton) button).isEnabled());
             }
         }));
 
-        this.privateButton.enabled = this.field_2797.getDungeonPortalEntity().getPrivateGroup();
+        this.privateButton.enabled = this.menu.getDungeonPortalEntity().getPrivateGroup();
         if (playerIsInDungeonWorld) {
-            this.dungeonButton.field_22763 = true;
-            this.difficultyButton.field_22763 = false;
-            this.privateButton.field_22763 = false;
+            this.dungeonButton.active = true;
+            this.difficultyButton.active = false;
+            this.privateButton.active = false;
         } else {
-            if (!this.field_2797.getDungeonPortalEntity().getDungeonPlayerUuids().isEmpty()) {
-                this.difficultyButton.field_22763 = false;
-                this.privateButton.field_22763 = false;
+            if (!this.menu.getDungeonPortalEntity().getDungeonPlayerUuids().isEmpty()) {
+                this.difficultyButton.active = false;
+                this.privateButton.active = false;
             } else {
-                this.difficultyButton.field_22763 = true;
-                this.privateButton.field_22763 = true;
+                this.difficultyButton.active = true;
+                this.privateButton.active = true;
             }
-            if ((this.field_2797.getDungeonPortalEntity().getDungeonPlayerUuids().size() + this.field_2797.getDungeonPortalEntity().getDeadDungeonPlayerUUIDs().size()) < this.field_2797
-                    .getDungeonPortalEntity().getMaxGroupSize() && InventoryHelper.hasRequiredItemStacks(this.playerEntity.method_31548(), this.field_2797.getRequiredItemStacks().get(this.field_2797.getDungeonPortalEntity().getDifficulty()))
-                    && !this.field_2797.getDungeonPortalEntity().getDeadDungeonPlayerUUIDs().contains(this.playerEntity.method_5667())) {
-                this.dungeonButton.field_22763 = true;
+            if ((this.menu.getDungeonPortalEntity().getDungeonPlayerUuids().size() + this.menu.getDungeonPortalEntity().getDeadDungeonPlayerUUIDs().size()) < this.menu
+                    .getDungeonPortalEntity().getMaxGroupSize() && InventoryHelper.hasRequiredItemStacks(this.playerEntity.getInventory(), this.menu.getRequiredItemStacks().get(this.menu.getDungeonPortalEntity().getDifficulty()))
+                    && !this.menu.getDungeonPortalEntity().getDeadDungeonPlayerUUIDs().contains(this.playerEntity.getUUID())) {
+                this.dungeonButton.active = true;
             } else {
-                this.dungeonButton.field_22763 = false;
+                this.dungeonButton.active = false;
             }
-            if (this.dungeonButton.field_22763 && DungeonzMain.isLevelZLoaded) {
-                LevelManager levelManager = ((LevelManagerAccess) this.playerEntity).getLevelManager();
-                if (levelManager.getOverallLevel() < this.field_2797.getRequiredLevel()) {
-                    this.dungeonButton.field_22763 = false;
-                }
+            if (!this.menu.getAdmission().meetsRequiredLevel(this.menu.getRequiredLevel())) {
+                this.dungeonButton.active = false;
             }
-            if (this.dungeonButton.field_22763 && this.privateButton.enabled && !this.field_2797.getDungeonPortalEntity().getDungeonPlayerUuids().isEmpty()) {
-                if (DungeonzMain.isPartyAddonLoaded) {
-                    GroupManager groupManager = ((GroupManagerAccess) this.playerEntity).getGroupManager();
-                    if (groupManager.getGroupPlayerIdList().isEmpty() || !groupManager.getGroupPlayerIdList().contains(this.field_2797.getDungeonPortalEntity().getDungeonPlayerUuids().get(0))) {
-                        this.dungeonButton.field_22763 = false;
-                    }
-                } else {
-                    this.dungeonButton.field_22763 = false;
+            if (this.dungeonButton.active && this.privateButton.enabled && !this.menu.getDungeonPortalEntity().getDungeonPlayerUuids().isEmpty()) {
+                if (!this.menu.getAdmission().admits(this.menu.getDungeonPortalEntity().getDungeonPlayerUuids().get(0))) {
+                    this.dungeonButton.active = false;
                 }
             }
         }
-        if (this.field_2797.getDifficulties().contains(this.field_2797.getDungeonPortalEntity().getDifficulty())) {
-            this.difficultyButton.setText(class_2561.method_43471("dungeonz.difficulty." + this.field_2797.getDungeonPortalEntity().getDifficulty()));
+        if (this.menu.getDifficulties().contains(this.menu.getDungeonPortalEntity().getDifficulty())) {
+            this.difficultyButton.setText(Component.translatable("dungeonz.difficulty." + this.menu.getDungeonPortalEntity().getDifficulty()));
         } else {
-            this.difficultyButton.setText(class_2561.method_43471("dungeonz.difficulty." + this.field_2797.getDifficulties().get(0)));
+            this.difficultyButton.setText(Component.translatable("dungeonz.difficulty." + this.menu.getDifficulties().get(0)));
         }
-        if (this.field_2797.getDungeonPortalEntity().isOnCooldown((int) this.field_22787.field_1687.method_8510())) {
-            this.dungeonButton.field_22763 = false;
+        if (this.menu.getDungeonPortalEntity().isOnCooldown((int) this.minecraft.level.getGameTime())) {
+            this.dungeonButton.active = false;
         }
     }
 
-    private class_2561 getPlayerName(UUID playerId, int length, int substringLength) {
-        if (this.field_22787.method_1562().method_2871(playerId) != null) {
-            String playerName = this.field_22787.method_1562().method_2871(playerId).method_2966().getName();
-            if (this.field_22787.field_1772.method_1727(playerName) > length && substringLength != 0) {
+    private Component getPlayerName(UUID playerId, int length, int substringLength) {
+        if (this.minecraft.getConnection().getPlayerInfo(playerId) != null) {
+            String playerName = this.minecraft.getConnection().getPlayerInfo(playerId).getProfile().name();
+            if (this.minecraft.font.width(playerName) > length && substringLength != 0) {
                 playerName = playerName.substring(0, substringLength) + "..";
             }
-            return class_2561.method_30163(playerName);
+            return Component.nullToEmpty(playerName);
         }
-        return class_2561.method_43471("text.dungeonz.empty_name");
+        return Component.translatable("text.dungeonz.empty_name");
     }
 
     @Override
-    public void method_37432() {
-        super.method_37432();
+    public void containerTick() {
+        super.containerTick();
+        if (this.joinRequested) {
+            return;
+        }
+        if (this.playerEntity.level().dimension() == DimensionInit.DUNGEON_WORLD) {
+            this.dungeonButton.active = true;
+            return;
+        }
+        var portal = this.menu.getDungeonPortalEntity();
+        var occupants = portal.getDungeonPlayerUuids();
+        this.dungeonButton.active = occupants.size() + portal.getDeadDungeonPlayerUUIDs().size() < portal.getMaxGroupSize()
+                && !portal.isOnCooldown((int) this.minecraft.level.getGameTime())
+                && !portal.getDeadDungeonPlayerUUIDs().contains(this.playerEntity.getUUID())
+                && InventoryHelper.hasRequiredItemStacks(this.playerEntity.getInventory(), this.menu.getRequiredItemStacks().get(portal.getDifficulty()))
+                && this.menu.getAdmission().meetsRequiredLevel(this.menu.getRequiredLevel())
+                && (!this.privateButton.enabled || occupants.isEmpty() || this.menu.getAdmission().admits(occupants.get(0)));
     }
 
     @Override
-    public void method_25394(class_332 context, int mouseX, int mouseY, float delta) {
-        super.method_25394(context, mouseX, mouseY, delta);
+    public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
+        super.extractBackground(graphics, mouseX, mouseY, delta);
+        graphics.blit(RenderPipelines.GUI_TEXTURED, texture, this.leftPos, this.topPos, 0, 0, this.imageWidth, this.imageHeight, 256, 256);
+    }
+
+    @Override
+    protected void extractLabels(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
+    }
+
+    @Override
+    public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
+        super.extractRenderState(graphics, mouseX, mouseY, delta);
 
         // Title
-        context.method_51439(this.field_22793, this.field_22785, this.field_2776 + this.field_2792 / 2 - this.field_22793.method_27525(this.field_22785) / 2, this.field_2800 + 8, 0x404040, false);
+        graphics.text(this.font, this.title, this.leftPos + this.imageWidth / 2 - this.font.width(this.title) / 2, this.topPos + 8, 0xFF404040, false);
 
         // Dungeon player list
-        int k = this.field_2800 + 37;
-        context.method_51439(this.field_22793,
-                class_2561.method_43469("text.dungeonz.player_list",
-                        this.field_2797.getDungeonPortalEntity().getDungeonPlayerUuids().size() + this.field_2797.getDungeonPortalEntity().getDeadDungeonPlayerUUIDs().size(),
-                        this.field_2797.getDungeonPortalEntity().getMaxGroupSize()),
-                this.field_2776 + 8, this.field_2800 + 24, 0x3F3F3F, false);
-        for (int i = 0; i < this.field_2797.getDungeonPortalEntity().getDungeonPlayerUuids().size() && i < 13; i++) {
-            String playerName = getPlayerName(this.field_2797.getDungeonPortalEntity().getDungeonPlayerUuids().get(i), 102, 15).getString();
+        int k = this.topPos + 37;
+        graphics.text(this.font,
+                Component.translatable("text.dungeonz.player_list",
+                        this.menu.getDungeonPortalEntity().getDungeonPlayerUuids().size() + this.menu.getDungeonPortalEntity().getDeadDungeonPlayerUUIDs().size(),
+                        this.menu.getDungeonPortalEntity().getMaxGroupSize()),
+                this.leftPos + 8, this.topPos + 24, 0xFF3F3F3F, false);
+        for (int i = 0; i < this.menu.getDungeonPortalEntity().getDungeonPlayerUuids().size() && i < 13; i++) {
+            String playerName = getPlayerName(this.menu.getDungeonPortalEntity().getDungeonPlayerUuids().get(i), 102, 15).getString();
             if (i == 12) {
                 playerName = "...";
-                if (this.method_2378(13, k, 16, 7, mouseX, mouseY)) {
-                    List<class_2561> otherPlayerNames = new ArrayList<class_2561>();
-                    for (int u = 12; u < this.field_2797.getDungeonPortalEntity().getDungeonPlayerUuids().size(); u++) {
-                        otherPlayerNames.add(getPlayerName(this.field_2797.getDungeonPortalEntity().getDungeonPlayerUuids().get(u), 102, 15));
+                if (this.isHovering(13, k, 16, 7, mouseX, mouseY)) {
+                    List<Component> otherPlayerNames = new ArrayList<Component>();
+                    for (int u = 12; u < this.menu.getDungeonPortalEntity().getDungeonPlayerUuids().size(); u++) {
+                        otherPlayerNames.add(getPlayerName(this.menu.getDungeonPortalEntity().getDungeonPlayerUuids().get(u), 102, 15));
                     }
-                    context.method_51434(this.field_22793, otherPlayerNames, mouseX, mouseY);
+                    graphics.setComponentTooltipForNextFrame(this.font, otherPlayerNames, mouseX, mouseY);
                 }
             }
-            context.method_51433(this.field_22793, playerName, this.field_2776 + 13, k, 0xFFFFFF, false);
+            graphics.text(this.font, playerName, this.leftPos + 13, k, 0xFFFFFFFF, false);
             k += 13;
         }
         // Required items
-        context.method_51439(this.field_22793, class_2561.method_43471("text.dungeonz.required"), this.field_2776 + 139, this.field_2800 + 81, 0x3F3F3F, false);
-        context.method_25302(ICONS, this.field_2776 + 142 + this.field_22793.method_27525(class_2561.method_43471("text.dungeonz.required")), this.field_2800 + 78,
-                52 + (InventoryHelper.hasRequiredItemStacks(this.playerEntity.method_31548(), this.field_2797.getRequiredItemStacks().get(this.field_2797.getDungeonPortalEntity().getDifficulty())) ? 0 : 14), 0, 14, 14);
+        graphics.text(this.font, Component.translatable("text.dungeonz.required"), this.leftPos + 139, this.topPos + 81, 0xFF3F3F3F, false);
+        graphics.blit(RenderPipelines.GUI_TEXTURED, ICONS, this.leftPos + 142 + this.font.width(Component.translatable("text.dungeonz.required")), this.topPos + 78,
+                52 + (InventoryHelper.hasRequiredItemStacks(this.playerEntity.getInventory(), this.menu.getRequiredItemStacks().get(this.menu.getDungeonPortalEntity().getDifficulty())) ? 0 : 14), 0, 14, 14, 256, 256);
 
-        if (!this.field_2797.getRequiredItemStacks().get(this.field_2797.getDungeonPortalEntity().getDifficulty()).isEmpty()) {
+        if (!this.menu.getRequiredItemStacks().get(this.menu.getDungeonPortalEntity().getDifficulty()).isEmpty()) {
             int l = 0;
 
-            for (class_1799 stack : this.field_2797.getRequiredItemStacks().get(this.field_2797.getDungeonPortalEntity().getDifficulty())) {
-                context.method_51427(stack, this.field_2776 + 144 + l, this.field_2800 + 93);
-                context.method_51431(this.field_22793, stack, this.field_2776 + 144 + l, this.field_2800 + 93);
-                if (this.method_2378(144 + l, 93, 16, 16, mouseX, mouseY)) {
-                    context.method_51438(this.field_22793, stack.method_7964(), mouseX, mouseY);
+            for (ItemStack stack : this.menu.getRequiredItemStacks().get(this.menu.getDungeonPortalEntity().getDifficulty())) {
+                graphics.item(stack, this.leftPos + 144 + l, this.topPos + 93);
+                graphics.itemDecorations(this.font, stack, this.leftPos + 144 + l, this.topPos + 93);
+                if (this.isHovering(144 + l, 93, 16, 16, mouseX, mouseY)) {
+                    graphics.setTooltipForNextFrame(this.font, stack.getHoverName(), mouseX, mouseY);
                 }
                 l += 18;
             }
         } else {
-            context.method_51439(this.field_22793, class_2561.method_43471("text.dungeonz.nothing_required"), this.field_2776 + 144, this.field_2800 + 93, 0x3F3F3F, false);
+            graphics.text(this.font, Component.translatable("text.dungeonz.nothing_required"), this.leftPos + 144, this.topPos + 93, 0xFF3F3F3F, false);
         }
 
         // Possible loot
-        context.method_51439(this.field_22793, class_2561.method_43471("text.dungeonz.possible"), this.field_2776 + 139, this.field_2800 + 115, 0x3F3F3F, false);
-        if (this.field_2797.getPossibleLootDifficultyItemStackMap().size() > 0 && this.field_2797.getPossibleLootDifficultyItemStackMap().containsKey(this.field_2797.getDungeonPortalEntity().getDifficulty())
-                && this.field_2797.getPossibleLootDifficultyItemStackMap().get(this.field_2797.getDungeonPortalEntity().getDifficulty()).size() > 0) {
+        graphics.text(this.font, Component.translatable("text.dungeonz.possible"), this.leftPos + 139, this.topPos + 115, 0xFF3F3F3F, false);
+        if (this.menu.getPossibleLootDifficultyItemStackMap().size() > 0 && this.menu.getPossibleLootDifficultyItemStackMap().containsKey(this.menu.getDungeonPortalEntity().getDifficulty())
+                && this.menu.getPossibleLootDifficultyItemStackMap().get(this.menu.getDungeonPortalEntity().getDifficulty()).size() > 0) {
             int l = 0;
             int o = 0;
-            for (int i = 0; i < this.field_2797.getPossibleLootDifficultyItemStackMap().get(this.field_2797.getDungeonPortalEntity().getDifficulty()).size() && i < 10; i++) {
-                context.method_51427(this.field_2797.getPossibleLootDifficultyItemStackMap().get(this.field_2797.getDungeonPortalEntity().getDifficulty()).get(i), this.field_2776 + 144 + l, this.field_2800 + o + 127);
-                context.method_51431(this.field_22793, this.field_2797.getPossibleLootDifficultyItemStackMap().get(this.field_2797.getDungeonPortalEntity().getDifficulty()).get(i), this.field_2776 + 144 + l,
-                        this.field_2800 + o + 127);
+            for (int i = 0; i < this.menu.getPossibleLootDifficultyItemStackMap().get(this.menu.getDungeonPortalEntity().getDifficulty()).size() && i < 10; i++) {
+                graphics.item(this.menu.getPossibleLootDifficultyItemStackMap().get(this.menu.getDungeonPortalEntity().getDifficulty()).get(i), this.leftPos + 144 + l, this.topPos + o + 127);
+                graphics.itemDecorations(this.font, this.menu.getPossibleLootDifficultyItemStackMap().get(this.menu.getDungeonPortalEntity().getDifficulty()).get(i), this.leftPos + 144 + l,
+                        this.topPos + o + 127);
 
-                if (this.method_2378(144 + l, o + 127, 16, 16, mouseX, mouseY)) {
-                    context.method_51438(this.field_22793, this.field_2797.getPossibleLootDifficultyItemStackMap().get(this.field_2797.getDungeonPortalEntity().getDifficulty()).get(i).method_7964(), mouseX,
+                if (this.isHovering(144 + l, o + 127, 16, 16, mouseX, mouseY)) {
+                    graphics.setTooltipForNextFrame(this.font, this.menu.getPossibleLootDifficultyItemStackMap().get(this.menu.getDungeonPortalEntity().getDifficulty()).get(i).getHoverName(), mouseX,
                             mouseY);
                 }
                 l += 18;
@@ -219,27 +228,27 @@ public class DungeonPortalScreen extends class_465<DungeonPortalScreenHandler> i
                 }
             }
         }
-        context.method_51439(this.field_22793, class_2561.method_43471("dungeonz.difficulty"), this.field_2776 + 139, this.field_2800 + 24, 0x3F3F3F, false);
-        context.method_51439(this.field_22793, class_2561.method_43471("text.dungeonz.private"), this.field_2776 + 169, this.field_2800 + 65, 0x3F3F3F, false);
+        graphics.text(this.font, Component.translatable("dungeonz.difficulty"), this.leftPos + 139, this.topPos + 24, 0xFF3F3F3F, false);
+        graphics.text(this.font, Component.translatable("text.dungeonz.private"), this.leftPos + 169, this.topPos + 65, 0xFF3F3F3F, false);
         // Min group size
-        if (this.field_2797.getDungeonPortalEntity().getDungeonPlayerCount() <= 0 && this.field_2797.getDungeonPortalEntity().getMinGroupSize() > 1) {
-            context.method_51439(this.field_22793, class_2561.method_43469("text.dungeonz.waiting_player_list", this.field_2797.getWaitingGroupSize(), this.field_2797.getDungeonPortalEntity().getMinGroupSize()),
-                    this.field_2776 + 139, this.field_2800 + 167, 0x3F3F3F, false);
+        if (this.menu.getDungeonPortalEntity().getDungeonPlayerCount() <= 0 && this.menu.getDungeonPortalEntity().getMinGroupSize() > 1) {
+            graphics.text(this.font, Component.translatable("text.dungeonz.waiting_player_list", this.menu.getWaitingGroupSize(), this.menu.getDungeonPortalEntity().getMinGroupSize()),
+                    this.leftPos + 139, this.topPos + 167, 0xFF3F3F3F, false);
         }
         // LevelZ
-        if (DungeonzMain.isLevelZLoaded) {
-            context.method_51439(this.field_22793, class_2561.method_43469("text.dungeonz.required_level", this.field_2797.getRequiredLevel()), this.field_2776 + 139, this.field_2800 + 180, 0x3F3F3F, false);
+        if (this.menu.getAdmission().levelsEnabled()) {
+            graphics.text(this.font, Component.translatable("text.dungeonz.required_level", this.menu.getRequiredLevel()), this.leftPos + 139, this.topPos + 180, 0xFF3F3F3F, false);
         }
         // Information
-        if (this.method_2378(230, 6, 20, 18, mouseX, mouseY)) {
-            context.method_25302(ICONS, this.field_2776 + 230, this.field_2800+6, 20, 84, 20, 18);
+        if (this.isHovering(230, 6, 20, 18, mouseX, mouseY)) {
+            graphics.blit(RenderPipelines.GUI_TEXTURED, ICONS, this.leftPos + 230, this.topPos + 6, 20, 84, 20, 18, 256, 256);
 
-            List<class_2561> dungeonInfo = new ArrayList<>();
-            dungeonInfo.add(class_2561.method_43471("dungeonz.dungeon.info"));
+            List<Component> dungeonInfo = new ArrayList<>();
+            dungeonInfo.add(Component.translatable("dungeonz.dungeon.info"));
             for (int i = 1; i < 10; i++) {
 
-                String dungeonInfoTooltip = "dungeon." + this.field_2797.getDungeonPortalEntity().getDungeonType() + ".description" + "." + i;
-                class_2561 dungeonInfoText = class_2561.method_43471(dungeonInfoTooltip);
+                String dungeonInfoTooltip = "dungeon." + this.menu.getDungeonPortalEntity().getDungeonType() + ".description" + "." + i;
+                Component dungeonInfoText = Component.translatable(dungeonInfoTooltip);
 
                 if (dungeonInfoText.getString().equals(dungeonInfoTooltip)) {
                     break;
@@ -247,132 +256,106 @@ public class DungeonPortalScreen extends class_465<DungeonPortalScreenHandler> i
                 dungeonInfo.add(dungeonInfoText);
             }
 
-            dungeonInfo.add(class_2561.method_43471("dungeonz.dungeon.info.respawn" + (this.field_2797.isAllowRespawn() ? "" : ".disabled")));
-            dungeonInfo.add(class_2561.method_43471("dungeonz.dungeon.info.keep_inventory" + (this.field_2797.isKeepInventory() ? "" : ".disabled")));
-            dungeonInfo.add(class_2561.method_43471("dungeonz.dungeon.info.positive_effects" + (this.field_2797.isAllowPositiveEffects() ? "" : ".disabled")));
-            dungeonInfo.add(class_2561.method_43471("dungeonz.dungeon.info.ender_pearl" + (this.field_2797.isAllowEnderPearl() ? "" : ".disabled")));
-            dungeonInfo.add(class_2561.method_43471("dungeonz.dungeon.info.elytra" + (this.field_2797.isAllowElytra() ? "" : ".disabled")));
+            dungeonInfo.add(Component.translatable("dungeonz.dungeon.info.respawn" + (this.menu.isAllowRespawn() ? "" : ".disabled")));
+            dungeonInfo.add(Component.translatable("dungeonz.dungeon.info.keep_inventory" + (this.menu.isKeepInventory() ? "" : ".disabled")));
+            dungeonInfo.add(Component.translatable("dungeonz.dungeon.info.positive_effects" + (this.menu.isAllowPositiveEffects() ? "" : ".disabled")));
+            dungeonInfo.add(Component.translatable("dungeonz.dungeon.info.ender_pearl" + (this.menu.isAllowEnderPearl() ? "" : ".disabled")));
+            dungeonInfo.add(Component.translatable("dungeonz.dungeon.info.elytra" + (this.menu.isAllowElytra() ? "" : ".disabled")));
 
 
-            context.method_51434(this.field_22793, dungeonInfo, mouseX, mouseY);
+            graphics.setComponentTooltipForNextFrame(this.font, dungeonInfo, mouseX, mouseY);
         } else {
-            context.method_25302(ICONS, this.field_2776 + 230, this.field_2800+6, 0, 84, 20, 18);
+            graphics.blit(RenderPipelines.GUI_TEXTURED, ICONS, this.leftPos + 230, this.topPos + 6, 0, 84, 20, 18, 256, 256);
         }
-        context.method_51427(INFO_ITEMSTACK,this.field_2776 + 232, this.field_2800+7);
-
-        this.method_2380(context, mouseX, mouseY);
+        graphics.item(INFO_ITEMSTACK, this.leftPos + 232, this.topPos + 7);
     }
 
     @Override
-    protected void method_2389(class_332 context, float delta, int mouseX, int mouseY) {
-        context.method_25302(texture, this.field_2776, this.field_2800, 0, 0, this.field_2792, this.field_2779);
+    public void slotChanged(AbstractContainerMenu var1, int var2, ItemStack var3) {
     }
 
     @Override
-    protected void method_2388(class_332 context, int mouseX, int mouseY) {
+    public void dataChanged(AbstractContainerMenu var1, int var2, int var3) {
     }
 
-    @Override
-    public boolean method_25402(double mouseX, double mouseY, int button) {
-        return super.method_25402(mouseX, mouseY, button);
-    }
+    public class DungeonButton extends Button {
 
-    @Override
-    public void method_7635(class_1703 var1, int var2, class_1799 var3) {
-    }
-
-    @Override
-    public void method_7633(class_1703 var1, int var2, int var3) {
-    }
-
-    public class DungeonButton extends class_4185 {
-
-        public DungeonButton(int x, int y, class_2561 text, class_4185.class_4241 onPress) {
-            super(x, y, 52, 20, text, onPress, field_40754);
+        public DungeonButton(int x, int y, Component text, Button.OnPress onPress) {
+            super(x, y, 52, 20, text, onPress, DEFAULT_NARRATION);
         }
 
         @Override
-        public void method_48579(class_332 context, int mouseX, int mouseY, float delta) {
+        protected void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
             int j = 20;
-            if (!this.field_22763) {
+            if (!this.active) {
                 j = 0;
-            } else if (this.method_49606()) {
+            } else if (this.isHovered()) {
                 j = 40;
             }
-            context.method_25302(ICONS, this.method_46426(), this.method_46427(), 0, j, this.field_22758, this.field_22759);
+            graphics.blit(RenderPipelines.GUI_TEXTURED, ICONS, this.getX(), this.getY(), 0, j, this.width, this.height, 256, 256);
 
-            int o = this.field_22763 ? 0xFFFFFF : 0xA0A0A0;
-            context.method_27534(field_22793, this.method_25369(), this.method_46426() + this.field_22758 / 2, this.method_46427() + (this.field_22759 - 8) / 2, o | class_3532.method_15386(this.field_22765 * 255.0f) << 24);
+            int o = (this.active ? 0xFFFFFF : 0xA0A0A0) | Mth.ceil(this.alpha * 255.0f) << 24;
+            graphics.centeredText(font, this.getMessage(), this.getX() + this.width / 2, this.getY() + (this.height - 8) / 2, o);
 
-            if (!this.field_22763 && this.method_49606()) {
-                class_2561 text = null;
-                if (DungeonPortalScreen.this.field_2797.getDungeonPortalEntity().isOnCooldown((int) DungeonPortalScreen.this.field_22787.field_1687.method_8510())) {
-                    int cooldown = (DungeonPortalScreen.this.field_2797.getDungeonPortalEntity().getCooldownTime() - (int) DungeonPortalScreen.this.field_22787.field_1687.method_8510()) / 20;
+            if (!this.active && this.isHovered()) {
+                Component text = null;
+                if (DungeonPortalScreen.this.menu.getDungeonPortalEntity().isOnCooldown((int) DungeonPortalScreen.this.minecraft.level.getGameTime())) {
+                    int cooldown = (DungeonPortalScreen.this.menu.getDungeonPortalEntity().getCooldownTime() - (int) DungeonPortalScreen.this.minecraft.level.getGameTime()) / 20;
                     int seconds = cooldown % 60;
                     int minutes = cooldown / 60 % 60;
                     int hours = cooldown / 60 / 60;
-                    text = class_2561.method_43469("text.dungeonz.dungeon_cooldown_time", hours, minutes, seconds);
-                } else if ((DungeonPortalScreen.this.field_2797.getDungeonPortalEntity().getDungeonPlayerUuids().size()
-                        + DungeonPortalScreen.this.field_2797.getDungeonPortalEntity().getDeadDungeonPlayerUUIDs().size()) >= DungeonPortalScreen.this.field_2797.getDungeonPortalEntity()
+                    text = Component.translatable("text.dungeonz.dungeon_cooldown_time", hours, minutes, seconds);
+                } else if ((DungeonPortalScreen.this.menu.getDungeonPortalEntity().getDungeonPlayerUuids().size()
+                        + DungeonPortalScreen.this.menu.getDungeonPortalEntity().getDeadDungeonPlayerUUIDs().size()) >= DungeonPortalScreen.this.menu.getDungeonPortalEntity()
                         .getMaxGroupSize()) {
-                    text = class_2561.method_43471("text.dungeonz.dungeon_full");
-                } else if (field_22787.field_1724 != null && !DungeonPortalScreen.this.field_2797.getDungeonPortalEntity().getDeadDungeonPlayerUUIDs().isEmpty()
-                        && DungeonPortalScreen.this.field_2797.getDungeonPortalEntity().getDeadDungeonPlayerUUIDs().contains(field_22787.field_1724.method_5667())) {
-                    text = class_2561.method_43471("text.dungeonz.dead_player");
-                } else if (!InventoryHelper.hasRequiredItemStacks(field_22787.field_1724.method_31548(), DungeonPortalScreen.this.field_2797.getRequiredItemStacks().get(DungeonPortalScreen.this.field_2797.getDungeonPortalEntity().getDifficulty()))) {
-                    text = class_2561.method_43471("text.dungeonz.missing");
-                } else if (DungeonzMain.isLevelZLoaded) {
-                    LevelManager levelManager = ((LevelManagerAccess) DungeonPortalScreen.this.playerEntity).getLevelManager();
-                    if (levelManager.getOverallLevel() < DungeonPortalScreen.this.field_2797.getRequiredLevel()) {
-                        text = class_2561.method_43469("text.dungeonz.required_level", DungeonPortalScreen.this.field_2797.getRequiredLevel());
-                    }
+                    text = Component.translatable("text.dungeonz.dungeon_full");
+                } else if (minecraft.player != null && !DungeonPortalScreen.this.menu.getDungeonPortalEntity().getDeadDungeonPlayerUUIDs().isEmpty()
+                        && DungeonPortalScreen.this.menu.getDungeonPortalEntity().getDeadDungeonPlayerUUIDs().contains(minecraft.player.getUUID())) {
+                    text = Component.translatable("text.dungeonz.dead_player");
+                } else if (!InventoryHelper.hasRequiredItemStacks(minecraft.player.getInventory(), DungeonPortalScreen.this.menu.getRequiredItemStacks().get(DungeonPortalScreen.this.menu.getDungeonPortalEntity().getDifficulty()))) {
+                    text = Component.translatable("text.dungeonz.missing");
+                } else if (!DungeonPortalScreen.this.menu.getAdmission().meetsRequiredLevel(DungeonPortalScreen.this.menu.getRequiredLevel())) {
+                    text = Component.translatable("text.dungeonz.required_level", DungeonPortalScreen.this.menu.getRequiredLevel());
                 }
                 if (text != null) {
-                    context.method_51438(field_22793, text, mouseX, mouseY);
+                    graphics.setTooltipForNextFrame(font, text, mouseX, mouseY);
                 }
             }
         }
 
     }
 
-    public class DungeonDifficultyButton extends class_4185 {
-        private class_2561 text;
-        private static final class_8666 TEXTURES = new class_8666(class_2960.method_60656("widget/button"), class_2960.method_60656("widget/button_disabled"),
-                class_2960.method_60656("widget/button_highlighted"));
+    public class DungeonDifficultyButton extends Button {
+        private Component text;
+        private static final WidgetSprites TEXTURES = new WidgetSprites(Identifier.withDefaultNamespace("widget/button"), Identifier.withDefaultNamespace("widget/button_disabled"),
+                Identifier.withDefaultNamespace("widget/button_highlighted"));
 
-        public DungeonDifficultyButton(int x, int y, class_2561 text, class_4185.class_4241 onPress) {
-            super(x, y, 60, 20, text, onPress, field_40754);
+        public DungeonDifficultyButton(int x, int y, Component text, Button.OnPress onPress) {
+            super(x, y, 60, 20, text, onPress, DEFAULT_NARRATION);
             this.text = text;
         }
 
-        public void setText(class_2561 text) {
+        public void setText(Component text) {
             this.text = text;
         }
 
         @Override
-        public void method_48579(class_332 context, int mouseX, int mouseY, float delta) {
-            class_310 minecraftClient = class_310.method_1551();
-            class_327 textRenderer = minecraftClient.field_1772;
+        protected void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
+            Minecraft minecraftClient = Minecraft.getInstance();
+            Font textRenderer = minecraftClient.font;
 
-            RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, this.field_22765);
-
-            RenderSystem.enableBlend();
-            RenderSystem.defaultBlendFunc();
-            RenderSystem.enableDepthTest();
-
-            context.method_52706(TEXTURES.method_52729(this.field_22763, this.method_25367()), this.method_46426(), this.method_46427(), this.method_25368(), this.method_25364());
-            int j = this.field_22763 ? 0xFFFFFF : 0xA0A0A0;
-            context.method_27534(textRenderer, this.text, this.method_46426() + this.field_22758 / 2, this.method_46427() + (this.field_22759 - 8) / 2, j | class_3532.method_15386(this.field_22765 * 255.0f) << 24);
-            RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
+            graphics.blitSprite(RenderPipelines.GUI_TEXTURED, TEXTURES.get(this.active, this.isHoveredOrFocused()), this.getX(), this.getY(), this.getWidth(), this.getHeight(), ARGB.white(this.alpha));
+            int j = (this.active ? 0xFFFFFF : 0xA0A0A0) | Mth.ceil(this.alpha * 255.0f) << 24;
+            graphics.centeredText(textRenderer, this.text, this.getX() + this.width / 2, this.getY() + (this.height - 8) / 2, j);
         }
 
     }
 
-    public class DungeonSliderButton extends class_4185 {
+    public class DungeonSliderButton extends Button {
         private boolean enabled = false;
 
-        public DungeonSliderButton(int x, int y, class_4185.class_4241 onPress) {
-            super(x, y, 20, 12, class_2561.method_30163(""), onPress, field_40754);
+        public DungeonSliderButton(int x, int y, Button.OnPress onPress) {
+            super(x, y, 20, 12, Component.nullToEmpty(""), onPress, DEFAULT_NARRATION);
         }
 
         public void cycleEnabled() {
@@ -384,22 +367,18 @@ public class DungeonPortalScreen extends class_465<DungeonPortalScreenHandler> i
         }
 
         @Override
-        public void method_48579(class_332 context, int mouseX, int mouseY, float delta) {
-            RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
-            RenderSystem.enableBlend();
-            RenderSystem.defaultBlendFunc();
-            RenderSystem.enableDepthTest();
+        protected void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
             int i = 60;
             if (this.enabled) {
                 i = 72;
             }
             int j = 0;
-            if (!this.field_22763) {
+            if (!this.active) {
                 j = 40;
-            } else if (this.method_49606()) {
+            } else if (this.isHovered()) {
                 j = 20;
             }
-            context.method_25302(ICONS, this.method_46426(), this.method_46427(), j, i, this.field_22758, this.field_22759);
+            graphics.blit(RenderPipelines.GUI_TEXTURED, ICONS, this.getX(), this.getY(), j, i, this.width, this.height, 256, 256);
         }
 
     }

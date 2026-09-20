@@ -7,17 +7,17 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import net.dungeonz.init.ConfigInit;
 import net.dungeonz.init.DimensionInit;
-import net.minecraft.class_1922;
-import net.minecraft.class_2338;
-import net.minecraft.class_2358;
-import net.minecraft.class_3218;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.block.FireBlock;
+import net.minecraft.server.level.ServerLevel;
 
-@Mixin(class_2358.class)
+@Mixin(FireBlock.class)
 public class FireBlockMixin {
 
-    @Inject(method = "areBlocksAroundFlammable", at = @At("HEAD"), cancellable = true)
-    private void areBlocksAroundFlammableMixin(class_1922 world, class_2338 pos, CallbackInfoReturnable<Boolean> info) {
-        if ((world instanceof class_3218 && ((class_3218) world).method_27983() == DimensionInit.DUNGEON_WORLD) || ConfigInit.CONFIG.devMode) {
+    @Inject(method = "isValidFireLocation", at = @At("HEAD"), cancellable = true)
+    private void areBlocksAroundFlammableMixin(BlockGetter world, BlockPos pos, CallbackInfoReturnable<Boolean> info) {
+        if ((world instanceof ServerLevel && ((ServerLevel) world).dimension() == DimensionInit.DUNGEON_WORLD) || ConfigInit.CONFIG.devMode) {
             info.cancel();
         }
     }

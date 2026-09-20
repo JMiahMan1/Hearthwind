@@ -1,5 +1,7 @@
 package net.dungeonz.block.entity;
 
+import net.minecraft.world.level.storage.ValueOutput;
+import net.minecraft.world.level.storage.ValueInput;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
@@ -14,80 +16,81 @@ import net.dungeonz.init.BlockInit;
 import net.dungeonz.init.ConfigInit;
 import net.dungeonz.init.DimensionInit;
 import net.dungeonz.init.SoundInit;
-import net.minecraft.class_1301;
-import net.minecraft.class_1588;
-import net.minecraft.class_1792;
-import net.minecraft.class_1937;
-import net.minecraft.class_2223;
-import net.minecraft.class_2338;
-import net.minecraft.class_2350;
-import net.minecraft.class_238;
-import net.minecraft.class_2394;
-import net.minecraft.class_2487;
-import net.minecraft.class_2586;
-import net.minecraft.class_2622;
-import net.minecraft.class_2680;
-import net.minecraft.class_2960;
-import net.minecraft.class_3419;
-import net.minecraft.class_7225;
-import net.minecraft.class_7225.class_7874;
-import net.minecraft.class_7923;
+import net.minecraft.world.entity.EntitySelector;
+import net.minecraft.world.entity.monster.Monster;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.commands.arguments.ParticleArgument;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.core.particles.ParticleOptions;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.resources.Identifier;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.HolderLookup.Provider;
+import net.minecraft.core.registries.BuiltInRegistries;
 
-public class DungeonGateEntity extends class_2586 {
+public class DungeonGateEntity extends BlockEntity {
 
-    private static final List<class_2350> directions = List.of(class_2350.field_11043, class_2350.field_11034, class_2350.field_11035, class_2350.field_11039, class_2350.field_11036, class_2350.field_11033);
-    private class_2960 gateBlockId = class_2960.method_60654("minecraft:chiseled_stone_bricks");
+    private static final List<Direction> directions = List.of(Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST, Direction.UP, Direction.DOWN);
+    private Identifier gateBlockId = Identifier.parse("minecraft:chiseled_stone_bricks");
     private String unlockItemId = "";
     private String gateParticleId = "minecraft:scrape";
     private List<Integer> dungeonEdgeList = new ArrayList<Integer>();
 
-    public DungeonGateEntity(class_2338 pos, class_2680 state) {
+    public DungeonGateEntity(BlockPos pos, BlockState state) {
         super(BlockInit.DUNGEON_GATE_ENTITY, pos, state);
     }
 
     @Override
-    public void method_11014(class_2487 nbt, class_7225.class_7874 registryLookup) {
-        super.method_11014(nbt, registryLookup);
-        this.gateBlockId = class_2960.method_60654(nbt.method_10558("GateBlockId"));
-        this.unlockItemId = nbt.method_10558("UnlockItemId");
-        this.gateParticleId = nbt.method_10558("GateParticleId");
+    protected void loadAdditional(ValueInput input) {
+        super.loadAdditional(input);
+        this.gateBlockId = Identifier.parse(input.getStringOr("GateBlockId", ""));
+        this.unlockItemId = input.getStringOr("UnlockItemId", "");
+        this.gateParticleId = input.getStringOr("GateParticleId", "");
 
-        if (nbt.method_10550("DungeonEdgeSize") > 0) {
+        if (input.getIntOr("DungeonEdgeSize", 0) > 0) {
             this.dungeonEdgeList.clear();
-            for (int i = 0; i < nbt.method_10550("DungeonEdgeSize") / 3; i++) {
-                this.dungeonEdgeList.add(nbt.method_10550("DungeonEdgeX" + i));
-                this.dungeonEdgeList.add(nbt.method_10550("DungeonEdgeY" + i));
-                this.dungeonEdgeList.add(nbt.method_10550("DungeonEdgeZ" + i));
+            for (int i = 0; i < input.getIntOr("DungeonEdgeSize", 0) / 3; i++) {
+                this.dungeonEdgeList.add(input.getIntOr("DungeonEdgeX" + i, 0));
+                this.dungeonEdgeList.add(input.getIntOr("DungeonEdgeY" + i, 0));
+                this.dungeonEdgeList.add(input.getIntOr("DungeonEdgeZ" + i, 0));
             }
         }
     }
 
     @Override
-    public void method_11007(class_2487 nbt, class_7225.class_7874 registryLookup) {
-        super.method_11007(nbt, registryLookup);
-        nbt.method_10582("GateBlockId", this.gateBlockId.toString());
-        nbt.method_10582("UnlockItemId", this.unlockItemId.toString());
-        nbt.method_10582("GateParticleId", this.gateParticleId.toString());
+    protected void saveAdditional(ValueOutput output) {
+        super.saveAdditional(output);
+        output.putString("GateBlockId", this.gateBlockId.toString());
+        output.putString("UnlockItemId", this.unlockItemId.toString());
+        output.putString("GateParticleId", this.gateParticleId.toString());
 
-        nbt.method_10569("DungeonEdgeSize", this.dungeonEdgeList.size());
+        output.putInt("DungeonEdgeSize", this.dungeonEdgeList.size());
         if (this.dungeonEdgeList.size() > 0) {
             for (int i = 0; i < this.dungeonEdgeList.size() / 3; i++) {
-                nbt.method_10569("DungeonEdgeX" + i, this.dungeonEdgeList.get(i + 3 * i));
-                nbt.method_10569("DungeonEdgeY" + i, this.dungeonEdgeList.get(i + 1 + 3 * i));
-                nbt.method_10569("DungeonEdgeZ" + i, this.dungeonEdgeList.get(i + 2 + 3 * i));
+                output.putInt("DungeonEdgeX" + i, this.dungeonEdgeList.get(3 * i));
+                output.putInt("DungeonEdgeY" + i, this.dungeonEdgeList.get(1 + 3 * i));
+                output.putInt("DungeonEdgeZ" + i, this.dungeonEdgeList.get(2 + 3 * i));
             }
         }
     }
 
-    public static void serverTick(class_1937 world, class_2338 pos, class_2680 state, DungeonGateEntity blockEntity) {
-        if (world.method_8510() % 20 == 0 && blockEntity.unlockItemId == null && blockEntity.getDungeonEdgeList().size() >= 6 && world.method_27983() == DimensionInit.DUNGEON_WORLD
+    public static void serverTick(Level world, BlockPos pos, BlockState state, DungeonGateEntity blockEntity) {
+        if (world.getGameTime() % 20 == 0 && blockEntity.unlockItemId == null && blockEntity.getDungeonEdgeList().size() >= 6 && world.dimension() == DimensionInit.DUNGEON_WORLD
                 && !ConfigInit.CONFIG.devMode) {
-            if (!world.method_8320(pos.method_10074()).method_27852(BlockInit.DUNGEON_GATE)) {
-                if (world.method_8320(pos.method_10095()).method_27852(BlockInit.DUNGEON_GATE) && !world.method_8320(pos.method_10072()).method_27852(BlockInit.DUNGEON_GATE)) {
+            if (!world.getBlockState(pos.below()).is(BlockInit.DUNGEON_GATE)) {
+                if (world.getBlockState(pos.north()).is(BlockInit.DUNGEON_GATE) && !world.getBlockState(pos.south()).is(BlockInit.DUNGEON_GATE)) {
                     if (!blockEntity.areHostileEntitiesAlive()) {
                         blockEntity.unlockGate(pos);
                     }
-                } else if (world.method_8320(pos.method_10078()).method_27852(BlockInit.DUNGEON_GATE) && !world.method_8320(pos.method_10067()).method_27852(BlockInit.DUNGEON_GATE)) {
+                } else if (world.getBlockState(pos.east()).is(BlockInit.DUNGEON_GATE) && !world.getBlockState(pos.west()).is(BlockInit.DUNGEON_GATE)) {
                     if (blockEntity.areHostileEntitiesAlive()) {
                         blockEntity.unlockGate(pos);
                     }
@@ -100,35 +103,35 @@ public class DungeonGateEntity extends class_2586 {
         if (this.getDungeonEdgeList().size() < 6) {
             return false;
         }
-        List<class_1588> hostileEntities = field_11863.method_8390(class_1588.class, new class_238(this.getDungeonEdgeList().get(0), this.getDungeonEdgeList().get(1),
-                this.getDungeonEdgeList().get(2), this.getDungeonEdgeList().get(3), this.getDungeonEdgeList().get(4), this.getDungeonEdgeList().get(5)), class_1301.field_6155);
+        List<Monster> hostileEntities = level.getEntitiesOfClass(Monster.class, new AABB(this.getDungeonEdgeList().get(0), this.getDungeonEdgeList().get(1),
+                this.getDungeonEdgeList().get(2), this.getDungeonEdgeList().get(3), this.getDungeonEdgeList().get(4), this.getDungeonEdgeList().get(5)), EntitySelector.NO_SPECTATORS);
         if (hostileEntities.isEmpty()) {
             return false;
         }
         return true;
     }
 
-    public void unlockGate(class_2338 pos) {
-        field_11863.method_8396(null, pos, SoundInit.DUNGEON_GATE_UNLOCK_EVENT, class_3419.field_15245, 1.0f, 0.9f + field_11863.method_8409().method_43057() * 0.2f);
+    public void unlockGate(BlockPos pos) {
+        level.playSound(null, pos, SoundInit.DUNGEON_GATE_UNLOCK_EVENT, SoundSource.BLOCKS, 1.0f, 0.9f + level.getRandom().nextFloat() * 0.2f);
 
-        List<class_2338> dungeonGatesPosList = DungeonGateEntity.getConnectedDungeonGatePosList(field_11863, pos);
+        List<BlockPos> dungeonGatesPosList = DungeonGateEntity.getConnectedDungeonGatePosList(level, pos);
         for (int i = 0; i < dungeonGatesPosList.size(); i++) {
-            if (field_11863.method_8321(dungeonGatesPosList.get(i)) != null && field_11863.method_8321(dungeonGatesPosList.get(i)) instanceof DungeonGateEntity) {
-                DungeonGateEntity otherDungeonGateEntity = (DungeonGateEntity) field_11863.method_8321(dungeonGatesPosList.get(i));
+            if (level.getBlockEntity(dungeonGatesPosList.get(i)) != null && level.getBlockEntity(dungeonGatesPosList.get(i)) instanceof DungeonGateEntity) {
+                DungeonGateEntity otherDungeonGateEntity = (DungeonGateEntity) level.getBlockEntity(dungeonGatesPosList.get(i));
 
-                field_11863.method_8501(dungeonGatesPosList.get(i), otherDungeonGateEntity.method_11010().method_28493(DungeonGateBlock.ENABLED));
-                otherDungeonGateEntity.method_5431();
+                level.setBlockAndUpdate(dungeonGatesPosList.get(i), otherDungeonGateEntity.getBlockState().cycle(DungeonGateBlock.ENABLED));
+                otherDungeonGateEntity.setChanged();
             }
         }
     }
 
-    public static List<class_2338> getConnectedDungeonGatePosList(class_1937 world, class_2338 pos) {
-        List<class_2338> dungeonGates = new ArrayList<class_2338>();
+    public static List<BlockPos> getConnectedDungeonGatePosList(Level world, BlockPos pos) {
+        List<BlockPos> dungeonGates = new ArrayList<BlockPos>();
         List<Integer> directionLengths = new ArrayList<Integer>();
 
         for (int i = 0; i < DungeonGateEntity.directions.size(); i++) {
             for (int u = 1; u < 100; u++) {
-                if (!world.method_8320(pos.method_10079(DungeonGateEntity.directions.get(i), u)).method_27852(BlockInit.DUNGEON_GATE)) {
+                if (!world.getBlockState(pos.relative(DungeonGateEntity.directions.get(i), u)).is(BlockInit.DUNGEON_GATE)) {
                     directionLengths.add(u - 1);
                     break;
                 }
@@ -137,8 +140,8 @@ public class DungeonGateEntity extends class_2586 {
         for (int i = -directionLengths.get(5); i <= directionLengths.get(4); i++) {
             for (int u = -directionLengths.get(0); u <= directionLengths.get(2); u++) {
                 for (int o = -directionLengths.get(1); o <= directionLengths.get(3); o++) {
-                    class_2338 checkPos = pos.method_10086(i).method_10077(u).method_10088(o);
-                    if (world.method_8320(checkPos).method_27852(BlockInit.DUNGEON_GATE) && !dungeonGates.contains(checkPos)) {
+                    BlockPos checkPos = pos.above(i).south(u).west(o);
+                    if (world.getBlockState(checkPos).is(BlockInit.DUNGEON_GATE) && !dungeonGates.contains(checkPos)) {
                         dungeonGates.add(checkPos);
                     }
                 }
@@ -149,13 +152,13 @@ public class DungeonGateEntity extends class_2586 {
     }
 
     @Override
-    public class_2622 method_38235() {
-        return class_2622.method_38585(this);
+    public ClientboundBlockEntityDataPacket getUpdatePacket() {
+        return ClientboundBlockEntityDataPacket.create(this);
     }
 
     @Override
-    public class_2487 method_16887(class_7874 registryLookup) {
-        return this.method_38244(registryLookup);
+    public CompoundTag getUpdateTag(Provider registryLookup) {
+        return this.saveWithoutMetadata(registryLookup);
     }
 
     public void setUnlockItemId(String unlockItemId) {
@@ -163,19 +166,19 @@ public class DungeonGateEntity extends class_2586 {
     }
 
     @Nullable
-    public class_1792 getUnlockItem() {
+    public Item getUnlockItem() {
         if (this.unlockItemId.equals("")) {
             return null;
         }
-        return class_7923.field_41178.method_10223(class_2960.method_60654(this.unlockItemId));
+        return BuiltInRegistries.ITEM.get(Identifier.parse(this.unlockItemId)).map(ref -> ref.value()).orElse(null);
     }
 
-    public void setBlockId(class_2960 gateBlockId) {
+    public void setBlockId(Identifier gateBlockId) {
         this.gateBlockId = gateBlockId;
     }
 
-    public class_2680 getBlockState() {
-        return class_7923.field_41175.method_10223(this.gateBlockId).method_9564();
+    public BlockState getDisguiseBlockState() {
+        return BuiltInRegistries.BLOCK.get(this.gateBlockId).map(ref -> ref.value().defaultBlockState()).orElse(Blocks.AIR.defaultBlockState());
     }
 
     public void setParticleEffectId(String gateParticleId) {
@@ -183,7 +186,7 @@ public class DungeonGateEntity extends class_2586 {
     }
 
     @Nullable
-    public class_2394 getParticleEffect() {
+    public ParticleOptions getParticleEffect() {
         if (this.gateParticleId.equals("")) {
             return null;
         }
@@ -195,8 +198,8 @@ public class DungeonGateEntity extends class_2586 {
             // return ParticleEffectArgumentType.readParameters(new StringReader(this.gateParticleId.toString()),
             // RegistryWrapper.WrapperLookup.of(Registries.PARTICLE_TYPE.getReadOnlyWrapper().streamEntries()));
 
-            return class_2223.method_9418(new StringReader(this.gateParticleId.toString()),
-                    class_7225.class_7874.method_46761(Stream.of(class_7923.field_41180.method_46771())));
+            return ParticleArgument.readParticle(new StringReader(this.gateParticleId.toString()),
+                    HolderLookup.Provider.create(Stream.of(BuiltInRegistries.PARTICLE_TYPE)));
         } catch (CommandSyntaxException commandSyntaxException) {
         }
         return null;

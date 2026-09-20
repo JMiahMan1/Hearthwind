@@ -7,18 +7,18 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import net.dungeonz.init.ConfigInit;
 import net.dungeonz.init.DimensionInit;
-import net.minecraft.class_2211;
-import net.minecraft.class_2338;
-import net.minecraft.class_2680;
-import net.minecraft.class_3218;
-import net.minecraft.class_5819;
+import net.minecraft.world.level.block.BambooStalkBlock;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.RandomSource;
 
-@Mixin(class_2211.class)
+@Mixin(BambooStalkBlock.class)
 public class BambooBlockMixin {
 
-    @Inject(method = "randomTick", at = @At(value = "INVOKE", target = "Lnet/minecraft/block/BambooBlock;updateLeaves(Lnet/minecraft/block/BlockState;Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/util/math/random/Random;I)V"), cancellable = true)
-    private void randomTickMixin(class_2680 state, class_3218 world, class_2338 pos, class_5819 random, CallbackInfo info) {
-        if (world.method_27983() == DimensionInit.DUNGEON_WORLD || ConfigInit.CONFIG.devMode) {
+    @Inject(method = "randomTick", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/block/BambooStalkBlock;growBamboo(Lnet/minecraft/world/level/block/state/BlockState;Lnet/minecraft/world/level/Level;Lnet/minecraft/core/BlockPos;Lnet/minecraft/util/RandomSource;I)V"), cancellable = true)
+    private void randomTickMixin(BlockState state, ServerLevel world, BlockPos pos, RandomSource random, CallbackInfo info) {
+        if (world.dimension() == DimensionInit.DUNGEON_WORLD || ConfigInit.CONFIG.devMode) {
             info.cancel();
         }
     }

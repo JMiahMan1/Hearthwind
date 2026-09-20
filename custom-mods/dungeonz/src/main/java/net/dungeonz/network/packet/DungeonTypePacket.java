@@ -1,23 +1,23 @@
 package net.dungeonz.network.packet;
 
-import net.minecraft.class_2338;
-import net.minecraft.class_2960;
-import net.minecraft.class_8710;
-import net.minecraft.class_9129;
-import net.minecraft.class_9139;
+import net.minecraft.core.BlockPos;
+import net.minecraft.resources.Identifier;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 
-public record DungeonTypePacket(class_2338 portalBlockPos, String dungeonType, String defaultDifficulty) implements class_8710 {
+public record DungeonTypePacket(BlockPos portalBlockPos, String dungeonType, String defaultDifficulty) implements CustomPacketPayload {
 
-    public static final class_8710.class_9154<DungeonTypePacket> PACKET_ID = new class_8710.class_9154<>(class_2960.method_60655("dungeonz", "dungeon_type_packet"));
+    public static final CustomPacketPayload.Type<DungeonTypePacket> PACKET_ID = new CustomPacketPayload.Type<>(Identifier.fromNamespaceAndPath("dungeonz", "dungeon_type_packet"));
 
-    public static final class_9139<class_9129, DungeonTypePacket> PACKET_CODEC = class_9139.method_56438((value, buf) -> {
-        buf.method_10807(value.portalBlockPos);
-        buf.method_10814(value.dungeonType);
-        buf.method_10814(value.defaultDifficulty);
-    }, buf -> new DungeonTypePacket(buf.method_10811(), buf.method_19772(), buf.method_19772()));
+    public static final StreamCodec<RegistryFriendlyByteBuf, DungeonTypePacket> PACKET_CODEC = StreamCodec.ofMember((value, buf) -> {
+        buf.writeBlockPos(value.portalBlockPos);
+        buf.writeUtf(value.dungeonType);
+        buf.writeUtf(value.defaultDifficulty);
+    }, buf -> new DungeonTypePacket(buf.readBlockPos(), buf.readUtf(), buf.readUtf()));
 
     @Override
-    public class_9154<? extends class_8710> method_56479() {
+    public Type<? extends CustomPacketPayload> type() {
         return PACKET_ID;
     }
 

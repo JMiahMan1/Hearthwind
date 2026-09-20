@@ -1,22 +1,22 @@
 package net.dungeonz.network.packet;
 
-import net.minecraft.class_2338;
-import net.minecraft.class_2960;
-import net.minecraft.class_8710;
-import net.minecraft.class_9129;
-import net.minecraft.class_9139;
+import net.minecraft.core.BlockPos;
+import net.minecraft.resources.Identifier;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 
-public record DungeonSyncScreenPacket(class_2338 blockPos, String difficulty) implements class_8710 {
+public record DungeonSyncScreenPacket(BlockPos blockPos, String difficulty) implements CustomPacketPayload {
 
-    public static final class_8710.class_9154<DungeonSyncScreenPacket> PACKET_ID = new class_8710.class_9154<>(class_2960.method_60655("dungeonz", "dungeon_sync_screen_packet"));
+    public static final CustomPacketPayload.Type<DungeonSyncScreenPacket> PACKET_ID = new CustomPacketPayload.Type<>(Identifier.fromNamespaceAndPath("dungeonz", "dungeon_sync_screen_packet"));
 
-    public static final class_9139<class_9129, DungeonSyncScreenPacket> PACKET_CODEC = class_9139.method_56438((value, buf) -> {
-        buf.method_10807(value.blockPos);
-        buf.method_10814(value.difficulty);
-    }, buf -> new DungeonSyncScreenPacket(buf.method_10811(), buf.method_19772()));
+    public static final StreamCodec<RegistryFriendlyByteBuf, DungeonSyncScreenPacket> PACKET_CODEC = StreamCodec.ofMember((value, buf) -> {
+        buf.writeBlockPos(value.blockPos);
+        buf.writeUtf(value.difficulty);
+    }, buf -> new DungeonSyncScreenPacket(buf.readBlockPos(), buf.readUtf()));
 
     @Override
-    public class_9154<? extends class_8710> method_56479() {
+    public Type<? extends CustomPacketPayload> type() {
         return PACKET_ID;
     }
 

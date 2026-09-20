@@ -7,16 +7,16 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import net.dungeonz.init.DimensionInit;
-import net.minecraft.class_1297;
-import net.minecraft.class_1588;
-import net.minecraft.class_7260;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.monster.Monster;
+import net.minecraft.world.entity.monster.warden.Warden;
 
-@Mixin(class_7260.class)
+@Mixin(Warden.class)
 public class WardenEntityMixin {
 
-    @Inject(method = "isValidTarget", at = @At("HEAD"), cancellable = true)
-    private void isValidTargetMixin(@Nullable class_1297 entity, CallbackInfoReturnable<Boolean> info) {
-        if (entity != null && entity.method_37908().method_27983() == DimensionInit.DUNGEON_WORLD && entity instanceof class_1588) {
+    @Inject(method = "canTargetEntity", at = @At("HEAD"), cancellable = true)
+    private void isValidTargetMixin(@Nullable Entity entity, CallbackInfoReturnable<Boolean> info) {
+        if (entity != null && entity.level().dimension() == DimensionInit.DUNGEON_WORLD && entity instanceof Monster) {
             info.setReturnValue(false);
         }
     }

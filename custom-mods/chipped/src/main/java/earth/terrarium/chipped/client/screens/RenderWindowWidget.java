@@ -1,7 +1,5 @@
 package earth.terrarium.chipped.client.screens;
 
-import com.mojang.math.Axis;
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
@@ -45,7 +43,6 @@ public class RenderWindowWidget extends AbstractWidget {
 
     private final Supplier<Mode> mode;
     private final Supplier<@Nullable BlockState> state;
-    private final FakeLevel fakeLevel = new FakeLevel();
 
     public RenderWindowWidget(int x, int y, int width, int height, Supplier<Mode> mode, Supplier<BlockState> state) {
         super(x, y, width, height, CommonComponents.EMPTY);
@@ -60,32 +57,36 @@ public class RenderWindowWidget extends AbstractWidget {
         if (state == null) return;
         boolean isDoor = state.getBlock() instanceof DoorBlock;
 
-        PoseStack pose = new PoseStack();
-        pose.translate(getX(), getY(), 100);
-        pose.translate(46, 46, 0);
-        if (!isDoor) {
-            pose.translate(mode.xOffset, mode.yOffset, 0);
-        } else {
-            pose.translate(5, 12, 0);
-        }
-        pose.scale(-20, -20, -20);
-
-        pose.translate(0.5, 0.5, 0.5);
-        pose.mulPose(Axis.XP.rotationDegrees(-30));
-        pose.mulPose(Axis.YP.rotationDegrees(45));
-        pose.translate(-0.5, -0.5, -0.5);
-
-        fakeLevel.setState(state);
+        // 26.2: upstream built a detached PoseStack and rendered immediately
+        // via FakeLevel/BlockRenderDispatcher. GUI 3D is now deferred: submit
+        // a PIP state and let ChippedBlockPreviewRenderer draw it during
+        // GuiRenderer.preparePictureInPicture (same isometric + offsets).
+        int xOffset;
+        int yOffset;
+        Set<BlockPos> positions;
+        BlockState upper = null;
         if (isDoor) {
-            fakeLevel.setPositions(DOOR_POSITIONS_BOTTOM);
-            fakeLevel.renderBlock(pose);
-            fakeLevel.setState(state.setValue(DoorBlock.HALF, DoubleBlockHalf.UPPER));
-            fakeLevel.setPositions(DOOR_POSITIONS_TOP);
-            fakeLevel.renderBlock(pose);
+            xOffset = 5;
+            yOffset = 12;
+            positions = DOOR_POSITIONS_BOTTOM;
+            upper = state.setValue(DoorBlock.HALF, DoubleBlockHalf.UPPER);
         } else {
-            fakeLevel.setPositions(mode.positions);
-            fakeLevel.renderBlock(pose);
+            xOffset = mode.xOffset;
+            yOffset = mode.yOffset;
+            positions = mode.positions;
         }
+        graphics.guiRenderState.addPicturesInPictureState(new ChippedBlockPreviewRenderState(
+            state,
+            upper,
+            positions,
+            xOffset,
+            yOffset,
+            getX(),
+            getY(),
+            getX() + getWidth(),
+            getY() + getHeight(),
+            ChippedBlockPreviewRenderState.PREVIEW_SCALE,
+            graphics.scissorStack.peek()));
     }
 
     @Override

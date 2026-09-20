@@ -7,18 +7,18 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import net.dungeonz.init.ConfigInit;
 import net.dungeonz.init.DimensionInit;
-import net.minecraft.class_2302;
-import net.minecraft.class_2338;
-import net.minecraft.class_2680;
-import net.minecraft.class_3218;
-import net.minecraft.class_5819;
+import net.minecraft.world.level.block.CropBlock;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.RandomSource;
 
-@Mixin(class_2302.class)
+@Mixin(CropBlock.class)
 public class CropBlockMixin {
 
-    @Inject(method = "randomTick", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/world/ServerWorld;setBlockState(Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/BlockState;I)Z"), cancellable = true)
-    private void randomTickMixin(class_2680 state, class_3218 world, class_2338 pos, class_5819 random, CallbackInfo info) {
-        if (world.method_27983() == DimensionInit.DUNGEON_WORLD || ConfigInit.CONFIG.devMode) {
+    @Inject(method = "randomTick", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerLevel;setBlock(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;I)Z"), cancellable = true)
+    private void randomTickMixin(BlockState state, ServerLevel world, BlockPos pos, RandomSource random, CallbackInfo info) {
+        if (world.dimension() == DimensionInit.DUNGEON_WORLD || ConfigInit.CONFIG.devMode) {
             info.cancel();
         }
     }

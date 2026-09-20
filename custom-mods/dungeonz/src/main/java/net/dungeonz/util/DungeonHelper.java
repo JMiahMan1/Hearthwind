@@ -7,29 +7,27 @@ import net.dungeonz.dungeon.Dungeon;
 import net.dungeonz.dungeon.DungeonPlacementHandler;
 import net.dungeonz.init.DimensionInit;
 import net.dungeonz.network.DungeonServerPacket;
-import net.levelz.access.LevelManagerAccess;
-import net.levelz.level.LevelManager;
-import net.minecraft.class_1263;
-import net.minecraft.class_1277;
-import net.minecraft.class_173;
-import net.minecraft.class_1799;
-import net.minecraft.class_181;
-import net.minecraft.class_2338;
-import net.minecraft.class_243;
-import net.minecraft.class_2561;
-import net.minecraft.class_2586;
-import net.minecraft.class_2960;
-import net.minecraft.class_3218;
-import net.minecraft.class_3222;
-import net.minecraft.class_52;
-import net.minecraft.class_5321;
-import net.minecraft.class_5454;
-import net.minecraft.class_7923;
-import net.minecraft.class_7924;
-import net.minecraft.class_8567;
+import net.dungeonz.compat.HearthwindLevels;
+import net.dungeonz.compat.HearthwindGroups;
+import net.minecraft.world.Container;
+import net.minecraft.world.SimpleContainer;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.resources.Identifier;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.level.storage.loot.LootTable;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.level.portal.TeleportTransition;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.server.MinecraftServer;
-import net.partyaddon.access.GroupManagerAccess;
-import net.partyaddon.group.GroupManager;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
@@ -38,9 +36,9 @@ import java.util.Map.Entry;
 public class DungeonHelper {
 
     @Nullable
-    public static Dungeon getCurrentDungeon(class_3222 playerEntity) {
-        if (playerEntity != null && playerEntity.method_37908().method_27983() == DimensionInit.DUNGEON_WORLD && ((ServerPlayerAccess) playerEntity).getOldServerWorld() != null) {
-            class_2586 blockEntity = ((ServerPlayerAccess) playerEntity).getOldServerWorld().method_8321(((ServerPlayerAccess) playerEntity).getDungeonPortalBlockPos());
+    public static Dungeon getCurrentDungeon(ServerPlayer playerEntity) {
+        if (playerEntity != null && playerEntity.level().dimension() == DimensionInit.DUNGEON_WORLD && ((ServerPlayerAccess) playerEntity).getOldServerWorld() != null) {
+            BlockEntity blockEntity = ((ServerPlayerAccess) playerEntity).getOldServerWorld().getBlockEntity(((ServerPlayerAccess) playerEntity).getDungeonPortalBlockPos());
             if (blockEntity == null) {
                 return null;
             }
@@ -52,9 +50,9 @@ public class DungeonHelper {
     }
 
     @Nullable
-    public static DungeonPortalEntity getDungeonPortalEntity(class_3222 playerEntity) {
+    public static DungeonPortalEntity getDungeonPortalEntity(ServerPlayer playerEntity) {
         if (((ServerPlayerAccess) playerEntity).getOldServerWorld() != null) {
-            class_2586 blockEntity = ((ServerPlayerAccess) playerEntity).getOldServerWorld().method_8321(((ServerPlayerAccess) playerEntity).getDungeonPortalBlockPos());
+            BlockEntity blockEntity = ((ServerPlayerAccess) playerEntity).getOldServerWorld().getBlockEntity(((ServerPlayerAccess) playerEntity).getDungeonPortalBlockPos());
             if (blockEntity == null) {
                 return null;
             }
@@ -65,44 +63,44 @@ public class DungeonHelper {
         return null;
     }
 
-    public static Map<String, List<class_1799>> getRequiredItemStackList(Dungeon dungeon) {
-        Map<String, List<class_1799>> requiredItemStackList = new HashMap<>();
+    public static Map<String, List<ItemStack>> getRequiredItemStackList(Dungeon dungeon) {
+        Map<String, List<ItemStack>> requiredItemStackList = new HashMap<>();
         for (Entry<String, HashMap<Integer, Integer>> entry : dungeon.getDifficultyRequiredItemCountMap().entrySet()) {
-            List<class_1799> stacks = new ArrayList<>();
+            List<ItemStack> stacks = new ArrayList<>();
             for (Entry<Integer, Integer> itemIdEntry : entry.getValue().entrySet()) {
-                stacks.add(new class_1799(class_7923.field_41178.method_10200(itemIdEntry.getKey()), itemIdEntry.getValue()));
+                stacks.add(new ItemStack(BuiltInRegistries.ITEM.byId(itemIdEntry.getKey()), itemIdEntry.getValue()));
             }
             requiredItemStackList.put(entry.getKey(), stacks);
         }
         return requiredItemStackList;
     }
 
-    public static Map<String, List<class_1799>> getPossibleLootItemStackMap(Dungeon dungeon, MinecraftServer server) {
-        HashMap<String, List<class_1799>> possibleLootItemStackMap = new HashMap<String, List<class_1799>>();
+    public static Map<String, List<ItemStack>> getPossibleLootItemStackMap(Dungeon dungeon, MinecraftServer server) {
+        HashMap<String, List<ItemStack>> possibleLootItemStackMap = new HashMap<String, List<ItemStack>>();
         for (Entry<String, String> entry : dungeon.getDifficultyBossLootTableMap().entrySet()) {
-            class_52 lootTable = server.method_58576().method_58295(class_5321.method_29179(class_7924.field_50079, class_2960.method_60654(entry.getValue())));
-            class_8567.class_8568 builder = new class_8567.class_8568(server.method_30002()).method_51874(class_181.field_24424,
-                    server.method_3760().method_14571().get(server.method_30002().method_8409().method_43048(server.method_3760().method_14571().size())).method_19538());
+            LootTable lootTable = server.reloadableRegistries().getLootTable(ResourceKey.create(Registries.LOOT_TABLE, Identifier.parse(entry.getValue())));
+            LootParams.Builder builder = new LootParams.Builder(server.overworld()).withParameter(LootContextParams.ORIGIN,
+                    server.getPlayerList().getPlayers().get(server.overworld().getRandom().nextInt(server.getPlayerList().getPlayers().size())).position());
 
-            class_1263 inventory = new class_1277(27);
-            lootTable.method_329(inventory, builder.method_51875(class_173.field_1179), server.method_30002().method_8409().method_43055());
+            Container inventory = new SimpleContainer(27);
+            lootTable.fill(inventory, builder.create(LootContextParamSets.CHEST), server.overworld().getRandom().nextLong());
 
-            List<class_1799> itemStacks = new ArrayList<class_1799>();
-            for (int i = 0; i < inventory.method_5439(); i++) {
-                if (!inventory.method_5438(i).method_7960()) {
-                    if (inventory.method_5438(i).method_7986()) {
-                        inventory.method_5438(i).method_7974(0);
+            List<ItemStack> itemStacks = new ArrayList<ItemStack>();
+            for (int i = 0; i < inventory.getContainerSize(); i++) {
+                if (!inventory.getItem(i).isEmpty()) {
+                    if (inventory.getItem(i).isDamaged()) {
+                        inventory.getItem(i).setDamageValue(0);
                     }
                     boolean contains = false;
-                    for (class_1799 itemStack : itemStacks) {
-                        if (class_1799.method_7984(itemStack, inventory.method_5438(i))) {
-                            itemStack.method_7933(inventory.method_5438(i).method_7947());
+                    for (ItemStack itemStack : itemStacks) {
+                        if (ItemStack.isSameItem(itemStack, inventory.getItem(i))) {
+                            itemStack.grow(inventory.getItem(i).getCount());
                             contains = true;
                             break;
                         }
                     }
                     if (!contains) {
-                        itemStacks.add(inventory.method_5438(i));
+                        itemStacks.add(inventory.getItem(i));
                     }
                 }
             }
@@ -112,116 +110,114 @@ public class DungeonHelper {
         return possibleLootItemStackMap;
     }
 
-    public static void teleportDungeon(class_3222 player, class_2338 dungeonPortalPos, @Nullable UUID requiredMinGroupUuid) {
-        if (player.method_37908().method_8321(dungeonPortalPos) != null && player.method_37908().method_8321(dungeonPortalPos) instanceof DungeonPortalEntity dungeonPortalEntity) {
+    public static void teleportDungeon(ServerPlayer player, BlockPos dungeonPortalPos, @Nullable UUID requiredMinGroupUuid) {
+        if (player.level().getBlockEntity(dungeonPortalPos) != null && player.level().getBlockEntity(dungeonPortalPos) instanceof DungeonPortalEntity dungeonPortalEntity) {
 
-            if (player.method_37908().method_27983() == DimensionInit.DUNGEON_WORLD) {
-                class_3218 oldWorld = ((ServerPlayerAccess) player).getOldServerWorld();
+            if (player.level().dimension() == DimensionInit.DUNGEON_WORLD) {
+                ServerLevel oldWorld = ((ServerPlayerAccess) player).getOldServerWorld();
                 if (oldWorld != null) {
-                    player.method_5731(DungeonPlacementHandler.leave(player, oldWorld));
+                    player.teleport(DungeonPlacementHandler.leave(player, oldWorld));
                     return;
                 }
             } else {
-                class_3218 dungeonWorld = player.method_37908().method_8503().method_3847(DimensionInit.DUNGEON_WORLD);
+                ServerLevel dungeonWorld = player.level().getServer().getLevel(DimensionInit.DUNGEON_WORLD);
                 if (dungeonWorld == null) {
-                    player.method_7353(class_2561.method_43470("Failed to find world, was it registered?"), false);
+                    player.sendSystemMessage(Component.literal("Failed to find world, was it registered?"));
                     return;
                 }
                 if (dungeonPortalEntity.getDungeon() != null) {
                     if ((dungeonPortalEntity.getDungeonPlayerCount() + dungeonPortalEntity.getDeadDungeonPlayerUUIDs().size()) < dungeonPortalEntity.getMaxGroupSize()) {
 
-                        if (dungeonPortalEntity.isOnCooldown((int) dungeonWorld.method_8510())) {
-                            player.method_7353(class_2561.method_43471("text.dungeonz.dungeon_cooldown"), false);
+                        if (dungeonPortalEntity.isOnCooldown((int) dungeonWorld.getGameTime())) {
+                            player.sendSystemMessage(Component.translatable("text.dungeonz.dungeon_cooldown"));
                             return;
                         }
                         if (dungeonPortalEntity.getDungeonPlayerCount() > 0 && dungeonPortalEntity.getPrivateGroup()) {
                             if (DungeonzMain.isPartyAddonLoaded) {
-                                GroupManager groupManager = ((GroupManagerAccess) player).getGroupManager();
-                                if (groupManager.getGroupPlayerIdList().isEmpty() || !groupManager.getGroupPlayerIdList().contains(dungeonPortalEntity.getDungeonPlayerUuids().get(0))) {
-                                    player.method_7353(class_2561.method_43471("text.dungeonz.dungeon_private"), false);
+                                if (!HearthwindGroups.admits(player, dungeonPortalEntity.getDungeonPlayerUuids().get(0))) {
+                                    player.sendSystemMessage(Component.translatable("text.dungeonz.dungeon_private"));
                                     return;
                                 }
                             } else {
-                                player.method_7353(class_2561.method_43471("text.dungeonz.dungeon_private"), false);
+                                player.sendSystemMessage(Component.translatable("text.dungeonz.dungeon_private"));
                                 return;
                             }
                         }
-                        if (!dungeonPortalEntity.getWaitingUuids().isEmpty() && dungeonPortalEntity.getWaitingUuids().contains(player.method_5667())) {
-                            player.method_7346();
+                        if (!dungeonPortalEntity.getWaitingUuids().isEmpty() && dungeonPortalEntity.getWaitingUuids().contains(player.getUUID())) {
+                            player.closeContainer();
                             return;
                         }
-                        if (!player.method_7337()) {
+                        if (!player.isCreative()) {
                             if (DungeonHelper.getRequiredItemStackList(dungeonPortalEntity.getDungeon()).containsKey(dungeonPortalEntity.getDifficulty())) {
-                                if (InventoryHelper.hasRequiredItemStacks(player.method_31548(), DungeonHelper.getRequiredItemStackList(dungeonPortalEntity.getDungeon()).get(dungeonPortalEntity.getDifficulty()))) {
-                                    InventoryHelper.decrementRequiredItemStacks(player.method_31548(), DungeonHelper.getRequiredItemStackList(dungeonPortalEntity.getDungeon()).get(dungeonPortalEntity.getDifficulty()));
+                                if (InventoryHelper.hasRequiredItemStacks(player.getInventory(), DungeonHelper.getRequiredItemStackList(dungeonPortalEntity.getDungeon()).get(dungeonPortalEntity.getDifficulty()))) {
+                                    InventoryHelper.decrementRequiredItemStacks(player.getInventory(), DungeonHelper.getRequiredItemStackList(dungeonPortalEntity.getDungeon()).get(dungeonPortalEntity.getDifficulty()));
                                 } else {
-                                    player.method_7353(class_2561.method_43471("text.dungeonz.missing"), false);
+                                    player.sendSystemMessage(Component.translatable("text.dungeonz.missing"));
                                     return;
                                 }
                             }
                         }
-                        if (DungeonzMain.isLevelZLoaded) {
-                            LevelManager levelManager = ((LevelManagerAccess) player).getLevelManager();
-                            if (levelManager.getOverallLevel() < dungeonPortalEntity.getDungeon().getRequiredLevel()) {
-                                player.method_7353(class_2561.method_43469("text.dungeonz.required_level", dungeonPortalEntity.getDungeon().getRequiredLevel()), false);
-                                return;
-                            }
+                        if (!HearthwindLevels.meetsRequiredLevel(player, dungeonPortalEntity.getDungeon().getRequiredLevel())) {
+                            player.sendSystemMessage(Component.translatable("text.dungeonz.required_level", dungeonPortalEntity.getDungeon().getRequiredLevel()));
+                            return;
                         }
                         if (dungeonPortalEntity.getDungeonPlayerCount() <= 0 && requiredMinGroupUuid != null && dungeonPortalEntity.getMinGroupSize() > 1) {
                             dungeonPortalEntity.addWaitingUuid(requiredMinGroupUuid);
                             if (dungeonPortalEntity.getMinGroupSize() > dungeonPortalEntity.getWaitingUuids().size()) {
-                                player.method_7353(class_2561.method_43469("text.dungeonz.dungeon_min_group_size", (dungeonPortalEntity.getMinGroupSize() - dungeonPortalEntity.getWaitingUuids().size())),
-                                        false);
+                                player.sendSystemMessage(Component.translatable("text.dungeonz.dungeon_min_group_size", (dungeonPortalEntity.getMinGroupSize() - dungeonPortalEntity.getWaitingUuids().size())));
                                 return;
                             } else if (dungeonPortalEntity.getdungeonTeleportCountdown() <= 0) {
                                 dungeonPortalEntity.startDungeonTeleportCountdown(dungeonWorld);
-                                player.method_7346();
+                                player.closeContainer();
                             }
                         } else if (dungeonPortalEntity.getDungeonPlayerCount() <= 0 && dungeonPortalEntity.getdungeonTeleportCountdown() <= 0) {
                             dungeonPortalEntity.addWaitingUuid(requiredMinGroupUuid);
                             dungeonPortalEntity.startDungeonTeleportCountdown(dungeonWorld);
-                            player.method_7346();
+                            player.closeContainer();
                         } else if (dungeonPortalEntity.getdungeonTeleportCountdown() > 0) {
                             dungeonPortalEntity.addWaitingUuid(requiredMinGroupUuid);
-                            player.method_7346();
-                        } else if (!dungeonPortalEntity.getDeadDungeonPlayerUUIDs().contains(player.method_5667()) || dungeonPortalEntity.getDungeon().isRespawnAllowed()) {
+                            player.closeContainer();
+                        } else if (!dungeonPortalEntity.getDeadDungeonPlayerUUIDs().contains(player.getUUID()) || dungeonPortalEntity.getDungeon().isRespawnAllowed()) {
                             teleportPlayer(player, dungeonWorld, dungeonPortalEntity, dungeonPortalPos);
                         } else {
-                            player.method_7353(class_2561.method_43471("text.dungeonz.dead_player"), false);
-                            player.method_7346();
+                            player.sendSystemMessage(Component.translatable("text.dungeonz.dead_player"));
+                            player.closeContainer();
                         }
                     } else {
-                        player.method_7353(class_2561.method_43471("text.dungeonz.dungeon_full"), false);
+                        player.sendSystemMessage(Component.translatable("text.dungeonz.dungeon_full"));
                     }
                 } else {
-                    player.method_7353(class_2561.method_43471("text.dungeonz.dungeon_missing"), false);
+                    player.sendSystemMessage(Component.translatable("text.dungeonz.dungeon_missing"));
                 }
             }
         }
     }
 
-    public static void teleportPlayer(class_3222 serverPlayerEntity, class_3218 dungeonWorld, DungeonPortalEntity dungeonPortalEntity, class_2338 dungeonPortalPos) {
-        class_3222 playerEntity = (class_3222) serverPlayerEntity.method_5731(DungeonPlacementHandler.enter(serverPlayerEntity, dungeonWorld, serverPlayerEntity.method_51469(),
+    public static void teleportPlayer(ServerPlayer serverPlayerEntity, ServerLevel dungeonWorld, DungeonPortalEntity dungeonPortalEntity, BlockPos dungeonPortalPos) {
+        ServerPlayer playerEntity = (ServerPlayer) serverPlayerEntity.teleport(DungeonPlacementHandler.enter(serverPlayerEntity, dungeonWorld, serverPlayerEntity.level(),
                 dungeonPortalEntity, dungeonPortalPos, dungeonPortalEntity.getDifficulty(), dungeonPortalEntity.getDungeon().isPositiveEffectsAllowed()));
 
         DungeonServerPacket.writeS2CDungeonInfoPacket(playerEntity, dungeonPortalEntity.getDungeon().getBreakableBlockIdList(), dungeonPortalEntity.getDungeon().getplaceableBlockIdList(),
                 dungeonPortalEntity.getDungeon().isElytraAllowed());
     }
 
-    public static void teleportOutOfDungeon(class_3222 player) {
-        class_3218 oldWorld = ((ServerPlayerAccess) player).getOldServerWorld();
+    public static void teleportOutOfDungeon(ServerPlayer player) {
+        ServerLevel oldWorld = ((ServerPlayerAccess) player).getOldServerWorld();
         if (oldWorld != null) {
-            player.method_5731(DungeonPlacementHandler.leave(player, oldWorld));
+            player.teleport(DungeonPlacementHandler.leave(player, oldWorld));
         } else {
-            class_243 spawnPos = null;
-            if (player.method_26280() != null) {
-                spawnPos = new class_243(player.method_26280().method_10263(), player.method_26280().method_10264(), player.method_26280().method_10260());
+            Vec3 spawnPos = null;
+            ServerPlayer.RespawnConfig respawnConfig = player.getRespawnConfig();
+            if (respawnConfig != null) {
+                BlockPos respawnPos = respawnConfig.respawnData().pos();
+                spawnPos = new Vec3(respawnPos.getX(), respawnPos.getY(), respawnPos.getZ());
             } else {
                 // spawnPos = ServerPlayerEntity.findRespawnPosition(player.server.getWorld(player.getSpawnPointDimension()), ((ServerPlayerAccess) player).getDungeonSpawnBlockPos(), 0.0f, true,
                 // true).get();
-                player.method_5731(player.method_60590(true, class_5454.field_52245));
+                player.teleport(player.findRespawnPositionAndUseSpawnBlock(true, TeleportTransition.DO_NOTHING));
             }
-            player.method_5731(new class_5454(player.field_13995.method_3847(player.method_26281()), spawnPos, new class_243(0.0D, 0.0D, 0.0D), 0.0f, 0.0f, class_5454.field_52245));
+            player.teleport(new TeleportTransition(player.level().getServer().getLevel(respawnConfig.respawnData().dimension()), spawnPos, new Vec3(0.0D, 0.0D, 0.0D), 0.0f, 0.0f,
+                    TeleportTransition.DO_NOTHING));
         }
     }
 

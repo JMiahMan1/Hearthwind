@@ -1,5 +1,7 @@
 package net.dungeonz.block.entity;
 
+import net.minecraft.world.level.storage.ValueOutput;
+import net.minecraft.world.level.storage.ValueInput;
 import net.dungeonz.block.screen.DungeonPortalScreenHandler;
 import net.dungeonz.dungeon.Dungeon;
 import net.dungeonz.dungeon.DungeonPlacementHandler;
@@ -8,38 +10,39 @@ import net.dungeonz.network.DungeonServerPacket;
 import net.dungeonz.network.packet.DungeonPortalPacket;
 import net.dungeonz.util.DungeonHelper;
 import net.dungeonz.util.InventoryHelper;
-import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
-import net.minecraft.class_1657;
-import net.minecraft.class_1661;
-import net.minecraft.class_1703;
-import net.minecraft.class_1799;
-import net.minecraft.class_1937;
-import net.minecraft.class_2246;
-import net.minecraft.class_2248;
-import net.minecraft.class_2338;
-import net.minecraft.class_2350;
-import net.minecraft.class_238;
-import net.minecraft.class_2487;
-import net.minecraft.class_2561;
-import net.minecraft.class_2640;
-import net.minecraft.class_2680;
-import net.minecraft.class_2960;
-import net.minecraft.class_3218;
-import net.minecraft.class_3222;
-import net.minecraft.class_3419;
-import net.minecraft.class_3914;
-import net.minecraft.class_4051;
-import net.minecraft.class_7225;
-import net.minecraft.class_7225.class_7874;
-import net.minecraft.class_7923;
+import net.fabricmc.fabric.api.menu.v1.ExtendedMenuProvider;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.level.block.entity.TheEndPortalBlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.resources.Identifier;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.inventory.ContainerLevelAccess;
+import net.minecraft.world.entity.ai.targeting.TargetingConditions;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.HolderLookup.Provider;
+import net.minecraft.core.UUIDUtil;
+import net.minecraft.core.registries.BuiltInRegistries;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.Map.Entry;
 
-public class DungeonPortalEntity extends class_2640 implements ExtendedScreenHandlerFactory<DungeonPortalPacket> {
+public class DungeonPortalEntity extends TheEndPortalBlockEntity implements ExtendedMenuProvider<DungeonPortalPacket> {
 
-    private class_2561 title = class_2561.method_43471("container.dungeon_portal");
+    private Component title = Component.translatable("container.dungeon_portal");
     private String dungeonType = "";
     private String difficulty = "";
     private boolean dungeonStructureGenerated = false;
@@ -51,255 +54,274 @@ public class DungeonPortalEntity extends class_2640 implements ExtendedScreenHan
     private int cooldownTime = 0;
     private int autoKickTime = 0;
     private boolean privateGroup = false;
-    private HashMap<Integer, ArrayList<class_2338>> blockBlockPosMap = new HashMap<Integer, ArrayList<class_2338>>();
-    private List<class_2338> chestPosList = new ArrayList<class_2338>();
-    private List<class_2338> exitPosList = new ArrayList<class_2338>();
-    private List<class_2338> gatePosList = new ArrayList<class_2338>();
-    private Map<class_2338, Integer> movingBlockMap = new HashMap<>();
-    private Map<class_2338, Powered> poweredBlockMap = new HashMap<>();
-    private class_2338 bossBlockPos = new class_2338(0, 0, 0);
-    private class_2338 bossLootBlockPos = new class_2338(0, 0, 0);
-    private HashMap<class_2338, Integer> spawnerPosEntityIdMap = new HashMap<class_2338, Integer>();
-    private HashMap<class_2338, Integer> replacePosBlockIdMap = new HashMap<class_2338, Integer>();
+    private HashMap<Integer, ArrayList<BlockPos>> blockBlockPosMap = new HashMap<Integer, ArrayList<BlockPos>>();
+    private List<BlockPos> chestPosList = new ArrayList<BlockPos>();
+    private List<BlockPos> exitPosList = new ArrayList<BlockPos>();
+    private List<BlockPos> gatePosList = new ArrayList<BlockPos>();
+    private Map<BlockPos, Integer> movingBlockMap = new HashMap<>();
+    private Map<BlockPos, Powered> poweredBlockMap = new HashMap<>();
+    private BlockPos bossBlockPos = new BlockPos(0, 0, 0);
+    private BlockPos bossLootBlockPos = new BlockPos(0, 0, 0);
+    private HashMap<BlockPos, Integer> spawnerPosEntityIdMap = new HashMap<BlockPos, Integer>();
+    private HashMap<BlockPos, Integer> replacePosBlockIdMap = new HashMap<BlockPos, Integer>();
     private List<Integer> dungeonEdgeList = new ArrayList<Integer>();
     private int dungeonTeleportCountdown = 0;
 
-    public DungeonPortalEntity(class_2338 pos, class_2680 state) {
+    public DungeonPortalEntity(BlockPos pos, BlockState state) {
         super(BlockInit.DUNGEON_PORTAL_ENTITY, pos, state);
     }
 
     @Override
-    public void method_11014(class_2487 nbt, class_7225.class_7874 registryLookup) {
-        super.method_11014(nbt, registryLookup);
-        this.dungeonType = nbt.method_10558("DungeonType");
-        this.difficulty = nbt.method_10558("Difficulty");
-        this.dungeonStructureGenerated = nbt.method_10577("DungeonStructureGenerated");
+    protected void loadAdditional(ValueInput input) {
+        super.loadAdditional(input);
+        this.dungeonType = input.getStringOr("DungeonType", "");
+        this.difficulty = input.getStringOr("Difficulty", "");
+        this.dungeonStructureGenerated = input.getBooleanOr("DungeonStructureGenerated", false);
         this.dungeonPlayerUuids.clear();
-        for (int i = 0; i < nbt.method_10550("DungeonPlayerCount"); i++) {
-            this.dungeonPlayerUuids.add(nbt.method_25926("PlayerUUID" + i));
+        for (int i = 0; i < input.getIntOr("DungeonPlayerCount", 0); i++) {
+            // 26.x: no ValueInput.getUUID; UUIDs go through UUIDUtil.CODEC.
+            input.read("PlayerUUID" + i, UUIDUtil.CODEC).ifPresent(this.dungeonPlayerUuids::add);
         }
         this.deadDungeonPlayerUuids.clear();
-        for (int i = 0; i < nbt.method_10550("DeadDungeonPlayerCount"); i++) {
-            this.deadDungeonPlayerUuids.add(nbt.method_25926("DeadPlayerUUID" + i));
+        for (int i = 0; i < input.getIntOr("DeadDungeonPlayerCount", 0); i++) {
+            input.read("DeadPlayerUUID" + i, UUIDUtil.CODEC).ifPresent(this.deadDungeonPlayerUuids::add);
         }
-        this.maxGroupSize = nbt.method_10550("MaxGroupSize");
-        this.minGroupSize = nbt.method_10550("MinGroupSize");
-        this.cooldownTime = nbt.method_10550("CooldownTime");
-        this.autoKickTime = nbt.method_10550("AutoKickTime");
-        this.privateGroup = nbt.method_10577("PrivateGroup");
+        this.maxGroupSize = input.getIntOr("MaxGroupSize", 0);
+        this.minGroupSize = input.getIntOr("MinGroupSize", 0);
+        this.cooldownTime = input.getIntOr("CooldownTime", 0);
+        this.autoKickTime = input.getIntOr("AutoKickTime", 0);
+        this.privateGroup = input.getBooleanOr("PrivateGroup", false);
         this.blockBlockPosMap.clear();
-        if (nbt.method_10550("BlockMapSize") > 0) {
-            for (int i = 0; i < nbt.method_10550("BlockMapSize"); i++) {
-                ArrayList<class_2338> posList = new ArrayList<>();
-                for (int u = 0; u < nbt.method_10550("BlockListSize" + i); u++) {
-                    int[] blockPos = nbt.method_10561("BlockPos" + i + "" + u);
-                    posList.add(new class_2338(blockPos[0], blockPos[1], blockPos[2]));
+        if (input.getIntOr("BlockMapSize", 0) > 0) {
+            for (int i = 0; i < input.getIntOr("BlockMapSize", 0); i++) {
+                ArrayList<BlockPos> posList = new ArrayList<>();
+                for (int u = 0; u < input.getIntOr("BlockListSize" + i, 0); u++) {
+                    int[] blockPos = input.getIntArray("BlockPos" + i + "" + u).orElse(new int[0]);
+                    if (blockPos.length >= 3) {
+                        posList.add(new BlockPos(blockPos[0], blockPos[1], blockPos[2]));
+                    }
                 }
-                this.blockBlockPosMap.put(nbt.method_10550("BlockId" + i), posList);
+                this.blockBlockPosMap.put(input.getIntOr("BlockId" + i, 0), posList);
             }
         }
 
-        int[] bossPos = nbt.method_10561("BossPos");
-        if (bossPos.length > 0) {
-            this.bossBlockPos = new class_2338(bossPos[0], bossPos[1], bossPos[2]);
+        int[] bossPos = input.getIntArray("BossPos").orElse(new int[0]);
+        if (bossPos.length >= 3) {
+            this.bossBlockPos = new BlockPos(bossPos[0], bossPos[1], bossPos[2]);
         }
-        int[] bossLootPos = nbt.method_10561("BossLootPos");
-        if (bossLootPos.length > 0) {
-            this.bossLootBlockPos = new class_2338(bossLootPos[0], bossLootPos[1], bossLootPos[2]);
+        int[] bossLootPos = input.getIntArray("BossLootPos").orElse(new int[0]);
+        if (bossLootPos.length >= 3) {
+            this.bossLootBlockPos = new BlockPos(bossLootPos[0], bossLootPos[1], bossLootPos[2]);
         }
 
-        if (nbt.method_10550("ChestListSize") > 0) {
+        if (input.getIntOr("ChestListSize", 0) > 0) {
             this.chestPosList.clear();
-            for (int i = 0; i < nbt.method_10550("ChestListSize"); i++) {
-                int[] chestPos = nbt.method_10561("ChestPos" + i);
-                this.chestPosList.add(new class_2338(chestPos[0], chestPos[1], chestPos[2]));
+            for (int i = 0; i < input.getIntOr("ChestListSize", 0); i++) {
+                int[] chestPos = input.getIntArray("ChestPos" + i).orElse(new int[0]);
+                if (chestPos.length >= 3) {
+                    this.chestPosList.add(new BlockPos(chestPos[0], chestPos[1], chestPos[2]));
+                }
             }
         }
 
-        if (nbt.method_10550("ExitListSize") > 0) {
+        if (input.getIntOr("ExitListSize", 0) > 0) {
             this.exitPosList.clear();
-            for (int i = 0; i < nbt.method_10550("ExitListSize"); i++) {
-                int[] exitPos = nbt.method_10561("ExitPos" + i);
-                this.exitPosList.add(new class_2338(exitPos[0], exitPos[1], exitPos[2]));
+            for (int i = 0; i < input.getIntOr("ExitListSize", 0); i++) {
+                int[] exitPos = input.getIntArray("ExitPos" + i).orElse(new int[0]);
+                if (exitPos.length >= 3) {
+                    this.exitPosList.add(new BlockPos(exitPos[0], exitPos[1], exitPos[2]));
+                }
             }
         }
 
-        if (nbt.method_10550("SpawnerMapSize") > 0) {
+        if (input.getIntOr("SpawnerMapSize", 0) > 0) {
             this.spawnerPosEntityIdMap.clear();
-            for (int i = 0; i < nbt.method_10550("SpawnerListSize"); i++) {
-                int[] spawnerPos = nbt.method_10561("SpawnerPos" + i);
-                this.spawnerPosEntityIdMap.put(new class_2338(spawnerPos[0], spawnerPos[1], spawnerPos[2]), spawnerPos[3]);
+            for (int i = 0; i < input.getIntOr("SpawnerMapSize", 0); i++) {
+                int[] spawnerPos = input.getIntArray("SpawnerPos" + i).orElse(new int[0]);
+                if (spawnerPos.length >= 4) {
+                    this.spawnerPosEntityIdMap.put(new BlockPos(spawnerPos[0], spawnerPos[1], spawnerPos[2]), spawnerPos[3]);
+                }
             }
         }
 
-        if (nbt.method_10550("ReplacePosSize") > 0) {
+        if (input.getIntOr("ReplacePosSize", 0) > 0) {
             this.replacePosBlockIdMap.clear();
-            for (int i = 0; i < nbt.method_10550("ReplacePosSize"); i++) {
-                int[] replacePos = nbt.method_10561("ReplacePos" + i);
-                this.replacePosBlockIdMap.put(new class_2338(replacePos[0], replacePos[1], replacePos[2]), replacePos[3]);
+            for (int i = 0; i < input.getIntOr("ReplacePosSize", 0); i++) {
+                int[] replacePos = input.getIntArray("ReplacePos" + i).orElse(new int[0]);
+                if (replacePos.length >= 4) {
+                    this.replacePosBlockIdMap.put(new BlockPos(replacePos[0], replacePos[1], replacePos[2]), replacePos[3]);
+                }
             }
         }
 
-        if (nbt.method_10550("MovingPosSize") > 0) {
+        if (input.getIntOr("MovingPosSize", 0) > 0) {
             this.movingBlockMap.clear();
-            for (int i = 0; i < nbt.method_10550("MovingPosSize"); i++) {
-                int[] movingPos = nbt.method_10561("MovingPos" + i);
-                this.movingBlockMap.put(new class_2338(movingPos[0], movingPos[1], movingPos[2]), movingPos[3]);
+            for (int i = 0; i < input.getIntOr("MovingPosSize", 0); i++) {
+                int[] movingPos = input.getIntArray("MovingPos" + i).orElse(new int[0]);
+                if (movingPos.length >= 4) {
+                    this.movingBlockMap.put(new BlockPos(movingPos[0], movingPos[1], movingPos[2]), movingPos[3]);
+                }
             }
         }
 
-        if (nbt.method_10550("PoweredPosSize") > 0) {
+        if (input.getIntOr("PoweredPosSize", 0) > 0) {
             this.poweredBlockMap.clear();
-            for (int i = 0; i < nbt.method_10550("PoweredPosSize"); i++) {
-                int[] poweredPos = nbt.method_10561("PoweredPos" + i);
-                boolean isPowered = poweredPos[4] == 1;
-                this.poweredBlockMap.put(new class_2338(poweredPos[0], poweredPos[1], poweredPos[2]), new Powered(poweredPos[3], isPowered, poweredPos[5], poweredPos[6]));
+            for (int i = 0; i < input.getIntOr("PoweredPosSize", 0); i++) {
+                int[] poweredPos = input.getIntArray("PoweredPos" + i).orElse(new int[0]);
+                if (poweredPos.length >= 7) {
+                    boolean isPowered = poweredPos[4] == 1;
+                    this.poweredBlockMap.put(new BlockPos(poweredPos[0], poweredPos[1], poweredPos[2]), new Powered(poweredPos[3], isPowered, poweredPos[5], poweredPos[6]));
+                }
             }
         }
 
-        if (nbt.method_10550("DungeonEdgeSize") > 0) {
+        if (input.getIntOr("DungeonEdgeSize", 0) > 0) {
             this.dungeonEdgeList.clear();
-            for (int i = 0; i < nbt.method_10550("DungeonEdgeSize") / 3; i++) {
-                int[] dungeonEdgePos = nbt.method_10561("DungeonEdge" + i);
-                this.dungeonEdgeList.add(dungeonEdgePos[0]);
-                this.dungeonEdgeList.add(dungeonEdgePos[1]);
-                this.dungeonEdgeList.add(dungeonEdgePos[2]);
+            for (int i = 0; i < input.getIntOr("DungeonEdgeSize", 0) / 3; i++) {
+                int[] dungeonEdgePos = input.getIntArray("DungeonEdge" + i).orElse(new int[0]);
+                if (dungeonEdgePos.length >= 3) {
+                    this.dungeonEdgeList.add(dungeonEdgePos[0]);
+                    this.dungeonEdgeList.add(dungeonEdgePos[1]);
+                    this.dungeonEdgeList.add(dungeonEdgePos[2]);
+                }
             }
         }
 
-        if (nbt.method_10550("GateListSize") > 0) {
+        if (input.getIntOr("GateListSize", 0) > 0) {
             this.gatePosList.clear();
-            for (int i = 0; i < nbt.method_10550("GateListSize"); i++) {
-                int[] gatePos = nbt.method_10561("GatePos" + i);
-                this.gatePosList.add(new class_2338(gatePos[0], gatePos[1], gatePos[2]));
+            for (int i = 0; i < input.getIntOr("GateListSize", 0); i++) {
+                int[] gatePos = input.getIntArray("GatePos" + i).orElse(new int[0]);
+                if (gatePos.length >= 3) {
+                    this.gatePosList.add(new BlockPos(gatePos[0], gatePos[1], gatePos[2]));
+                }
             }
         }
     }
 
     @Override
-    public void method_11007(class_2487 nbt, class_7225.class_7874 registryLookup) {
-        super.method_11007(nbt, registryLookup);
-        nbt.method_10582("DungeonType", this.dungeonType);
-        nbt.method_10582("Difficulty", this.difficulty);
-        nbt.method_10556("DungeonStructureGenerated", this.dungeonStructureGenerated);
-        nbt.method_10569("DungeonPlayerCount", this.dungeonPlayerUuids.size());
+    protected void saveAdditional(ValueOutput output) {
+        super.saveAdditional(output);
+        output.putString("DungeonType", this.dungeonType);
+        output.putString("Difficulty", this.difficulty);
+        output.putBoolean("DungeonStructureGenerated", this.dungeonStructureGenerated);
+        output.putInt("DungeonPlayerCount", this.dungeonPlayerUuids.size());
         for (int i = 0; i < this.dungeonPlayerUuids.size(); i++) {
-            nbt.method_25927("PlayerUUID" + i, this.dungeonPlayerUuids.get(i));
+            output.store("PlayerUUID" + i, UUIDUtil.CODEC, this.dungeonPlayerUuids.get(i));
         }
-        nbt.method_10569("DeadDungeonPlayerCount", this.deadDungeonPlayerUuids.size());
+        output.putInt("DeadDungeonPlayerCount", this.deadDungeonPlayerUuids.size());
         for (int i = 0; i < this.deadDungeonPlayerUuids.size(); i++) {
-            nbt.method_25927("DeadPlayerUUID" + i, this.deadDungeonPlayerUuids.get(i));
+            output.store("DeadPlayerUUID" + i, UUIDUtil.CODEC, this.deadDungeonPlayerUuids.get(i));
         }
-        nbt.method_10569("MaxGroupSize", this.maxGroupSize);
-        nbt.method_10569("MinGroupSize", this.minGroupSize);
-        nbt.method_10569("CooldownTime", this.cooldownTime);
-        nbt.method_10569("AutoKickTime", this.autoKickTime);
-        nbt.method_10556("PrivateGroup", this.privateGroup);
+        output.putInt("MaxGroupSize", this.maxGroupSize);
+        output.putInt("MinGroupSize", this.minGroupSize);
+        output.putInt("CooldownTime", this.cooldownTime);
+        output.putInt("AutoKickTime", this.autoKickTime);
+        output.putBoolean("PrivateGroup", this.privateGroup);
 
-        nbt.method_10569("BlockMapSize", this.blockBlockPosMap.size());
+        output.putInt("BlockMapSize", this.blockBlockPosMap.size());
         if (!this.blockBlockPosMap.isEmpty()) {
             int blockCount = 0;
-            for (Entry<Integer, ArrayList<class_2338>> entry : this.blockBlockPosMap.entrySet()) {
-                nbt.method_10569("BlockId" + blockCount, entry.getKey());
-                nbt.method_10569("BlockListSize" + blockCount, entry.getValue().size());
+            for (Entry<Integer, ArrayList<BlockPos>> entry : this.blockBlockPosMap.entrySet()) {
+                output.putInt("BlockId" + blockCount, entry.getKey());
+                output.putInt("BlockListSize" + blockCount, entry.getValue().size());
                 for (int i = 0; i < entry.getValue().size(); i++) {
-                    nbt.method_10572("BlockPos" + blockCount + "" + i, List.of(entry.getValue().get(i).method_10263(), entry.getValue().get(i).method_10264(), entry.getValue().get(i).method_10260()));
+                    output.putIntArray("BlockPos" + blockCount + "" + i, new int[]{entry.getValue().get(i).getX(), entry.getValue().get(i).getY(), entry.getValue().get(i).getZ()});
                 }
                 blockCount++;
             }
         }
-        nbt.method_10572("BossPos", List.of(this.bossBlockPos.method_10263(), this.bossBlockPos.method_10264(), this.bossBlockPos.method_10260()));
-        nbt.method_10572("BossLootPos", List.of(this.bossLootBlockPos.method_10263(), this.bossLootBlockPos.method_10264(), this.bossLootBlockPos.method_10260()));
+        output.putIntArray("BossPos", new int[]{this.bossBlockPos.getX(), this.bossBlockPos.getY(), this.bossBlockPos.getZ()});
+        output.putIntArray("BossLootPos", new int[]{this.bossLootBlockPos.getX(), this.bossLootBlockPos.getY(), this.bossLootBlockPos.getZ()});
 
-        nbt.method_10569("ChestListSize", this.chestPosList.size());
+        output.putInt("ChestListSize", this.chestPosList.size());
         if (!this.chestPosList.isEmpty()) {
             for (int i = 0; i < this.chestPosList.size(); i++) {
-                nbt.method_10572("ChestPos" + i, List.of(this.chestPosList.get(i).method_10263(), this.chestPosList.get(i).method_10264(), this.chestPosList.get(i).method_10260()));
+                output.putIntArray("ChestPos" + i, new int[]{this.chestPosList.get(i).getX(), this.chestPosList.get(i).getY(), this.chestPosList.get(i).getZ()});
             }
         }
 
-        nbt.method_10569("ExitListSize", this.exitPosList.size());
+        output.putInt("ExitListSize", this.exitPosList.size());
         if (!this.exitPosList.isEmpty()) {
             for (int i = 0; i < this.exitPosList.size(); i++) {
-                nbt.method_10572("ExitPos" + i, List.of(this.exitPosList.get(i).method_10263(), this.exitPosList.get(i).method_10264(), this.exitPosList.get(i).method_10260()));
+                output.putIntArray("ExitPos" + i, new int[]{this.exitPosList.get(i).getX(), this.exitPosList.get(i).getY(), this.exitPosList.get(i).getZ()});
             }
         }
 
-        nbt.method_10569("SpawnerMapSize", this.spawnerPosEntityIdMap.size());
+        output.putInt("SpawnerMapSize", this.spawnerPosEntityIdMap.size());
         if (!this.spawnerPosEntityIdMap.isEmpty()) {
-            Iterator<Entry<class_2338, Integer>> iterator = this.spawnerPosEntityIdMap.entrySet().iterator();
+            Iterator<Entry<BlockPos, Integer>> iterator = this.spawnerPosEntityIdMap.entrySet().iterator();
             int count = 0;
             while (iterator.hasNext()) {
-                Entry<class_2338, Integer> entry = iterator.next();
-                nbt.method_10572("SpawnerPos" + count, List.of(entry.getKey().method_10263(), entry.getKey().method_10264(), entry.getKey().method_10260(), entry.getValue()));
+                Entry<BlockPos, Integer> entry = iterator.next();
+                output.putIntArray("SpawnerPos" + count, new int[]{entry.getKey().getX(), entry.getKey().getY(), entry.getKey().getZ(), entry.getValue()});
                 count++;
             }
         }
 
-        nbt.method_10569("ReplacePosSize", this.replacePosBlockIdMap.size());
+        output.putInt("ReplacePosSize", this.replacePosBlockIdMap.size());
         if (!this.replacePosBlockIdMap.isEmpty()) {
-            Iterator<Entry<class_2338, Integer>> iterator = this.replacePosBlockIdMap.entrySet().iterator();
+            Iterator<Entry<BlockPos, Integer>> iterator = this.replacePosBlockIdMap.entrySet().iterator();
             int count = 0;
             while (iterator.hasNext()) {
-                Entry<class_2338, Integer> entry = iterator.next();
-                nbt.method_10572("ReplacePos" + count, List.of(entry.getKey().method_10263(), entry.getKey().method_10264(), entry.getKey().method_10260(), entry.getValue()));
+                Entry<BlockPos, Integer> entry = iterator.next();
+                output.putIntArray("ReplacePos" + count, new int[]{entry.getKey().getX(), entry.getKey().getY(), entry.getKey().getZ(), entry.getValue()});
                 count++;
             }
         }
 
-        nbt.method_10569("MovingPosSize", this.movingBlockMap.size());
+        output.putInt("MovingPosSize", this.movingBlockMap.size());
         if (!this.movingBlockMap.isEmpty()) {
-            Iterator<Entry<class_2338, Integer>> iterator = this.movingBlockMap.entrySet().iterator();
+            Iterator<Entry<BlockPos, Integer>> iterator = this.movingBlockMap.entrySet().iterator();
             int count = 0;
             while (iterator.hasNext()) {
-                Entry<class_2338, Integer> entry = iterator.next();
-                nbt.method_10572("MovingPos" + count, List.of(entry.getKey().method_10263(), entry.getKey().method_10264(), entry.getKey().method_10260(), entry.getValue()));
+                Entry<BlockPos, Integer> entry = iterator.next();
+                output.putIntArray("MovingPos" + count, new int[]{entry.getKey().getX(), entry.getKey().getY(), entry.getKey().getZ(), entry.getValue()});
                 count++;
             }
         }
 
-        nbt.method_10569("PoweredPosSize", this.poweredBlockMap.size());
+        output.putInt("PoweredPosSize", this.poweredBlockMap.size());
         if (!this.poweredBlockMap.isEmpty()) {
-            Iterator<Entry<class_2338, Powered>> iterator = this.poweredBlockMap.entrySet().iterator();
+            Iterator<Entry<BlockPos, Powered>> iterator = this.poweredBlockMap.entrySet().iterator();
             int count = 0;
             while (iterator.hasNext()) {
-                Entry<class_2338, Powered> entry = iterator.next();
+                Entry<BlockPos, Powered> entry = iterator.next();
                 int isPowered = entry.getValue().getPowered() ? 1 : 0;
-                nbt.method_10572("PoweredPos" + count, List.of(entry.getKey().method_10263(), entry.getKey().method_10264(), entry.getKey().method_10260(), entry.getValue().getBlockId(), isPowered, entry.getValue().getFacing(), entry.getValue().getBlockFacing()));
+                output.putIntArray("PoweredPos" + count, new int[]{entry.getKey().getX(), entry.getKey().getY(), entry.getKey().getZ(), entry.getValue().getBlockId(), isPowered, entry.getValue().getFacing(), entry.getValue().getBlockFacing()});
                 count++;
             }
         }
 
-        nbt.method_10569("DungeonEdgeSize", this.dungeonEdgeList.size());
+        output.putInt("DungeonEdgeSize", this.dungeonEdgeList.size());
         if (!this.dungeonEdgeList.isEmpty()) {
             for (int i = 0; i < this.dungeonEdgeList.size() / 3; i++) {
-                nbt.method_10572("DungeonEdge" + i, List.of(this.dungeonEdgeList.get(3 * i), this.dungeonEdgeList.get(1 + 3 * i), this.dungeonEdgeList.get(2 + 3 * i)));
+                output.putIntArray("DungeonEdge" + i, new int[]{this.dungeonEdgeList.get(3 * i), this.dungeonEdgeList.get(1 + 3 * i), this.dungeonEdgeList.get(2 + 3 * i)});
             }
         }
 
-        nbt.method_10569("GateListSize", this.gatePosList.size());
+        output.putInt("GateListSize", this.gatePosList.size());
         if (!this.gatePosList.isEmpty()) {
             for (int i = 0; i < this.gatePosList.size(); i++) {
-                nbt.method_10572("GatePos" + i, List.of(this.gatePosList.get(i).method_10263(), this.gatePosList.get(i).method_10264(), this.gatePosList.get(i).method_10260()));
+                output.putIntArray("GatePos" + i, new int[]{this.gatePosList.get(i).getX(), this.gatePosList.get(i).getY(), this.gatePosList.get(i).getZ()});
             }
         }
     }
 
-    public static void clientTick(class_1937 world, class_2338 pos, class_2680 state, DungeonPortalEntity blockEntity) {
+    public static void clientTick(Level world, BlockPos pos, BlockState state, DungeonPortalEntity blockEntity) {
     }
 
-    public static void serverTick(class_1937 world, class_2338 pos, class_2680 state, DungeonPortalEntity blockEntity) {
+    public static void serverTick(Level world, BlockPos pos, BlockState state, DungeonPortalEntity blockEntity) {
         if (blockEntity.getDungeonPlayerCount() > 0) {
             if (blockEntity.autoKickTime == 0) {
-                blockEntity.autoKickTime = (int) world.method_8510() + 432000;
-            } else if (blockEntity.autoKickTime < (int) world.method_8510()) {
+                blockEntity.autoKickTime = (int) world.getGameTime() + 432000;
+            } else if (blockEntity.autoKickTime < (int) world.getGameTime()) {
                 if (blockEntity.getDungeon() != null) {
-                    blockEntity.setCooldownTime(blockEntity.getDungeon().getCooldown() + (int) blockEntity.method_10997().method_8510());
+                    blockEntity.setCooldownTime(blockEntity.getDungeon().getCooldown() + (int) blockEntity.getLevel().getGameTime());
                     for (int i = 0; i < blockEntity.getDungeonPlayerUuids().size(); i++) {
-                        class_3222 player = (class_3222) world.method_18470(blockEntity.getDungeonPlayerUuids().get(i));
+                        ServerPlayer player = (ServerPlayer) world.getPlayerByUUID(blockEntity.getDungeonPlayerUuids().get(i));
                         if (DungeonHelper.getCurrentDungeon(player) != null) {
                             DungeonHelper.teleportOutOfDungeon(player);
-                            player.method_43496(class_2561.method_43471("text.dungeonz.dungeon_autokick"));
+                            player.sendSystemMessage(Component.translatable("text.dungeonz.dungeon_autokick"));
                         }
                     }
                 }
@@ -313,8 +335,8 @@ public class DungeonPortalEntity extends class_2640 implements ExtendedScreenHan
         if (blockEntity.dungeonTeleportCountdown >= 1) {
             if (blockEntity.dungeonTeleportCountdown % 20 == 0) {
                 for (int i = 0; i < blockEntity.getWaitingUuids().size(); i++) {
-                    if (((class_3218) blockEntity.method_10997()).method_14190(blockEntity.getWaitingUuids().get(i)) != null
-                            && ((class_3218) blockEntity.method_10997()).method_14190(blockEntity.getWaitingUuids().get(i)) instanceof class_3222 serverPlayerEntity) {
+                    if (((ServerLevel) blockEntity.getLevel()).getEntity(blockEntity.getWaitingUuids().get(i)) != null
+                            && ((ServerLevel) blockEntity.getLevel()).getEntity(blockEntity.getWaitingUuids().get(i)) instanceof ServerPlayer serverPlayerEntity) {
                         DungeonServerPacket.writeS2CDungeonTeleportCountdown(serverPlayerEntity, blockEntity.dungeonTeleportCountdown);
                     }
                 }
@@ -325,15 +347,15 @@ public class DungeonPortalEntity extends class_2640 implements ExtendedScreenHan
             if (blockEntity.dungeonTeleportCountdown == (ConfigInit.CONFIG.defaultDungeonTeleportCountdown / 2)) {
 //                CompletableFuture.runAsync(() -> DungeonPlacementHandler.refreshDungeon(((ServerWorld) blockEntity.getWorld()).getServer(), blockEntity.getWorld().getServer().getWorld(DimensionInit.DUNGEON_WORLD), blockEntity,
 //                        blockEntity.getDungeon(), blockEntity.getDifficulty(), blockEntity.getDisableEffects()));
-                DungeonPlacementHandler.refreshDungeon(((class_3218) blockEntity.method_10997()).method_8503(), blockEntity.method_10997().method_8503().method_3847(DimensionInit.DUNGEON_WORLD), blockEntity,
+                DungeonPlacementHandler.refreshDungeon(((ServerLevel) blockEntity.getLevel()).getServer(), blockEntity.getLevel().getServer().getLevel(DimensionInit.DUNGEON_WORLD), blockEntity,
                         blockEntity.getDungeon(), blockEntity.getDifficulty());
             }
 
             if (blockEntity.dungeonTeleportCountdown == 0) {
                 for (int i = 0; i < blockEntity.getWaitingUuids().size(); i++) {
-                    if (((class_3218) blockEntity.method_10997()).method_14190(blockEntity.getWaitingUuids().get(i)) != null
-                            && ((class_3218) blockEntity.method_10997()).method_14190(blockEntity.getWaitingUuids().get(i)) instanceof class_3222 serverPlayerEntity) {
-                        DungeonHelper.teleportPlayer(serverPlayerEntity, blockEntity.method_10997().method_8503().method_3847(DimensionInit.DUNGEON_WORLD), blockEntity, blockEntity.method_11016());
+                    if (((ServerLevel) blockEntity.getLevel()).getEntity(blockEntity.getWaitingUuids().get(i)) != null
+                            && ((ServerLevel) blockEntity.getLevel()).getEntity(blockEntity.getWaitingUuids().get(i)) instanceof ServerPlayer serverPlayerEntity) {
+                        DungeonHelper.teleportPlayer(serverPlayerEntity, blockEntity.getLevel().getServer().getLevel(DimensionInit.DUNGEON_WORLD), blockEntity, blockEntity.getBlockPos());
                     }
                 }
                 blockEntity.getWaitingUuids().clear();
@@ -342,34 +364,34 @@ public class DungeonPortalEntity extends class_2640 implements ExtendedScreenHan
     }
 
     @Override
-    public class_2561 method_5476() {
+    public Component getDisplayName() {
         if (this.getDungeon() != null) {
-            return class_2561.method_43471("dungeon." + this.getDungeonType());
+            return Component.translatable("dungeon." + this.getDungeonType());
         }
         return title;
     }
 
     @Override
-    public class_2487 method_16887(class_7874 registryLookup) {
-        return this.method_38244(registryLookup);
+    public CompoundTag getUpdateTag(Provider registryLookup) {
+        return this.saveWithoutMetadata(registryLookup);
     }
 
     @Override
-    public class_1703 createMenu(int syncId, class_1661 playerInventory, class_1657 playerEntity) {
-        return new DungeonPortalScreenHandler(syncId, playerInventory, this, class_3914.method_17392(field_11863, field_11867));
+    public AbstractContainerMenu createMenu(int syncId, Inventory playerInventory, Player playerEntity) {
+        return new DungeonPortalScreenHandler(syncId, playerInventory, this, ContainerLevelAccess.create(level, worldPosition));
     }
 
     @Override
-    public boolean method_11400(class_2350 direction) {
+    public boolean shouldRenderFace(Direction direction) {
         return true;
     }
 
     @Override
-    public DungeonPortalPacket getScreenOpeningData(class_3222 player) {
+    public DungeonPortalPacket getScreenOpeningData(ServerPlayer player) {
         List<String> difficulties = new ArrayList<String>();
-        Map<String, List<class_1799>> possibleLoot = new HashMap<>();
-        Map<String, List<class_1799>> requiredItemStacks = new HashMap<>();
-        Optional<class_2960> backgroundId = Optional.empty();
+        Map<String, List<ItemStack>> possibleLoot = new HashMap<>();
+        Map<String, List<ItemStack>> requiredItemStacks = new HashMap<>();
+        Optional<Identifier> backgroundId = Optional.empty();
 
         int requiredLevel = 0;
         boolean allowRespawn = false;
@@ -379,7 +401,7 @@ public class DungeonPortalEntity extends class_2640 implements ExtendedScreenHan
         boolean allowElytra = false;
         if (this.getDungeon() instanceof Dungeon dungeon) {
             difficulties = dungeon.getDifficultyList();
-            possibleLoot = DungeonHelper.getPossibleLootItemStackMap(dungeon, player.method_5682());
+            possibleLoot = DungeonHelper.getPossibleLootItemStackMap(dungeon, player.level().getServer());
             requiredItemStacks = DungeonHelper.getRequiredItemStackList(dungeon);
             backgroundId = Optional.ofNullable(dungeon.getBackgroundId());
             requiredLevel = dungeon.getRequiredLevel();
@@ -390,26 +412,26 @@ public class DungeonPortalEntity extends class_2640 implements ExtendedScreenHan
             allowElytra = dungeon.isElytraAllowed();
         }
 
-        return new DungeonPortalPacket(this.getDungeonType(), this.field_11867, this.getDungeonPlayerUuids(), this.getDeadDungeonPlayerUUIDs(), difficulties, possibleLoot, requiredItemStacks, this.getMaxGroupSize(),
-                this.getMinGroupSize(), this.getWaitingUuids().size(), requiredLevel, this.getCooldownTime(), this.getDifficulty(), allowEnderPearl, allowPositiveEffects, allowElytra, allowRespawn, keepInventory, this.getPrivateGroup(), backgroundId);
+        return new DungeonPortalPacket(this.getDungeonType(), this.worldPosition, this.getDungeonPlayerUuids(), this.getDeadDungeonPlayerUUIDs(), difficulties, possibleLoot, requiredItemStacks, this.getMaxGroupSize(),
+                this.getMinGroupSize(), this.getWaitingUuids().size(), requiredLevel, this.getCooldownTime(), this.getDifficulty(), allowEnderPearl, allowPositiveEffects, allowElytra, allowRespawn, keepInventory, this.getPrivateGroup(), backgroundId, net.dungeonz.network.packet.DungeonAdmissionPacket.snapshot(player, 0));
     }
 
-    public void finishDungeon(class_3218 world, class_2338 pos) {
-        List<class_1657> players = world.method_18464(class_4051.method_36625().method_18418(64.0), null, new class_238(pos).method_1009(64.0, 64.0, 64.0));
-        for (class_1657 player : players) {
-            CriteriaInit.DUNGEON_COMPLETION.trigger((class_3222) player, this.getDungeonType(), this.getDifficulty());
+    public void finishDungeon(ServerLevel world, BlockPos pos) {
+        List<Player> players = world.getNearbyPlayers(TargetingConditions.forCombat().range(64.0), null, new AABB(pos).inflate(64.0, 64.0, 64.0));
+        for (Player player : players) {
+            CriteriaInit.DUNGEON_COMPLETION.trigger((ServerPlayer) player, this.getDungeonType(), this.getDifficulty());
         }
-        world.method_8396(null, pos, SoundInit.DUNGEON_COMPLETION_EVENT, class_3419.field_15245, 1.0f, 0.9f + world.method_8409().method_43057() * 0.2f);
+        world.playSound(null, pos, SoundInit.DUNGEON_COMPLETION_EVENT, SoundSource.BLOCKS, 1.0f, 0.9f + world.getRandom().nextFloat() * 0.2f);
 
         for (int i = 0; i < this.getExitPosList().size(); i++) {
-            world.method_8652(this.getExitPosList().get(i), BlockInit.DUNGEON_PORTAL.method_9564(), 3);
+            world.setBlock(this.getExitPosList().get(i), BlockInit.DUNGEON_PORTAL.defaultBlockState(), 3);
         }
 
-        world.method_8652(this.getBossLootBlockPos(), class_2246.field_10034.method_9564(), 3);
-        InventoryHelper.fillInventoryWithLoot(world.method_8503(), world, this.getBossLootBlockPos(), this.getDungeon().getDifficultyBossLootTableMap().get(this.getDifficulty()));
+        world.setBlock(this.getBossLootBlockPos(), Blocks.CHEST.defaultBlockState(), 3);
+        InventoryHelper.fillInventoryWithLoot(world.getServer(), world, this.getBossLootBlockPos(), this.getDungeon().getDifficultyBossLootTableMap().get(this.getDifficulty()));
 
-        this.setCooldownTime(this.getDungeon().getCooldown() + (int) this.method_10997().method_8510());
-        method_5431();
+        this.setCooldownTime(this.getDungeon().getCooldown() + (int) this.getLevel().getGameTime());
+        setChanged();
     }
 
     @Nullable
@@ -476,11 +498,11 @@ public class DungeonPortalEntity extends class_2640 implements ExtendedScreenHan
     }
 
     // Might lead to issues if using "="
-    public void setBlockMap(HashMap<Integer, ArrayList<class_2338>> map) {
+    public void setBlockMap(HashMap<Integer, ArrayList<BlockPos>> map) {
         this.blockBlockPosMap = map;
     }
 
-    public HashMap<Integer, ArrayList<class_2338>> getBlockMap() {
+    public HashMap<Integer, ArrayList<BlockPos>> getBlockMap() {
         return this.blockBlockPosMap;
     }
 
@@ -533,59 +555,59 @@ public class DungeonPortalEntity extends class_2640 implements ExtendedScreenHan
         return this.privateGroup;
     }
 
-    public void setBossBlockPos(class_2338 pos) {
+    public void setBossBlockPos(BlockPos pos) {
         this.bossBlockPos = pos;
     }
 
-    public class_2338 getBossBlockPos() {
+    public BlockPos getBossBlockPos() {
         return this.bossBlockPos;
     }
 
-    public void setBossLootBlockPos(class_2338 pos) {
+    public void setBossLootBlockPos(BlockPos pos) {
         this.bossLootBlockPos = pos;
     }
 
-    public class_2338 getBossLootBlockPos() {
+    public BlockPos getBossLootBlockPos() {
         return this.bossLootBlockPos;
     }
 
-    public void setChestPosList(List<class_2338> chestPosList) {
+    public void setChestPosList(List<BlockPos> chestPosList) {
         this.chestPosList = chestPosList;
     }
 
-    public List<class_2338> getChestPosList() {
+    public List<BlockPos> getChestPosList() {
         return this.chestPosList;
     }
 
-    public void setGatePosList(List<class_2338> gatePosList) {
+    public void setGatePosList(List<BlockPos> gatePosList) {
         this.gatePosList = gatePosList;
     }
 
-    public List<class_2338> getGatePosList() {
+    public List<BlockPos> getGatePosList() {
         return this.gatePosList;
     }
 
-    public void setMovingBlockMap(Map<class_2338, Integer> movingBlockMap) {
+    public void setMovingBlockMap(Map<BlockPos, Integer> movingBlockMap) {
         this.movingBlockMap = movingBlockMap;
     }
 
-    public Map<class_2338, Integer> getMovingBlockMap() {
+    public Map<BlockPos, Integer> getMovingBlockMap() {
         return this.movingBlockMap;
     }
 
-    public void setPoweredBlockMap(Map<class_2338, Powered> poweredBlockMap) {
+    public void setPoweredBlockMap(Map<BlockPos, Powered> poweredBlockMap) {
         this.poweredBlockMap = poweredBlockMap;
     }
 
-    public Map<class_2338, Powered> getPoweredBlockMap() {
+    public Map<BlockPos, Powered> getPoweredBlockMap() {
         return this.poweredBlockMap;
     }
 
-    public void setExitPosList(List<class_2338> exitPosList) {
+    public void setExitPosList(List<BlockPos> exitPosList) {
         this.exitPosList = exitPosList;
     }
 
-    public List<class_2338> getExitPosList() {
+    public List<BlockPos> getExitPosList() {
         return this.exitPosList;
     }
 
@@ -599,37 +621,37 @@ public class DungeonPortalEntity extends class_2640 implements ExtendedScreenHan
         return this.dungeonEdgeList;
     }
 
-    public void setSpawnerPosEntityIdMap(HashMap<class_2338, Integer> spawnerPosEntityIdMap) {
+    public void setSpawnerPosEntityIdMap(HashMap<BlockPos, Integer> spawnerPosEntityIdMap) {
         this.spawnerPosEntityIdMap = spawnerPosEntityIdMap;
     }
 
-    public HashMap<class_2338, Integer> getSpawnerPosEntityIdMap() {
+    public HashMap<BlockPos, Integer> getSpawnerPosEntityIdMap() {
         return this.spawnerPosEntityIdMap;
     }
 
-    public void setReplaceBlockIdMap(HashMap<class_2338, Integer> replacePosBlockIdMap) {
+    public void setReplaceBlockIdMap(HashMap<BlockPos, Integer> replacePosBlockIdMap) {
         this.replacePosBlockIdMap = replacePosBlockIdMap;
     }
 
-    public void addReplaceBlockId(class_2338 pos, class_2248 block) {
-        this.replacePosBlockIdMap.put(pos, class_7923.field_41175.method_10206(block));
+    public void addReplaceBlockId(BlockPos pos, Block block) {
+        this.replacePosBlockIdMap.put(pos, BuiltInRegistries.BLOCK.getId(block));
     }
 
-    public HashMap<class_2338, Integer> getReplaceBlockIdMap() {
+    public HashMap<BlockPos, Integer> getReplaceBlockIdMap() {
         return this.replacePosBlockIdMap;
     }
 
-    public void startDungeonTeleportCountdown(class_3218 dungeonWorld) {
+    public void startDungeonTeleportCountdown(ServerLevel dungeonWorld) {
         this.dungeonTeleportCountdown = ConfigInit.CONFIG.defaultDungeonTeleportCountdown;
 
         boolean isDungeonStructureGenerated = this.isDungeonStructureGenerated();
         if (!isDungeonStructureGenerated) {
             this.setDungeonStructureGenerated();
-            DungeonPlacementHandler.generateDungeonStructure(dungeonWorld, new class_2338(0, 0, 0).method_10069(this.method_11016().method_10263() * 16, 100, this.method_11016().method_10260() * 16), this);
+            DungeonPlacementHandler.generateDungeonStructure(dungeonWorld, new BlockPos(0, 0, 0).offset(this.getBlockPos().getX() * 16, 100, this.getBlockPos().getZ() * 16), this);
         } else {
             DungeonPlacementHandler.prepareDungeon(dungeonWorld, this);
         }
-        this.method_5431();
+        this.setChanged();
     }
 
     public int getdungeonTeleportCountdown() {

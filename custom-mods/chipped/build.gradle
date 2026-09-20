@@ -1,0 +1,11 @@
+tasks.register('stageInteractionTests', Sync) {
+    dependsOn tasks.named('testClasses')
+    into layout.buildDirectory.dir('interaction-tests')
+    from(sourceSets.test.runtimeClasspath) {
+        into 'classpath'
+    }
+}
+
+tasks.withType(Test).configureEach {
+    failOnNoDiscoveredTests = false
+}

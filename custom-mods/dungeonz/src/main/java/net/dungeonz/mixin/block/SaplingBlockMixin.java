@@ -7,18 +7,18 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import net.dungeonz.init.ConfigInit;
 import net.dungeonz.init.DimensionInit;
-import net.minecraft.class_2338;
-import net.minecraft.class_2473;
-import net.minecraft.class_2680;
-import net.minecraft.class_3218;
-import net.minecraft.class_5819;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.block.SaplingBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.RandomSource;
 
-@Mixin(class_2473.class)
+@Mixin(SaplingBlock.class)
 public class SaplingBlockMixin {
 
-    @Inject(method = "generate", at = @At("HEAD"), cancellable = true)
-    private void generateMixin(class_3218 world, class_2338 pos, class_2680 state, class_5819 random, CallbackInfo info) {
-        if (world.method_27983() == DimensionInit.DUNGEON_WORLD || ConfigInit.CONFIG.devMode) {
+    @Inject(method = "advanceTree", at = @At("HEAD"), cancellable = true)
+    private void generateMixin(ServerLevel world, BlockPos pos, BlockState state, RandomSource random, CallbackInfo info) {
+        if (world.dimension() == DimensionInit.DUNGEON_WORLD || ConfigInit.CONFIG.devMode) {
             info.cancel();
         }
     }

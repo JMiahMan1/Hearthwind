@@ -5,108 +5,107 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import net.minecraft.class_1311;
-import net.minecraft.class_1959;
-import net.minecraft.class_1972;
-import net.minecraft.class_1992;
-import net.minecraft.class_2338;
-import net.minecraft.class_2680;
-import net.minecraft.class_2791;
-import net.minecraft.class_2794;
-import net.minecraft.class_2893.class_2894;
-import net.minecraft.class_2902.class_2903;
-import net.minecraft.class_3233;
-import net.minecraft.class_3485;
-import net.minecraft.class_4543;
-import net.minecraft.class_4966;
-import net.minecraft.class_5138;
-import net.minecraft.class_5281;
-import net.minecraft.class_5455;
-import net.minecraft.class_5483;
-import net.minecraft.class_5539;
-import net.minecraft.class_6012;
-import net.minecraft.class_6748;
-import net.minecraft.class_6880;
-import net.minecraft.class_6903;
-import net.minecraft.class_7138;
-import net.minecraft.class_7869;
+import net.minecraft.world.entity.MobCategory;
+import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.level.biome.Biomes;
+import net.minecraft.world.level.biome.FixedBiomeSource;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.chunk.ChunkAccess;
+import net.minecraft.world.level.chunk.ChunkGenerator;
+import net.minecraft.world.level.levelgen.Heightmap.Types;
+import net.minecraft.server.level.WorldGenRegion;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplateManager;
+import net.minecraft.world.level.biome.BiomeManager;
+import net.minecraft.world.level.NoiseColumn;
+import net.minecraft.world.level.StructureManager;
+import net.minecraft.world.level.WorldGenLevel;
+import net.minecraft.core.RegistryAccess;
+import net.minecraft.world.level.biome.MobSpawnSettings;
+import net.minecraft.world.level.LevelHeightAccessor;
+import net.minecraft.util.random.WeightedList;
+import net.minecraft.world.level.levelgen.blending.Blender;
+import net.minecraft.core.Holder;
+import net.minecraft.resources.RegistryOps;
+import net.minecraft.world.level.levelgen.RandomState;
+import net.minecraft.world.level.chunk.ChunkGeneratorStructureState;
 
-public class DungeonChunkGenerator extends class_2794 {
+public class DungeonChunkGenerator extends ChunkGenerator {
 
     public static final MapCodec<DungeonChunkGenerator> CODEC = RecordCodecBuilder
-            .mapCodec(instance -> instance.group(class_6903.method_46637(class_1972.field_9451)).apply(instance, instance.stable(DungeonChunkGenerator::new)));
+            .mapCodec(instance -> instance.group(RegistryOps.retrieveElement(Biomes.PLAINS)).apply(instance, instance.stable(DungeonChunkGenerator::new)));
 
-    public DungeonChunkGenerator(class_6880.class_6883<class_1959> biomeEntry) {
-        super(new class_1992(biomeEntry));
+    public DungeonChunkGenerator(Holder.Reference<Biome> biomeEntry) {
+        super(new FixedBiomeSource(biomeEntry));
     }
 
     @Override
-    protected MapCodec<? extends class_2794> method_28506() {
+    protected MapCodec<? extends ChunkGenerator> codec() {
         return CODEC;
     }
 
     @Override
-    public void method_12107(class_3233 region) {
+    public void spawnOriginalMobs(WorldGenRegion region) {
     }
 
     @Override
-    public void method_12102(class_5281 world, class_2791 chunk, class_5138 structureAccessor) {
+    public void applyBiomeDecoration(WorldGenLevel world, ChunkAccess chunk, StructureManager structureAccessor) {
     }
 
     @Override
-    public void method_16129(class_5455 registryManager, class_7869 placementCalculator, class_5138 structureAccessor, class_2791 chunk,
-            class_3485 structureTemplateManager) {
+    public void createStructures(RegistryAccess registryManager, ChunkGeneratorStructureState placementCalculator, StructureManager structureAccessor, ChunkAccess chunk,
+            StructureTemplateManager structureTemplateManager, net.minecraft.resources.ResourceKey<net.minecraft.world.level.Level> dimensionKey) {
     }
 
     @Override
-    public void method_16130(class_5281 world, class_5138 accessor, class_2791 chunk) {
+    public void createReferences(WorldGenLevel world, StructureManager accessor, ChunkAccess chunk) {
     }
 
     @Override
-    public class_6012<class_5483.class_1964> method_12113(class_6880<class_1959> biome, class_5138 accessor, class_1311 group, class_2338 pos) {
-        return class_6012.method_34988(new ArrayList<class_5483.class_1964>());
+    public WeightedList<MobSpawnSettings.SpawnerData> getMobsAt(Holder<Biome> biome, StructureManager accessor, MobCategory group, BlockPos pos) {
+        return WeightedList.of();
     }
 
     @Override
-    public int method_12104() {
+    public int getGenDepth() {
         return 256;
     }
 
     @Override
-    public int method_16398() {
+    public int getSeaLevel() {
         return 0;
     }
 
     @Override
-    public int method_33730() {
+    public int getMinY() {
         return 0;
     }
 
     @Override
-    public void method_12108(class_3233 chunkRegion, long l, class_7138 noiseConfig, class_4543 biomeAccess, class_5138 structureAccessor, class_2791 chunk, class_2894 carver) {
+    public void applyCarvers(WorldGenRegion chunkRegion, long l, RandomState noiseConfig, BiomeManager biomeAccess, StructureManager structureAccessor, ChunkAccess chunk) {
     }
 
     @Override
-    public void method_12110(class_3233 chunkRegion, class_5138 structureAccessor, class_7138 noiseConfig, class_2791 chunk) {
+    public void buildSurface(WorldGenRegion chunkRegion, StructureManager structureAccessor, RandomState noiseConfig, ChunkAccess chunk) {
     }
 
     @Override
-    public CompletableFuture<class_2791> method_12088(class_6748 blender, class_7138 noiseConfig, class_5138 structureAccessor, class_2791 chunk) {
+    public CompletableFuture<ChunkAccess> fillFromNoise(Blender blender, RandomState noiseConfig, StructureManager structureAccessor, ChunkAccess chunk) {
         return CompletableFuture.completedFuture(chunk);
     }
 
     @Override
-    public int method_16397(int x, int z, class_2903 type, class_5539 heightLimitView, class_7138 noiseConfig) {
+    public int getBaseHeight(int x, int z, Types type, LevelHeightAccessor heightLimitView, RandomState noiseConfig) {
         return 0;
     }
 
     @Override
-    public class_4966 method_26261(int x, int z, class_5539 var3, class_7138 var4) {
-        return new class_4966(z, new class_2680[0]);
+    public NoiseColumn getBaseColumn(int x, int z, LevelHeightAccessor var3, RandomState var4) {
+        return new NoiseColumn(z, new BlockState[0]);
     }
 
     @Override
-    public void method_40450(List<String> list, class_7138 noiseConfig, class_2338 blockPos) {
+    public void addDebugScreenInfo(List<String> list, RandomState noiseConfig, BlockPos blockPos) {
     }
 
 }

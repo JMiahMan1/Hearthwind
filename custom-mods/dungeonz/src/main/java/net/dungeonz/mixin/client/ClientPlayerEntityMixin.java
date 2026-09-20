@@ -8,10 +8,10 @@ import org.spongepowered.asm.mixin.Mixin;
 import net.dungeonz.access.ClientPlayerAccess;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_746;
+import net.minecraft.client.player.LocalPlayer;
 
 @Environment(EnvType.CLIENT)
-@Mixin(class_746.class)
+@Mixin(LocalPlayer.class)
 public class ClientPlayerEntityMixin implements ClientPlayerAccess {
 
     private List<Integer> breakableBlockIdList = new ArrayList<Integer>();

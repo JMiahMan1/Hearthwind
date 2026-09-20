@@ -6,106 +6,120 @@ import java.util.Optional;
 import net.dungeonz.init.ItemInit;
 import net.dungeonz.item.component.DungeonCompassComponent;
 import net.dungeonz.network.DungeonServerPacket;
-import net.minecraft.class_1269;
-import net.minecraft.class_1297;
-import net.minecraft.class_1792;
-import net.minecraft.class_1799;
-import net.minecraft.class_1836;
-import net.minecraft.class_1838;
-import net.minecraft.class_1937;
-import net.minecraft.class_2246;
-import net.minecraft.class_2338;
-import net.minecraft.class_2561;
-import net.minecraft.class_2960;
-import net.minecraft.class_310;
-import net.minecraft.class_3218;
-import net.minecraft.class_3222;
-import net.minecraft.class_4208;
-import net.minecraft.class_6862;
-import net.minecraft.class_7924;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.LodestoneTracker;
+import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.GlobalPos;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
+import net.minecraft.client.Minecraft;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.core.GlobalPos;
+import net.minecraft.tags.TagKey;
+import net.minecraft.core.registries.Registries;
 import org.jetbrains.annotations.Nullable;
 
-public class DungeonCompassItem extends class_1792 {
+public class DungeonCompassItem extends Item {
 
-    public DungeonCompassItem(class_1792.class_1793 settings) {
+    public DungeonCompassItem(Item.Properties settings) {
         super(settings);
     }
 
     @Override
-    public void method_7888(class_1799 stack, class_1937 world, class_1297 entity, int slot, boolean selected) {
-        if (world.method_8608()) {
-            return;
+    public void inventoryTick(ItemStack stack, ServerLevel world, Entity entity, net.minecraft.world.entity.EquipmentSlot slot) {
+        if (hasDungeon(stack) && world.getGameTime() % 100 == 0 && !hasDungeonStructure(stack)) {
+            setCompassDungeonStructure(world, entity.blockPosition(), stack, stack.get(ItemInit.DUNGEON_COMPASS_DATA).dungeonType());
         }
-        if (hasDungeon(stack) && world.method_8510() % 100 == 0 && !hasDungeonStructure(stack)) {
-            setCompassDungeonStructure((class_3218) world, entity.method_24515(), stack, stack.method_57824(ItemInit.DUNGEON_COMPASS_DATA).dungeonType());
-        }
+        syncLodestoneTracker(world, stack);
     }
 
     @Override
-    public class_1269 method_7884(class_1838 context) {
-        class_2338 blockPos = context.method_8037();
-        class_1937 world = context.method_8045();
+    public InteractionResult useOn(UseOnContext context) {
+        BlockPos blockPos = context.getClickedPos();
+        Level world = context.getLevel();
 
-        if (world.method_8320(blockPos).method_27852(class_2246.field_16336)) {
-            if (!world.method_8608()) {
-                DungeonServerPacket.writeS2COpenCompassScreenPacket((class_3222) context.method_8036(),
-                        context.method_8041().method_57824(ItemInit.DUNGEON_COMPASS_DATA) != null ? context.method_8041().method_57824(ItemInit.DUNGEON_COMPASS_DATA).dungeonType() : "");
+        if (world.getBlockState(blockPos).is(Blocks.CARTOGRAPHY_TABLE)) {
+            if (!world.isClientSide()) {
+                DungeonServerPacket.writeS2COpenCompassScreenPacket((ServerPlayer) context.getPlayer(),
+                        context.getItemInHand().get(ItemInit.DUNGEON_COMPASS_DATA) != null ? context.getItemInHand().get(ItemInit.DUNGEON_COMPASS_DATA).dungeonType() : "");
             }
-            return class_1269.method_29236(world.method_8608());
+            return (world.isClientSide() ? InteractionResult.SUCCESS : InteractionResult.CONSUME);
         }
-        return super.method_7884(context);
+        return super.useOn(context);
     }
 
-    public static boolean hasDungeon(class_1799 stack) {
-        return stack.method_57824(ItemInit.DUNGEON_COMPASS_DATA) != null;
+    public static boolean hasDungeon(ItemStack stack) {
+        return stack.get(ItemInit.DUNGEON_COMPASS_DATA) != null;
     }
 
-    public static boolean hasDungeonStructure(class_1799 itemStack) {
-        if (itemStack.method_57824(ItemInit.DUNGEON_COMPASS_DATA) != null && itemStack.method_57824(ItemInit.DUNGEON_COMPASS_DATA).hasDungeon()) {
+    public static boolean hasDungeonStructure(ItemStack itemStack) {
+        if (itemStack.get(ItemInit.DUNGEON_COMPASS_DATA) != null && itemStack.get(ItemInit.DUNGEON_COMPASS_DATA).hasDungeon()) {
             return true;
         }
         return false;
     }
 
     @Nullable
-    public static class_2338 getDungeonStructurePos(class_1799 itemStack) {
-        if (itemStack.method_57824(ItemInit.DUNGEON_COMPASS_DATA) != null && itemStack.method_57824(ItemInit.DUNGEON_COMPASS_DATA).hasDungeon()) {
-            return itemStack.method_57824(ItemInit.DUNGEON_COMPASS_DATA).dungeonPos().get();
+    public static BlockPos getDungeonStructurePos(ItemStack itemStack) {
+        if (itemStack.get(ItemInit.DUNGEON_COMPASS_DATA) != null && itemStack.get(ItemInit.DUNGEON_COMPASS_DATA).hasDungeon()) {
+            return itemStack.get(ItemInit.DUNGEON_COMPASS_DATA).dungeonPos().get();
         }
         return null;
     }
 
     @Nullable
-    public static class_4208 createGlobalDungeonStructurePos(class_1937 world, class_1799 itemStack) {
-        class_2338 pos = getDungeonStructurePos(itemStack);
-        return pos != null ? class_4208.method_19443(world.method_27983(), pos) : null;
+    public static GlobalPos createGlobalDungeonStructurePos(Level world, ItemStack itemStack) {
+        BlockPos pos = getDungeonStructurePos(itemStack);
+        return pos != null ? GlobalPos.of(world.dimension(), pos) : null;
     }
 
-    public static void setCompassDungeonStructure(class_3218 world, class_2338 playerPos, class_1799 itemStack, String dungeonType) {
-        if (itemStack.method_31574(ItemInit.DUNGEON_COMPASS)) {
-            class_2338 structurePos = getDungeonStructurePos(world, dungeonType, playerPos);
+    public static void setCompassDungeonStructure(ServerLevel world, BlockPos playerPos, ItemStack itemStack, String dungeonType) {
+        if (itemStack.is(ItemInit.DUNGEON_COMPASS)) {
+            BlockPos structurePos = getDungeonStructurePos(world, dungeonType, playerPos);
             if (structurePos == null) {
-                structurePos = class_2338.method_49637(0, 0, 0);
+                structurePos = BlockPos.containing(0, 0, 0);
             }
-            itemStack.method_57379(ItemInit.DUNGEON_COMPASS_DATA, new DungeonCompassComponent(dungeonType, structurePos != null, Optional.of(structurePos)));
+            itemStack.set(ItemInit.DUNGEON_COMPASS_DATA, new DungeonCompassComponent(dungeonType, structurePos != null, Optional.of(structurePos)));
+            syncLodestoneTracker(world, itemStack);
+        }
+    }
+
+    static void syncLodestoneTracker(ServerLevel world, ItemStack itemStack) {
+        BlockPos pos = getDungeonStructurePos(itemStack);
+        if (pos != null) {
+            LodestoneTracker tracker = new LodestoneTracker(Optional.of(GlobalPos.of(world.dimension(), pos)), true);
+            if (!tracker.equals(itemStack.get(DataComponents.LODESTONE_TRACKER))) {
+                itemStack.set(DataComponents.LODESTONE_TRACKER, tracker);
+            }
+        } else {
+            itemStack.remove(DataComponents.LODESTONE_TRACKER);
         }
     }
 
     @Nullable
-    private static class_2338 getDungeonStructurePos(class_3218 world, String dungeonType, class_2338 playerPos) {
-        return world.method_8487(class_6862.method_40092(class_7924.field_41246, class_2960.method_60655("dungeonz", dungeonType)), playerPos, 100, false);
+    private static BlockPos getDungeonStructurePos(ServerLevel world, String dungeonType, BlockPos playerPos) {
+        return world.findNearestMapStructure(TagKey.create(Registries.STRUCTURE, Identifier.fromNamespaceAndPath("dungeonz", dungeonType)), playerPos, 100, false);
     }
 
     @Override
-    public void method_7851(class_1799 stack, class_9635 context, List<class_2561> tooltip, class_1836 type) {
-        super.method_7851(stack, context, tooltip, type);
-        if (stack.method_57824(ItemInit.DUNGEON_COMPASS_DATA) != null) {
-            tooltip.add(class_2561.method_43471("dungeon." + stack.method_57824(ItemInit.DUNGEON_COMPASS_DATA).dungeonType()));
-            if (class_310.method_1551().field_1724 != null && class_310.method_1551().field_1724.method_7338() && stack.method_57824(ItemInit.DUNGEON_COMPASS_DATA).dungeonPos().isPresent()) {
-                tooltip.add(class_2561.method_30163(stack.method_57824(ItemInit.DUNGEON_COMPASS_DATA).dungeonPos().get().method_23854()));
+    public void appendHoverText(ItemStack stack, TooltipContext context, net.minecraft.world.item.component.TooltipDisplay displayComponent, java.util.function.Consumer<Component> tooltip, TooltipFlag type) {
+        super.appendHoverText(stack, context, displayComponent, tooltip, type);
+        if (stack.get(ItemInit.DUNGEON_COMPASS_DATA) != null) {
+            tooltip.accept(Component.translatable("dungeon." + stack.get(ItemInit.DUNGEON_COMPASS_DATA).dungeonType()));
+            if (Minecraft.getInstance().player != null && Minecraft.getInstance().player.canUseGameMasterBlocks() && stack.get(ItemInit.DUNGEON_COMPASS_DATA).dungeonPos().isPresent()) {
+                tooltip.accept(Component.nullToEmpty(stack.get(ItemInit.DUNGEON_COMPASS_DATA).dungeonPos().get().toShortString()));
             }
         } else {
-            tooltip.add(class_2561.method_43471("compass.compass_item.cartography"));
+            tooltip.accept(Component.translatable("compass.compass_item.cartography"));
         }
     }
 

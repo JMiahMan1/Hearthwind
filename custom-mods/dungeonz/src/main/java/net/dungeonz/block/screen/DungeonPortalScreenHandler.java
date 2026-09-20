@@ -11,26 +11,29 @@ import net.dungeonz.block.entity.DungeonPortalEntity;
 import net.dungeonz.init.BlockInit;
 import net.dungeonz.network.packet.DungeonPortalPacket;
 import net.dungeonz.util.DungeonHelper;
-import net.minecraft.class_1657;
-import net.minecraft.class_1661;
-import net.minecraft.class_1703;
-import net.minecraft.class_1799;
-import net.minecraft.class_1937;
-import net.minecraft.class_2338;
-import net.minecraft.class_2960;
-import net.minecraft.class_3914;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.core.BlockPos;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.inventory.ContainerLevelAccess;
 
-public class DungeonPortalScreenHandler extends class_1703 {
+public class DungeonPortalScreenHandler extends AbstractContainerMenu {
 
-    private final class_1937 world;
-    private final class_3914 context;
+    private final Level world;
+    private final ContainerLevelAccess context;
     private final DungeonPortalEntity dungeonPortalEntity;
-    private class_2338 pos;
+    private BlockPos pos;
 
     private List<String> difficulties = new ArrayList<String>();
-    private Map<String, List<class_1799>> possibleLootDifficultyItemStackMap = new HashMap<String, List<class_1799>>();
-    private Map<String, List<class_1799>> requiredItemStacks = new HashMap<String, List<class_1799>>();
+    private Map<String, List<ItemStack>> possibleLootDifficultyItemStackMap = new HashMap<String, List<ItemStack>>();
+    private Map<String, List<ItemStack>> requiredItemStacks = new HashMap<String, List<ItemStack>>();
     private int waitingGroupSize = 0;
+
+    private net.dungeonz.network.packet.DungeonAdmissionPacket admission = net.dungeonz.network.packet.DungeonAdmissionPacket.empty();
+    private net.minecraft.server.level.ServerPlayer viewer;
 
     private int requiredLevel = 0;
     private boolean allowRespawn = false;
@@ -40,10 +43,10 @@ public class DungeonPortalScreenHandler extends class_1703 {
     private boolean allowElytra = false;
 
     @Nullable
-    private class_2960 backgroundId = null;
+    private Identifier backgroundId = null;
 
-    public DungeonPortalScreenHandler(int syncId, class_1661 playerInventory, DungeonPortalPacket packet) {
-        this(syncId, playerInventory, new DungeonPortalEntity(packet.blockPos(), playerInventory.field_7546.method_37908().method_8320(packet.blockPos())), class_3914.field_17304);
+    public DungeonPortalScreenHandler(int syncId, Inventory playerInventory, DungeonPortalPacket packet) {
+        this(syncId, playerInventory, new DungeonPortalEntity(packet.blockPos(), playerInventory.player.level().getBlockState(packet.blockPos())), ContainerLevelAccess.NULL);
         this.getDungeonPortalEntity().setDungeonType(packet.dungeonType());
         this.pos = packet.blockPos();
 
@@ -68,39 +71,64 @@ public class DungeonPortalScreenHandler extends class_1703 {
         this.keepInventory = packet.keepInventory();
         this.getDungeonPortalEntity().setPrivateGroup(packet.privateGroup());
         this.backgroundId = packet.backgroundId().orElse(null);
+        this.admission = packet.admission();
     }
 
-    public DungeonPortalScreenHandler(int syncId, class_1661 playerInventory, DungeonPortalEntity dungeonPortalEntity, class_3914 context) {
+    public DungeonPortalScreenHandler(int syncId, Inventory playerInventory, DungeonPortalEntity dungeonPortalEntity, ContainerLevelAccess context) {
         super(BlockInit.PORTAL, syncId);
         this.context = context;
-        this.world = playerInventory.field_7546.method_37908();
+        this.world = playerInventory.player.level();
         this.dungeonPortalEntity = dungeonPortalEntity;
-        this.pos = dungeonPortalEntity.method_11016();
+        this.pos = dungeonPortalEntity.getBlockPos();
 
-        if (!this.world.method_8608()) {
+        if (playerInventory.player instanceof net.minecraft.server.level.ServerPlayer serverPlayer) {
+            this.viewer = serverPlayer;
+            this.admission = net.dungeonz.network.packet.DungeonAdmissionPacket.snapshot(serverPlayer, syncId);
+        }
+        if (!this.world.isClientSide()) {
             setDifficulties(this.dungeonPortalEntity.getDungeon().getDifficultyList());
             setRequiredItemStacks(DungeonHelper.getRequiredItemStackList(this.dungeonPortalEntity.getDungeon()));
-            setPossibleLootItemStacks(DungeonHelper.getPossibleLootItemStackMap(this.dungeonPortalEntity.getDungeon(), this.world.method_8503()));
+            setPossibleLootItemStacks(DungeonHelper.getPossibleLootItemStackMap(this.dungeonPortalEntity.getDungeon(), this.world.getServer()));
+        }
+    }
+
+    public net.dungeonz.network.packet.DungeonAdmissionPacket getAdmission() {
+        return this.admission;
+    }
+
+    public void setAdmission(net.dungeonz.network.packet.DungeonAdmissionPacket admission) {
+        this.admission = admission;
+    }
+
+    @Override
+    public void broadcastChanges() {
+        super.broadcastChanges();
+        if (this.viewer != null) {
+            var snapshot = net.dungeonz.network.packet.DungeonAdmissionPacket.snapshot(this.viewer, this.containerId);
+            if (!snapshot.equals(this.admission)) {
+                this.admission = snapshot;
+                net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking.send(this.viewer, snapshot);
+            }
         }
     }
 
     @Override
-    public class_1799 method_7601(class_1657 var1, int var2) {
+    public ItemStack quickMoveStack(Player var1, int var2) {
         return null;
     }
 
     @Override
-    public boolean method_7597(class_1657 player) {
-        return this.context.method_17396((world, pos) -> {
-            if (!this.world.method_8320(pos).method_27852(BlockInit.DUNGEON_PORTAL)) {
+    public boolean stillValid(Player player) {
+        return this.context.evaluate((world, pos) -> {
+            if (!this.world.getBlockState(pos).is(BlockInit.DUNGEON_PORTAL)) {
                 return false;
             }
-            return player.method_5649((double) pos.method_10263() + 0.5, (double) pos.method_10264() + 0.5, (double) pos.method_10260() + 0.5) <= 64.0;
+            return player.distanceToSqr((double) pos.getX() + 0.5, (double) pos.getY() + 0.5, (double) pos.getZ() + 0.5) <= 64.0;
         }, true);
     }
 
     @Nullable
-    public class_2960 getBackgroundId() {
+    public Identifier getBackgroundId() {
         return this.backgroundId;
     }
 
@@ -116,19 +144,19 @@ public class DungeonPortalScreenHandler extends class_1703 {
         this.difficulties = difficulties;
     }
 
-    public Map<String, List<class_1799>> getPossibleLootDifficultyItemStackMap() {
+    public Map<String, List<ItemStack>> getPossibleLootDifficultyItemStackMap() {
         return this.possibleLootDifficultyItemStackMap;
     }
 
-    public void setPossibleLootItemStacks(Map<String, List<class_1799>> possibleLootDifficultyItemStackMap) {
+    public void setPossibleLootItemStacks(Map<String, List<ItemStack>> possibleLootDifficultyItemStackMap) {
         this.possibleLootDifficultyItemStackMap = possibleLootDifficultyItemStackMap;
     }
 
-    public Map<String, List<class_1799>> getRequiredItemStacks() {
+    public Map<String, List<ItemStack>> getRequiredItemStacks() {
         return this.requiredItemStacks;
     }
 
-    public void setRequiredItemStacks(Map<String, List<class_1799>> requiredItemStacks) {
+    public void setRequiredItemStacks(Map<String, List<ItemStack>> requiredItemStacks) {
         this.requiredItemStacks = requiredItemStacks;
     }
 
@@ -140,7 +168,7 @@ public class DungeonPortalScreenHandler extends class_1703 {
         this.waitingGroupSize = waitingGroupSize;
     }
 
-    public class_2338 getPos() {
+    public BlockPos getPos() {
         return this.pos;
     }
 

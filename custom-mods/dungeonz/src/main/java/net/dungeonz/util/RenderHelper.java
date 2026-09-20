@@ -1,35 +1,31 @@
 package net.dungeonz.util;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-
 import net.dungeonz.access.InGameHudAccess;
 import net.dungeonz.init.ConfigInit;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_2561;
-import net.minecraft.class_310;
-import net.minecraft.class_332;
-import net.minecraft.class_9779;
+import net.minecraft.network.chat.Component;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.DeltaTracker;
 
 @Environment(EnvType.CLIENT)
 public class RenderHelper {
 
-    public static void renderDungeonCountdown(class_332 context, class_9779 tickDelta) {
-        class_310 client = class_310.method_1551();
-        if (((InGameHudAccess) client.field_1705).getDungeonCountdownRemainingTicks() > 0) {
-            RenderSystem.enableBlend();
+    public static void renderDungeonCountdown(GuiGraphicsExtractor context, DeltaTracker tickDelta) {
+        Minecraft client = Minecraft.getInstance();
+        if (((InGameHudAccess) client.gui).getDungeonCountdownRemainingTicks() > 0) {
+            // 26.x: no global blend state (RenderSystem.enableBlend is gone) and no setColor on
+            // the extractor - text alpha is baked into the ARGB color int instead.
+            Component text = Component.translatable("hud.dungeonz.dungeon_countdown", ((InGameHudAccess) client.gui).getDungeonCountdownTicks() / 20);
+            context.pose().pushMatrix();
+            context.pose().translate(context.guiWidth() / 2 - client.font.width(text) / 2 + ConfigInit.CONFIG.countdownX,
+                    context.guiHeight() / 2 + ConfigInit.CONFIG.countdownY);
+            context.pose().scale(ConfigInit.CONFIG.countdownSize, ConfigInit.CONFIG.countdownSize);
 
-            class_2561 text = class_2561.method_43469("hud.dungeonz.dungeon_countdown", ((InGameHudAccess) client.field_1705).getDungeonCountdownTicks() / 20);
-            context.method_51448().method_22903();
-            context.method_51448().method_46416(context.method_51421() / 2 - client.field_1772.method_27525(text) / 2 + ConfigInit.CONFIG.countdownX,
-                    context.method_51443() / 2 + ConfigInit.CONFIG.countdownY, 0.0f);
-            context.method_51448().method_22905(ConfigInit.CONFIG.countdownSize, ConfigInit.CONFIG.countdownSize, ConfigInit.CONFIG.countdownSize);
-
-            context.method_51422(1.0f, 1.0f, 1.0f, (float) ((InGameHudAccess) client.field_1705).getDungeonCountdownRemainingTicks() / 18.0f);
-            context.method_27535(client.field_1772, text, 0, 0, 0xFFFFFF);
-            context.method_51422(1.0f, 1.0f, 1.0f, 1.0f);
-            context.method_51448().method_22909();
-            RenderSystem.disableBlend();
+            int alpha = (int) (255 * ((InGameHudAccess) client.gui).getDungeonCountdownRemainingTicks() / 18.0f);
+            context.text(client.font, text, 0, 0, (Math.min(255, Math.max(0, alpha)) << 24) | 0xFFFFFF);
+            context.pose().popMatrix();
         }
     }
 

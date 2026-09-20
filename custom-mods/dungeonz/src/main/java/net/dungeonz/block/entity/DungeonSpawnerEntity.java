@@ -1,88 +1,85 @@
 package net.dungeonz.block.entity;
 
+import net.minecraft.world.level.storage.ValueOutput;
+import net.minecraft.world.level.storage.ValueInput;
 import net.dungeonz.block.logic.DungeonSpawnerLogic;
 import net.dungeonz.init.BlockInit;
-import net.minecraft.class_1299;
-import net.minecraft.class_1937;
-import net.minecraft.class_1952;
-import net.minecraft.class_2248;
-import net.minecraft.class_2338;
-import net.minecraft.class_2487;
-import net.minecraft.class_2586;
-import net.minecraft.class_2622;
-import net.minecraft.class_2680;
-import net.minecraft.class_3218;
-import net.minecraft.class_5819;
-import net.minecraft.class_7225;
-import net.minecraft.class_7225.class_7874;
-import net.minecraft.class_8959;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.SpawnData;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.RandomSource;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.HolderLookup.Provider;
+import net.minecraft.world.level.Spawner;
 import org.jetbrains.annotations.Nullable;
 
-public class DungeonSpawnerEntity extends class_2586 implements class_8959 {
+public class DungeonSpawnerEntity extends BlockEntity implements Spawner {
     private final DungeonSpawnerLogic logic = new DungeonSpawnerLogic() {
 
         @Override
-        public void sendStatus(class_1937 world, class_2338 pos, int status) {
-            world.method_8427(pos, BlockInit.DUNGEON_SPAWNER, status, 0);
+        public void sendStatus(Level world, BlockPos pos, int status) {
+            world.blockEvent(pos, BlockInit.DUNGEON_SPAWNER, status, 0);
         }
 
         @Override
-        public void setSpawnEntry(@Nullable class_1937 world, class_2338 pos, class_1952 spawnEntry) {
+        public void setSpawnEntry(@Nullable Level world, BlockPos pos, SpawnData spawnEntry) {
             super.setSpawnEntry(world, pos, spawnEntry);
             if (world != null) {
-                class_2680 blockState = world.method_8320(pos);
-                world.method_8413(pos, blockState, blockState, class_2248.field_31029);
+                BlockState blockState = world.getBlockState(pos);
+                world.sendBlockUpdated(pos, blockState, blockState, Block.UPDATE_INVISIBLE);
             }
         }
     };
 
-    public DungeonSpawnerEntity(class_2338 pos, class_2680 state) {
+    public DungeonSpawnerEntity(BlockPos pos, BlockState state) {
         super(BlockInit.DUNGEON_SPAWNER_ENTITY, pos, state);
     }
 
     @Override
-    public void method_11014(class_2487 nbt, class_7225.class_7874 registryLookup) {
-        super.method_11014(nbt, registryLookup);
-        this.logic.readNbt(this.field_11863, this.field_11867, nbt);
+    protected void loadAdditional(ValueInput input) {
+        super.loadAdditional(input);
+        this.logic.readNbt(this.level, this.worldPosition, input);
     }
 
     @Override
-    protected void method_11007(class_2487 nbt, class_7225.class_7874 registryLookup) {
-        super.method_11007(nbt, registryLookup);
-        this.logic.writeNbt(nbt);
+    protected void saveAdditional(ValueOutput output) {
+        super.saveAdditional(output);
+        this.logic.writeNbt(output);
     }
 
-    public static void clientTick(class_1937 world, class_2338 pos, class_2680 state, DungeonSpawnerEntity blockEntity) {
+    public static void clientTick(Level world, BlockPos pos, BlockState state, DungeonSpawnerEntity blockEntity) {
         blockEntity.logic.clientTick(world, pos);
     }
 
-    public static void serverTick(class_1937 world, class_2338 pos, class_2680 state, DungeonSpawnerEntity blockEntity) {
-        blockEntity.logic.serverTick((class_3218) world, pos);
+    public static void serverTick(Level world, BlockPos pos, BlockState state, DungeonSpawnerEntity blockEntity) {
+        blockEntity.logic.serverTick((ServerLevel) world, pos);
     }
 
     @Override
-    public class_2622 method_38235() {
-        return class_2622.method_38585(this);
+    public ClientboundBlockEntityDataPacket getUpdatePacket() {
+        return ClientboundBlockEntityDataPacket.create(this);
     }
 
     @Override
-    public class_2487 method_16887(class_7874 registryLookup) {
-        class_2487 nbtCompound = this.method_38244(registryLookup);
-        nbtCompound.method_10551("SpawnPotentials");
+    public CompoundTag getUpdateTag(Provider registryLookup) {
+        CompoundTag nbtCompound = this.saveWithoutMetadata(registryLookup);
+        nbtCompound.remove("SpawnPotentials");
         return nbtCompound;
     }
 
     @Override
-    public boolean method_11004(int type, int data) {
-        if (this.logic.handleStatus(this.field_11863, type)) {
+    public boolean triggerEvent(int type, int data) {
+        if (this.logic.handleStatus(this.level, type)) {
             return true;
         }
-        return super.method_11004(type, data);
-    }
-
-    @Override
-    public boolean method_11011() {
-        return true;
+        return super.triggerEvent(type, data);
     }
 
     public DungeonSpawnerLogic getLogic() {
@@ -90,7 +87,7 @@ public class DungeonSpawnerEntity extends class_2586 implements class_8959 {
     }
 
     @Override
-    public void method_46408(class_1299<?> entityType, class_5819 random) {
+    public void setEntityId(EntityType<?> entityType, RandomSource random) {
         this.logic.setEntityId(entityType);
     }
 

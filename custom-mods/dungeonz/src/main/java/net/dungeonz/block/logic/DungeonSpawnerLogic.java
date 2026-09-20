@@ -2,48 +2,60 @@ package net.dungeonz.block.logic;
 
 import com.mojang.logging.LogUtils;
 import java.util.Optional;
-import java.util.function.Function;
 
 import net.dungeonz.dungeon.Dungeon;
 import net.dungeonz.dungeon.DungeonPlacementHandler;
-import net.minecraft.class_1297;
-import net.minecraft.class_1299;
-import net.minecraft.class_1301;
-import net.minecraft.class_1308;
-import net.minecraft.class_1317;
-import net.minecraft.class_1657;
-import net.minecraft.class_1924;
-import net.minecraft.class_1937;
-import net.minecraft.class_1952;
-import net.minecraft.class_2338;
-import net.minecraft.class_238;
-import net.minecraft.class_2398;
-import net.minecraft.class_2487;
-import net.minecraft.class_2499;
-import net.minecraft.class_2509;
-import net.minecraft.class_2520;
-import net.minecraft.class_3218;
-import net.minecraft.class_3730;
-import net.minecraft.class_5712;
-import net.minecraft.class_5819;
-import net.minecraft.class_6005;
-import net.minecraft.class_6088;
-import net.minecraft.class_7923;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.UUIDUtil;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtOps;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.ProblemReporter;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.BaseSpawner;
+import net.minecraft.world.entity.EntitySpawnReason;
+import net.minecraft.world.entity.EntitySpawnRequest;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EntitySelector;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.SpawnPlacements;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.EntityGetter;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.SpawnData;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.storage.TagValueInput;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtOps;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.EntitySpawnReason;
+import net.minecraft.world.level.gameevent.GameEvent;
+import net.minecraft.util.RandomSource;
+import net.minecraft.util.random.WeightedList;
+import net.minecraft.world.level.block.LevelEvent;
+import net.minecraft.core.registries.BuiltInRegistries;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
 public abstract class DungeonSpawnerLogic {
     private static final Logger LOGGER = LogUtils.getLogger();
     private int spawnDelay = 20;
-    private class_6005<class_1952> spawnPotentials = class_6005.<class_1952>method_38062();
-    private class_1952 spawnEntry = new class_1952();
+    private WeightedList<SpawnData> spawnPotentials = WeightedList.of();
+    private SpawnData spawnEntry = new SpawnData();
     private double randomParticleValueOne;
     private double randomParticleValueTwo;
     private int minSpawnDelay = 200;
     private int maxSpawnDelay = 800;
     private int spawnCount = 4;
     @Nullable
-    private class_1297 renderedEntity;
+    private Entity renderedEntity;
     private int maxNearbyEntities = 6;
     private int requiredPlayerRange = 16;
     private int spawnRange = 4;
@@ -53,15 +65,15 @@ public abstract class DungeonSpawnerLogic {
     private Dungeon dungeon = null;
     private int entityTypeId = 0;
 
-    private boolean isPlayerInRange(class_1937 world, class_2338 pos) {
-        return isPlayerInRange(world, (double) pos.method_10263() + 0.5, (double) pos.method_10264() + 0.5, (double) pos.method_10260() + 0.5, this.requiredPlayerRange);
+    private boolean isPlayerInRange(Level world, BlockPos pos) {
+        return isPlayerInRange(world, (double) pos.getX() + 0.5, (double) pos.getY() + 0.5, (double) pos.getZ() + 0.5, this.requiredPlayerRange);
     }
 
-    private boolean isPlayerInRange(class_1924 world, double x, double y, double z, double range) {
-        for (class_1657 playerEntity : world.method_18456()) {
-            if (!class_1301.field_6156.test(playerEntity) || !class_1301.field_6157.test(playerEntity))
+    private boolean isPlayerInRange(EntityGetter world, double x, double y, double z, double range) {
+        for (Player playerEntity : world.players()) {
+            if (!EntitySelector.NO_CREATIVE_OR_SPECTATOR.test(playerEntity) || !EntitySelector.LIVING_ENTITY_STILL_ALIVE.test(playerEntity))
                 continue;
-            double d = playerEntity.method_5649(x, y, z);
+            double d = playerEntity.distanceToSqr(x, y, z);
             if (!(range < 0.0) && !(d < range * range))
                 continue;
             return true;
@@ -69,16 +81,16 @@ public abstract class DungeonSpawnerLogic {
         return false;
     }
 
-    public void clientTick(class_1937 world, class_2338 pos) {
+    public void clientTick(Level world, BlockPos pos) {
         if (!this.isPlayerInRange(world, pos)) {
             this.randomParticleValueTwo = this.randomParticleValueOne;
         } else {
-            class_5819 random = world.method_8409();
-            double d = (double) pos.method_10263() + random.method_43058();
-            double e = (double) pos.method_10264() + random.method_43058();
-            double f = (double) pos.method_10260() + random.method_43058();
-            world.method_8406(class_2398.field_11251, d, e, f, 0.0, 0.0, 0.0);
-            world.method_8406(class_2398.field_11240, d, e, f, 0.0, 0.0, 0.0);
+            RandomSource random = world.getRandom();
+            double d = (double) pos.getX() + random.nextDouble();
+            double e = (double) pos.getY() + random.nextDouble();
+            double f = (double) pos.getZ() + random.nextDouble();
+            world.addParticle(ParticleTypes.SMOKE, d, e, f, 0.0, 0.0, 0.0);
+            world.addParticle(ParticleTypes.FLAME, d, e, f, 0.0, 0.0, 0.0);
             if (this.spawnDelay > 0) {
                 --this.spawnDelay;
             }
@@ -87,7 +99,7 @@ public abstract class DungeonSpawnerLogic {
         }
     }
 
-    public void serverTick(class_3218 world, class_2338 pos) {
+    public void serverTick(ServerLevel world, BlockPos pos) {
         if (!this.isPlayerInRange(world, pos)) {
             return;
         }
@@ -103,62 +115,64 @@ public abstract class DungeonSpawnerLogic {
         for (int i = 0; i < this.spawnCount; ++i) {
             // MobSpawnerEntry.CustomSpawnRules customSpawnRules;
             double f;
-            class_2487 nbtCompound = this.spawnEntry.method_38093();
-            Optional<class_1299<?>> optional = class_1299.method_17684(nbtCompound);
+            CompoundTag nbtCompound = this.spawnEntry.getEntityToSpawn();
+            Optional<EntityType<?>> optional = EntityType.by(TagValueInput.create(ProblemReporter.DISCARDING, world.registryAccess(), nbtCompound));
             if (optional.isEmpty()) {
                 this.updateSpawns(world, pos);
                 return;
             }
-            class_2499 nbtList = nbtCompound.method_10554("Pos", class_2520.field_33256);
+            ListTag nbtList = nbtCompound.getListOrEmpty("Pos");
             int j = nbtList.size();
-            class_5819 random = world.method_8409();
-            double d = j >= 1 ? nbtList.method_10611(0) : (double) pos.method_10263() + (random.method_43058() - random.method_43058()) * (double) this.spawnRange + 0.5;
-            double e = j >= 2 ? nbtList.method_10611(1) : (double) (pos.method_10264() + random.method_43048(3) - 1);
-            f = j >= 3 ? nbtList.method_10611(2) : (double) pos.method_10260() + (random.method_43058() - random.method_43058()) * (double) this.spawnRange + 0.5;
-            if (!world.method_18026(optional.get().method_58629(d, e, f))) {
+            RandomSource random = world.getRandom();
+            double d = j >= 1 ? nbtList.getDoubleOr(0, 0.0) : (double) pos.getX() + (random.nextDouble() - random.nextDouble()) * (double) this.spawnRange + 0.5;
+            double e = j >= 2 ? nbtList.getDoubleOr(1, 0.0) : (double) (pos.getY() + random.nextInt(3) - 1);
+            f = j >= 3 ? nbtList.getDoubleOr(2, 0.0) : (double) pos.getZ() + (random.nextDouble() - random.nextDouble()) * (double) this.spawnRange + 0.5;
+            if (!world.noCollision(optional.get().getSpawnAABB(d, e, f))) {
                 continue;
             }
-            class_2338 blockPos = class_2338.method_49637(d, e, f);
+            BlockPos blockPos = BlockPos.containing(d, e, f);
             // if (!this.spawnEntry.getCustomSpawnRules().isPresent() ? !SpawnRestriction.canSpawn(optional.get(), world, SpawnReason.SPAWNER, blockPos, world.getRandom())
             // : !optional.get().getSpawnGroup().isPeaceful() && world.getDifficulty() == Difficulty.PEACEFUL
             // || !(customSpawnRules = this.spawnEntry.getCustomSpawnRules().get()).blockLightLimit().contains(world.getLightLevel(LightType.BLOCK, blockPos))
             // || !customSpawnRules.skyLightLimit().contains(world.getLightLevel(LightType.SKY, blockPos)))
-            if (!class_1317.method_20638(optional.get(), world, class_3730.field_16469, blockPos, world.method_8409()))
+            if (!SpawnPlacements.checkSpawnRules(optional.get(), world, EntitySpawnReason.SPAWNER, blockPos, world.getRandom()))
                 continue;
-            class_1297 entity2 = class_1299.method_17842(nbtCompound, world, entity -> {
-                entity.method_5808(d, e, f, entity.method_36454(), entity.method_36455());
+            Entity entity2 = EntityType.loadEntityRecursive(nbtCompound, world, new EntitySpawnRequest(EntitySpawnReason.SPAWNER, true), entity -> {
+                entity.setPos(d, e, f);
                 return entity;
             });
             if (entity2 == null) {
                 this.updateSpawns(world, pos);
                 return;
             }
-            int k = world.method_18467(entity2.getClass(), new class_238(pos.method_10263(), pos.method_10264(), pos.method_10260(), pos.method_10263() + 1, pos.method_10264() + 1, pos.method_10260() + 1).method_1014(this.spawnRange)).size();
+            int k = world.getEntitiesOfClass(entity2.getClass(), new AABB(pos.getX(), pos.getY(), pos.getZ(), pos.getX() + 1, pos.getY() + 1, pos.getZ() + 1).inflate(this.spawnRange)).size();
             if (k >= this.maxNearbyEntities) {
                 this.updateSpawns(world, pos);
                 return;
             }
-            entity2.method_5808(entity2.method_23317(), entity2.method_23318(), entity2.method_23321(), random.method_43057() * 360.0f, 0.0f);
-            if (entity2 instanceof class_1308) {
-                class_1308 mobEntity = (class_1308) entity2;
-                if (this.spawnEntry.method_38097().isEmpty() && !mobEntity.method_5979(world, class_3730.field_16469) || !mobEntity.method_5957(world))
+            entity2.setPos(entity2.getX(), entity2.getY(), entity2.getZ());
+            entity2.setYRot(random.nextFloat() * 360.0f);
+            entity2.setXRot(0.0f);
+            if (entity2 instanceof Mob) {
+                Mob mobEntity = (Mob) entity2;
+                if (this.spawnEntry.getCustomSpawnRules().isEmpty() && !mobEntity.checkSpawnRules(world, EntitySpawnReason.SPAWNER) || !mobEntity.checkSpawnObstruction(world))
                     continue;
-                if (this.spawnEntry.method_38093().method_10546() == 1 && this.spawnEntry.method_38093().method_10573("id", class_2520.field_33258)) {
-                    ((class_1308) entity2).method_5943(world, world.method_8404(entity2.method_24515()), class_3730.field_16469, null);
+                if (this.spawnEntry.getEntityToSpawn().size() == 1 && this.spawnEntry.getEntityToSpawn().contains("id")) {
+                    ((Mob) entity2).finalizeSpawn(world, world.getCurrentDifficultyAt(entity2.blockPosition()), EntitySpawnReason.SPAWNER, null);
                 }
                 if (dungeon != null) {
                     DungeonPlacementHandler.strengthenMob(mobEntity, dungeon, difficulty, false);
                 }
             }
-            if (!world.method_30736(entity2)) {
+            if (!world.tryAddFreshEntityWithPassengers(entity2)) {
                 this.totalSpawnCount++;
                 this.updateSpawns(world, pos);
                 return;
             }
-            world.method_20290(class_6088.field_31147, pos, 0);
-            world.method_33596(entity2, class_5712.field_28738, blockPos);
-            if (entity2 instanceof class_1308) {
-                ((class_1308) entity2).method_5990();
+            world.levelEvent(LevelEvent.PARTICLES_MOBBLOCK_SPAWN, pos, 0);
+            world.gameEvent(entity2, GameEvent.ENTITY_PLACE, blockPos);
+            if (entity2 instanceof Mob) {
+                ((Mob) entity2).spawnAnim();
             }
             bl = true;
         }
@@ -166,95 +180,90 @@ public abstract class DungeonSpawnerLogic {
             this.updateSpawns(world, pos);
         }
         if (this.maxSpawnCount != 0 && this.maxSpawnCount <= this.totalSpawnCount) {
-            world.method_22352(pos, false);
+            world.destroyBlock(pos, false);
         }
     }
 
-    private void updateSpawns(class_1937 world, class_2338 pos) {
-        class_5819 random = world.field_9229;
-        this.spawnDelay = this.maxSpawnDelay <= this.minSpawnDelay ? this.minSpawnDelay : this.minSpawnDelay + random.method_43048(this.maxSpawnDelay - this.minSpawnDelay);
-        this.spawnPotentials.method_34992(random).ifPresent(spawnPotential -> this.setSpawnEntry(world, pos, (class_1952) spawnPotential.comp_2542()));
+    private void updateSpawns(Level world, BlockPos pos) {
+        RandomSource random = world.getRandom();
+        this.spawnDelay = this.maxSpawnDelay <= this.minSpawnDelay ? this.minSpawnDelay : this.minSpawnDelay + random.nextInt(this.maxSpawnDelay - this.minSpawnDelay);
+        this.spawnPotentials.getRandom(random).ifPresent(spawnPotential -> this.setSpawnEntry(world, pos, spawnPotential));
         this.sendStatus(world, pos, 1);
     }
 
-    public void readNbt(@Nullable class_1937 world, class_2338 pos, class_2487 nbt) {
-        this.spawnDelay = nbt.method_10568("Delay");
-        boolean bl = nbt.method_10573("SpawnPotentials", class_2520.field_33259);
-        boolean bl2 = nbt.method_10573("SpawnData", class_2520.field_33260);
-        if (!bl) {
-            class_1952 mobSpawnerEntry = bl2
-                    ? class_1952.field_34460.parse(class_2509.field_11560, nbt.method_10562("SpawnData")).resultOrPartial(error -> LOGGER.warn("Invalid SpawnData: {}", error)).orElseGet(class_1952::new)
-                    : new class_1952();
-            this.spawnPotentials = class_6005.method_38061(mobSpawnerEntry);
-            this.setSpawnEntry(world, pos, mobSpawnerEntry);
+    public void readNbt(@Nullable Level world, BlockPos pos, ValueInput input) {
+        this.spawnDelay = input.getShortOr("Delay", (short) 0);
+        // 26.x: ValueInput.read parses via codec directly (no NbtOps round-trip).
+        Optional<SpawnData> spawnData = input.read("SpawnData", SpawnData.CODEC);
+        Optional<WeightedList<SpawnData>> potentials = input.read("SpawnPotentials", SpawnData.LIST_CODEC);
+        if (potentials.isEmpty()) {
+            SpawnData entry = spawnData.orElseGet(SpawnData::new);
+            this.spawnPotentials = WeightedList.of(entry);
+            this.setSpawnEntry(world, pos, entry);
         } else {
-            class_2499 nbtList = nbt.method_10554("SpawnPotentials", class_2520.field_33260);
-            this.spawnPotentials = class_1952.field_34461.parse(class_2509.field_11560, nbtList).resultOrPartial(error -> LOGGER.warn("Invalid SpawnPotentials list: {}", error))
-                    .orElseGet(class_6005::<class_1952>method_38062);
-            if (bl2) {
-                class_1952 mobSpawnerEntry2 = class_1952.field_34460.parse(class_2509.field_11560, nbt.method_10562("SpawnData")).resultOrPartial(error -> LOGGER.warn("Invalid SpawnData: {}", error))
-                        .orElseGet(class_1952::new);
-                this.setSpawnEntry(world, pos, mobSpawnerEntry2);
+            this.spawnPotentials = potentials.get();
+            if (spawnData.isPresent()) {
+                this.setSpawnEntry(world, pos, spawnData.get());
             } else {
-                this.spawnPotentials.method_34992(world.method_8409()).ifPresent(spawnPotential -> this.setSpawnEntry(world, pos, (class_1952) spawnPotential.comp_2542()));
+                RandomSource random = world != null ? world.getRandom() : RandomSource.create();
+                this.spawnPotentials.getRandom(random).ifPresent(spawnPotential -> this.setSpawnEntry(world, pos, spawnPotential));
             }
         }
-        if (nbt.method_10573("MinSpawnDelay", class_2520.field_33263)) {
-            this.minSpawnDelay = nbt.method_10568("MinSpawnDelay");
-            this.maxSpawnDelay = nbt.method_10568("MaxSpawnDelay");
-            this.spawnCount = nbt.method_10568("SpawnCount");
+        if (input.contains("MinSpawnDelay")) {
+            this.minSpawnDelay = input.getShortOr("MinSpawnDelay", (short) 0);
+            this.maxSpawnDelay = input.getShortOr("MaxSpawnDelay", (short) 0);
+            this.spawnCount = input.getShortOr("SpawnCount", (short) 0);
         }
-        if (nbt.method_10573("MaxNearbyEntities", class_2520.field_33263)) {
-            this.maxNearbyEntities = nbt.method_10568("MaxNearbyEntities");
-            this.requiredPlayerRange = nbt.method_10568("RequiredPlayerRange");
+        if (input.contains("MaxNearbyEntities")) {
+            this.maxNearbyEntities = input.getShortOr("MaxNearbyEntities", (short) 0);
+            this.requiredPlayerRange = input.getShortOr("RequiredPlayerRange", (short) 0);
         }
-        if (nbt.method_10573("SpawnRange", class_2520.field_33263)) {
-            this.spawnRange = nbt.method_10568("SpawnRange");
+        if (input.contains("SpawnRange")) {
+            this.spawnRange = input.getShortOr("SpawnRange", (short) 0);
         }
         this.renderedEntity = null;
-        this.maxSpawnCount = nbt.method_10550("MaxSpawnCount");
-        this.totalSpawnCount = nbt.method_10550("TotalSpawnCount");
-        this.difficulty = nbt.method_10558("Difficulty");
-        if (nbt.method_10545("Dungeon")) {
-            this.dungeon = Dungeon.getDungeon(nbt.method_10558("Dungeon"));
+        this.maxSpawnCount = input.getIntOr("MaxSpawnCount", 0);
+        this.totalSpawnCount = input.getIntOr("TotalSpawnCount", 0);
+        this.difficulty = input.getStringOr("Difficulty", "");
+        if (input.contains("Dungeon")) {
+            this.dungeon = Dungeon.getDungeon(input.getStringOr("Dungeon", ""));
         }
-        this.entityTypeId = nbt.method_10550("EntityTypeId");
+        this.entityTypeId = input.getIntOr("EntityTypeId", 0);
     }
 
-    public class_2487 writeNbt(class_2487 nbt) {
-        nbt.method_10575("Delay", (short) this.spawnDelay);
-        nbt.method_10575("MinSpawnDelay", (short) this.minSpawnDelay);
-        nbt.method_10575("MaxSpawnDelay", (short) this.maxSpawnDelay);
-        nbt.method_10575("SpawnCount", (short) this.spawnCount);
-        nbt.method_10575("MaxNearbyEntities", (short) this.maxNearbyEntities);
-        nbt.method_10575("RequiredPlayerRange", (short) this.requiredPlayerRange);
-        nbt.method_10575("SpawnRange", (short) this.spawnRange);
-        nbt.method_10566("SpawnData", class_1952.field_34460.encodeStart(class_2509.field_11560, this.spawnEntry).result().orElseThrow(() -> new IllegalStateException("Invalid SpawnData")));
-        nbt.method_10566("SpawnPotentials", class_1952.field_34461.encodeStart(class_2509.field_11560, this.spawnPotentials).result().orElseThrow());
-        nbt.method_10569("MaxSpawnCount", this.maxSpawnCount);
-        nbt.method_10569("TotalSpawnCount", this.totalSpawnCount);
-        nbt.method_10582("Difficulty", this.difficulty);
+    public void writeNbt(ValueOutput output) {
+        output.putShort("Delay", (short) this.spawnDelay);
+        output.putShort("MinSpawnDelay", (short) this.minSpawnDelay);
+        output.putShort("MaxSpawnDelay", (short) this.maxSpawnDelay);
+        output.putShort("SpawnCount", (short) this.spawnCount);
+        output.putShort("MaxNearbyEntities", (short) this.maxNearbyEntities);
+        output.putShort("RequiredPlayerRange", (short) this.requiredPlayerRange);
+        output.putShort("SpawnRange", (short) this.spawnRange);
+        output.store("SpawnData", SpawnData.CODEC, this.spawnEntry);
+        output.store("SpawnPotentials", SpawnData.LIST_CODEC, this.spawnPotentials);
+        output.putInt("MaxSpawnCount", this.maxSpawnCount);
+        output.putInt("TotalSpawnCount", this.totalSpawnCount);
+        output.putString("Difficulty", this.difficulty);
         if (this.dungeon != null) {
-            nbt.method_10582("Dungeon", this.dungeon.getDungeonTypeId());
+            output.putString("Dungeon", this.dungeon.getDungeonTypeId());
         }
-        nbt.method_10569("EntityTypeId", this.entityTypeId);
-        return nbt;
+        output.putInt("EntityTypeId", this.entityTypeId);
     }
 
     @Nullable
-    public class_1297 getRenderedEntity(class_1937 world) {
+    public Entity getRenderedEntity(Level world) {
         if (this.renderedEntity == null) {
-            this.renderedEntity = class_1299.method_17842(this.spawnEntry.method_38093(), world, Function.identity());
-            if (this.spawnEntry.method_38093().method_10546() != 1 || !this.spawnEntry.method_38093().method_10573("id", class_2520.field_33258) || this.renderedEntity instanceof class_1308) {
+            this.renderedEntity = EntityType.loadEntityRecursive(this.spawnEntry.getEntityToSpawn(), world, new EntitySpawnRequest(EntitySpawnReason.SPAWNER, true), BaseSpawner.SET_DISPLAY_ENTITY_ID);
+            if (this.spawnEntry.getEntityToSpawn().size() != 1 || !this.spawnEntry.getEntityToSpawn().contains("id") || this.renderedEntity instanceof Mob) {
                 // empty if block
             }
         }
         return this.renderedEntity;
     }
 
-    public boolean handleStatus(class_1937 world, int status) {
+    public boolean handleStatus(Level world, int status) {
         if (status == 1) {
-            if (world.field_9236) {
+            if (world.isClientSide()) {
                 this.spawnDelay = this.minSpawnDelay;
             }
             return true;
@@ -262,27 +271,27 @@ public abstract class DungeonSpawnerLogic {
         return false;
     }
 
-    public void setSpawnEntry(@Nullable class_1937 world, class_2338 pos, class_1952 spawnEntry) {
+    public void setSpawnEntry(@Nullable Level world, BlockPos pos, SpawnData spawnEntry) {
         this.spawnEntry = spawnEntry;
     }
 
-    public void setDungeonInfo(Dungeon dungeon, String difficulty, int maxSpawnCount, class_1299<?> type) {
+    public void setDungeonInfo(Dungeon dungeon, String difficulty, int maxSpawnCount, EntityType<?> type) {
         this.dungeon = dungeon;
         this.difficulty = difficulty;
         this.maxSpawnCount = maxSpawnCount;
         this.setEntityId(type);
     }
 
-    public void setEntityId(class_1299<?> type) {
-        this.spawnEntry.method_38093().method_10582("id", class_7923.field_41177.method_10221(type).toString());
-        this.entityTypeId = class_7923.field_41177.method_10206(type);
+    public void setEntityId(EntityType<?> type) {
+        this.spawnEntry.getEntityToSpawn().putString("id", BuiltInRegistries.ENTITY_TYPE.getKey(type).toString());
+        this.entityTypeId = BuiltInRegistries.ENTITY_TYPE.getId(type);
     }
 
     public int getEntityId() {
         return this.entityTypeId;
     }
 
-    public abstract void sendStatus(class_1937 var1, class_2338 var2, int var3);
+    public abstract void sendStatus(Level var1, BlockPos var2, int var3);
 
     public double randomParticleValueOne() {
         return this.randomParticleValueOne;

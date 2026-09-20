@@ -1,35 +1,35 @@
 package net.dungeonz.network.packet;
 
 import java.util.UUID;
-import net.minecraft.class_2338;
-import net.minecraft.class_2960;
-import net.minecraft.class_8710;
-import net.minecraft.class_9129;
-import net.minecraft.class_9139;
+import net.minecraft.core.BlockPos;
+import net.minecraft.resources.Identifier;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import org.jetbrains.annotations.Nullable;
 
-public record DungeonTeleportPacket(class_2338 dungeonPortalPos, boolean isMinGroupRequired, @Nullable UUID uuid) implements class_8710 {
+public record DungeonTeleportPacket(BlockPos dungeonPortalPos, boolean isMinGroupRequired, @Nullable UUID uuid) implements CustomPacketPayload {
 
-    public static final class_8710.class_9154<DungeonTeleportPacket> PACKET_ID = new class_8710.class_9154<>(class_2960.method_60655("dungeonz", "dungeon_teleport_packet"));
+    public static final CustomPacketPayload.Type<DungeonTeleportPacket> PACKET_ID = new CustomPacketPayload.Type<>(Identifier.fromNamespaceAndPath("dungeonz", "dungeon_teleport_packet"));
 
-    public static final class_9139<class_9129, DungeonTeleportPacket> PACKET_CODEC = class_9139.method_56438((value, buf) -> {
-        buf.method_10807(value.dungeonPortalPos);
-        buf.method_52964(value.isMinGroupRequired);
+    public static final StreamCodec<RegistryFriendlyByteBuf, DungeonTeleportPacket> PACKET_CODEC = StreamCodec.ofMember((value, buf) -> {
+        buf.writeBlockPos(value.dungeonPortalPos);
+        buf.writeBoolean(value.isMinGroupRequired);
         if (value.isMinGroupRequired) {
-            buf.method_10797(value.uuid);
+            buf.writeUUID(value.uuid);
         }
     }, buf -> {
-        class_2338 dungeonPortalPos = buf.method_10811();
+        BlockPos dungeonPortalPos = buf.readBlockPos();
         boolean isMinGroupRequired = buf.readBoolean();
         UUID uuid = null;
         if (isMinGroupRequired) {
-            uuid = buf.method_10790();
+            uuid = buf.readUUID();
         }
         return new DungeonTeleportPacket(dungeonPortalPos, isMinGroupRequired, uuid);
     });
 
     @Override
-    public class_9154<? extends class_8710> method_56479() {
+    public Type<? extends CustomPacketPayload> type() {
         return PACKET_ID;
     }
 

@@ -12,40 +12,40 @@ import net.dungeonz.access.ClientPlayerAccess;
 import net.dungeonz.init.DimensionInit;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_1268;
-import net.minecraft.class_1747;
-import net.minecraft.class_1799;
-import net.minecraft.class_2338;
-import net.minecraft.class_310;
-import net.minecraft.class_3965;
-import net.minecraft.class_636;
-import net.minecraft.class_746;
-import net.minecraft.class_7923;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.core.BlockPos;
+import net.minecraft.client.Minecraft;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.client.multiplayer.MultiPlayerGameMode;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.core.registries.BuiltInRegistries;
 
 @Environment(EnvType.CLIENT)
-@Mixin(class_310.class)
+@Mixin(Minecraft.class)
 public class MinecraftClientMixin {
     @Shadow
     @Nullable
-    public class_746 player;
+    public LocalPlayer player;
 
     @Shadow
     @Nullable
-    public class_636 interactionManager;
+    public MultiPlayerGameMode gameMode;
 
-    @Inject(method = "doItemUse", at = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;getCount()I"), cancellable = true, locals = LocalCapture.CAPTURE_FAILSOFT)
-    private void doItemUseMixin(CallbackInfo info, class_1268[] var1, int var2, int var3, class_1268 hand, class_1799 itemStack) {
-        if (player != null && !player.method_7337() && itemStack.method_7909() instanceof class_1747 && player.method_37908().method_27983() == DimensionInit.DUNGEON_WORLD
-                && !((ClientPlayerAccess) player).getPlaceableBlockIdList().contains(class_7923.field_41175.method_10206(((class_1747) itemStack.method_7909()).method_7711()))) {
+    @Inject(method = "startUseItem", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/ItemStack;getCount()I", ordinal = 0), cancellable = true, locals = LocalCapture.CAPTURE_FAILHARD)
+    private void doItemUseMixin(CallbackInfo info, InteractionHand[] var1, int var2, int var3, InteractionHand hand, ItemStack itemStack) {
+        if (player != null && !player.isCreative() && itemStack.getItem() instanceof BlockItem && player.level().dimension() == DimensionInit.DUNGEON_WORLD
+                && !((ClientPlayerAccess) player).getPlaceableBlockIdList().contains(BuiltInRegistries.BLOCK.getId(((BlockItem) itemStack.getItem()).getBlock()))) {
             info.cancel();
         }
     }
 
-    @Inject(method = "handleBlockBreaking", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/hit/BlockHitResult;getSide()Lnet/minecraft/util/math/Direction;"), cancellable = true, locals = LocalCapture.CAPTURE_FAILSOFT)
-    private void handleBlockBreakingMixin(boolean bl, CallbackInfo info, class_3965 blockHitResult, class_2338 blockPos) {
-        if (player != null && !player.method_7337() && player.method_37908().method_27983() == DimensionInit.DUNGEON_WORLD
-                && !((ClientPlayerAccess) player).getBreakableBlockIdList().contains(class_7923.field_41175.method_10206(player.method_37908().method_8320(blockPos).method_26204()))) {
-            interactionManager.method_2925();
+    @Inject(method = "continueAttack", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/phys/BlockHitResult;getDirection()Lnet/minecraft/core/Direction;"), cancellable = true, locals = LocalCapture.CAPTURE_FAILHARD)
+    private void handleBlockBreakingMixin(boolean bl, CallbackInfo info, ItemStack heldItem, BlockHitResult blockHitResult, BlockPos blockPos) {
+        if (player != null && !player.isCreative() && player.level().dimension() == DimensionInit.DUNGEON_WORLD
+                && !((ClientPlayerAccess) player).getBreakableBlockIdList().contains(BuiltInRegistries.BLOCK.getId(player.level().getBlockState(blockPos).getBlock()))) {
+            gameMode.stopDestroyBlock();
             info.cancel();
         }
     }

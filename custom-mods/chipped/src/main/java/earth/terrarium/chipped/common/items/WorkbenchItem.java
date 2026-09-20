@@ -17,7 +17,7 @@ public class WorkbenchItem extends Item {
     @Override
     public @NotNull InteractionResult use(Level level, Player player, InteractionHand usedHand) {
         var stack = player.getItemInHand(usedHand);
-        player.openMenu(new WorkbenchMenuProvider(getName(stack)));
+        player.openMenu(new WorkbenchMenuProvider(player.blockPosition(), getName(stack)));
         return InteractionResult.SUCCESS;
     }
 }

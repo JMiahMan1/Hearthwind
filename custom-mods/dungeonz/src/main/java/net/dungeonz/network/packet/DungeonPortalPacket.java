@@ -4,51 +4,53 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
-import net.minecraft.class_1799;
-import net.minecraft.class_2338;
-import net.minecraft.class_2540;
-import net.minecraft.class_2960;
-import net.minecraft.class_8710;
-import net.minecraft.class_9129;
-import net.minecraft.class_9139;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.Identifier;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 
-public record DungeonPortalPacket(String dungeonType, class_2338 blockPos, List<UUID> playerUuids, List<UUID> deadPlayerUuids, List<String> difficulties, Map<String, List<class_1799>> possibleLoot,
-                                  Map<String, List<class_1799>> requiredItemStacks, int maxGroupSize, int minGroupSize, int waitingPlayerCount, int requiredLevel, int cooldownTime, String difficulty,
-                                  boolean allowEnderPearl, boolean allowPositiveEffects, boolean allowElytra, boolean allowRespawn, boolean keepInventory, boolean privateGroup, Optional<class_2960> backgroundId)
-        implements class_8710 {
+public record DungeonPortalPacket(String dungeonType, BlockPos blockPos, List<UUID> playerUuids, List<UUID> deadPlayerUuids, List<String> difficulties, Map<String, List<ItemStack>> possibleLoot,
+                                  Map<String, List<ItemStack>> requiredItemStacks, int maxGroupSize, int minGroupSize, int waitingPlayerCount, int requiredLevel, int cooldownTime, String difficulty,
+                                  boolean allowEnderPearl, boolean allowPositiveEffects, boolean allowElytra, boolean allowRespawn, boolean keepInventory, boolean privateGroup, Optional<Identifier> backgroundId, DungeonAdmissionPacket admission)
+        implements CustomPacketPayload {
 
-    public static final class_8710.class_9154<DungeonPortalPacket> PACKET_ID = new class_8710.class_9154<>(class_2960.method_60655("dungeonz", "dungeon_portal_packet"));
+    public static final CustomPacketPayload.Type<DungeonPortalPacket> PACKET_ID = new CustomPacketPayload.Type<>(Identifier.fromNamespaceAndPath("dungeonz", "dungeon_portal_packet"));
 
-    public static final class_9139<class_9129, DungeonPortalPacket> PACKET_CODEC = class_9139.method_56438((value, buf) -> {
-        buf.method_10814(value.dungeonType);
-        buf.method_10807(value.blockPos);
-        buf.method_34062(value.playerUuids, (buffer, uuid) -> buffer.method_10797(uuid));
-        buf.method_34062(value.deadPlayerUuids, (buffer, uuid) -> buffer.method_10797(uuid));
-        buf.method_34062(value.difficulties, class_2540::method_10814);
-        buf.method_34063(value.possibleLoot, class_2540::method_10814, (buffer, stacks) -> class_1799.field_48350.encode(buf, stacks));
-        buf.method_34063(value.requiredItemStacks, class_2540::method_10814, (buffer, stacks) -> class_1799.field_48350.encode(buf, stacks));
-        buf.method_53002(value.maxGroupSize);
-        buf.method_53002(value.minGroupSize);
-        buf.method_53002(value.waitingPlayerCount);
-        buf.method_53002(value.requiredLevel);
-        buf.method_53002(value.cooldownTime);
-        buf.method_10814(value.difficulty);
-        buf.method_52964(value.allowEnderPearl);
-        buf.method_52964(value.allowPositiveEffects);
-        buf.method_52964(value.allowElytra);
-        buf.method_52964(value.allowRespawn);
-        buf.method_52964(value.keepInventory);
-        buf.method_52964(value.privateGroup);
-        buf.method_37435(value.backgroundId, class_2540::method_10812);
+    public static final StreamCodec<RegistryFriendlyByteBuf, DungeonPortalPacket> PACKET_CODEC = StreamCodec.ofMember((value, buf) -> {
+        buf.writeUtf(value.dungeonType);
+        buf.writeBlockPos(value.blockPos);
+        buf.writeCollection(value.playerUuids, (buffer, uuid) -> buffer.writeUUID(uuid));
+        buf.writeCollection(value.deadPlayerUuids, (buffer, uuid) -> buffer.writeUUID(uuid));
+        buf.writeCollection(value.difficulties, FriendlyByteBuf::writeUtf);
+        buf.writeMap(value.possibleLoot, FriendlyByteBuf::writeUtf, (buffer, stacks) -> ItemStack.STREAM_CODEC.apply(ByteBufCodecs.list()).encode(buf, stacks));
+        buf.writeMap(value.requiredItemStacks, FriendlyByteBuf::writeUtf, (buffer, stacks) -> ItemStack.STREAM_CODEC.apply(ByteBufCodecs.list()).encode(buf, stacks));
+        buf.writeInt(value.maxGroupSize);
+        buf.writeInt(value.minGroupSize);
+        buf.writeInt(value.waitingPlayerCount);
+        buf.writeInt(value.requiredLevel);
+        buf.writeInt(value.cooldownTime);
+        buf.writeUtf(value.difficulty);
+        buf.writeBoolean(value.allowEnderPearl);
+        buf.writeBoolean(value.allowPositiveEffects);
+        buf.writeBoolean(value.allowElytra);
+        buf.writeBoolean(value.allowRespawn);
+        buf.writeBoolean(value.keepInventory);
+        buf.writeBoolean(value.privateGroup);
+        buf.writeOptional(value.backgroundId, FriendlyByteBuf::writeIdentifier);
+        DungeonAdmissionPacket.PACKET_CODEC.encode(buf, value.admission);
 
-    }, buf -> new DungeonPortalPacket(buf.method_19772(), buf.method_10811(), buf.method_34066((buffer) -> class_2540.method_56344(buffer)), buf.method_34066((buffer) -> class_2540.method_56344(buffer)),
-            buf.method_34066(class_2540::method_19772), buf.method_34067(class_2540::method_19772, (bufx) -> class_1799.field_48350.decode(buf)),
-            buf.method_34067(class_2540::method_19772, (bufx) -> class_1799.field_48350.decode(buf)), buf.readInt(),
-            buf.readInt(), buf.readInt(), buf.readInt(), buf.readInt(), buf.method_19772(), buf.readBoolean(), buf.readBoolean(), buf.readBoolean(), buf.readBoolean(), buf.readBoolean(), buf.readBoolean(),
-            buf.method_37436(class_2540::method_10810)));
+    }, buf -> new DungeonPortalPacket(buf.readUtf(), buf.readBlockPos(), buf.readList((buffer) -> FriendlyByteBuf.readUUID(buffer)), buf.readList((buffer) -> FriendlyByteBuf.readUUID(buffer)),
+            buf.readList(FriendlyByteBuf::readUtf), buf.readMap(FriendlyByteBuf::readUtf, (bufx) -> ItemStack.STREAM_CODEC.apply(ByteBufCodecs.list()).decode(buf)),
+            buf.readMap(FriendlyByteBuf::readUtf, (bufx) -> ItemStack.STREAM_CODEC.apply(ByteBufCodecs.list()).decode(buf)), buf.readInt(),
+            buf.readInt(), buf.readInt(), buf.readInt(), buf.readInt(), buf.readUtf(), buf.readBoolean(), buf.readBoolean(), buf.readBoolean(), buf.readBoolean(), buf.readBoolean(), buf.readBoolean(),
+            buf.readOptional(FriendlyByteBuf::readIdentifier), DungeonAdmissionPacket.PACKET_CODEC.decode(buf)));
 
     @Override
-    public class_9154<? extends class_8710> method_56479() {
+    public Type<? extends CustomPacketPayload> type() {
         return PACKET_ID;
     }
 

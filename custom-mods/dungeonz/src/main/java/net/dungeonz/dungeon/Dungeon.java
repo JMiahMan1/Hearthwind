@@ -1,9 +1,9 @@
 package net.dungeonz.dungeon;
 
 import net.dungeonz.DungeonzMain;
-import net.minecraft.class_1299;
-import net.minecraft.class_2487;
-import net.minecraft.class_2960;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
@@ -13,7 +13,7 @@ public class Dungeon {
 
     private final String dungeonTypeId;
 
-    private final HashMap<Integer, List<class_1299<?>>> blockIdEntityMap;
+    private final HashMap<Integer, List<EntityType<?>>> blockIdEntityMap;
     private final HashMap<Integer, HashMap<String, Float>> blockIdEntitySpawnChance;
     private final HashMap<Integer, Integer> blockIdBlockReplacement;
 
@@ -36,9 +36,9 @@ public class Dungeon {
     private final HashMap<String, Float> difficultyBossSpeedModificator;
     private final HashMap<String, String> difficultyBossLootTable;
 
-    private final class_1299<?> bossEntityType;
+    private final EntityType<?> bossEntityType;
     @Nullable
-    private final class_2487 bossNbtCompound;
+    private final CompoundTag bossNbtCompound;
     private final int bossBlockId;
     private final int bossLootBlockId;
 
@@ -56,15 +56,15 @@ public class Dungeon {
     private final int cooldown;
 
     @Nullable
-    private final class_2960 dungeonBackgroundId;
-    private final class_2960 dungeonStructurePoolId;
+    private final Identifier dungeonBackgroundId;
+    private final Identifier dungeonStructurePoolId;
 
-    public Dungeon(String dungeonTypeId, HashMap<Integer, List<class_1299<?>>> blockIdEntityMap, HashMap<Integer, HashMap<String, Float>> blockIdEntitySpawnChance,
+    public Dungeon(String dungeonTypeId, HashMap<Integer, List<EntityType<?>>> blockIdEntityMap, HashMap<Integer, HashMap<String, Float>> blockIdEntitySpawnChance,
                     HashMap<Integer, Integer> blockIdBlockReplacement, HashMap<Integer, Integer> spawnerEntityIdCountMap, HashMap<String, HashMap<Integer, Integer>> difficultyRequiredItemCountMap, List<Integer> breakableBlockIds,
                     List<Integer> placeableBlockIds, List<String> difficultyList, HashMap<String, Float> difficultyMobHealthModificator, HashMap<String, Float> difficultyMobDamageModificator, HashMap<String, Float> difficultyMobProtectionModificator, HashMap<String, Float> difficultyMobSpeedModificator,
                     HashMap<String, List<String>> difficultyLootTableIds, HashMap<String, Float> difficultyBossHealthModificator, HashMap<String, Float> difficultyBossDamageModificator, HashMap<String, Float> difficultyBossProtectionModificator, HashMap<String, Float> difficultyBossSpeedModificator,
-                    HashMap<String, String> difficultyBossLootTable, class_1299<?> bossEntityType, @Nullable class_2487 bossNbtCompound, int bossBlockId, int bossLootBlockId, int exitBlockId, boolean allowRespawn,
-                    boolean allowElytra, boolean keepInventory, boolean allowEnderPearl, boolean allowPositiveEffects, int maxGroupSize, int minGroupSize, int requiredLevel, int cooldown, @Nullable class_2960 dungeonBackgroundId, class_2960 dungeonStructurePoolId) {
+                    HashMap<String, String> difficultyBossLootTable, EntityType<?> bossEntityType, @Nullable CompoundTag bossNbtCompound, int bossBlockId, int bossLootBlockId, int exitBlockId, boolean allowRespawn,
+                    boolean allowElytra, boolean keepInventory, boolean allowEnderPearl, boolean allowPositiveEffects, int maxGroupSize, int minGroupSize, int requiredLevel, int cooldown, @Nullable Identifier dungeonBackgroundId, Identifier dungeonStructurePoolId) {
         this.dungeonTypeId = dungeonTypeId;
         this.blockIdEntityMap = blockIdEntityMap;
         this.blockIdEntitySpawnChance = blockIdEntitySpawnChance;
@@ -106,12 +106,12 @@ public class Dungeon {
         return this.dungeonTypeId;
     }
 
-    public class_2960 getStructurePoolId() {
+    public Identifier getStructurePoolId() {
         return this.dungeonStructurePoolId;
     }
 
     @Nullable
-    public class_2960 getBackgroundId() {
+    public Identifier getBackgroundId() {
         return this.dungeonBackgroundId;
     }
 
@@ -119,7 +119,7 @@ public class Dungeon {
         return this.difficultyList;
     }
 
-    public HashMap<Integer, List<class_1299<?>>> getBlockIdEntityMap() {
+    public HashMap<Integer, List<EntityType<?>>> getBlockIdEntityMap() {
         return this.blockIdEntityMap;
     }
 
@@ -187,12 +187,12 @@ public class Dungeon {
         return this.placeableBlockIds;
     }
 
-    public class_1299<?> getBossEntityType() {
+    public EntityType<?> getBossEntityType() {
         return this.bossEntityType;
     }
 
     @Nullable
-    public class_2487 getBossNbtCompound() {
+    public CompoundTag getBossNbtCompound() {
         return this.bossNbtCompound;
     }
 

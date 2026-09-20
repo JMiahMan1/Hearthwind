@@ -47,6 +47,19 @@ subprojects {
 			implementation project(':hearthwind-jobs')
 		}
 	}
+	if (project.name == 'hearthwind-world') {
+		tasks.named('processResources') {
+			from(rootProject.file('../conversion/datapacks/hearthwind')) {
+				include 'data/hearthwind/worldgen/configured_feature/coarse_dirt_ledge_pine.json'
+				include 'data/hearthwind/worldgen/placed_feature/coarse_dirt_ledge_pine.json'
+			}
+			from(rootProject.file('../conversion/curated/datapack-overrides')) {
+				include 'data/formationsoverworld/loot_table/stone_tower/smithing.json'
+				include 'data/formationsoverworld/loot_table/witch_tower/smithing.json'
+			}
+			duplicatesStrategy = DuplicatesStrategy.FAIL
+		}
+	}
 	if (project.name == 'hearthwind-primitive') {
 		dependencies {
 			implementation project(':hearthwind-survival')
@@ -108,6 +121,7 @@ subprojects {
 		dependencies {
 			modCompileClasspath "dev.architectury:architectury:21.0.7"
 			modCompileClasspath "dev.architectury:architectury-fabric:21.0.7"
+			modCompileClasspath "net.fabricmc.fabric.api:fabric-gametest-api-v1:4.0.21+4a7fa0819e"
 			modCompileClasspath files("${rootDir}/../dev-server/mods/ResourcefulLib-5.0.3.jar")
 			modCompileClasspath files("${rootDir}/../conversion/vendored/resourcefullib-bytecodecs/bytecodecs-1.1.3.jar")
 			modCompileClasspath files("${rootDir}/../conversion/vendored/resourcefullib-bytecodecs/yabn-1.0.3.jar")
@@ -115,9 +129,35 @@ subprojects {
 			implementation files("${rootDir}/../conversion/vendored/resourcefullib-bytecodecs/bytecodecs-1.1.3.jar")
 		}
 	}
+	if (project.name == 'chipped') {
+		dependencies {
+			modCompileClasspath "net.fabricmc.fabric.api:fabric-menu-api-v1:2.0.16+086d547a9e"
+			modCompileClasspath "net.fabricmc.fabric.api:fabric-recipe-api-v1:9.0.20+11e1c9a39e"
+			// workbench 3D preview PIP renderer (PictureInPictureRendererRegistry)
+			modCompileClasspath "net.fabricmc.fabric.api:fabric-rendering-v1:25.3.2+515ac5339e"
+		}
+	}
+	if (project.name == 'dungeonz') {
+		dependencies {
+			// gametests drive the real SkillXp/PartyManager classes; the
+			// production compat layer stays reflection-only
+			implementation project(':hearthwind-skills')
+			modCompileClasspath "net.fabricmc.fabric-api:fabric-data-attachment-api-v1:2.2.18+515ac5339e"
+			modCompileClasspath "net.fabricmc.fabric-api:fabric-object-builder-api-v1:24.1.0+6fcd5f039e"
+			modCompileClasspath "net.fabricmc.fabric-api:fabric-resource-loader-v1:2.0.13+9edec1269e"
+			modCompileClasspath "net.fabricmc.fabric-api:fabric-lifecycle-events-v1:4.1.3+4575b05f9e"
+			modCompileClasspath "net.fabricmc.fabric-api:fabric-rendering-v1:25.3.2+515ac5339e"
+			modCompileClasspath "net.fabricmc.fabric-api:fabric-creative-tab-api-v1:5.0.14+d871b99e9e"
+			modCompileClasspath "net.fabricmc.fabric-api:fabric-menu-api-v1:2.0.16+086d547a9e"
+			modCompileClasspath "net.fabricmc.fabric-api:fabric-networking-api-v1:6.3.3+72073ef09e"
+			modCompileClasspath "net.fabricmc.fabric-api:fabric-entity-events-v1:2.0.11+d871b99e9e"
+			modCompileClasspath "net.fabricmc.fabric-api:fabric-screen-api-v1:5.2.1+5087f8249e"
+			modCompileClasspath "net.fabricmc.fabric-api:fabric-command-api-v2:3.1.0+00cb03469e"
+		}
+	}
 
 	afterEvaluate {
-		if (name == 'hearthwind-client') {
+		if (name == 'hearthwind-client' || name == 'dungeonz' || name == 'chipped') {
 			dependencies {
 				// keymapping API is one of the modules the aggregator hides
 				// at compile time; pin it for NutrientsKey (renamed from
@@ -129,7 +169,7 @@ subprojects {
 				modCompileClasspath "net.fabricmc.fabric.api:fabric-client-gametest-api-v1:6.0.0+515ac5339e"
 			}
 		}
-		if (name == 'hearthwind-survival' || name == 'hearthwind-skills' || name == 'hearthwind-jobs' || name == 'hearthwind-world' || name.startsWith('letsdo-')) {
+		if (name == 'hearthwind-survival' || name == 'hearthwind-skills' || name == 'hearthwind-jobs' || name == 'hearthwind-world' || name == 'dungeonz' || name.startsWith('letsdo-')) {
 			dependencies {
 				// fabric-api aggregator POM hides module classes at compile
 				// time; pin gametest API for @GameTest compilation.
@@ -158,6 +198,7 @@ subprojects {
 				modCompileClasspath "net.fabricmc.fabric.api:fabric-gametest-api-v1:4.0.21+4a7fa0819e"
 			}
 		}
+
 		if (name.startsWith('letsdo-')) {
 			// Duplicate of the pre-afterEvaluate letsdo block retained for
 			// documentation only. Loom resolves the mod compile classpath

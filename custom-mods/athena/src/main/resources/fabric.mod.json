@@ -11,6 +11,7 @@
   "mixins": ["athena.mixins.json"],
   "entrypoints": {
     "client": [
+      "earth.terrarium.athena.impl.client.DefaultModels::init",
       "earth.terrarium.athena.fabric.client.AthenaFabricClient"
     ]
   },
