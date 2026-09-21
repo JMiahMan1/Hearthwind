@@ -2,7 +2,6 @@
  "type": "minecraft:entity",
  "pools": [
   {
-   "bonus_rolls": 0.0,
    "entries": [
     {
      "type": "minecraft:item",
@@ -13,7 +12,7 @@
         "condition": "minecraft:damage_source_properties",
         "predicate": {
          "source_entity": {
-          "entity_type": "minecraft:frog"
+          "minecraft:entity_type": "minecraft:frog"
          }
         }
        }
@@ -21,7 +20,6 @@
      ],
      "functions": [
       {
-       "add": false,
        "count": {
         "type": "minecraft:uniform",
         "max": 1.0,
@@ -43,10 +41,8 @@
     },
     {
      "type": "minecraft:item",
-     "conditions": [],
      "functions": [
       {
-       "add": false,
        "count": 1.0,
        "function": "minecraft:set_count"
       }
@@ -55,10 +51,8 @@
     },
     {
      "type": "minecraft:item",
-     "conditions": [],
      "functions": [
       {
-       "add": false,
        "count": 1.0,
        "function": "minecraft:set_count"
       }
@@ -67,10 +61,8 @@
     },
     {
      "type": "minecraft:item",
-     "conditions": [],
      "functions": [
       {
-       "add": false,
        "count": 1.0,
        "function": "minecraft:set_count"
       }
@@ -81,7 +73,6 @@
    "rolls": 1.0
   },
   {
-   "bonus_rolls": 0.0,
    "conditions": [
     {
      "condition": "minecraft:killed_by_player"
@@ -92,7 +83,6 @@
      "type": "minecraft:item",
      "functions": [
       {
-       "add": false,
        "count": {
         "type": "minecraft:uniform",
         "max": 3.0,

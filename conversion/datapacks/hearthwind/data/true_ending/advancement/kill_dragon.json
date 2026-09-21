@@ -1,0 +1,21 @@
+{
+  "criteria": {
+    "killed_dragon": {
+      "trigger": "minecraft:player_killed_entity",
+      "conditions": {
+        "entity": [
+          {
+            "condition": "minecraft:entity_properties",
+            "entity": "this",
+            "predicate": {
+              "minecraft:entity_type": "minecraft:ender_dragon"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "rewards": {
+    "function": "true_ending:other/kill_dragon"
+  }
+}

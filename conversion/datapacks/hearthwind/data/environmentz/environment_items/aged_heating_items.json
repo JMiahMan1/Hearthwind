@@ -1,11 +1,46 @@
 {
- "endrem:nether_eye": {
-  "temperature": 3
- },
  "earlystage:lava_brick_bucket": {
   "temperature": 4
  },
  "endermanoverhaul:crimson_pearl": {
   "temperature": 2
+ },
+ "endrem:nether_eye": {
+  "temperature": 3
+ },
+ "environmentz:heating_stones": {
+  "cold_protection": 2,
+  "damage": 1,
+  "temperature": 10
+ },
+ "minecraft:blaze_powder": {
+  "temperature": 2
+ },
+ "minecraft:blaze_rod": {
+  "temperature": 2
+ },
+ "minecraft:campfire": {
+  "temperature": 2
+ },
+ "minecraft:fire_charge": {
+  "temperature": 3
+ },
+ "minecraft:lava_bucket": {
+  "temperature": 4
+ },
+ "minecraft:magma_block": {
+  "temperature": 4
+ },
+ "minecraft:magma_cream": {
+  "temperature": 2
+ },
+ "minecraft:soul_campfire": {
+  "temperature": 2
+ },
+ "minecraft:soul_torch": {
+  "temperature": 1
+ },
+ "minecraft:torch": {
+  "temperature": 1
  }
 }

@@ -2,7 +2,6 @@
  "type": "minecraft:entity",
  "pools": [
   {
-   "bonus_rolls": 0.0,
    "conditions": [
     {
      "condition": "minecraft:killed_by_player"
@@ -13,7 +12,6 @@
      "type": "minecraft:item",
      "functions": [
       {
-       "add": false,
        "count": {
         "type": "minecraft:uniform",
         "max": 2.0,
@@ -38,7 +36,6 @@
      "type": "minecraft:item",
      "functions": [
       {
-       "add": false,
        "count": {
         "type": "minecraft:uniform",
         "max": 1.0,
@@ -63,13 +60,12 @@
    "rolls": 1.0
   },
   {
-   "bonus_rolls": 0.0,
    "conditions": [
     {
      "condition": "minecraft:entity_properties",
-     "entity": "killer",
+     "entity": "attacker",
      "predicate": {
-      "entity_type": "#minecraft:skeletons"
+      "minecraft:entity_type": "#minecraft:skeletons"
      }
     }
    ],

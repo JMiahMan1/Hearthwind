@@ -2,13 +2,11 @@
  "type": "minecraft:entity",
  "pools": [
   {
-   "bonus_rolls": 0.0,
    "entries": [
     {
      "type": "minecraft:item",
      "functions": [
       {
-       "add": false,
        "count": {
         "type": "minecraft:uniform",
         "max": 2.0,
@@ -32,7 +30,6 @@
    "rolls": 1.0
   },
   {
-   "bonus_rolls": 0.0,
    "entries": [
     {
      "type": "minecraft:item",
@@ -52,7 +49,7 @@
          "condition": "minecraft:entity_properties",
          "entity": "this",
          "predicate": {
-          "flags": {
+          "minecraft:flags": {
            "is_on_fire": true
           }
          }
@@ -87,7 +84,6 @@
    "rolls": 1.0
   },
   {
-   "bonus_rolls": 0.0,
    "conditions": [
     {
      "condition": "minecraft:killed_by_player"
@@ -102,7 +98,6 @@
    "rolls": 1.0
   },
   {
-   "bonus_rolls": 0.0,
    "conditions": [
     {
      "condition": "minecraft:killed_by_player"
@@ -128,7 +123,7 @@
          "condition": "minecraft:entity_properties",
          "entity": "this",
          "predicate": {
-          "flags": {
+          "minecraft:flags": {
            "is_on_fire": true
           }
          }
@@ -137,13 +132,12 @@
        "function": "minecraft:furnace_smelt"
       }
      ],
-     "name": "minecraft:gameplay/fishing/fish"
+     "value": "minecraft:gameplay/fishing/fish"
     }
    ],
    "rolls": 1.0
   },
   {
-   "bonus_rolls": 0.0,
    "entries": [
     {
      "type": "minecraft:empty",
@@ -157,7 +151,6 @@
    "rolls": 1.0
   },
   {
-   "bonus_rolls": 0.0,
    "conditions": [
     {
      "condition": "minecraft:killed_by_player"
@@ -168,7 +161,6 @@
      "type": "minecraft:item",
      "functions": [
       {
-       "add": false,
        "count": {
         "type": "minecraft:uniform",
         "max": 3.0,

@@ -8,7 +8,6 @@
      "condition": "minecraft:killed_by_player"
     }
    ],
-   "bonus_rolls": 0.0,
    "entries": [
     {
      "type": "minecraft:item",
@@ -19,8 +18,7 @@
         "type": "minecraft:uniform",
         "min": 0.0,
         "max": 3.0
-       },
-       "add": false
+       }
       },
       {
        "function": "minecraft:enchanted_count_increase",
@@ -39,7 +37,6 @@
      "type": "minecraft:item",
      "functions": [
       {
-       "add": false,
        "count": {
         "type": "minecraft:uniform",
         "max": 3.0,
@@ -62,5 +59,6 @@
     }
    ]
   }
- ]
+ ],
+ "random_sequence": "minecraft:entities/pillager"
 }

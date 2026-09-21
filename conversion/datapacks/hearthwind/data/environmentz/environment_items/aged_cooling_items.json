@@ -1,14 +1,52 @@
 {
+ "endermanoverhaul:icy_pearl": {
+  "temperature": -2
+ },
  "endrem:cold_eye": {
+  "temperature": -3
+ },
+ "environmentz:ice_pack": {
+  "damage": 1,
+  "heat_protection": 2,
+  "temperature": -10
+ },
+ "environmentz:wanderer_boots": {
+  "temperature": -1
+ },
+ "environmentz:wanderer_chestplate": {
+  "temperature": -1
+ },
+ "environmentz:wanderer_helmet": {
+  "temperature": -1
+ },
+ "environmentz:wanderer_leggings": {
+  "temperature": -1
+ },
+ "minecraft:blue_ice": {
   "temperature": -3
  },
  "minecraft:heart_of_the_sea": {
   "temperature": -2
  },
- "vinery:eiswein": {
+ "minecraft:ice": {
   "temperature": -3
  },
- "endermanoverhaul:icy_pearl": {
+ "minecraft:packed_ice": {
+  "temperature": -3
+ },
+ "minecraft:powder_snow_bucket": {
+  "temperature": -4
+ },
+ "minecraft:snow": {
+  "temperature": -1
+ },
+ "minecraft:snow_block": {
   "temperature": -2
+ },
+ "minecraft:snowball": {
+  "temperature": -1
+ },
+ "vinery:eiswein": {
+  "temperature": -3
  }
 }
