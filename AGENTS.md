@@ -111,6 +111,8 @@ cd custom-mods && bash tools/run_client_gametests_docker.sh
 #    mining loop (job join -> mine -> skills+jobs XP asserts), dedicated
 #    pack-server connect (registry negotiation), desert temperature.
 #    Screenshots land in .tmp/shots/cgt/; exit code is the verdict.
+#    Every fabric-client-gametest entrypoint class must call
+#    takeScreenshot at least once (10 classes / 21 calls as of 0.1.1).
 #    waitFor* TIMEOUTS ARE TICKS (20/s) - use minutes, not seconds.
 ```
 

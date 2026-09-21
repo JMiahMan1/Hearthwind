@@ -103,7 +103,7 @@ jobs:
             sleep 6
             if grep -q "Done (" boot.log; then
               for chunk in "1000 1000" "-1000 -1000"; do
-                python3 "$RCON" 127.0.0.1 25575 agedtest --connect-wait 60 -- "forceload add $chunk"
+                python3 "$RCON" 127.0.0.1 25575 agedtest --connect-wait 60 "forceload add $chunk"
               done
               sleep 10
               if grep -q "Feature order cycle" boot.log; then
@@ -116,7 +116,7 @@ jobs:
               # chunk 62,62. Summon a modded item + a ship entity inside the
               # loaded chunk and assert existence via 'say' log markers
               # (RCON alone cannot signal command failure).
-              python3 "$RCON" 127.0.0.1 25575 agedtest --connect-wait 60 -- \
+              python3 "$RCON" 127.0.0.1 25575 agedtest --connect-wait 60 \
                 "execute positioned 1000.0 80.0 1000.0 run summon item ~ ~ ~ {Item:{id:\"earlystage:rock\",count:1}}" \
                 "execute positioned 1000.0 80.0 1000.0 run execute if entity @e[type=item] run say PROBE_ITEM_OK" \
                 "execute positioned 1000.0 80.0 1000.0 run summon smallships:cog ~ ~ ~ {NoAI:1b}" \

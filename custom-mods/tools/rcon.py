@@ -69,7 +69,9 @@ def main():
                     help="seconds to keep retrying connect+auth (default 60)")
     ap.add_argument("--timeout", type=float, default=15.0,
                     help="per-response socket timeout in seconds (default 15)")
-    args = ap.parse_args()
+    args, extras = ap.parse_known_args()
+    if extras:
+        args.commands = [e for e in list(args.commands) + extras if e != "--"]
 
     deadline = time.monotonic() + args.connect_wait
     sock, rc = connect_auth(args.host, args.port, args.password, deadline, args.timeout)
