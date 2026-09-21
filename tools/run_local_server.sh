@@ -25,12 +25,25 @@ if [ ! -d "$ROOT/dev-server/mods" ]; then
   bash "$ROOT/custom-mods/tools/setup_prism_dev.sh" 2>&1 | tail -n 20
 fi
 
-# Ensure latest custom jars are in dev-server
-for f in "$ROOT"/custom-mods/hearthwind-*/build/libs/*26.2+0.1.0.jar; do
-  [[ -f "$f" ]] || continue
-  [[ "$f" == *"-sources.jar" ]] && continue
-  [[ "$f" == *"hearthwind-client"* ]] && continue
-  cp "$f" "$ROOT/dev-server/mods/" 2>/dev/null || true
+# Ensure latest custom jars are in dev-server (all in-house ports, never
+# the client companion or -sources jars - the client entrypoint is ignored
+# on a dedicated server but it doesn't belong here)
+rm -f "$ROOT/dev-server/mods/hearthwind-client-"*.jar 2>/dev/null || true
+for moddir in "$ROOT"/custom-mods/hearthwind-* "$ROOT"/custom-mods/letsdo-* \
+    "$ROOT"/custom-mods/smallships "$ROOT"/custom-mods/villagesandpillages \
+    "$ROOT"/custom-mods/chipped "$ROOT"/custom-mods/dungeonz "$ROOT"/custom-mods/athena; do
+  [ -d "$moddir" ] || continue
+  for f in "$moddir"/build/libs/*.jar; do
+    [[ -f "$f" ]] || continue
+    [[ "$f" == *"-sources.jar" ]] && continue
+    [[ "$f" == *"-javadoc.jar" ]] && continue
+    [[ "$f" == *"hearthwind-client"* ]] && continue
+    [[ "$f" != *"26.2"* ]] && continue
+    # replace any older same-mod jar so stale builds can't linger
+    mod=$(basename "$moddir")
+    rm -f "$ROOT/dev-server/mods/$mod"-*.jar 2>/dev/null || true
+    cp "$f" "$ROOT/dev-server/mods/" 2>/dev/null || true
+  done
 done
 
 if [ ! -f "$ROOT/dev-server/fabric-server.jar" ]; then

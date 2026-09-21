@@ -454,6 +454,20 @@ def flatten_uniform_providers(out_data: Path):
     report["uniform_fixed"] = fixed
 
 
+MANDATORY_OVERRIDES = [
+    Path("data/formationsoverworld/loot_table/stone_tower/smithing.json"),
+    Path("data/formationsoverworld/loot_table/witch_tower/smithing.json"),
+]
+
+
+def copy_mandatory_overrides(out: Path):
+    overrides = ROOT / "conversion" / "curated" / "datapack-overrides"
+    for rel in MANDATORY_OVERRIDES:
+        dst = out / rel
+        dst.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(overrides / rel, dst)
+
+
 def main():
     src = SRC_DEFAULT
     if len(sys.argv) > 1:
@@ -498,6 +512,7 @@ def main():
     scrub_tags(OUT / "data", allowed)
     drop_foreign_worldgen(OUT / "data", allowed)
     flatten_uniform_providers(OUT / "data")
+    copy_mandatory_overrides(OUT)
     print(
         f"scanned {total} files | written {report['files']} | "
         f"recipes migrated {report['recipe_fixed']} | "
