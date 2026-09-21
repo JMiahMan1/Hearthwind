@@ -64,7 +64,7 @@ Eight optional professions (Miner, Farmer, Fisher, Warrior, Smither, Brewer, Bui
 - Join and manage via `/job join <job>`, `/job leave`, `/job info`.
 - Earn XP by performing trade-specific tasks following the job ladder.
 - Crafting is gated by **skill** levels always; per-job recipe gating is opt-in (`jobCraftGating`, default off).
-- Respects Age technology gating: **Smither & Brewer unlock at Copper Age (Age 2)** - joining earlier fails, and their level-up bonus items are withheld until Age 2.
+- Respects Age technology gating: **Smither & Brewer unlock at Copper Age (Age 2)** - joining earlier fails, and their level-up bonus items are withheld until Age 2. Full quest/Age design: `docs/QUESTS_AND_AGES.md` (no quest mods by design; guide book + gates instead).
 
 ## Flora, Crops, Agriculture & Wildlife (Complete Aged Parity)
 
