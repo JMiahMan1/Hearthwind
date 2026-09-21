@@ -79,6 +79,11 @@ Eight optional professions (Miner, Farmer, Fisher, Warrior, Smither, Brewer, Bui
 - **Leaves & Early-Game Stick Foraging**:
   - Punching or right-clicking leaves with an empty hand forages sticks (60% chance with 1s cooldown).
   - Breaking leaves with bare hands or tools drops sticks reliably (50% drop rate).
+- **Passable Foliage (walk through leaves)**:
+  - Leaves have no collision: players, mobs and pathfinding treat every `#minecraft:leaves` block as open air, so you can walk, fall and jump straight through canopies.
+  - Pushing through leaves slows you slightly (90% speed each way by default), cushions long falls (no damage for the first 20 blocks, half damage after), and rustles leaf sounds as you move.
+  - **Leaf Walker** boot enchantment (enchanted-book + leaves shapeless recipe): wearers can stand on top of leaves again instead of sinking through.
+  - Tunables in `config/passablefoliage.json` (speed/fall-damage multipliers, player-only mode, head-hitter mode that blocks entry from below).
 - **Wildlife & Fauna Dynamics (`hearthwind-world`)**:
   - **Superb Steeds**: Multi-tier steed breeds, pack mules, draft horses, donkeys, and functional carts.
   - **Waterfowl**: Ducks and waterfowl inhabit rivers, swamps, and shorelines; can be fed seeds and kelp for feathers and breeding.

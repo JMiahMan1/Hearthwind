@@ -1,0 +1,23 @@
+{
+	"required": true,
+	"package": "snownee.passablefoliage.mixin",
+	"compatibilityLevel": "JAVA_25",
+	"mixins": [
+		"BlockBehaviourAccessor",
+		"BlockMixin",
+		"BlockStateCacheMixin",
+		"BlockStateMixin",
+		"FlowingFluidMixin",
+		"LivingEntityMixin",
+		"MultifaceBlockMixin",
+		"fabric.WalkNodeEvaluatorMixin"
+	],
+	"client": [
+		"EntityRendererMixin",
+		"LeavesBlockMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	},
+	"minVersion": "0.8"
+}

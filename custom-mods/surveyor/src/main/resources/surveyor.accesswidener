@@ -1,0 +1,20 @@
+accessWidener v2 official
+# 26.2 port of sisby-folk/surveyor (26.1 branch, v1.2.4) surveyor.accesswidener.
+# Yarn (named) -> Mojmap (official) translations verified with javap against
+# the 26.2 merged jar. Dropped upstream entries with no code usage:
+#  - PersistentStateManager.directory (unused)
+#  - ClientLoginNetworkHandler.serverInfo (unused)
+#  - PalettedContainer$Data record is widened as a class (call sites read
+#    the data.storage/data.palette record components directly)
+#  - AbstractBlock.getPickStack (covered by the AccessAbstractBlock invoker,
+#    retargeted to BlockBehaviour.getCloneItemStack)
+accessible class net/minecraft/world/level/chunk/PalettedContainer$Data
+accessible field net/minecraft/server/level/WorldGenRegion level Lnet/minecraft/server/level/ServerLevel;
+accessible field net/minecraft/world/level/levelgen/structure/pools/SinglePoolElement template Lcom/mojang/datafixers/util/Either;
+accessible field net/minecraft/world/level/levelgen/structure/pools/FeaturePoolElement feature Lnet/minecraft/core/Holder;
+accessible field net/minecraft/world/level/chunk/LevelChunkSection nonEmptyBlockCount S
+accessible method net/minecraft/nbt/ListTag <init> (Ljava/util/List;)V
+accessible field net/minecraft/world/level/levelgen/structure/pools/ListPoolElement elements Ljava/util/List;
+accessible field net/minecraft/world/level/levelgen/structure/PoolElementStructurePiece structureTemplateManager Lnet/minecraft/world/level/levelgen/structure/templatesystem/StructureTemplateManager;
+accessible field net/minecraft/world/level/chunk/PalettedContainer data Lnet/minecraft/world/level/chunk/PalettedContainer$Data;
+accessible field net/minecraft/world/level/saveddata/maps/MapItemSavedData unlimitedTracking Z

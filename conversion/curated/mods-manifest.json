@@ -849,7 +849,7 @@
    "slug": "exposure",
    "action": "keep",
    "cat": "flavor",
-   "note": "Photography; verify readiness"
+   "note": "Standalone 26.2 port in custom-mods/exposure (HanLax93 26.2 branch, Fabric-only, de-architectured)"
   },
   {
    "file": "antique-atlas",
@@ -1069,6 +1069,34 @@
    "action": "keep",
    "cat": "lib",
    "note": "Required by Terralith and Tectonic on 26.2"
+  },
+  {
+   "file": "ambientenvironment",
+   "slug": "ambient-environment",
+   "action": "keep",
+   "cat": "flavor",
+   "note": "Biome water fog/ambience; in Aged 3.1.2, missing from pack caused water-look drift. Upstream has 26.2 builds."
+  },
+  {
+   "file": "visuality",
+   "slug": "visuality",
+   "action": "keep",
+   "cat": "flavor",
+   "note": "Ambient particles (incl. water sparkles); in Aged 3.1.2. Upstream has 26.2 builds."
+  },
+  {
+   "file": "waterfall-particles",
+   "slug": "waterfall-particles",
+   "action": "keep",
+   "cat": "flavor",
+   "note": "Waterfall spray particles; complements water look. Upstream lists 26.2 in game versions."
+  },
+  {
+   "file": "passable-foliage",
+   "slug": "passable-foliage",
+   "action": "keep",
+   "cat": "flavor",
+   "note": "Walk-through leaves (Aged parity: PassableFoliage 8.2.1). Upstream max 26.1.2; needs 26.1->26.2 nudge fork (tiny collision-mixin mod)."
   }
  ],
  "client_optional_extra_note": "All 28 client-only visual/perf mods from 3.1.2 (sodium, iris, indium, DistantHorizons, EMF/ETF, firstperson, skinlayers, presence-footsteps, sound-physics, fancymenu stack, etc.) ship as an OPTIONAL companion download, not in the server index.",

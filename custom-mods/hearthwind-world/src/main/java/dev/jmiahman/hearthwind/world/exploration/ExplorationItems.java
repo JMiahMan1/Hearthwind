@@ -31,12 +31,15 @@ public final class ExplorationItems {
         registerAtlasItem("antiqueatlas", "antique_atlas");
         registerAtlasItem("antiqueatlas", "empty_antique_atlas");
 
-        // 2. Exposure Photography
-        registerCameraItem("exposure", "camera");
-        registerItem("exposure", "photograph");
-        registerItem("exposure", "black_and_white_film");
-        registerItem("exposure", "color_film");
-        registerItem("exposure", "album");
+        // 2. Exposure Photography — interim placeholders only when the real
+        // exposure port is absent; the real mod owns these IDs when present.
+        if (!net.fabricmc.loader.api.FabricLoader.getInstance().isModLoaded("exposure")) {
+            registerCameraItem("exposure", "camera");
+            registerItem("exposure", "photograph");
+            registerItem("exposure", "black_and_white_film");
+            registerItem("exposure", "color_film");
+            registerItem("exposure", "album");
+        }
 
         // 3. Inmis Backpacks
         registerItem("inmis", "baby_backpack");

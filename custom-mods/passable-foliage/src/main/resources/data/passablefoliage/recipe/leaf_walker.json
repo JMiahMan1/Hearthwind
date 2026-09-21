@@ -1,0 +1,24 @@
+{
+  "fabric:load_conditions": [
+    {
+      "condition": "fabric:not",
+      "value": {
+        "condition": "passablefoliage:always_leaf_walking"
+      }
+    }
+  ],
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "minecraft:enchanted_book",
+    "#minecraft:leaves"
+  ],
+  "result": {
+    "components": {
+      "minecraft:stored_enchantments": {
+        "passablefoliage:leaf_walker": 1
+      }
+    },
+    "id": "minecraft:enchanted_book"
+  }
+}

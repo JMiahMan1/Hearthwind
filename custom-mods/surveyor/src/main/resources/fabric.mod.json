@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 1,
+  "id": "surveyor",
+  "version": "${version}",
+  "name": "Surveyor Map Framework",
+  "description": "Unified API, networking, and save data for map mods. 26.2 port of sisby-folk/surveyor (branch 26.1, v1.2.4) for Hearthwind.",
+  "authors": [
+    "Sisby folk"
+  ],
+  "contributors": [
+    "Ampflower",
+    "falkreon",
+    "jaskarth",
+    "Garden System"
+  ],
+  "contact": {
+    "homepage": "https://modrinth.com/mod/surveyor",
+    "issues": "https://github.com/sisby-folk/surveyor/issues",
+    "sources": "https://github.com/sisby-folk/surveyor"
+  },
+  "license": "LGPL-3.0-or-later",
+  "icon": "assets/surveyor/icon.png",
+  "accessWidener": "surveyor.accesswidener",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "folk.sisby.surveyor.Surveyor"
+    ],
+    "client": [
+      "folk.sisby.surveyor.client.SurveyorClient"
+    ]
+  },
+  "mixins": [
+    "surveyor.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.16.0",
+    "fabric-api": "*",
+    "minecraft": ">=26.2"
+  }
+}

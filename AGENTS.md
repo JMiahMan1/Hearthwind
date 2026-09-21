@@ -287,8 +287,10 @@ Every task is judged against **realism → earned unlock → harder frontier →
     - Remaining vs original: crafting denial for gated items (smithing
       tiers), entity/husbandry gates, client HUD (companion mod).
 3. **Jobs** (`hearthwind-jobs`, jobs-addon parity) - 🟡 partial, 4/4 gametests green:
-   8 jobs (fisher/miner/farmer/warrior/smither/brewer/builder/lumberjack), per-player job attachment `hearthwind_jobs:state`, level math `pointsPerLevel` (default 100), XP hooks on block break / entity kill via `JobState.awardIfMatch`, **`/job join/leave/info` commands** shipped; config `config/hearthwind_jobs.json`.
-   Remaining: job-restricted recipe gating (reuses gate infra), bonus rewards - must respect **Age 2+** before smither/brewer unlocks.
+    8 jobs (fisher/miner/farmer/warrior/smither/brewer/builder/lumberjack), per-player job attachment `hearthwind_jobs:state`, level math `pointsPerLevel` (default 100), XP hooks on block break / entity kill via `JobState.awardIfMatch`, **`/job join/leave/info` commands** shipped; config `config/hearthwind_jobs.json`.
+    - **Aged parity**: job select via screen is SILENT — no "Joined the X job" / "Left..." / "Unemployed" chat messages in `JobState.join/leave` (Aged `JobsManager.employJob/quitJob` are silent; `addJobXP` only plays sound + packet + criteria). `awardIfMatch` level-up chat kept (not select-path).
+    Remaining: job-restricted recipe gating (reuses gate infra), bonus rewards - must respect **Age 2+** before smither/brewer unlocks.
+  - **DungeonZ** (`custom-mods/dungeonz`) - 🟡 partial, wired + tested: full port compiles, 23 server gametests green (admission, enter/leave, countdown, respawn, leave command, compass calibration), 11 client screenshots; bridges replace levelz/partyaddon/rpgdifficulty stubs. Remaining: jigsaw-generation path, criteria/loot-content asserts, `required_level` tuning per Age.
 4. **Primitive Ages 0→3** (`hearthwind-primitive`) - 🟡 partial: **faithful earlystage rock+flint port shipped** (surface `earlystage:rock` 4 variants / `earlystage:flint` 2 variants × facing, weighted_state_provider worldgen in Aged's biome tag, 1-hit mounds drop rock/flint, shovel right-click cycles variant, stonecutter rocks_from_stone + shaped cobblestone_from_rock, original earlystage MIT models/textures - they render vanilla stone); flint tools, ore pieces, steel ingot/nugget/block + assets shipped. **Removed the invented stone->rock/gravel loot hooks** (Aged keeps vanilla drops). Next: Age 1 Sieve (`earlystage:sieve_drops/aged_drops.json` as the ONE sieve, tanning 4 flesh→leather as datapack recipe, no duplicate Prospector Bench), knapping minigame on `crafting_rock`, beginner-death forgiveness (`beginnerDeathCount: 3`), full `tiered` affix system. Steel stays gated behind `mining 7`+`smithing 14` (Iron Age).
    - Client: **NutrientsScreen + inventory tab SHIPPED and live-verified** (apple tab top-left anchored to `leftPos/topPos`, N key, back arrow, E close; NutritionZ MIT crops for panel/bars/arrow).
 5. **World Ages 1→5** (`hearthwind-world`) - 🟡 partial: **seasons-lite shipped** (4 seasons over `daysPerSeason` 21, `Season.fromWorldTime()`, temp offsets + crop multipliers per season, `config/hearthwind_world.json`); next wiring crop growth + temperature hook, then **Age-gated Mechanical preview** (Create wind/water wheel after `smithing 18`/`builder 3`, full Create only at Mechanical Age). Water motion per `ideas/rivers-and-waves.md` (river currents, ocean swell, foam, tides -> later visible wave surfaces via optional client companion/shaders; Tectonic vs Terralith pick ONE).
@@ -311,10 +313,14 @@ Every task is judged against **realism → earned unlock → harder frontier →
 ## Scratch-file policy (MANDATORY)
 
 ALL generated files (logs, screenshots, test scripts, compiled helpers,
-classpath dumps, scenario JSONs, crash dumps) stay INSIDE the project in
-`.tmp/` (git-ignored). NEVER write scratch to `/tmp`, `/var/folders/...`,
-or any absolute path outside the repo - macOS temp dirs are invisible to
-code review, survive across sessions as litter, and get purged at random.
+classpath dumps, scenario JSONs, crash dumps, jar/zip extraction dirs,
+javap dumps) stay INSIDE the project in `.tmp/` (git-ignored). NEVER write
+scratch to `/tmp`, `/var/folders/...`, or any absolute path outside the
+repo - macOS temp dirs are invisible to code review, survive across
+sessions as litter, and get purged at random. BEFORE running any shell
+command, re-read it: if any path starts with `/tmp/`, `/var/folders/`, or
+`cd /tmp`, STOP and rewrite it under `./.tmp/`. This includes `unzip -d`,
+`mkdir`, output redirects (`> /tmp/...`), and `CGT_STAGE_DIR` overrides.
 
 ```
 .tmp/

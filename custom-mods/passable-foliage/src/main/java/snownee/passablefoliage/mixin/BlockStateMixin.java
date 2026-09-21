@@ -1,0 +1,160 @@
+package snownee.passablefoliage.mixin;
+
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+
+import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.InsideBlockEffectApplier;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockBehaviour.BlockStateBase;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.EntityCollisionContext;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.phys.shapes.VoxelShape;
+import snownee.passablefoliage.PassableFoliage;
+import snownee.passablefoliage.PassableFoliageCommonConfig;
+
+@Mixin(BlockStateBase.class)
+public class BlockStateMixin {
+
+	@Unique
+	private BlockState self() {
+		return (BlockState) (Object) this;
+	}
+
+	@Inject(
+			at = @At("HEAD"),
+			method = "getCollisionShape(Lnet/minecraft/world/level/BlockGetter;Lnet/minecraft/core/BlockPos;)Lnet/minecraft/world/phys/shapes/VoxelShape;",
+			cancellable = true)
+	private void pfoliage_getCollisionShape(BlockGetter worldIn, BlockPos pos, CallbackInfoReturnable<VoxelShape> ci) {
+		if (PassableFoliage.isPassable(self())) {
+			ci.setReturnValue(Shapes.empty());
+		}
+	}
+
+	@Inject(
+			at = @At("HEAD"),
+			method = "getCollisionShape(Lnet/minecraft/world/level/BlockGetter;Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/phys/shapes/CollisionContext;)Lnet/minecraft/world/phys/shapes/VoxelShape;",
+			cancellable = true)
+	private void pfoliage_getCollisionShape(
+			BlockGetter worldIn,
+			BlockPos pos,
+			CollisionContext context,
+			CallbackInfoReturnable<VoxelShape> ci) {
+		if (PassableFoliage.isPassable(self())) {
+			Entity entity = null;
+			if (context instanceof EntityCollisionContext) {
+				entity = ((EntityCollisionContext) context).getEntity();
+			}
+			if (PassableFoliageCommonConfig.playerOnly && !(entity instanceof Player)) {
+				return;
+			}
+			if (entity instanceof LivingEntity livingEntity) {
+				if (PassableFoliageCommonConfig.headHitter && entity.getEyeY() < pos.getY() && !livingEntity.isFallFlying() &&
+						!(entity instanceof Player player && player.getAbilities().flying) && !PassableFoliage.isPartiallyInFoliage(
+						livingEntity)) {
+					return;
+				}
+				if (PassableFoliage.hasLeafWalker(livingEntity)) {
+					if (context.isDescending() || entity.blockPosition().getY() <= pos.getY()) {
+						ci.setReturnValue(Shapes.empty());
+					}
+					return;
+				}
+			}
+			ci.setReturnValue(Shapes.empty());
+		}
+	}
+
+	@WrapMethod(method = "getBlockSupportShape")
+	private VoxelShape pfoliage_getBlockSupportShape(BlockGetter blockGetter, BlockPos blockPos, Operation<VoxelShape> original) {
+		if (PassableFoliage.isPassable(self())) {
+			PassableFoliage.setSuppressPassableCheck(true);
+			VoxelShape shape = original.call(blockGetter, blockPos);
+			PassableFoliage.setSuppressPassableCheck(false);
+			return shape;
+		}
+		return original.call(blockGetter, blockPos);
+	}
+
+	@Inject(at = @At("HEAD"), method = "getVisualShape", cancellable = true)
+	private void pfoliage_getVisualShape(
+			BlockGetter p_60772_,
+			BlockPos p_60773_,
+			CollisionContext p_60774_,
+			CallbackInfoReturnable<VoxelShape> ci) {
+		if (PassableFoliage.isPassable(self())) {
+			ci.setReturnValue(Shapes.empty());
+		}
+	}
+
+	// 26.2 note: upstream gated this on `cache == null`, but Cache went
+	// private in 26.2 (unnameable at compile time; the widener only helps at
+	// runtime). Returning false unconditionally when passable is the same end
+	// state the Cache mixin produces, and additionally self-heals caches
+	// built before tags load instead of serving stale `true`.
+	@Inject(at = @At("HEAD"), method = "isCollisionShapeFullBlock", cancellable = true)
+	private void pfoliage_isCollisionShapeFullBlock(BlockGetter blockReaderIn, BlockPos blockPosIn, CallbackInfoReturnable<Boolean> ci) {
+		if (PassableFoliage.isPassable(self())) {
+			ci.setReturnValue(false);
+		}
+	}
+
+	@Inject(at = @At("HEAD"), method = "entityInside")
+	private void pfoliage_entityInside(
+			Level level,
+			BlockPos pos,
+			Entity entity,
+			InsideBlockEffectApplier effectApplier,
+			boolean isPrecise,
+			CallbackInfo ci) {
+		if (PassableFoliage.isPassable(self())) {
+			PassableFoliage.onEntityCollidedWithLeaves(level, pos, self(), entity, effectApplier, isPrecise);
+		}
+	}
+
+	@Inject(at = @At("HEAD"), method = "getShadeBrightness", cancellable = true)
+	private void pfoliage_getShadeBrightness(BlockGetter reader, BlockPos pos, CallbackInfoReturnable<Float> ci) {
+		if (PassableFoliage.isPassable(self())) {
+			PassableFoliage.setSuppressPassableCheck(true);
+			boolean full = ((BlockBehaviourAccessor) self().getBlock()).pfoliage$invokeIsCollisionShapeFullBlock(
+					self(), reader, pos);
+			PassableFoliage.setSuppressPassableCheck(false);
+			ci.setReturnValue(full ? 0.2F : 1.0F);
+		}
+	}
+
+	@Inject(at = @At("HEAD"), method = "isSuffocating", cancellable = true)
+	private void pfoliage_isSuffocating(BlockGetter level, BlockPos pos, CallbackInfoReturnable<Boolean> ci) {
+		if (PassableFoliage.isPassable(self())) {
+			ci.setReturnValue(false);
+		}
+	}
+
+	@Inject(at = @At("HEAD"), method = "isViewBlocking", cancellable = true)
+	private void pfoliage_isViewBlocking(BlockGetter level, BlockPos pos, CallbackInfoReturnable<Boolean> ci) {
+		if (PassableFoliageCommonConfig.alwaysNotViewBlocking && PassableFoliage.isPassable(self())) {
+			ci.setReturnValue(false);
+		}
+	}
+
+	@Inject(at = @At("HEAD"), method = "canOcclude", cancellable = true)
+	private void pfoliage_canOcclude(CallbackInfoReturnable<Boolean> cir) {
+		if (PassableFoliage.isPassable(self())) {
+			cir.setReturnValue(false);
+		}
+	}
+}
