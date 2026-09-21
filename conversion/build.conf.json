@@ -18,7 +18,7 @@
   "targets": {
     "minecraft": "26.2",
     "loader": "fabric-loader",
-    "loader_version": "0.19.3",
+    "loader_version": "0.19.5",
     "notes": "Set minecraft to any release or snapshot id, e.g. 26.3-snapshot-9. resolve_deps.py reports per-mod readiness for that exact id."
   },
   "datapack": {

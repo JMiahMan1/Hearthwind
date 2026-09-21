@@ -54,6 +54,10 @@ for d in "$REPO"/custom-mods/hearthwind-*/build/libs \
 done
 
 # 3. pack mod sets + tuning corpus + server base mods
+# build.conf.json is the version source of truth run_gametests.sh reads.
+mkdir -p "$R/conversion"
+cp "$REPO/conversion/build.conf.json" "$R/conversion/build.conf.json"
+rsync -a --delete "$REPO/conversion/build/dist/server/mods/" "$R/conversion/build/dist/server/mods/"
 rsync -a --delete "$REPO/conversion/build/dist/client/mods/" "$R/conversion/build/dist/client/mods/"
 rsync -a --delete "$REPO/conversion/datapacks/hearthwind/" "$R/conversion/datapacks/hearthwind/"
 rsync -a --delete "$REPO/dev-server/mods/" "$R/dev-server/mods/"

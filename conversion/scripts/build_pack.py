@@ -230,7 +230,9 @@ def main():
         # In-house 26.2 ports of third-party mods (letsdo-* ports, villagesandpillages)
         for mod in ("villagesandpillages", "letsdo-vinery", "letsdo-meadow", "letsdo-bakery",
                     "letsdo-candlelight", "letsdo-brewery", "letsdo-herbalbrews",
-                    "letsdo-farm-and-charm"):
+                    "letsdo-farm-and-charm", "letsdo-nethervinery",
+                    "chipped", "dungeonz", "athena", "exposure",
+                    "passable-foliage"):
             custom_jars += [
                 j
                 for j in (ROOT / "custom-mods" / mod / "build" / "libs").glob("*26.2*.jar")

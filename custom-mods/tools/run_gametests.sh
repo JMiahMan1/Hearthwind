@@ -14,10 +14,11 @@ export PATH="$JAVA_HOME/bin:$PATH"
 # Requires: java (25) on PATH. Server files are cached in .gametest-server/
 set -euo pipefail
 
-MC=26.2
-LOADER=0.19.3
-FABRIC_API=0.158.0+26.2
 DIR="$(cd "$(dirname "$0")" && pwd)"
+CONF="$DIR/../../conversion/build.conf.json"
+MC=$(python3 -c "import json;print(json.load(open('$CONF'))['targets']['minecraft'])")
+LOADER=$(python3 -c "import json;print(json.load(open('$CONF'))['targets']['loader_version'])")
+FABRIC_API=0.158.0+26.2
 SRV="$DIR/../.gametest-server"
 HEAP="${GAMETEST_HEAP:-768m}"
 KEEP=0
@@ -45,10 +46,14 @@ python3 "$DIR/lint_and_validate.py"
 
 CACHE="$DIR/../.gametest-cache"
 mkdir -p "$CACHE" "$SRV"
-if [ ! -f "$CACHE/fabric-server.jar" ]; then
-  echo "== fetching fabric server launcher =="
+# Version-stamp the cached launcher: a stale cache from an older loader
+# survives across runs (and inside the shared container volume) and would
+# boot the wrong loader forever.
+if [ ! -f "$CACHE/fabric-server.jar" ] || [ "$(cat "$CACHE/loader.version" 2>/dev/null)" != "$MC/$LOADER" ]; then
+  echo "== fetching fabric server launcher ($MC/$LOADER) =="
   curl -sL -o "$CACHE/fabric-server.jar" \
     "https://meta.fabricmc.net/v2/versions/loader/$MC/$LOADER/1.1.0/server/jar"
+  echo "$MC/$LOADER" > "$CACHE/loader.version"
 fi
 cp "$CACHE/fabric-server.jar" "$SRV/fabric-server.jar"
 
@@ -61,9 +66,12 @@ fi
 
 echo "== installing fresh mod jars =="
 rm -rf "$SRV/mods" && mkdir -p "$SRV/mods"
-# Copy all resolved server dependencies and vendored jars
+# Copy all resolved server dependencies and vendored jars. The materialized
+# pack dist (built by build_pack.py --server-dir) supplies third-party mods
+# such as fabric-api, which are absent from dev-server/ on clean checkouts.
 cp "$DIR/../../dev-server/mods/"*.jar "$SRV/mods/" 2>/dev/null || true
 cp "$DIR/../../conversion/vendored/"*.jar "$SRV/mods/" 2>/dev/null || true
+cp "$DIR/../../conversion/build/dist/server/mods/"*.jar "$SRV/mods/" 2>/dev/null || true
 # Ensure fresh custom builds overwrite any stale jars (letsdo jars included:
 # their gametest entrypoints run in the same harness invocation; skip dirs
 # not wired in settings.gradle yet)

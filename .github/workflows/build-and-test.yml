@@ -26,6 +26,14 @@ jobs:
         working-directory: custom-mods
         run: ./gradlew build --no-daemon --max-workers=2
 
+      # Materialize the pack dist so the gametest server gets the same
+      # third-party mod set (fabric-api et al.) that local runs use.
+      # dev-server/ is git-ignored and absent on clean checkouts.
+      - name: Resolve deps + materialize server dir
+        run: |
+          python3 conversion/scripts/resolve_deps.py --allow-missing
+          python3 conversion/scripts/build_pack.py --server-dir
+
       - name: Headless gametests
         working-directory: custom-mods
         run: bash tools/run_gametests.sh --keep-server
@@ -58,6 +66,12 @@ jobs:
         with:
           distribution: temurin
           java-version: '26'
+          cache: gradle
+      # In-house mod jars must exist before materializing: build_pack.py
+      # globs them from custom-mods/*/build/libs (absent on clean checkouts).
+      - name: Build all modules
+        working-directory: custom-mods
+        run: ./gradlew build --no-daemon --max-workers=2
       - name: Resolve deps + materialize server dir
         run: |
           python3 conversion/scripts/resolve_deps.py --allow-missing
