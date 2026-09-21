@@ -16,9 +16,9 @@ subprojects {
 		minecraft "com.mojang:minecraft:${project.minecraft_version}"
 		implementation "net.fabricmc:fabric-loader:${project.loader_version}"
 		implementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
-		implementation files("${rootDir}/../dev-server/mods/architectury-fabric-21.0.7.jar")
-		implementation files("${rootDir}/../dev-server/mods/cloth-config-26.2.155.jar")
-		implementation files("${rootDir}/../dev-server/mods/modmenu-20.0.1.jar")
+		implementation files("${rootDir}/../conversion/vendored/compile-libs/architectury-fabric-21.0.7.jar")
+		implementation files("${rootDir}/../conversion/vendored/compile-libs/cloth-config-26.2.155.jar")
+		implementation files("${rootDir}/../conversion/vendored/compile-libs/modmenu-20.0.1.jar")
 	}
 
 	java {
@@ -97,9 +97,9 @@ subprojects {
 	}
 	if (project.name == 'letsdo-farm-and-charm' || project.name == 'letsdo-bakery' || project.name == 'letsdo-vinery' || project.name == 'letsdo-brewery' || project.name == 'letsdo-candlelight' || project.name == 'letsdo-herbalbrews' || project.name == 'letsdo-meadow' || project.name == 'letsdo-nethervinery') {
 		dependencies {
-			implementation files("${rootDir}/../dev-server/mods/rei-26.2.820-fabric.jar")
-			implementation files("${rootDir}/../dev-server/mods/cloth-basic-math-0.6.1.jar")
-			implementation files("${rootDir}/../dev-server/mods/modmenu-20.0.1.jar")
+			implementation files("${rootDir}/../conversion/vendored/compile-libs/rei-26.2.820-fabric.jar")
+			implementation files("${rootDir}/../conversion/vendored/compile-libs/cloth-basic-math-0.6.1.jar")
+			implementation files("${rootDir}/../conversion/vendored/compile-libs/modmenu-20.0.1.jar")
 		}
 	}
 	if (project.name.startsWith('letsdo-')) {
@@ -114,7 +114,7 @@ subprojects {
 			modCompileClasspath "net.fabricmc.fabric.api:fabric-resource-loader-v1:2.0.13+9edec1269e"
 			modCompileClasspath "net.fabricmc.fabric.api:fabric-lifecycle-events-v1:4.1.3+4575b05f9e"
 			modCompileClasspath "net.fabricmc.fabric.api:fabric-rendering-v1:25.3.2+515ac5339e"
-			modCompileClasspath files("${rootDir}/../dev-server/mods/modmenu-20.0.1.jar")
+			modCompileClasspath files("${rootDir}/../conversion/vendored/compile-libs/modmenu-20.0.1.jar")
 		}
 	}
 	if (project.name in ['athena', 'chipped']) {
@@ -122,10 +122,10 @@ subprojects {
 			modCompileClasspath "dev.architectury:architectury:21.0.7"
 			modCompileClasspath "dev.architectury:architectury-fabric:21.0.7"
 			modCompileClasspath "net.fabricmc.fabric.api:fabric-gametest-api-v1:4.0.21+4a7fa0819e"
-			modCompileClasspath files("${rootDir}/../dev-server/mods/ResourcefulLib-5.0.3.jar")
+			modCompileClasspath files("${rootDir}/../conversion/vendored/compile-libs/ResourcefulLib-5.0.3.jar")
 			modCompileClasspath files("${rootDir}/../conversion/vendored/resourcefullib-bytecodecs/bytecodecs-1.1.3.jar")
 			modCompileClasspath files("${rootDir}/../conversion/vendored/resourcefullib-bytecodecs/yabn-1.0.3.jar")
-			implementation files("${rootDir}/../dev-server/mods/ResourcefulLib-5.0.3.jar")
+			implementation files("${rootDir}/../conversion/vendored/compile-libs/ResourcefulLib-5.0.3.jar")
 			implementation files("${rootDir}/../conversion/vendored/resourcefullib-bytecodecs/bytecodecs-1.1.3.jar")
 		}
 	}
@@ -135,6 +135,59 @@ subprojects {
 			modCompileClasspath "net.fabricmc.fabric.api:fabric-recipe-api-v1:9.0.20+11e1c9a39e"
 			// workbench 3D preview PIP renderer (PictureInPictureRendererRegistry)
 			modCompileClasspath "net.fabricmc.fabric.api:fabric-rendering-v1:25.3.2+515ac5339e"
+		}
+	}
+	if (project.name == 'surveyor') {
+		loom {
+			accessWidenerPath = file("src/main/resources/surveyor.accesswidener")
+		}
+		dependencies {
+			// kaleido-config is a plain library (no fabric.mod.json); upstream
+			// JiJs it, so do the same via loom's include (no extra pack mod).
+			implementation files("${rootDir}/../conversion/vendored/kaleido-config-0.3.3+1.3.2.jar")
+			include files("${rootDir}/../conversion/vendored/kaleido-config-0.3.3+1.3.2.jar")
+			modCompileClasspath "net.fabricmc.fabric.api:fabric-command-api-v2:3.1.0+00cb03469e"
+			modCompileClasspath "net.fabricmc.fabric.api:fabric-lifecycle-events-v1:4.1.3+4575b05f9e"
+			modCompileClasspath "net.fabricmc.fabric.api:fabric-networking-api-v1:6.3.3+72073ef09e"
+			modCompileClasspath "net.fabricmc.fabric.api:fabric-gametest-api-v1:4.0.21+4a7fa0819e"
+		}
+	}
+	if (project.name == 'exposure') {
+		// HanLax93 26.2 branch re-homed as a Fabric-only single module
+		// (architectury @ExpectPlatform dispatch replaced with direct calls
+		// to the fabric *Impl classes; easy-anvils/realcamera compat dropped,
+		// neither mod is in the pack).
+		loom {
+			accessWidenerPath = file("src/main/resources/exposure.accesswidener")
+		}
+		repositories {
+			maven { url = 'https://maven.blamejared.com/' } // JEI
+			maven { url = 'https://cursemaven.com' } // Jade
+		}
+		dependencies {
+			// Config system (jar already ships in dev-server/mods; bundles
+			// the net.neoforged config classes exposure imports).
+			implementation files("${rootDir}/../conversion/vendored/compile-libs/ForgeConfigAPIPort-v26.2.1-mc26.2.x-Fabric.jar")
+			// JEI + Jade integrations are compileOnly: both entrypoints load
+			// only when the mod is present, and neither ships in the pack.
+			compileOnly "mezz.jei:jei-26.2-common-api:30.16.0.124"
+			compileOnly "mezz.jei:jei-26.2-fabric-api:30.16.0.124"
+			compileOnly "curse.maven:jade-324717:8529944"
+			// fabric-api aggregator jar is thin at compile time; pin every
+			// module exposure touches (versions from fabric-api 0.158.0+26.2 POM).
+			modCompileClasspath "net.fabricmc.fabric.api:fabric-api-base:2.0.4+ece063239e"
+			modCompileClasspath "net.fabricmc.fabric.api:fabric-command-api-v2:3.1.0+00cb03469e"
+			modCompileClasspath "net.fabricmc.fabric.api:fabric-item-api-v1:14.5.0+c68f6cbe9e"
+			modCompileClasspath "net.fabricmc.fabric.api:fabric-key-mapping-api-v1:2.0.5+e2bdee789e"
+			modCompileClasspath "net.fabricmc.fabric.api:fabric-lifecycle-events-v1:4.1.3+4575b05f9e"
+			modCompileClasspath "net.fabricmc.fabric.api:fabric-loot-api-v3:3.0.17+06488ac19e"
+			modCompileClasspath "net.fabricmc.fabric.api:fabric-menu-api-v1:2.0.16+086d547a9e"
+			modCompileClasspath "net.fabricmc.fabric.api:fabric-model-loading-api-v1:8.0.16+c80601bb9e"
+			modCompileClasspath "net.fabricmc.fabric.api:fabric-networking-api-v1:6.3.3+72073ef09e"
+			modCompileClasspath "net.fabricmc.fabric.api:fabric-registry-sync-v0:7.1.0+c7bd5b8e9e"
+			modCompileClasspath "net.fabricmc.fabric.api:fabric-rendering-v1:25.3.2+515ac5339e"
+			modCompileClasspath "net.fabricmc.fabric.api:fabric-resource-loader-v1:2.0.13+9edec1269e"
+			modCompileClasspath "net.fabricmc.fabric.api:fabric-screen-api-v1:5.2.0+58e078ad9e"
 		}
 	}
 	if (project.name == 'dungeonz') {
@@ -169,13 +222,23 @@ subprojects {
 				modCompileClasspath "net.fabricmc.fabric.api:fabric-client-gametest-api-v1:6.0.0+515ac5339e"
 			}
 		}
-		if (name == 'hearthwind-survival' || name == 'hearthwind-skills' || name == 'hearthwind-jobs' || name == 'hearthwind-world' || name == 'dungeonz' || name.startsWith('letsdo-')) {
+		if (name == 'hearthwind-survival' || name == 'hearthwind-skills' || name == 'hearthwind-jobs' || name == 'hearthwind-world' || name == 'dungeonz' || name == 'passable-foliage' || name.startsWith('letsdo-')) {
 			dependencies {
 				// fabric-api aggregator POM hides module classes at compile
 				// time; pin gametest API for @GameTest compilation.
 				// loom 1.17 has no modImplementation(); modCompileClasspath
 				// gives compile + runtime presence.
 				modCompileClasspath "net.fabricmc.fabric.api:fabric-gametest-api-v1:4.0.21+4a7fa0819e"
+			}
+		}
+		if (name == 'passable-foliage') {
+			dependencies {
+				// init uses CommonLifecycleEvents.TAGS_LOADED + the
+				// always_leaf_walking ResourceCondition; both live in
+				// modules the thin aggregator jar hides at compile time.
+				// (versions pair with fabric-api 0.158.0+26.2.)
+				modCompileClasspath "net.fabricmc.fabric.api:fabric-lifecycle-events-v1:4.1.3+4575b05f9e"
+				modCompileClasspath "net.fabricmc.fabric.api:fabric-resource-conditions-api-v1:6.1.0+10e9a28b9e"
 			}
 		}
 		if (name == 'hearthwind-primitive') {
