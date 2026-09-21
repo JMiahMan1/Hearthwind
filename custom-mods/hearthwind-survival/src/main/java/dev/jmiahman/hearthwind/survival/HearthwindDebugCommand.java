@@ -14,9 +14,43 @@ public final class HearthwindDebugCommand {
     private HearthwindDebugCommand() {}
 
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
-        dispatcher.register(Commands.literal("hearthwind")
-                .requires(src -> net.minecraft.commands.Commands.LEVEL_MODERATORS.check(src.permissions()))
-                .then(Commands.literal("hydration")
+		dispatcher.register(Commands.literal("hearthwind")
+				.requires(src -> net.minecraft.commands.Commands.LEVEL_MODERATORS.check(src.permissions()))
+				.then(Commands.literal("nutrition")
+						.then(Commands.literal("get")
+								.executes(ctx -> {
+									HearthwindSurvivalDiet.debugStatus(ctx.getSource().getPlayerOrException());
+									return 1;
+								}))
+						.then(Commands.literal("set")
+								.then(Commands.argument("nutrient", com.mojang.brigadier.arguments.StringArgumentType.word())
+										.suggests((c, b) -> {
+											for (String name : HearthwindSurvivalDiet.NUTRIENT_NAMES) {
+												b.suggest(name);
+											}
+											return b.buildFuture();
+										})
+										.then(Commands.argument("value", com.mojang.brigadier.arguments.IntegerArgumentType.integer(0, 3000))
+												.executes(ctx -> {
+													ServerPlayer p = ctx.getSource().getPlayerOrException();
+													String nutrient = com.mojang.brigadier.arguments.StringArgumentType.getString(ctx, "nutrient");
+													int index = -1;
+													for (int i = 0; i < HearthwindSurvivalDiet.NUTRIENT_NAMES.length; i++) {
+														if (HearthwindSurvivalDiet.NUTRIENT_NAMES[i].equalsIgnoreCase(nutrient)) {
+															index = i;
+														}
+													}
+													if (index < 0) {
+														ctx.getSource().sendFailure(net.minecraft.network.chat.Component.literal(
+																"Unknown nutrient: " + String.join("/", HearthwindSurvivalDiet.NUTRIENT_NAMES)));
+														return 0;
+													}
+													int value = com.mojang.brigadier.arguments.IntegerArgumentType.getInteger(ctx, "value");
+													HearthwindSurvivalDiet.setLevel(p, index, value);
+													HearthwindSurvivalDiet.debugStatus(p);
+													return 1;
+												})))))
+				.then(Commands.literal("hydration")
                         .then(Commands.literal("set")
                                 .then(Commands.argument("value", DoubleArgumentType.doubleArg(0, 20))
                                         .executes(ctx -> {
@@ -37,22 +71,54 @@ public final class HearthwindDebugCommand {
                                 })))
                 .then(Commands.literal("temperature")
                         .then(Commands.literal("set")
-                                .then(Commands.argument("value", DoubleArgumentType.doubleArg(-10, 10))
+                                .then(Commands.argument("value", com.mojang.brigadier.arguments.IntegerArgumentType.integer(-2400, 2400))
                                         .executes(ctx -> {
                                             ServerPlayer p = ctx.getSource().getPlayerOrException();
-                                            double v = DoubleArgumentType.getDouble(ctx, "value");
-                                            p.setAttached(HearthwindSurvivalTemperature.TEMPERATURE, v);
+                                            int v = com.mojang.brigadier.arguments.IntegerArgumentType.getInteger(ctx, "value");
+                                            HearthwindSurvivalTemperature.setBody(p, v);
                                             ctx.getSource().sendSuccess(() -> net.minecraft.network.chat.Component.literal(
-                                                    "Set temperature to " + v), false);
+                                                    "Set body temperature to " + v), false);
                                             return 1;
                                         })))
+                        .then(Commands.literal("wetness")
+                                .then(Commands.argument("value", com.mojang.brigadier.arguments.IntegerArgumentType.integer(0, 200))
+                                        .executes(ctx -> {
+                                            ServerPlayer p = ctx.getSource().getPlayerOrException();
+                                            int v = com.mojang.brigadier.arguments.IntegerArgumentType.getInteger(ctx, "value");
+                                            HearthwindSurvivalTemperature.setWetness(p, v);
+                                            ctx.getSource().sendSuccess(() -> net.minecraft.network.chat.Component.literal(
+                                                    "Set wetness to " + v), false);
+                                            return 1;
+                                        })))
+                        .then(Commands.literal("affection")
+                                .then(Commands.argument("targets", com.mojang.brigadier.arguments.StringArgumentType.word())
+                                        .suggests((c, b) -> {
+                                            b.suggest("hot");
+                                            b.suggest("cold");
+                                            return b.buildFuture();
+                                        })
+                                        .then(Commands.argument("value", com.mojang.brigadier.arguments.BoolArgumentType.bool())
+                                                .executes(ctx -> {
+                                                    ServerPlayer p = ctx.getSource().getPlayerOrException();
+                                                    String target = com.mojang.brigadier.arguments.StringArgumentType.getString(ctx, "targets");
+                                                    boolean value = com.mojang.brigadier.arguments.BoolArgumentType.getBool(ctx, "value");
+                                                    HearthwindSurvivalTemperature.State s = HearthwindSurvivalTemperature.getState(p);
+                                                    boolean hot = target.equals("hot") ? value : s.hotAffected();
+                                                    boolean cold = target.equals("cold") ? value : s.coldAffected();
+                                                    HearthwindSurvivalTemperature.setEnvironmentAffection(p, hot, cold);
+                                                    ctx.getSource().sendSuccess(() -> net.minecraft.network.chat.Component.literal(
+                                                            "Set " + target + " affection to " + value), false);
+                                                    return 1;
+                                                }))))
                         .then(Commands.literal("get")
                                 .executes(ctx -> {
                                     ServerPlayer p = ctx.getSource().getPlayerOrException();
-                                    double v = HearthwindSurvivalTemperature.get(p);
-                                    double target = HearthwindSurvivalTemperature.targetFor(p);
+                                    HearthwindSurvivalTemperature.State s = HearthwindSurvivalTemperature.getState(p);
                                     ctx.getSource().sendSuccess(() -> net.minecraft.network.chat.Component.literal(
-                                            "Temp: " + String.format("%.1f", v) + " target " + String.format("%.1f", target)), false);
+                                            "Body: " + s.body() + " wetness: " + s.wetness()
+                                                    + " thermometer: " + s.thermometer()
+                                                    + " coldProt: " + s.coldProtection()
+                                                    + " heatProt: " + s.heatProtection()), false);
                                     return 1;
                                 })))
                 .then(Commands.literal("test")

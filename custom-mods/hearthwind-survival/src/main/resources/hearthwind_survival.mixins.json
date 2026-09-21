@@ -3,7 +3,9 @@
 	"package": "dev.jmiahman.hearthwind.survival.mixin",
 	"compatibilityLevel": "JAVA_25",
 	"mixins": [
-		"ConsumableConsumeMixin"
+		"AnvilMenuTemperatureMixin",
+		"ConsumableConsumeMixin",
+		"FoodDataTickMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

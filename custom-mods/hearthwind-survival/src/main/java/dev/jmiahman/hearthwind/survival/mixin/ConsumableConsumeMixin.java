@@ -10,9 +10,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import dev.jmiahman.hearthwind.survival.DietGates;
 import dev.jmiahman.hearthwind.survival.HearthwindSurvivalDiet;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 
 @Mixin(Consumable.class)
@@ -32,9 +30,6 @@ public abstract class ConsumableConsumeMixin {
                     || stack.is(dev.jmiahman.hearthwind.survival.FlaskItems.NETHERITE_LEATHER_FLASK)) {
                 cir.setReturnValue(dev.jmiahman.hearthwind.survival.FlaskItems.onFlaskConsumed(player, stack));
                 return;
-            }
-            if (!DietGates.allowed(player, stack)) {
-                cir.setReturnValue(stack);
             }
         }
     }

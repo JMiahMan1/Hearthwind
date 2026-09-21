@@ -7,7 +7,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.fabricmc.fabric.api.event.player.UseItemCallback;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -28,11 +27,13 @@ import net.minecraft.world.phys.HitResult;
 
 /**
  * Bare-hand drinking (Aged / Dehydration parity):
- * Crouch (sneak) + empty main hand + right-click looking at water (or while in water).
- * Instantly takes a sip with a short cooldown, restoring hydration and playing drink audio.
+ * Sneak + empty main hand + hold right-click looking at still water.
+ * ~21 use-events (~4s) with a drink sound every 3rd; completion restores
+ * hydration, may inflict thirst (halved in rivers), and consumes a still
+ * source block. Audio-only feedback, no chat messages.
  */
 public final class BareHandDrinkHandler {
-    private static final Map<UUID, Long> lastDrinkTime = new ConcurrentHashMap<>();
+    private static final Map<UUID, Integer> drinkTime = new ConcurrentHashMap<>();
 
     private BareHandDrinkHandler() {}
 
@@ -51,7 +52,7 @@ public final class BareHandDrinkHandler {
     }
 
     public static InteractionResult trySip(Player player, Level level) {
-        if (!player.getMainHandItem().isEmpty() || player.isSpectator()) {
+        if (!player.getMainHandItem().isEmpty() || player.isSpectator() || !player.isShiftKeyDown()) {
             return InteractionResult.PASS;
         }
 
@@ -64,15 +65,26 @@ public final class BareHandDrinkHandler {
             return InteractionResult.PASS;
         }
 
-        long now = level.getGameTime();
-        Long last = lastDrinkTime.get(player.getUUID());
-        if (last != null && now - last < 15) { // 15 tick (~0.75s) cooldown
-            return InteractionResult.SUCCESS;
+        HearthwindSurvivalConfig.BareHand cfg = HearthwindSurvivalConfig.get().bareHand;
+        FluidState fluid = level.getFluidState(water);
+        boolean still = fluid.isSource();
+        if (!still && !cfg.allowNonFlowingWaterSip) {
+            return InteractionResult.PASS;
         }
-        lastDrinkTime.put(player.getUUID(), now);
 
         if (player instanceof ServerPlayer sp && level instanceof ServerLevel server) {
-            completeSip(sp, server, water);
+            int time = drinkTime.getOrDefault(player.getUUID(), 0);
+            if (time % 3 == 0) {
+                level.playSound(null, sp.getX(), sp.getY(), sp.getZ(),
+                        SoundEvents.GENERIC_DRINK.value(), SoundSource.PLAYERS, 0.5f,
+                        0.9f + sp.getRandom().nextFloat() * 0.2f);
+            }
+            if (time > 20) {
+                drinkTime.put(player.getUUID(), 0);
+                completeSip(sp, server, water, still);
+            } else {
+                drinkTime.put(player.getUUID(), time + 1);
+            }
         }
 
         player.swing(InteractionHand.MAIN_HAND, true);
@@ -117,12 +129,17 @@ public final class BareHandDrinkHandler {
         return null;
     }
 
-    private static void completeSip(ServerPlayer sp, ServerLevel level, BlockPos pos) {
+    private static void completeSip(ServerPlayer sp, ServerLevel level, BlockPos pos, boolean still) {
         HearthwindSurvivalConfig.BareHand cfg = HearthwindSurvivalConfig.get().bareHand;
         HearthwindSurvivalThirst.addHydration(sp, cfg.sipQuench > 0 ? cfg.sipQuench : 1.0);
-        
+        // Drink hook parity: the hand is empty by rule, so this is a no-op
+        // for unlisted stacks but keeps the same code path as flask drinks.
+        HearthwindSurvivalDiet.onDrink(sp, sp.getMainHandItem());
+
         float chance = (float) cfg.sipThirstChance;
-        if (level.getBiome(pos).is(net.minecraft.tags.BiomeTags.IS_RIVER)) {
+        if (level.getFluidState(pos).is(PurifiedWater.PURIFIED_TAG)) {
+            chance = 0f;
+        } else if (level.getBiome(pos).is(net.minecraft.tags.BiomeTags.IS_RIVER)) {
             chance = chance / 2f;
         }
         if (chance > 0f && sp.getRandom().nextFloat() <= chance) {
@@ -130,10 +147,18 @@ public final class BareHandDrinkHandler {
                     ThirstMobEffect.HOLDER, cfg.sipThirstDuration, 1));
         }
 
+        if (cfg.consumeStillSource && still) {
+            BlockState state = level.getBlockState(pos);
+            if (state.hasProperty(BlockStateProperties.WATERLOGGED) && state.getValue(BlockStateProperties.WATERLOGGED)) {
+                level.setBlock(pos, state.setValue(BlockStateProperties.WATERLOGGED, false), 3);
+            } else if (level.getBlockState(pos).is(Blocks.WATER)) {
+                level.setBlock(pos, Blocks.AIR.defaultBlockState(), 3);
+            }
+        }
+
         level.playSound(null, sp.getX(), sp.getY(), sp.getZ(),
                 SoundEvents.GENERIC_DRINK.value(), SoundSource.PLAYERS, 0.9f,
                 0.9f + sp.getRandom().nextFloat() * 0.2f);
-        sp.sendOverlayMessage(Component.literal("You cup your hands and drink from the water"));
     }
 
     /** Kept for cauldron boil checks shared with flask filling. */

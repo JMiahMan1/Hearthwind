@@ -3,13 +3,11 @@ package dev.jmiahman.hearthwind.survival;
 import java.util.Map;
 import java.util.function.Consumer;
 
-import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
@@ -50,12 +48,15 @@ public final class EnvironmentzItems {
     private static final ArmorMaterial WOLF = leatherLike(WOLF_REPAIR, "wolf");
     private static final ArmorMaterial WANDERER = leatherLike(WANDERER_REPAIR, "wanderer");
 
+    /** Reference ItemInit.COOLDING_HEATING_VALUE: 120 temperature uses. */
+    public static final int COOLING_HEATING_VALUE = 120;
+
     public static final Item WOLF_PELT = plain("wolf_pelt");
     public static final Item POLAR_BEAR_FUR = plain("polar_bear_fur");
-    public static final Item ICE_PACK = new TempControlItem(
-            new Item.Properties().durability(5).setId(key("ice_pack")), -3.0);
-    public static final Item HEATING_STONES = new TempControlItem(
-            new Item.Properties().durability(5).setId(key("heating_stones")), 3.0);
+    public static final Item ICE_PACK = new Item(
+            new Item.Properties().durability(COOLING_HEATING_VALUE).setId(key("ice_pack")));
+    public static final Item HEATING_STONES = new Item(
+            new Item.Properties().durability(COOLING_HEATING_VALUE).setId(key("heating_stones")));
 
     public static final Item WOLF_HELMET = armor("wolf_helmet", WOLF, ArmorType.HELMET);
     public static final Item WOLF_CHESTPLATE = armor("wolf_chestplate", WOLF, ArmorType.CHESTPLATE);
@@ -96,11 +97,6 @@ public final class EnvironmentzItems {
                 Map.entry("wanderer_boots", WANDERER_BOOTS));
         items.forEach((path, item) -> Registry.register(BuiltInRegistries.ITEM, key(path), item));
         log.accept("[aged-survival] environmentz items registered (" + items.size() + ")");
-    }
-
-    /** Shared sound holder for temperature control use feedback. */
-    static Holder<net.minecraft.sounds.SoundEvent> drinkSound() {
-        return SoundEvents.GENERIC_DRINK;
     }
 
     private EnvironmentzItems() {}

@@ -28,14 +28,18 @@ public class HearthwindSurvival implements ModInitializer {
 		HearthwindSurvivalConfig.get(); // materialize config/hearthwind_survival.json early
 		PayloadTypeRegistry.clientboundPlay().register(ThirstSyncPayload.TYPE, ThirstSyncPayload.CODEC);
 		PayloadTypeRegistry.clientboundPlay().register(DietSyncPayload.TYPE, DietSyncPayload.CODEC);
+		PayloadTypeRegistry.clientboundPlay().register(NutritionItemMapPayload.TYPE, NutritionItemMapPayload.CODEC);
+		PayloadTypeRegistry.clientboundPlay().register(NutritionEffectsPayload.TYPE, NutritionEffectsPayload.CODEC);
 		PayloadTypeRegistry.clientboundPlay().register(TempSyncPayload.TYPE, TempSyncPayload.CODEC);
 		PayloadTypeRegistry.clientboundPlay().register(JobSyncPayload.TYPE, JobSyncPayload.CODEC);
 		PayloadTypeRegistry.clientboundPlay().register(dev.jmiahman.hearthwind.survival.revive.DownedSyncPayload.TYPE, dev.jmiahman.hearthwind.survival.revive.DownedSyncPayload.CODEC);
 		ThirstMobEffect.register();
+		EnvironmentzEffects.register();
 		HearthwindSurvivalThirst.registerTickLoop();
 		HearthwindSurvivalDiet.registerTickLoop();
 		HearthwindSurvivalSpoilage.registerTickLoop();
 		FlaskItems.registerAll(msg -> LOGGER.info(msg));
+		PurifiedWater.registerAll(msg -> LOGGER.info(msg));
 		EnvironmentzItems.registerAll(msg -> LOGGER.info(msg));
 		BareHandDrinkHandler.register();
 		CommandRegistrationCallback.EVENT.register((dispatcher, ctx, sel) -> HearthwindDebugCommand.register(dispatcher));
@@ -48,11 +52,21 @@ public class HearthwindSurvival implements ModInitializer {
 			for (String line : HydrationCorpus.summary()) {
 				LOGGER.info(line);
 			}
+			HearthwindSurvivalDiet.loadCorpus(server.getResourceManager());
+			for (String line : HearthwindSurvivalDiet.summary()) {
+				LOGGER.info(line);
+			}
+			NutritionEffects.load(server.getResourceManager());
 		});
 		ServerLifecycleEvents.END_DATA_PACK_RELOAD.register((server, resourceManager, success) -> {
 			if (success) {
 				EnvironmentCorpus.load(resourceManager);
 				HydrationCorpus.load(resourceManager);
+				HearthwindSurvivalDiet.loadCorpus(resourceManager);
+				NutritionEffects.load(resourceManager);
+				for (ServerPlayer player : server.getPlayerList().getPlayers()) {
+					syncNutritionCorpus(player);
+				}
 			}
 		});
 		HearthwindSurvivalTemperature.registerTickLoop();
@@ -69,6 +83,7 @@ public class HearthwindSurvival implements ModInitializer {
 			syncDiet(p);
 			syncTemp(p);
 			syncJob(p);
+			syncNutritionCorpus(p);
 		});
 		ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> {
 			UUID id = handler.getPlayer().getUUID();
@@ -93,15 +108,28 @@ public class HearthwindSurvival implements ModInitializer {
 
 	private static void syncDiet(ServerPlayer player) {
 		try {
-			float[] nuts = HearthwindSurvivalDiet.getNutrients(player);
+			int[] nuts = HearthwindSurvivalDiet.getNutrients(player);
 			int hash = java.util.Arrays.hashCode(nuts);
 			UUID id = player.getUUID();
 			Integer prev = lastDietHash.get(id);
 			if (prev == null || prev != hash) {
 				lastDietHash.put(id, hash);
 				net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking.send(
-						player, new DietSyncPayload(nuts));
+						player, DietSyncPayload.of(nuts));
 			}
+		} catch (Exception e) {
+			// ignore sync failures
+		}
+	}
+
+	/** Item map + threshold-effect tooltips for the Nutrients panel. */
+	private static void syncNutritionCorpus(ServerPlayer player) {
+		try {
+			net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking.send(
+					player, new NutritionItemMapPayload(HearthwindSurvivalDiet.itemSnapshot()));
+			net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking.send(
+					player, new NutritionEffectsPayload(
+							NutritionEffects.positiveKeys(), NutritionEffects.negativeKeys()));
 		} catch (Exception e) {
 			// ignore sync failures
 		}
@@ -109,14 +137,14 @@ public class HearthwindSurvival implements ModInitializer {
 
 	private static void syncTemp(ServerPlayer player) {
 		try {
-			float temp = (float) HearthwindSurvivalTemperature.get(player);
-			int hash = Float.floatToIntBits(temp);
+			HearthwindSurvivalTemperature.State state = HearthwindSurvivalTemperature.getState(player);
+			int hash = java.util.Objects.hash(state.body(), state.wetness(), state.thermometer());
 			UUID id = player.getUUID();
 			Integer prev = lastTempHash.get(id);
 			if (prev == null || prev != hash) {
 				lastTempHash.put(id, hash);
 				net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking.send(
-						player, new TempSyncPayload(temp));
+						player, new TempSyncPayload(state.body(), state.wetness(), state.thermometer()));
 			}
 		} catch (Exception e) {
 			// ignore sync failures

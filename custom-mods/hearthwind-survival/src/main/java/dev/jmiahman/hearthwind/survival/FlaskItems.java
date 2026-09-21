@@ -78,6 +78,9 @@ public final class FlaskItems {
         }
         HearthwindSurvivalConfig.Flask cfg = HearthwindSurvivalConfig.get().flask;
         HearthwindSurvivalThirst.addHydration(player, cfg.quench);
+        // NutritionZ's DrinkEvent hook: a drink adds its positive nutrients
+        // (the Dehydration compat map gives every flask minerals +20).
+        HearthwindSurvivalDiet.onDrink(player, stack);
         if (!player.getAbilities().instabuild) {
             float chance;
             int amplifier;

@@ -100,10 +100,11 @@ public final class StarterKit {
         // Page 3: Body Temperature
         pages.add(Filterable.passThrough(Component.literal(
                 "§0§lBODY TEMPERATURE§r\n\n" +
-                "A thermometer beside your hotbar monitors core body temperature (-10 to +10).\n\n" +
-                "§9Freezing (-8):§r Cold biomes, night, altitude, rain, and snow.\n\n" +
-                "§6Heatstroke (+9):§r Deserts, nether, magma, midday heat.\n\n" +
-                "§2Shelter:§r Place your §6Campfire§0 in an enclosed room for +50% warmth!"
+                "A body icon and thermometer beside your hotbar track core temperature (from -2400 to +2400).\n\n" +
+                "§9Freezing (-1800):§r Cold biomes, night, rain, altitude; iced armor and ice packs.\n\n" +
+                "§6Overheating (+1800):§r Deserts, nether, lava, magma; -30% attack damage.\n\n" +
+                "§2Warmth:§r Lit campfires, lava, furnaces and torches heat you within 3 blocks; wool/leather armor insulates +3 a piece.\n\n" +
+                "At §9-2400§0 you freeze; at §6+2400§0 you exhaust. Find shelter or shade!"
         )));
 
         // Page 4: Diet & 5 Nutrients

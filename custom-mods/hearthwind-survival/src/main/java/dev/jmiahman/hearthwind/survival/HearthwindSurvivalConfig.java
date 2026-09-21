@@ -23,11 +23,12 @@ public final class HearthwindSurvivalConfig {
     public final Temperature temperature = new Temperature();
     public final Diet diet = new Diet();
     public final Spoilage spoilage = new Spoilage();
+    public final Sobriety sobriety = new Sobriety();
 
     /** Bare-hand cupping (sneak + empty hand + hold right-click on water). */
     public static class BareHand {
         /** Hydration points granted per completed sip (two sips = half droplet). */
-        public double sipQuench = 0.5;
+        public double sipQuench = 1.0;
         /** Chance the sip gives the thirst effect (halved in river biomes). */
         public double sipThirstChance = 0.5;
         /** Duration of the thirst effect in ticks. */
@@ -89,61 +90,71 @@ public final class HearthwindSurvivalConfig {
         public double hydrationCorpusScale = 1.0;
     }
 
+    /**
+     * EnvironmentZ 2.0.8 tunables (Aged 3.1.2 overrides applied): the body
+     * temperature model itself is data-driven from
+     * {@code data/environmentz/manager}, exactly like the original mod.
+     */
     public static class Temperature {
-        /** Degrees drifted toward the biome target per second. Scale -10..+10. */
-        public double driftPerSecond = 0.05;
-        /** Body temperature below which freeze damage starts. */
-        public double freezeHurtAt = -8.0;
-        /** Body temperature above which heat exhaustion (food drain) starts. */
-        public double heatExhaustAt = 7.0;
-        /** Body temperature above which heat damage starts. */
-        public double heatHurtAt = 9.0;
-        /** Cooldown seconds between repeated extreme-temperature damage. */
-        public double hurtCooldownSeconds = 4.0;
-        /** Temperature offset in icy biomes. */
-        public double icyOffset = -3.0;
-        /** Temperature offset in cold biomes. */
-        public double coldOffset = -1.5;
-        /** Temperature offset in hot biomes. */
-        public double hotOffset = 2.0;
-        /** Activity temperature offset while sprinting. */
-        public double activityOffset = 0.5;
-        /** Temperature change rate per tick. */
-        public double changeRatePerTick = 0.001;
-        /** Duration of cold debuff in ticks. */
-        public int coldDebuffDuration = 600;
-        /** Duration of heat stroke in ticks. */
-        public int heatStrokeDuration = 400;
         /**
-         * Use the migrated environmentz corpus (data/environmentz/manager) for
-         * day/night, armor, wetness, shadow and height modifiers instead of the
-         * hand-tuned constants below. Falls back to the constants when no
-         * corpus is installed.
+         * Recalculate once per this many ticks + 1 (reference
+         * TemperatureManager semantics). Aged override: 10.
          */
-        public boolean useEnvironmentzTables = true;
-        /** Radius scanned for heating/cooling blocks (0 disables block heat). */
+        public int temperatureCalculationTime = 10;
+        /** Try to keep the vanilla spawn point friendly (reference option). */
+        public boolean easyWorldSpawn = true;
+        /** Body icon X offset: drawn at width/2 - iconX. */
+        public int iconX = 7;
+        /** Body icon Y offset: drawn at height - iconY. */
+        public int iconY = 52;
+        /** Thermometer X offset: Aged override -95 (width/2 - (-95)). */
+        public int thermometerIconX = -95;
+        /** Thermometer Y offset: drawn at height - thermometerIconY. */
+        public int thermometerIconY = 32;
+        public boolean showThermometer = true;
+        /** Reference startup comfort effect duration (ticks). */
+        public int startUpComfortEffectDuration = 9600;
+        /** Radius scanned for heating/cooling blocks, fluids and items. */
         public int heatBlockRadius = 3;
-        /** Bonus multiplier applied to fire heat in an enclosed room. */
-        public double roomHeatFactor = 0.5;
-        /** Radius used to decide whether a player is sheltered. */
-        public int enclosedRadius = 3;
+        public boolean printInConsole = false;
+        /** Exhaustion added per overheating calculation. Aged override: 0.07. */
+        public float overheatingExhaustion = 0.07F;
+        /**
+         * Reference Dehydration-compat option. Our thirst is in-house, so the
+         * exhaustion path (food > 6) is the Aged-equivalent default.
+         */
+        public boolean exhaustionInsteadDehydration = true;
+        public boolean coldOverlay = true;
+        public boolean shakingScreenEffect = true;
+        public boolean blurScreenEffect = true;
     }
 
+    /**
+     * NutritionZ 1.0.11 parity (the exact version Aged 3.1.2 ships).
+     * Five integer nutrients (carbohydrates, protein, fat, vitamins,
+     * minerals) on a 0..maxNutrition scale. Eating/drinking adds the
+     * positive values from the loaded {@code data/<ns>/nutrition/*.json}
+     * item maps; the {@code nutrition_manager} datapack decides the
+     * threshold effects. There is no deficiency-debuff list in code -
+     * effects are data-driven.
+     */
     public static class Diet {
-        /** Nutrient decay per second per group. Scale 0..100. */
-        public double decayPerSecond = 0.02;
-        /** Nutrients granted per point of vanilla food nutrition per group match. */
-        public double nutrientsPerFoodPoint = 4.0;
-        /** Below this a group counts as deficient (debuff). */
-        public double deficiencyThreshold = 15.0;
-        /** All groups at or above this count as a balanced diet (bonus hearts). */
-        public double balanceThreshold = 50.0;
-        /** Half-heart absorption pool refreshed while balanced (0 disables). */
-        public float balancedBonusHearts = 2.0f;
-        /** Require farming skill to eat proteins (mirrors Aged early-game gate). */
-        public boolean proteinsRequireFarming = true;
-        /** Require farming skill to eat grains (mirrors Aged early-game gate). */
-        public boolean grainsRequireFarming = true;
+        /** Upper bound of each nutrient (original maxNutrition). */
+        public int maxNutrition = 300;
+        /** At or below this, the negative effect list applies. */
+        public int negativeNutrition = 30;
+        /** At or above this, the positive effect list applies. */
+        public int positiveNutrition = 270;
+        /** Icon shown on the first Nutrients row. */
+        public String carbohydrateItemId = "minecraft:sugar";
+        /** Icon shown on the second Nutrients row. */
+        public String proteinItemId = "minecraft:chicken";
+        /** Icon shown on the third Nutrients row. */
+        public String fatItemId = "minecraft:porkchop";
+        /** Icon shown on the fourth Nutrients row (Aged override). */
+        public String vitaminItemId = "farm_and_charm:lettuce";
+        /** Icon shown on the fifth Nutrients row (Aged override). */
+        public String mineralItemId = "meadow:alpine_salt";
     }
 
     public static class Spoilage {
@@ -155,6 +166,12 @@ public final class HearthwindSurvivalConfig {
         public double hotBiomeMultiplier = 2.0;
         /** Item id perishables rot into. */
         public String rotsInto = "minecraft:rotten_flesh";
+    }
+
+    /** Family-friendly brewing: alcohol becomes juice / NA medieval drinks. */
+    public static class Sobriety {
+        /** When true, letsdo mods unregister alcohol and ship juice/NA drinks instead. */
+        public boolean removeAlcohol = true;
     }
 
     private static HearthwindSurvivalConfig instance;

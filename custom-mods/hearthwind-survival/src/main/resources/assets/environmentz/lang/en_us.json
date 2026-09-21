@@ -1,0 +1,20 @@
+{
+  "effect.environmentz.warming": "Warming",
+  "effect.environmentz.cooling": "Cooling",
+  "effect.environmentz.comfort": "Comfort",
+  "death.attack.freezing": "%1$s froze to death",
+  "item.environmentz.heating_stones": "Heating Stones",
+  "item.environmentz.ice_pack": "Ice Pack",
+  "item.environmentz.wolf_pelt": "Wolf Pelt",
+  "item.environmentz.polar_bear_fur": "Polar Bear Fur",
+  "item.environmentz.wolf_helmet": "Wolf Pelt Helmet",
+  "item.environmentz.wolf_chestplate": "Wolf Pelt Chestplate",
+  "item.environmentz.wolf_leggings": "Wolf Pelt Leggings",
+  "item.environmentz.wolf_boots": "Wolf Pelt Boots",
+  "item.environmentz.wanderer_helmet": "Wanderer Keffiyeh",
+  "item.environmentz.wanderer_chestplate": "Wanderer Thawb",
+  "item.environmentz.wanderer_leggings": "Wanderer Leggings",
+  "item.environmentz.wanderer_boots": "Wanderer Boots",
+  "item.environmentz.fur_insolated.tooltip": "Insulated",
+  "item.environmentz.iced.tooltip": "Cooled"
+}

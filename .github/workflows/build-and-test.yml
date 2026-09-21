@@ -62,6 +62,12 @@ jobs:
         run: |
           python3 conversion/scripts/resolve_deps.py --allow-missing
           python3 conversion/scripts/build_pack.py --server-dir
+      - name: Fetch Fabric server launcher jar
+        run: |
+          MC=$(python3 -c "import json;print(json.load(open('conversion/build.conf.json'))['targets']['minecraft'])")
+          LOADER=$(python3 -c "import json;print(json.load(open('conversion/build.conf.json'))['targets']['loader_version'])")
+          curl -sL -o conversion/build/dist/server/fabric-server.jar "https://meta.fabricmc.net/v2/versions/loader/$MC/$LOADER/1.1.0/server/jar"
+          ls -la conversion/build/dist/server/fabric-server.jar
       - name: Static feature-order cycle check
         run: |
           python3 custom-mods/tools/check_feature_cycles.py \
