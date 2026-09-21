@@ -175,6 +175,8 @@ jobs:
           name: modpacks
           path: mrpacks
       - name: Publish Prism-ready .mrpack files to GitHub Release
+        # Release-notes style rule: plain ASCII hyphens only. No em/en
+        # dashes, no AI-isms, no AI watermarks in titles or notes.
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
