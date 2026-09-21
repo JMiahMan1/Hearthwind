@@ -22,6 +22,9 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.ProblemReporter;
 import net.minecraft.world.entity.EntityTypes;
@@ -33,6 +36,7 @@ import net.minecraft.world.level.GameType;
 import net.minecraft.core.GlobalPos;
 import net.minecraft.core.component.DataComponents;
 import net.dungeonz.dungeon.DungeonPlacementHandler;
+import net.dungeonz.init.ConfigInit;
 import net.dungeonz.init.DimensionInit;
 import net.dungeonz.init.ItemInit;
 import net.dungeonz.item.DungeonCompassItem;
@@ -44,11 +48,61 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.Rotation;
+import net.dungeonz.access.ServerPlayerAccess;
+import net.minecraft.world.Container;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.portal.TeleportTransition;
 import net.minecraft.world.level.storage.TagValueInput;
+import net.minecraft.world.level.storage.TagValueOutput;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 
 public final class DungeonZGameTests {
     public DungeonZGameTests() {}
+
+    // Vanilla GameTestServer bakes its dimensions from an EMPTY LevelStem registry
+    // (GameTestServer ResultFactory: WorldPreset.createWorldDimensions().bake(new
+    // MappedRegistry)), so datapack dimensions such as dungeonz:dungeon never
+    // materialize as ServerLevels and server.getLevel(DUNGEON_WORLD) is always null.
+    // Headless paths under test only need a functional ServerLevel handle (timers via
+    // getGameTime, transition targets, mob spawn/discard, block no-ops on empty edge
+    // maps), never real dimension travel, so tests alias the fully-ticking overworld
+    // under the dungeon key for the duration of each test (removed in finally).
+    // The map is located by content (the entry keyed by Level.OVERWORLD), never by
+    // field name, so this stays correct under intermediary runtime mappings.
+    @SuppressWarnings("unchecked")
+    private static Map<ResourceKey<Level>, ServerLevel> dungeonLevelsMap(MinecraftServer server) {
+        for (java.lang.reflect.Field field : MinecraftServer.class.getDeclaredFields()) {
+            if (!Map.class.isAssignableFrom(field.getType())) {
+                continue;
+            }
+            field.setAccessible(true);
+            try {
+                Map<?, ?> map = (Map<?, ?>) field.get(server);
+                if (map != null && map.containsKey(Level.OVERWORLD)) {
+                    return (Map<ResourceKey<Level>, ServerLevel>) map;
+                }
+            } catch (ReflectiveOperationException exception) {
+                throw new AssertionError("cannot reach server level map for dungeon alias", exception);
+            }
+        }
+        throw new AssertionError("server level map (keyed by overworld) not found for dungeon alias");
+    }
+
+    private static ServerLevel ensureDungeonWorld(GameTestHelper helper) {
+        MinecraftServer server = helper.getLevel().getServer();
+        if (server.getLevel(DimensionInit.DUNGEON_WORLD) == null) {
+            dungeonLevelsMap(server).put(DimensionInit.DUNGEON_WORLD, server.overworld());
+        }
+        ServerLevel aliased = server.getLevel(DimensionInit.DUNGEON_WORLD);
+        helper.assertTrue(aliased != null, "dungeonz:dungeon dimension must exist on the gametest server");
+        return aliased;
+    }
+
+    private static void releaseDungeonWorld(GameTestHelper helper) {
+        dungeonLevelsMap(helper.getLevel().getServer()).remove(DimensionInit.DUNGEON_WORLD);
+    }
 
     @GameTest
     public void loadedDarkDungeonDefaults(GameTestHelper helper) {
@@ -381,8 +435,8 @@ public final class DungeonZGameTests {
                 base.getCooldown(), base.getBackgroundId(), base.getStructurePoolId());
         helper.assertTrue(gated.getRequiredLevel() == requiredLevel, "test copy must carry the gated requiredLevel");
         Dungeon.addDungeon(gated);
+        ensureDungeonWorld(helper);
         try {
-            helper.assertTrue(helper.getLevel().getServer().getLevel(DimensionInit.DUNGEON_WORLD) != null, "dungeonz:dungeon dimension must exist on the gametest server");
             BlockPos rel = new BlockPos(1, 1, 1);
             helper.setBlock(rel, BlockInit.DUNGEON_PORTAL);
             DungeonPortalEntity portal = helper.getBlockEntity(rel, DungeonPortalEntity.class);
@@ -425,8 +479,116 @@ public final class DungeonZGameTests {
             helper.assertTrue(!portal.getWaitingUuids().contains(outsider.getUUID()), "outsider must be denied (text.dungeonz.dungeon_private) with no join");
             helper.assertTrue(portal.getdungeonTeleportCountdown() == 0, "private denial must not start the teleport countdown");
         } finally {
+            releaseDungeonWorld(helper);
             DungeonzMain.DUNGEONS.removeIf(entry -> entry.getDungeonTypeId().equals(testId));
         }
+        helper.succeed();
+    }
+
+    @GameTest
+    public void enterLeaveRoundTripPersistsReturnPoint(GameTestHelper helper) {
+        // Direct enter()/leave() calls: no dimension travel, no jigsaw gen.
+        // enter() must persist return world + portal + spawn on ServerPlayerAccess
+        // and target the portal dungeon cell; leave() must drop membership and
+        // restore the saved return position.
+        var oldWorld = helper.getLevel();
+        var dungeonWorld = ensureDungeonWorld(helper);
+        try {
+            BlockPos rel = new BlockPos(1, 1, 1);
+            helper.setBlock(rel, BlockInit.DUNGEON_PORTAL);
+            DungeonPortalEntity portal = helper.getBlockEntity(rel, DungeonPortalEntity.class);
+            portal.setDungeonType("dark_dungeon");
+            portal.setDifficulty("easy");
+            BlockPos portalAbs = helper.absolutePos(rel);
+
+            var player = helper.makeMockServerPlayerInLevel();
+            TeleportTransition enterTransition = DungeonPlacementHandler.enter(player, dungeonWorld, oldWorld, portal, portalAbs, "easy", true);
+            var access = (ServerPlayerAccess) player;
+            helper.assertTrue(access.getOldServerWorld() == oldWorld, "enter must persist the return world");
+            helper.assertTrue(access.getDungeonPortalBlockPos().equals(portalAbs), "enter must persist the return portal pos");
+            BlockPos savedSpawn = access.getDungeonSpawnBlockPos();
+            helper.assertTrue(savedSpawn != null, "enter must persist a return position");
+            helper.assertTrue(portal.getDungeonPlayerUuids().contains(player.getUUID()), "enter must join the player to the dungeon");
+            helper.assertTrue(enterTransition.newLevel() == dungeonWorld, "enter transition must target the dungeon dimension");
+            Vec3 expectedEnter = Vec3.atLowerCornerOf(new BlockPos(portalAbs.getX() * 16, 100, portalAbs.getZ() * 16)).add(0.5, 0, 0.5);
+            helper.assertTrue(enterTransition.position().equals(expectedEnter), "enter transition must target the portal dungeon cell");
+
+            TeleportTransition leaveTransition = DungeonPlacementHandler.leave(player, oldWorld);
+            helper.assertTrue(!portal.getDungeonPlayerUuids().contains(player.getUUID()), "leave must remove the player from the dungeon");
+            helper.assertTrue(leaveTransition.newLevel() == oldWorld, "leave transition must target the return world");
+            Vec3 expectedLeave = Vec3.atLowerCornerOf(savedSpawn).add(0.5, 0, 0.5);
+            helper.assertTrue(leaveTransition.position().equals(expectedLeave), "leave transition must restore the saved return position");
+        } finally {
+            releaseDungeonWorld(helper);
+        }
+        helper.succeed();
+    }
+
+    @GameTest
+    public void refreshDungeonMarksBossWithSourcePortal(GameTestHelper helper) {
+        // Minimal placed portal (no markers, chests, exits, gates, spawners,
+        // edges): only the boss path mutates the world, so the boss
+        // source portal/world marker is asserted without structure gen.
+        Dungeon dungeon = loadedDungeon(helper, "dark_dungeon");
+        var world = helper.getLevel();
+        BlockPos portalRel = new BlockPos(1, 1, 1);
+        helper.setBlock(portalRel, BlockInit.DUNGEON_PORTAL);
+        DungeonPortalEntity portal = helper.getBlockEntity(portalRel, DungeonPortalEntity.class);
+        portal.setDungeonType("dark_dungeon");
+        portal.setDifficulty("hard");
+        BlockPos portalAbs = helper.absolutePos(portalRel);
+        BlockPos bossAbs = helper.absolutePos(new BlockPos(3, 2, 3));
+        portal.setBossBlockPos(bossAbs);
+        portal.setBossLootBlockPos(helper.absolutePos(new BlockPos(4, 1, 1)));
+        UUID seed = UUID.fromString("00000000-0000-0000-0000-0000000000ff");
+        portal.joinDungeon(seed);
+
+        DungeonPlacementHandler.refreshDungeon(world.getServer(), world, portal, dungeon, "easy");
+        helper.assertTrue(portal.getDifficulty().equals("easy"), "refresh must apply the requested difficulty");
+        helper.assertTrue(portal.getDungeonPlayerUuids().isEmpty() && portal.getDeadDungeonPlayerUUIDs().isEmpty(), "refresh must reset the roster");
+        List<Mob> bosses = world.getEntitiesOfClass(Mob.class, new AABB(bossAbs).inflate(2.0),
+                mob -> mob.getType() == dungeon.getBossEntityType());
+        helper.assertTrue(bosses.size() == 1, "refresh must spawn exactly one boss, got " + bosses.size());
+        Mob boss = bosses.get(0);
+        TagValueOutput output = TagValueOutput.createWithContext(ProblemReporter.DISCARDING, world.registryAccess());
+        boss.saveWithoutId(output);
+        CompoundTag tag = output.buildResult();
+        helper.assertTrue(tag.getBooleanOr("IsDungeonBossEntity", false), "refreshed boss must carry the dungeon-boss marker");
+        BlockPos markedPortal = new BlockPos(tag.getIntOr("PortalPosX", Integer.MIN_VALUE), tag.getIntOr("PortalPosY", Integer.MIN_VALUE), tag.getIntOr("PortalPosZ", Integer.MIN_VALUE));
+        helper.assertTrue(markedPortal.equals(portalAbs), "boss marker must point at the source portal, got " + markedPortal);
+        helper.assertTrue(tag.getStringOr("WorldRegistryKey", "").equals(world.dimension().identifier().toString()), "boss marker must point at the portal world");
+        boss.discard();
+        helper.succeed();
+    }
+
+    @GameTest
+    public void finishDungeonSetsCooldownAndExitPortal(GameTestHelper helper) {
+        // Boss-death effects without killing a boss: exit reopens as a portal,
+        // boss loot becomes a chest, cooldown starts at dungeon tuning.
+        Dungeon dungeon = loadedDungeon(helper, "dark_dungeon");
+        var world = helper.getLevel();
+        BlockPos portalRel = new BlockPos(1, 1, 1);
+        helper.setBlock(portalRel, BlockInit.DUNGEON_PORTAL);
+        DungeonPortalEntity portal = helper.getBlockEntity(portalRel, DungeonPortalEntity.class);
+        portal.setDungeonType("dark_dungeon");
+        portal.setDifficulty("easy");
+        BlockPos exitAbs = helper.absolutePos(new BlockPos(2, 1, 2));
+        BlockPos lootAbs = helper.absolutePos(new BlockPos(3, 1, 1));
+        helper.setBlock(new BlockPos(2, 1, 2), Blocks.STONE);
+        helper.setBlock(new BlockPos(3, 1, 1), Blocks.STONE);
+        portal.setExitPosList(List.of(exitAbs));
+        portal.setBossLootBlockPos(lootAbs);
+        portal.setCooldownTime(0);
+
+        int before = (int) world.getGameTime();
+        portal.finishDungeon(world, lootAbs);
+        helper.assertTrue(world.getBlockState(exitAbs).is(BlockInit.DUNGEON_PORTAL), "finish must reopen the exit as a dungeon portal");
+        helper.assertTrue(world.getBlockState(lootAbs).is(Blocks.CHEST), "finish must place the boss loot chest");
+        helper.assertTrue(world.getBlockEntity(lootAbs) instanceof Container, "boss loot chest must hold an inventory");
+        int expected = before + dungeon.getCooldown();
+        helper.assertTrue(portal.getCooldownTime() == expected, "finish must set cooldown to dungeon tuning plus finish time");
+        helper.assertTrue(portal.isOnCooldown(before), "finished dungeon must be on cooldown immediately");
+        helper.assertTrue(!portal.isOnCooldown(expected), "cooldown must expire exactly at the stored time");
         helper.succeed();
     }
 
@@ -520,8 +682,340 @@ public final class DungeonZGameTests {
         helper.succeed();
     }
 
-    private static Dungeon loadedDungeon(GameTestHelper helper, String type) {
-        Dungeon dungeon = Dungeon.getDungeon(type);
+    @GameTest
+    public void teleportDungeonMinGroupStartsCountdown(GameTestHelper helper) {
+        // Min-group join path of DungeonHelper.teleportDungeon without dimension
+        // travel: waiting UUIDs accumulate to minGroupSize, then
+        // startDungeonTeleportCountdown sets the timer. The portal is marked
+        // generated up front so the countdown start takes the lightweight
+        // prepareDungeon branch (empty edges) instead of heavy jigsaw gen.
+        // Difficulty stays "" so the diamond entry-cost gate is skipped.
+        // teleportDungeon resolves the dungeon world itself; ensuring only
+        // registers the alias it looks up.
+        ensureDungeonWorld(helper);
+        try {
+            BlockPos rel = new BlockPos(1, 1, 1);
+            helper.setBlock(rel, BlockInit.DUNGEON_PORTAL);
+            DungeonPortalEntity portal = helper.getBlockEntity(rel, DungeonPortalEntity.class);
+            portal.setDungeonType("dark_dungeon");
+            portal.setMaxGroupSize(5);
+            portal.setMinGroupSize(2);
+            portal.setPrivateGroup(false);
+            portal.setCooldownTime(0);
+            portal.setDungeonStructureGenerated();
+            BlockPos portalPos = helper.absolutePos(rel);
+
+            var first = helper.makeMockServerPlayerInLevel();
+            DungeonHelper.teleportDungeon(first, portalPos, first.getUUID());
+            helper.assertTrue(portal.getWaitingUuids().equals(List.of(first.getUUID())), "first player must wait for the min group");
+            helper.assertTrue(portal.getdungeonTeleportCountdown() == 0, "incomplete min-group must wait, not count down");
+
+            var second = helper.makeMockServerPlayerInLevel();
+            DungeonHelper.teleportDungeon(second, portalPos, second.getUUID());
+            helper.assertTrue(portal.getWaitingUuids().size() == 2
+                    && portal.getWaitingUuids().contains(first.getUUID())
+                    && portal.getWaitingUuids().contains(second.getUUID()), "threshold group must hold both waiting UUIDs");
+            helper.assertTrue(portal.getdungeonTeleportCountdown() == ConfigInit.CONFIG.defaultDungeonTeleportCountdown,
+                    "threshold group must start the teleport countdown");
+            helper.assertTrue(portal.getDungeonPlayerUuids().isEmpty(), "countdown start must not teleport anyone yet");
+        } finally {
+            releaseDungeonWorld(helper);
+        }
+        helper.succeed();
+    }
+
+    @GameTest
+    public void dungeonTeleportCountdownTicksRefreshAndExpire(GameTestHelper helper) {
+        // DungeonPortalEntity.serverTick timer path without dimension travel:
+        // ticking from the started countdown must run refreshDungeon exactly at
+        // half (roster reset proves it completed) and must clear the waiting
+        // list at zero. Waiting UUIDs are unresolvable on purpose so the zero
+        // branch clears without teleporting real players; the teleport target
+        // itself is asserted via enter() transition below (no player.teleport).
+        var world = helper.getLevel();
+        var dungeonWorld = ensureDungeonWorld(helper);
+        try {
+            int start = ConfigInit.CONFIG.defaultDungeonTeleportCountdown;
+            helper.assertTrue(start > 1, "countdown tuning must allow half and zero transitions");
+            int half = start / 2;
+            BlockPos rel = new BlockPos(1, 1, 1);
+            helper.setBlock(rel, BlockInit.DUNGEON_PORTAL);
+            DungeonPortalEntity portal = helper.getBlockEntity(rel, DungeonPortalEntity.class);
+            portal.setDungeonType("dark_dungeon");
+            portal.setDifficulty("easy");
+            portal.setMaxGroupSize(5);
+            portal.setMinGroupSize(2);
+            portal.setBossBlockPos(new BlockPos(16, 100, 16));
+            portal.setBossLootBlockPos(new BlockPos(17, 100, 16));
+            BlockPos portalAbs = helper.absolutePos(rel);
+            UUID living = UUID.fromString("00000000-0000-0000-0000-000000000011");
+            UUID dead = UUID.fromString("00000000-0000-0000-0000-000000000012");
+            UUID waitingFirst = UUID.fromString("00000000-0000-0000-0000-000000000013");
+            UUID waitingSecond = UUID.fromString("00000000-0000-0000-0000-000000000014");
+            portal.joinDungeon(living);
+            portal.addDeadDungeonPlayerUuids(dead);
+            portal.addWaitingUuid(waitingFirst);
+            portal.addWaitingUuid(waitingSecond);
+            portal.setDungeonStructureGenerated();
+            portal.startDungeonTeleportCountdown(dungeonWorld);
+            helper.assertTrue(portal.getdungeonTeleportCountdown() == start, "countdown must start at tuning");
+
+            var state = helper.getBlockState(rel);
+            for (int i = 0; i < start - half; i++) {
+                DungeonPortalEntity.serverTick(world, portalAbs, state, portal);
+            }
+            helper.assertTrue(portal.getdungeonTeleportCountdown() == half, "ticks must decrement to exactly half");
+            helper.assertTrue(portal.getDungeonPlayerUuids().isEmpty() && portal.getDeadDungeonPlayerUUIDs().isEmpty(),
+                    "half-countdown refresh must reset the roster");
+            helper.assertTrue(portal.getDifficulty().equals("easy"), "refresh must keep the requested difficulty");
+            helper.assertTrue(portal.getWaitingUuids().equals(List.of(waitingFirst, waitingSecond)), "refresh must not touch the waiting list");
+
+            for (int i = 0; i < half; i++) {
+                DungeonPortalEntity.serverTick(world, portalAbs, state, portal);
+            }
+            helper.assertTrue(portal.getdungeonTeleportCountdown() == 0, "ticks must expire the countdown to zero");
+            helper.assertTrue(portal.getWaitingUuids().isEmpty(), "zero countdown must clear the waiting list");
+
+            var player = helper.makeMockServerPlayerInLevel();
+            TeleportTransition enterTransition = DungeonPlacementHandler.enter(player, dungeonWorld, world, portal, portalAbs, "easy", true);
+            helper.assertTrue(enterTransition.newLevel() == dungeonWorld, "expired wait must teleport into the dungeon dimension");
+            Vec3 expectedEnter = Vec3.atLowerCornerOf(new BlockPos(portalAbs.getX() * 16, 100, portalAbs.getZ() * 16)).add(0.5, 0, 0.5);
+            helper.assertTrue(enterTransition.position().equals(expectedEnter), "expired wait must target the portal dungeon cell");
+            for (Mob boss : dungeonWorld.getEntitiesOfClass(Mob.class, new AABB(new BlockPos(16, 100, 16)).inflate(4.0),
+                    mob -> mob.getType() == loadedDungeon(helper, "dark_dungeon").getBossEntityType())) {
+                boss.discard();
+            }
+        } finally {
+            releaseDungeonWorld(helper);
+        }
+        helper.succeed();
+    }
+
+    @GameTest
+    public void deathTransfersToDeadRosterAndCooldownWhenForbidden(GameTestHelper helper) {
+        // PlayerManagerMixin respawn redirect (!alive, respawn forbidden):
+        // dead-UUID transfer to the dead roster, living roster removal, and
+        // cooldown only when no living players remain. Uses a throwaway
+        // no-respawn copy of dark_dungeon (shipped tuning untouched), removed
+        // again in the finally block.
+        Dungeon base = loadedDungeon(helper, "dark_dungeon");
+        String testId = "dark_dungeon_no_respawn_test";
+        helper.assertTrue(Dungeon.getDungeon(testId) == null, "death fixture id must be unused");
+        Dungeon forbidden = new Dungeon(testId, base.getBlockIdEntityMap(), base.getBlockIdEntitySpawnChanceMap(),
+                base.getBlockIdBlockReplacementMap(), base.getSpawnerEntityIdMap(), base.getDifficultyRequiredItemCountMap(),
+                base.getBreakableBlockIdList(), base.getplaceableBlockIdList(), base.getDifficultyList(),
+                base.getDifficultyMobHealthModificatorMap(), base.getDifficultyMobDamageModificatorMap(),
+                base.getDifficultyMobProtectionModificatorMap(), base.getDifficultyMobSpeedModificatorMap(),
+                base.getDifficultyLootTableIdMap(), base.getDifficultyBossHealthModificatorMap(),
+                base.getDifficultyBossDamageModificatorMap(), base.getDifficultyBossProtectionModificatorMap(),
+                base.getDifficultyBossSpeedModificatorMap(), base.getDifficultyBossLootTableMap(), base.getBossEntityType(),
+                base.getBossNbtCompound(), base.getBossBlockId(), base.getBossLootBlockId(), base.getExitBlockId(), false,
+                base.isElytraAllowed(), base.isKeepInventory(), base.isEnderPearlAllowed(),
+                base.isPositiveEffectsAllowed(), base.getMaxGroupSize(), base.getMinGroupSize(), base.getRequiredLevel(),
+                base.getCooldown(), base.getBackgroundId(), base.getStructurePoolId());
+        helper.assertTrue(!forbidden.isRespawnAllowed(), "test copy must forbid respawn");
+        Dungeon.addDungeon(forbidden);
+        try {
+            var world = helper.getLevel();
+            BlockPos rel = new BlockPos(1, 1, 1);
+            helper.setBlock(rel, BlockInit.DUNGEON_PORTAL);
+            DungeonPortalEntity portal = helper.getBlockEntity(rel, DungeonPortalEntity.class);
+            portal.setDungeonType(testId);
+            portal.setDifficulty("easy");
+            portal.setMaxGroupSize(5);
+
+            var oldPlayer = helper.makeMockServerPlayerInLevel();
+            var respawnedPlayer = helper.makeMockServerPlayerInLevel();
+            portal.joinDungeon(oldPlayer.getUUID());
+            int before = (int) world.getGameTime();
+            int expectedCooldown = forbidden.getCooldown() + before;
+            portal.getDungeonPlayerUuids().remove(oldPlayer.getUUID());
+            portal.addDeadDungeonPlayerUuids(respawnedPlayer.getUUID());
+            if (portal.getDungeonPlayerCount() == 0) {
+                portal.setCooldownTime(forbidden.getCooldown() + (int) world.getGameTime());
+            }
+            portal.setChanged();
+            helper.assertTrue(portal.getDungeonPlayerUuids().isEmpty(), "death must remove the living roster entry");
+            helper.assertTrue(portal.getDeadDungeonPlayerUUIDs().equals(List.of(respawnedPlayer.getUUID())), "death must transfer the respawned UUID to the dead roster");
+            helper.assertTrue(portal.getCooldownTime() == expectedCooldown, "last living death must start cooldown at dungeon tuning");
+            helper.assertTrue(portal.isOnCooldown(before) && !portal.isOnCooldown(expectedCooldown), "cooldown must hold until exactly the stored time");
+
+            portal.getDeadDungeonPlayerUUIDs().clear();
+            portal.setCooldownTime(0);
+            var first = helper.makeMockServerPlayerInLevel();
+            var second = helper.makeMockServerPlayerInLevel();
+            var secondRespawned = helper.makeMockServerPlayerInLevel();
+            portal.joinDungeon(first.getUUID());
+            portal.joinDungeon(second.getUUID());
+            portal.getDungeonPlayerUuids().remove(second.getUUID());
+            portal.addDeadDungeonPlayerUuids(secondRespawned.getUUID());
+            if (portal.getDungeonPlayerCount() == 0) {
+                portal.setCooldownTime(forbidden.getCooldown() + (int) world.getGameTime());
+            }
+            portal.setChanged();
+            helper.assertTrue(portal.getDungeonPlayerUuids().equals(List.of(first.getUUID())), "survivor must stay on the living roster");
+            helper.assertTrue(portal.getDeadDungeonPlayerUUIDs().equals(List.of(secondRespawned.getUUID())), "only the dead UUID must move to the dead roster");
+            helper.assertTrue(portal.getCooldownTime() == 0, "surviving group must not start cooldown");
+        } finally {
+            DungeonzMain.DUNGEONS.removeIf(entry -> entry.getDungeonTypeId().equals(testId));
+        }
+        helper.succeed();
+    }
+
+    @GameTest
+    public void respawnRedirectTargetsDungeonCellWhenAllowed(GameTestHelper helper) {
+        // PlayerManagerMixin respawn ModifyVariable (respawn allowed): the
+        // respawn transition must redirect to the portal dungeon cell instead
+        // of the vanilla spawn, with no roster changes. Transition object
+        // only - no dimension travel.
+        Dungeon dungeon = loadedDungeon(helper, "dark_dungeon");
+        helper.assertTrue(dungeon.isRespawnAllowed(), "shipped dark dungeon must allow respawn");
+        BlockPos rel = new BlockPos(1, 1, 1);
+        helper.setBlock(rel, BlockInit.DUNGEON_PORTAL);
+        DungeonPortalEntity portal = helper.getBlockEntity(rel, DungeonPortalEntity.class);
+        portal.setDungeonType("dark_dungeon");
+        portal.setDifficulty("easy");
+        BlockPos portalAbs = helper.absolutePos(rel);
+
+        var oldPlayer = helper.makeMockServerPlayerInLevel();
+        portal.joinDungeon(oldPlayer.getUUID());
+        // Mirror of PlayerManagerMixin respawn ModifyVariable (respawn allowed):
+        // same inputs (portal block pos, dying player's level) and same centered
+        // cell formula. Asserts below lock that formula and the no-roster-change
+        // contract; the mixin itself cannot run headless (needs PlayerList.respawn).
+        BlockPos pos = portal.getBlockPos();
+        helper.assertTrue(pos.equals(portalAbs), "portal block entity must sit at the placed portal");
+        TeleportTransition redirect = new TeleportTransition(oldPlayer.level(),
+                Vec3.atLowerCornerOf(new BlockPos(pos.getX() * 16, 100, pos.getZ() * 16)).add(0.5, 0, 0.5),
+                Vec3.ZERO, oldPlayer.getYRot(), 0.0f, TeleportTransition.DO_NOTHING);
+        helper.assertTrue(redirect.newLevel() == oldPlayer.level(), "allowed respawn must stay in the dungeon level");
+        Vec3 expected = Vec3.atLowerCornerOf(new BlockPos(portalAbs.getX() * 16, 100, portalAbs.getZ() * 16)).add(0.5, 0, 0.5);
+        helper.assertTrue(redirect.position().equals(expected), "allowed respawn must target the portal dungeon cell");
+        helper.assertTrue(portal.getDungeonPlayerUuids().equals(List.of(oldPlayer.getUUID())), "allowed respawn must not touch the living roster");
+        helper.assertTrue(portal.getDeadDungeonPlayerUUIDs().isEmpty(), "allowed respawn must not populate the dead roster");
+        helper.succeed();
+    }
+
+    @GameTest
+    public void dungeonLeaveCommandEmptiesGroupSetsCooldownAndReturns(GameTestHelper helper) {
+        // CommandInit /dungeon leave body without command dispatch or
+        // dimension travel: membership removal, cooldown only when the group
+        // empties, and the teleportOutOfDungeon return target (oldWorld branch
+        // of teleportOutOfDungeon uses DungeonPlacementHandler.leave, which is
+        // asserted here as the transition object).
+        Dungeon dungeon = loadedDungeon(helper, "dark_dungeon");
+        var oldWorld = helper.getLevel();
+        var dungeonWorld = ensureDungeonWorld(helper);
+        try {
+            BlockPos rel = new BlockPos(1, 1, 1);
+            helper.setBlock(rel, BlockInit.DUNGEON_PORTAL);
+            DungeonPortalEntity portal = helper.getBlockEntity(rel, DungeonPortalEntity.class);
+            portal.setDungeonType("dark_dungeon");
+            portal.setDifficulty("easy");
+            portal.setCooldownTime(0);
+            BlockPos portalAbs = helper.absolutePos(rel);
+
+            var player = helper.makeMockServerPlayerInLevel();
+            DungeonPlacementHandler.enter(player, dungeonWorld, oldWorld, portal, portalAbs, "easy", true);
+            var access = (ServerPlayerAccess) player;
+            helper.assertTrue(access.getOldServerWorld() == oldWorld, "leave fixture must persist the return world (teleportOutOfDungeon oldWorld branch)");
+            BlockPos savedSpawn = access.getDungeonSpawnBlockPos();
+            helper.assertTrue(savedSpawn != null, "leave fixture must persist a return position");
+            helper.assertTrue(portal.getDungeonPlayerUuids().contains(player.getUUID()), "leave fixture must join the player");
+
+            int before = (int) player.level().getGameTime();
+            portal.getDungeonPlayerUuids().remove(player.getUUID());
+            if (portal.getDungeonPlayerCount() == 0) {
+                portal.setCooldownTime(dungeon.getCooldown() + (int) player.level().getGameTime());
+            }
+            portal.setChanged();
+            helper.assertTrue(!portal.getDungeonPlayerUuids().contains(player.getUUID()), "leave must remove the player from the dungeon");
+            helper.assertTrue(portal.getCooldownTime() == dungeon.getCooldown() + before, "empty group leave must start cooldown at dungeon tuning");
+
+            TeleportTransition leaveTransition = DungeonPlacementHandler.leave(player, oldWorld);
+            helper.assertTrue(leaveTransition.newLevel() == oldWorld, "leave must target the return world");
+            Vec3 expectedLeave = Vec3.atLowerCornerOf(savedSpawn).add(0.5, 0, 0.5);
+            helper.assertTrue(leaveTransition.position().equals(expectedLeave), "leave must restore the saved return position");
+
+            portal.setCooldownTime(0);
+            var first = helper.makeMockServerPlayerInLevel();
+            var second = helper.makeMockServerPlayerInLevel();
+            portal.joinDungeon(first.getUUID());
+            portal.joinDungeon(second.getUUID());
+            portal.getDungeonPlayerUuids().remove(first.getUUID());
+            if (portal.getDungeonPlayerCount() == 0) {
+                portal.setCooldownTime(dungeon.getCooldown() + (int) player.level().getGameTime());
+            }
+            portal.setChanged();
+            helper.assertTrue(portal.getDungeonPlayerUuids().equals(List.of(second.getUUID())), "remaining member must stay on the roster");
+            helper.assertTrue(portal.getCooldownTime() == 0, "non-empty group leave must not start cooldown");
+        } finally {
+            releaseDungeonWorld(helper);
+        }
+        helper.succeed();
+    }
+
+    @GameTest
+    public void compassCalibrationConsumesShardsAndBindsDungeon(GameTestHelper helper) {
+        // DungeonServerPacket DungeonCompassPacket receiver (calibrated path):
+        // compass in main hand plus 3 amethysts in main inventory must consume
+        // the shards and bind the dungeon structure component.
+        var player = helper.makeMockServerPlayer(GameType.SURVIVAL);
+        helper.assertTrue(!player.isCreative(), "compass fixture must be survival");
+        var inventory = player.getInventory();
+        inventory.clearContent();
+        var compass = new ItemStack(ItemInit.DUNGEON_COMPASS);
+        inventory.setItem(0, compass);
+        inventory.setItem(1, new ItemStack(Items.AMETHYST_SHARD, 3));
+        helper.assertTrue(player.getMainHandItem().is(ItemInit.DUNGEON_COMPASS), "compass must be in the main hand");
+        helper.assertTrue(InventoryHelper.hasRequiredItemStacks(inventory, ItemInit.getRequiredDungeonCompassCalibrationItems()), "three shards must fund calibration");
+
+        ServerLevel level = (ServerLevel) player.level();
+        if (player.getMainHandItem().is(ItemInit.DUNGEON_COMPASS)
+                && InventoryHelper.hasRequiredItemStacks(player.getInventory(), ItemInit.getRequiredDungeonCompassCalibrationItems())) {
+            InventoryHelper.decrementRequiredItemStacks(player.getInventory(), ItemInit.getRequiredDungeonCompassCalibrationItems());
+            DungeonCompassItem.setCompassDungeonStructure(level, player.blockPosition(), player.getMainHandItem(), "dark_dungeon");
+        }
+        var component = player.getMainHandItem().get(ItemInit.DUNGEON_COMPASS_DATA);
+        helper.assertTrue(component != null, "calibration must set the compass component");
+        helper.assertTrue(component.hasDungeon(), "calibration must mark a bound dungeon");
+        helper.assertTrue(component.dungeonType().equals("dark_dungeon"), "calibration must bind the requested dungeon");
+        helper.assertTrue(component.dungeonPos().isPresent(), "calibration must record a structure position");
+        int shardsLeft = 0;
+        for (ItemStack stack : inventory.getNonEquipmentItems()) {
+            if (stack.is(Items.AMETHYST_SHARD)) {
+                shardsLeft += stack.getCount();
+            }
+        }
+        helper.assertTrue(shardsLeft == 0, "calibration must consume all three shards, got " + shardsLeft);
+        helper.succeed();
+    }
+
+    @GameTest
+    public void compassCalibrationDeniedWithoutShards(GameTestHelper helper) {
+        // DungeonServerPacket DungeonCompassPacket receiver (denial path):
+        // compass in main hand but no amethysts must leave the compass
+        // unbound and the inventory untouched.
+        var player = helper.makeMockServerPlayer(GameType.SURVIVAL);
+        helper.assertTrue(!player.isCreative(), "compass fixture must be survival");
+        var inventory = player.getInventory();
+        inventory.clearContent();
+        inventory.setItem(0, new ItemStack(ItemInit.DUNGEON_COMPASS));
+        helper.assertTrue(player.getMainHandItem().is(ItemInit.DUNGEON_COMPASS), "compass must be in the main hand");
+        helper.assertTrue(!InventoryHelper.hasRequiredItemStacks(inventory, ItemInit.getRequiredDungeonCompassCalibrationItems()), "empty inventory must not fund calibration");
+
+        ServerLevel level = (ServerLevel) player.level();
+        if (player.getMainHandItem().is(ItemInit.DUNGEON_COMPASS)
+                && InventoryHelper.hasRequiredItemStacks(player.getInventory(), ItemInit.getRequiredDungeonCompassCalibrationItems())) {
+            InventoryHelper.decrementRequiredItemStacks(player.getInventory(), ItemInit.getRequiredDungeonCompassCalibrationItems());
+            DungeonCompassItem.setCompassDungeonStructure(level, player.blockPosition(), player.getMainHandItem(), "dark_dungeon");
+        }
+        helper.assertTrue(!player.getMainHandItem().has(ItemInit.DUNGEON_COMPASS_DATA), "denied calibration must not set the compass component");
+        helper.assertTrue(player.getMainHandItem().is(ItemInit.DUNGEON_COMPASS) && player.getMainHandItem().getCount() == 1, "denied calibration must leave the compass untouched");
+        helper.succeed();
+    }
+
+    private static Dungeon loadedDungeon(GameTestHelper helper, String type) {        Dungeon dungeon = Dungeon.getDungeon(type);
         helper.assertTrue(dungeon != null, type + " must already be loaded by the registered server resource listener");
         helper.assertTrue(DungeonzMain.DUNGEONS.stream().filter(entry -> entry.getDungeonTypeId().equals(type)).count() == 1, type + " must have exactly one loaded definition");
         return dungeon;

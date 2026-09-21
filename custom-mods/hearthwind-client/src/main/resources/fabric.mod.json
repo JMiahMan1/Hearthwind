@@ -14,12 +14,14 @@
       "dev.jmiahman.hearthwind.client.HearthwindClient"
     ],
   "fabric-client-gametest": [
+    "dev.jmiahman.hearthwind.client.gametest.AthenaCtmGameTests",
     "dev.jmiahman.hearthwind.client.gametest.HearthwindClientGameTests",
     "dev.jmiahman.hearthwind.client.gametest.ScreensTourGameTests",
     "dev.jmiahman.hearthwind.client.gametest.DietGameTests",
     "dev.jmiahman.hearthwind.client.gametest.MiningGameTests",
     "dev.jmiahman.hearthwind.client.gametest.PackServerConnectGameTests",
-    "dev.jmiahman.hearthwind.client.gametest.BiomeTempGameTests"
+    "dev.jmiahman.hearthwind.client.gametest.BiomeTempGameTests",
+    "dev.jmiahman.hearthwind.client.gametest.ShowcaseTourGameTests"
   ]
   },
   "depends": {

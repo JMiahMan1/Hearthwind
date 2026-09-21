@@ -7,7 +7,10 @@ export PATH="$JAVA_HOME/bin:$PATH"
 # harness enabled (-Dfabric-api.gametest=true), which runs every @GameTest
 # in every mod and writes a JUnit XML report, then parses it.
 #
-# Usage:  tools/run_gametests.sh [--keep-server]
+# Usage:  tools/run_gametests.sh [--keep-server] [--filter=<regex>]
+#   --filter passes -Dfabric-api.gametest.filter through so a single test
+#   (e.g. dungeonz:dungeon_zgame_tests_enter_leave_round_trip_persists_return_point)
+#   can be reproduced without running the whole suite.
 # Requires: java (25) on PATH. Server files are cached in .gametest-server/
 set -euo pipefail
 
@@ -18,11 +21,21 @@ DIR="$(cd "$(dirname "$0")" && pwd)"
 SRV="$DIR/../.gametest-server"
 HEAP="${GAMETEST_HEAP:-768m}"
 KEEP=0
-[ "${1:-}" = "--keep-server" ] && KEEP=1
+FILTER="${GAMETEST_FILTER:-}"
+for arg in "$@"; do
+  case "$arg" in
+    --keep-server) KEEP=1 ;;
+    --filter=*) FILTER="${arg#--filter=}" ;;
+  esac
+done
 
 cd "$DIR/.."
-echo "== building all hearthwind modules =="
-./gradlew build --no-daemon --max-workers=2 -q
+if [ "${SKIP_BUILD:-0}" = "1" ]; then
+  echo "== SKIP_BUILD=1: using pre-staged jars, skipping gradle build =="
+else
+  echo "== building all hearthwind modules =="
+  ./gradlew build --no-daemon --max-workers=2 -q
+fi
 
 echo "== running asset and drop integrity tests =="
 python3 "$DIR/test_assets_and_drops.py"
@@ -51,8 +64,15 @@ rm -rf "$SRV/mods" && mkdir -p "$SRV/mods"
 # Copy all resolved server dependencies and vendored jars
 cp "$DIR/../../dev-server/mods/"*.jar "$SRV/mods/" 2>/dev/null || true
 cp "$DIR/../../conversion/vendored/"*.jar "$SRV/mods/" 2>/dev/null || true
-# Ensure fresh custom builds overwrite any stale jars
-find hearthwind-survival hearthwind-skills hearthwind-jobs hearthwind-primitive hearthwind-world hearthwind-client -name "*.jar" \
+# Ensure fresh custom builds overwrite any stale jars (letsdo jars included:
+# their gametest entrypoints run in the same harness invocation; skip dirs
+# not wired in settings.gradle yet)
+LETS_DO="letsdo-farm-and-charm letsdo-bakery letsdo-vinery letsdo-brewery letsdo-candlelight letsdo-herbalbrews letsdo-meadow letsdo-nethervinery"
+HAVE_LETS_DO=""
+for m in $LETS_DO; do [ -d "$m" ] && HAVE_LETS_DO="$HAVE_LETS_DO $m"; done
+HAVE_LETS_DO_WIRED=""
+for m in $HAVE_LETS_DO; do grep -q "^include '$m'$" settings.gradle && HAVE_LETS_DO_WIRED="$HAVE_LETS_DO_WIRED $m"; done
+find hearthwind-survival hearthwind-skills hearthwind-jobs hearthwind-primitive hearthwind-world hearthwind-client athena chipped dungeonz $HAVE_LETS_DO_WIRED -name "*.jar" \
      -path "*build/libs/*" ! -name "*-sources.jar" -exec cp {} "$SRV/mods/" \;
 # Install gametest harness
 cp "$CACHE/fabric-gametest-api-v1.jar" "$SRV/mods/"
@@ -94,11 +114,17 @@ else
 fi
 
 echo "== running gametests headless (${HEAP} heap) =="
+FILTER_ARGS=()
+if [ -n "$FILTER" ]; then
+  echo "== gametest filter: $FILTER =="
+  FILTER_ARGS+=("-Dfabric-api.gametest.filter=$FILTER")
+fi
 set +e
 cd "$SRV"
 timeout "${GAMETEST_TIMEOUT:-420}" java -Xmx"$HEAP" \
      -Dfabric-api.gametest=true \
      -Dhearthwind.mergedJar="${MERGED_JAR}" \
+     "${FILTER_ARGS[@]:+${FILTER_ARGS[@]}}" \
      -Dfabric-api.gametest.report-file="$REPORT" \
      -jar "$SRV/fabric-server.jar" nogui > "$SRV/gametest.log" 2>&1
 STATUS=$?

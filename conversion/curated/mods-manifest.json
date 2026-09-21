@@ -860,7 +860,7 @@
   },
   {
    "file": "surveyor",
-   "slug": "surveyor-map-framework",
+   "slug": "surveyor",
    "action": "keep",
    "reason": "Atlas framework lib; only if antique atlas needs it",
    "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"

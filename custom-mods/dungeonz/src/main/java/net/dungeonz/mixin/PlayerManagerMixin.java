@@ -59,7 +59,9 @@ public class PlayerManagerMixin {
         if (!alive && oldPlayer.level().dimension() == DimensionInit.DUNGEON_WORLD && DungeonHelper.getDungeonPortalEntity(oldPlayer) != null
                 && DungeonHelper.getDungeonPortalEntity(oldPlayer).getDungeon().isRespawnAllowed()) {
             BlockPos pos = DungeonHelper.getDungeonPortalEntity(oldPlayer).getBlockPos();
-            return new TeleportTransition(oldPlayer.level(), new Vec3(pos.getX() * 16, 100, pos.getZ() * 16), Vec3.ZERO, oldPlayer.getYRot(), 0.0f, TeleportTransition.DO_NOTHING);
+            // Center on the portal dungeon cell like DungeonPlacementHandler.enter does;
+            // the raw corner would wedge the respawned player into neighboring blocks.
+            return new TeleportTransition(oldPlayer.level(), Vec3.atLowerCornerOf(new BlockPos(pos.getX() * 16, 100, pos.getZ() * 16)).add(0.5, 0, 0.5), Vec3.ZERO, oldPlayer.getYRot(), 0.0f, TeleportTransition.DO_NOTHING);
         }
         return original;
     }
