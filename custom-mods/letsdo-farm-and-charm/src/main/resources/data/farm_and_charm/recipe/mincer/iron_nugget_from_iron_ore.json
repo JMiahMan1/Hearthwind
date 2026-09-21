@@ -1,0 +1,9 @@
+{
+  "type": "farm_and_charm:mincer",
+  "ingredient": "minecraft:iron_ore",
+  "recipe_type": "METAL",
+  "result": {
+    "id": "minecraft:iron_nugget",
+    "count": 5
+  }
+}

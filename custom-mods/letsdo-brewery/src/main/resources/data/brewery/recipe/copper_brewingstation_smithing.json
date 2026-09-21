@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:smithing_transform",
+  "addition": "minecraft:copper_ingot",
+  "base": "brewery:wooden_brewingstation",
+  "result": {
+    "id": "brewery:copper_brewingstation",
+    "count": 1
+  },
+  "template": "minecraft:sentry_armor_trim_smithing_template"
+}

@@ -1,0 +1,64 @@
+{
+  "variants": {
+    "facing=north,fill=0": {
+      "model": "farm_and_charm:block/ribwort_tea_0",
+      "y": 0,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=east,fill=0": {
+      "model": "farm_and_charm:block/ribwort_tea_0",
+      "y": 90,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=south,fill=0": {
+      "model": "farm_and_charm:block/ribwort_tea_0",
+      "y": 180,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=west,fill=0": {
+      "model": "farm_and_charm:block/ribwort_tea_0",
+      "y": 270,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=north,fill=1": {
+      "model": "farm_and_charm:block/ribwort_tea_0",
+      "y": 0,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=east,fill=1": {
+      "model": "farm_and_charm:block/ribwort_tea_0",
+      "y": 90,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=south,fill=1": {
+      "model": "farm_and_charm:block/ribwort_tea_0",
+      "y": 180,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=west,fill=1": {
+      "model": "farm_and_charm:block/ribwort_tea_0",
+      "y": 270,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=north,fill=2": {
+      "model": "farm_and_charm:block/ribwort_tea_1",
+      "y": 0,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=east,fill=2": {
+      "model": "farm_and_charm:block/ribwort_tea_1",
+      "y": 90,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=south,fill=2": {
+      "model": "farm_and_charm:block/ribwort_tea_1",
+      "y": 180,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=west,fill=2": {
+      "model": "farm_and_charm:block/ribwort_tea_1",
+      "y": 270,
+      "render_type": "minecraft:cutout"
+    }
+  }
+}

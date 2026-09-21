@@ -1,0 +1,20 @@
+{
+  "variants": {
+    "layers=0": {
+      "model": "farm_and_charm:block/wheat_pile_0",
+      "render_type": "minecraft:cutout"
+    },
+    "layers=1": {
+      "model": "farm_and_charm:block/wheat_pile_1",
+      "render_type": "minecraft:cutout"
+    },
+    "layers=2": {
+      "model": "farm_and_charm:block/wheat_pile_2",
+      "render_type": "minecraft:cutout"
+    },
+    "layers=3": {
+      "model": "farm_and_charm:block/wheat_pile_3",
+      "render_type": "minecraft:cutout"
+    }
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "# #",
+    "###",
+    "X X"
+  ],
+  "key": {
+    "X": "meadow:pine_planks",
+    "#": "meadow:rustic_wool"
+  },
+  "result": {
+    "id": "meadow:pine_sofa_rustic",
+    "count": 1
+  }
+}

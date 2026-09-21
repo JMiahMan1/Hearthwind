@@ -1,0 +1,110 @@
+{
+  "multipart": [
+    {
+      "apply": {
+        "model": "farm_and_charm:block/iron_divider_post_ends",
+        "render_type": "minecraft:cutout"
+      }
+    },
+    {
+      "apply": {
+        "model": "farm_and_charm:block/iron_divider_post",
+        "render_type": "minecraft:cutout"
+      },
+      "when": {
+        "east": "false",
+        "north": "false",
+        "south": "false",
+        "west": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "farm_and_charm:block/iron_divider_cap",
+        "render_type": "minecraft:cutout"
+      },
+      "when": {
+        "east": "false",
+        "north": "true",
+        "south": "false",
+        "west": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "farm_and_charm:block/iron_divider_cap",
+        "y": 90,
+        "render_type": "minecraft:cutout"
+      },
+      "when": {
+        "east": "true",
+        "north": "false",
+        "south": "false",
+        "west": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "farm_and_charm:block/iron_divider_cap_alt",
+        "render_type": "minecraft:cutout"
+      },
+      "when": {
+        "east": "false",
+        "north": "false",
+        "south": "true",
+        "west": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "farm_and_charm:block/iron_divider_cap_alt",
+        "y": 90,
+        "render_type": "minecraft:cutout"
+      },
+      "when": {
+        "east": "false",
+        "north": "false",
+        "south": "false",
+        "west": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "farm_and_charm:block/iron_divider_side",
+        "render_type": "minecraft:cutout"
+      },
+      "when": {
+        "north": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "farm_and_charm:block/iron_divider_side",
+        "y": 90,
+        "render_type": "minecraft:cutout"
+      },
+      "when": {
+        "east": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "farm_and_charm:block/iron_divider_side_alt",
+        "render_type": "minecraft:cutout"
+      },
+      "when": {
+        "south": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "farm_and_charm:block/iron_divider_side_alt",
+        "y": 90,
+        "render_type": "minecraft:cutout"
+      },
+      "when": {
+        "west": "true"
+      }
+    }
+  ]
+}

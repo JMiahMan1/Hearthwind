@@ -1,0 +1,80 @@
+{
+  "variants": {
+    "facing=north,type=none": {
+      "model": "meadow:block/doormat",
+      "render_type": "minecraft:cutout"
+    },
+    "facing=east,type=none": {
+      "model": "meadow:block/doormat",
+      "y": 90,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=south,type=none": {
+      "model": "meadow:block/doormat",
+      "y": 180,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=west,type=none": {
+      "model": "meadow:block/doormat",
+      "y": 270,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=north,type=middle": {
+      "model": "meadow:block/doormat_middle",
+      "render_type": "minecraft:cutout"
+    },
+    "facing=east,type=middle": {
+      "model": "meadow:block/doormat_middle",
+      "y": 90,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=south,type=middle": {
+      "model": "meadow:block/doormat_middle",
+      "y": 180,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=west,type=middle": {
+      "model": "meadow:block/doormat_middle",
+      "y": 270,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=north,type=left": {
+      "model": "meadow:block/doormat_side",
+      "render_type": "minecraft:cutout"
+    },
+    "facing=east,type=left": {
+      "model": "meadow:block/doormat_side",
+      "y": 90,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=south,type=left": {
+      "model": "meadow:block/doormat_side",
+      "y": 180,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=west,type=left": {
+      "model": "meadow:block/doormat_side",
+      "y": 270,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=north,type=right": {
+      "model": "meadow:block/doormat_side",
+      "y": 180,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=east,type=right": {
+      "model": "meadow:block/doormat_side",
+      "y": 270,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=south,type=right": {
+      "model": "meadow:block/doormat_side",
+      "render_type": "minecraft:cutout"
+    },
+    "facing=west,type=right": {
+      "model": "meadow:block/doormat_side",
+      "y": 90,
+      "render_type": "minecraft:cutout"
+    }
+  }
+}

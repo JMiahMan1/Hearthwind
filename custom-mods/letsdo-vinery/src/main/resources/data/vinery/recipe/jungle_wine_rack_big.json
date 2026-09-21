@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "group": "jungle_rack",
+  "pattern": [
+    "#_#",
+    "___",
+    "#_#"
+  ],
+  "key": {
+    "#": "minecraft:jungle_planks",
+    "_": "minecraft:jungle_slab"
+  },
+  "result": {
+    "id": "vinery:jungle_wine_rack_big"
+  }
+}

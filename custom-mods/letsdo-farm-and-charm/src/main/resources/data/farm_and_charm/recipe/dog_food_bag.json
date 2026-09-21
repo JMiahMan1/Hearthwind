@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "group": "animal_food_bag",
+  "pattern": [
+    "###",
+    "###",
+    "###"
+  ],
+  "key": {
+    "#": "farm_and_charm:dog_food"
+  },
+  "result": {
+    "id": "farm_and_charm:dog_food_bag"
+  }
+}

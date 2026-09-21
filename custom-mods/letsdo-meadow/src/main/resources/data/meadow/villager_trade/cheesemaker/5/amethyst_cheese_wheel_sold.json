@@ -1,0 +1,17 @@
+{
+  "wants": {
+    "id": "minecraft:emerald",
+    "count": {
+      "type": "minecraft:uniform",
+      "min": 12.0,
+      "max": 12.0
+    }
+  },
+  "gives": {
+    "id": "meadow:amethyst_cheese_wheel",
+    "count": 1
+  },
+  "max_uses": 12.0,
+  "reputation_discount": 0.05,
+  "xp": 15.0
+}

@@ -1,0 +1,14 @@
+{
+  "type": "farm_and_charm:stove",
+  "ingredients": [
+    "#farm_and_charm:dough",
+    "farm_and_charm:yeast",
+    "#bakery:eggs"
+  ],
+  "result": {
+    "count": 5,
+    "id": "bakery:bun"
+  },
+  "experience": 0.125,
+  "requiresLearning": false
+}

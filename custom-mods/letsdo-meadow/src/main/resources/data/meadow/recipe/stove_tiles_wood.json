@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "###",
+    "#C#",
+    "i i"
+  ],
+  "key": {
+    "#": "meadow:limestone_bricks",
+    "C": "meadow:firewood",
+    "i": "minecraft:iron_ingot"
+  },
+  "result": {
+    "id": "meadow:stove_tiles_wood",
+    "count": 1
+  }
+}

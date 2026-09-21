@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:smithing_transform",
+  "addition": "minecraft:netherite_ingot",
+  "base": "brewery:brewery_banner",
+  "result": {
+    "id": "brewery:brewery_banner",
+    "count": 2
+  },
+  "template": "minecraft:netherite_upgrade_smithing_template"
+}

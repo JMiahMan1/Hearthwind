@@ -1,0 +1,11 @@
+{
+  "type": "farm_and_charm:crafting_bowl",
+  "ingredients": [
+    "#farm_and_charm:milk",
+    "#candlelight:water_bottles"
+  ],
+  "result": {
+    "id": "candlelight:mozzarella",
+    "count": 6
+  }
+}

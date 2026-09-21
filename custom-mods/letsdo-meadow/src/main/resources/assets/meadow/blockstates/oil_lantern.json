@@ -1,0 +1,12 @@
+{
+  "variants": {
+    "hanging=false": {
+      "model": "meadow:block/oil_lantern",
+      "render_type": "minecraft:cutout"
+    },
+    "hanging=true": {
+      "model": "meadow:block/oil_lantern_hanging",
+      "render_type": "minecraft:cutout"
+    }
+  }
+}

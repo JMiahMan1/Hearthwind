@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 1,
+  "id": "exposure",
+  "version": "${version}",
+  "name": "Exposure",
+  "description": "Camera mod with focus on process and aesthetics.",
+  "authors": ["mortuusars"],
+  "contact": {
+    "homepage": "https://www.curseforge.com/minecraft/mc-mods/exposure",
+    "sources": "https://github.com/mortuusars/Exposure"
+  },
+  "license": "MIT",
+  "icon": "icon.png",
+  "environment": "*",
+  "accessWidener": "exposure.accesswidener",
+  "entrypoints": {
+    "main": [
+      "io.github.mortuusars.exposure.fabric.ExposureFabric"
+    ],
+    "client": [
+      "io.github.mortuusars.exposure.fabric.ExposureFabricClient"
+    ],
+    "jei_mod_plugin": [
+      "io.github.mortuusars.exposure.integration.jei.ExposureJeiPlugin"
+    ],
+    "jade": [
+      "io.github.mortuusars.exposure.integration.jade.ExposureJadePlugin"
+    ]
+  },
+  "mixins": [
+    "exposure.mixins.json",
+    "exposure-common.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.19.3",
+    "minecraft": "~26.2",
+    "java": ">=25",
+    "fabric-api": "*",
+    "forgeconfigapiport": ">=26.2.1"
+  }
+}

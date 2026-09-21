@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "S S",
+    "# #"
+  ],
+  "key": {
+    "#": "minecraft:black_wool",
+    "S": "minecraft:rabbit_hide"
+  },
+  "result": {
+    "id": "candlelight:chefs_boots"
+  }
+}

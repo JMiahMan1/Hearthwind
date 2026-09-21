@@ -1,0 +1,12 @@
+{
+  "type": "brewery:brewing",
+  "ingredients": [
+    "brewery:dried_barley",
+    "brewery:dried_oat",
+    "farm_and_charm:yeast"
+  ],
+  "material": "NETHERITE",
+  "result": {
+    "id": "brewery:whiskey_jamesons_malt"
+  }
+}

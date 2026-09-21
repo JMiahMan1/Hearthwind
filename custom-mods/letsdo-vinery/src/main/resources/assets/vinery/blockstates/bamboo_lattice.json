@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "": {
+      "model": "vinery:block/bamboo_lattice",
+      "render_type": "minecraft:cutout"
+    }
+  }
+}

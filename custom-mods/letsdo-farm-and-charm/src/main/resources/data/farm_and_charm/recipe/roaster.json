@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "UUU",
+    "# #",
+    "###"
+  ],
+  "key": {
+    "#": "minecraft:iron_ingot",
+    "U": "minecraft:iron_nugget"
+  },
+  "result": {
+    "id": "farm_and_charm:roaster",
+    "count": 1
+  }
+}

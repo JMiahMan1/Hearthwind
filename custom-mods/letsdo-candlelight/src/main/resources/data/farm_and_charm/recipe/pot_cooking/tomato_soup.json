@@ -1,0 +1,17 @@
+{
+  "type": "farm_and_charm:pot_cooking",
+  "ingredients": [
+    "#farm_and_charm:tomato",
+    "#farm_and_charm:tomato",
+    "#candlelight:red_effect"
+  ],
+  "requireContainer": true,
+  "container": {
+    "id": "minecraft:bowl"
+  },
+  "result": {
+    "id": "candlelight:tomato_soup",
+    "count": 4
+  },
+  "requiresLearning": false
+}

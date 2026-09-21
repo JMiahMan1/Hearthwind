@@ -1,0 +1,13 @@
+{
+  "type": "farm_and_charm:crafting_bowl",
+  "ingredients": [
+    "farm_and_charm:flour",
+    "minecraft:sugar",
+    "#bakery:eggs",
+    "#bakery:milk"
+  ],
+  "result": {
+    "id": "bakery:cake_dough",
+    "count": 12
+  }
+}

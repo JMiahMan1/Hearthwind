@@ -1,0 +1,12 @@
+{
+  "replace": false,
+  "values": [
+    "brewery:beer_wheat",
+    "brewery:beer_hops",
+    "brewery:beer_barley",
+    "brewery:beer_oat",
+    "brewery:beer_nettle",
+    "brewery:beer_haley"
+  ]
+}
+

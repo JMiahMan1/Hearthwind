@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "#B#",
+    "BBB",
+    "BBB"
+  ],
+  "key": {
+    "#": "minecraft:string",
+    "B": "#minecraft:wool"
+  },
+  "result": {
+    "id": "candlelight:shirt",
+    "count": 1
+  }
+}

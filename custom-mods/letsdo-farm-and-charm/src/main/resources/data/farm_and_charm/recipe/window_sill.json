@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "U U",
+    "###"
+  ],
+  "key": {
+    "#": "#minecraft:wooden_slabs",
+    "U": "minecraft:flower_pot"
+  },
+  "result": {
+    "id": "farm_and_charm:window_sill",
+    "count": 2
+  }
+}

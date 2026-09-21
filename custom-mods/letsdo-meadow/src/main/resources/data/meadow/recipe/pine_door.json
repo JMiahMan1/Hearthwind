@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "group": "door",
+  "pattern": [
+    "##",
+    "##",
+    "##"
+  ],
+  "key": {
+    "#": "meadow:pine_planks"
+  },
+  "result": {
+    "id": "meadow:pine_door",
+    "count": 3
+  }
+}

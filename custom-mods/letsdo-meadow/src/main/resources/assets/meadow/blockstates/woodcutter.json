@@ -1,0 +1,23 @@
+{
+  "variants": {
+    "facing=east": {
+      "model": "meadow:block/woodcutter",
+      "y": 90,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=north": {
+      "model": "meadow:block/woodcutter",
+      "render_type": "minecraft:cutout"
+    },
+    "facing=south": {
+      "model": "meadow:block/woodcutter",
+      "y": 180,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=west": {
+      "model": "meadow:block/woodcutter",
+      "y": 270,
+      "render_type": "minecraft:cutout"
+    }
+  }
+}

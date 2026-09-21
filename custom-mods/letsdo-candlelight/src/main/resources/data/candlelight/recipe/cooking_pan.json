@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " ii",
+    " ii",
+    "/  "
+  ],
+  "key": {
+    "i": "minecraft:copper_ingot",
+    "/": "minecraft:stick"
+  },
+  "result": {
+    "id": "candlelight:cooking_pan",
+    "count": 1
+  }
+}

@@ -1,0 +1,80 @@
+{
+  "variants": {
+    "facing=north,type=none": {
+      "model": "bakery:block/iron_bench_single",
+      "render_type": "minecraft:cutout"
+    },
+    "facing=east,type=none": {
+      "model": "bakery:block/iron_bench_single",
+      "y": 90,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=south,type=none": {
+      "model": "bakery:block/iron_bench_single",
+      "y": 180,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=west,type=none": {
+      "model": "bakery:block/iron_bench_single",
+      "y": 270,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=north,type=middle": {
+      "model": "bakery:block/iron_bench_middle",
+      "render_type": "minecraft:cutout"
+    },
+    "facing=east,type=middle": {
+      "model": "bakery:block/iron_bench_middle",
+      "y": 90,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=south,type=middle": {
+      "model": "bakery:block/iron_bench_middle",
+      "y": 180,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=west,type=middle": {
+      "model": "bakery:block/iron_bench_middle",
+      "y": 270,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=north,type=left": {
+      "model": "bakery:block/iron_bench_extended",
+      "render_type": "minecraft:cutout"
+    },
+    "facing=east,type=left": {
+      "model": "bakery:block/iron_bench_extended",
+      "y": 90,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=south,type=left": {
+      "model": "bakery:block/iron_bench_extended",
+      "y": 180,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=west,type=left": {
+      "model": "bakery:block/iron_bench_extended",
+      "y": 270,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=north,type=right": {
+      "model": "bakery:block/iron_bench_extended",
+      "y": 180,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=east,type=right": {
+      "model": "bakery:block/iron_bench_extended",
+      "y": 270,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=south,type=right": {
+      "model": "bakery:block/iron_bench_extended",
+      "render_type": "minecraft:cutout"
+    },
+    "facing=west,type=right": {
+      "model": "bakery:block/iron_bench_extended",
+      "y": 90,
+      "render_type": "minecraft:cutout"
+    }
+  }
+}

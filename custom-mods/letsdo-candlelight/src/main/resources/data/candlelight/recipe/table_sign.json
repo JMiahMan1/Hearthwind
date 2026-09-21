@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "   ",
+    " # ",
+    "# #"
+  ],
+  "key": {
+    "#": "minecraft:paper"
+  },
+  "result": {
+    "id": "candlelight:table_sign",
+    "count": 2
+  }
+}

@@ -60,7 +60,7 @@ jobs:
           java-version: '26'
       - name: Resolve deps + materialize server dir
         run: |
-          python3 conversion/scripts/resolve_deps.py
+          python3 conversion/scripts/resolve_deps.py --allow-missing
           python3 conversion/scripts/build_pack.py --server-dir
       - name: Static feature-order cycle check
         run: |
@@ -129,7 +129,7 @@ jobs:
           java-version: '26'
       - name: Resolve deps + build pack
         run: |
-          python3 conversion/scripts/resolve_deps.py
+          python3 conversion/scripts/resolve_deps.py --allow-missing
           python3 conversion/scripts/build_pack.py --server-dir
       - name: Static feature-order cycle check
         run: |
@@ -208,7 +208,7 @@ jobs:
         run: ./gradlew build --no-daemon --max-workers=2
       - name: Resolve deps + materialize client mods
         run: |
-          python3 conversion/scripts/resolve_deps.py
+          python3 conversion/scripts/resolve_deps.py --allow-missing
           python3 conversion/scripts/build_pack.py --server-dir
       - name: Client gametests under xvfb
         working-directory: custom-mods

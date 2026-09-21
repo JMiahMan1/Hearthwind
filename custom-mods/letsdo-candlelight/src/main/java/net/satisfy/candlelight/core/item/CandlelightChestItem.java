@@ -1,0 +1,22 @@
+package net.satisfy.candlelight.core.item;
+
+import net.minecraft.core.Holder;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.equipment.ArmorMaterial;
+import net.minecraft.world.item.equipment.ArmorType;
+
+public class CandlelightChestItem extends Item {
+    private final ArmorType type;
+    private final Identifier chestplateTexture;
+
+    public CandlelightChestItem(Holder<ArmorMaterial> armorMaterial, ArmorType type, Properties properties, Identifier chestplateTexture) {
+        super(properties.humanoidArmor(armorMaterial.value(), type));
+        this.type = type;
+        this.chestplateTexture = chestplateTexture;
+    }
+
+    public Identifier getChestplateTexture() {
+        return chestplateTexture;
+    }
+}

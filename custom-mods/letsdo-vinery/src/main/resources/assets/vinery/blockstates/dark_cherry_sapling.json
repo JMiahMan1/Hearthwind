@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "": {
+      "model": "vinery:block/dark_cherry_sapling",
+      "render_type": "minecraft:cutout"
+    }
+  }
+}

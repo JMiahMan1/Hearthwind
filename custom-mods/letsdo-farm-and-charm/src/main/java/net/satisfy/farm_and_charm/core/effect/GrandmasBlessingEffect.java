@@ -1,0 +1,49 @@
+package net.satisfy.farm_and_charm.core.effect;
+
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffectCategory;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
+import net.minecraft.world.entity.ai.attributes.AttributeMap;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.satisfy.farm_and_charm.FarmAndCharm;
+
+public class GrandmasBlessingEffect extends MobEffect {
+    private static final Identifier LUCK_MODIFIER_ID = FarmAndCharm.identifier("grandmas_blessing_luck_modifier");
+    private static final AttributeModifier LUCK_MODIFIER = new AttributeModifier(LUCK_MODIFIER_ID, 2, AttributeModifier.Operation.ADD_VALUE);
+
+    public GrandmasBlessingEffect() {
+        super(MobEffectCategory.BENEFICIAL, 0xFFDA70D6);
+    }
+
+    @Override
+    public boolean applyEffectTick(net.minecraft.server.level.ServerLevel level, LivingEntity entity, int amplifier) {
+        entity.getActiveEffectsMap().forEach((effect, instance) -> {
+            if (effect.value().getCategory() == MobEffectCategory.HARMFUL) {
+                entity.removeEffect(effect);
+            }
+        });
+        return true;
+    }
+
+    @Override
+    public boolean shouldApplyEffectTickThisTick(int i, int j) {
+        return true;
+    }
+
+    @Override
+    public void addAttributeModifiers(AttributeMap attributeMap, int i) {
+        super.addAttributeModifiers(attributeMap, i);
+        AttributeInstance luckAttribute = attributeMap.getInstance(Attributes.LUCK);
+        if (luckAttribute != null && !luckAttribute.hasModifier(LUCK_MODIFIER_ID)) {
+            luckAttribute.addPermanentModifier(LUCK_MODIFIER);
+        }
+    }
+
+    @Override
+    public boolean isInstantaneous() {
+        return false;
+    }
+}

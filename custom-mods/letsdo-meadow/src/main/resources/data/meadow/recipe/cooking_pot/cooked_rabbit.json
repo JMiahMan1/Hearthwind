@@ -1,0 +1,13 @@
+{
+  "type": "meadow:cooking",
+  "ingredients": [
+    "minecraft:rabbit",
+    "#c:salts"
+  ],
+  "fluid_amount": 10,
+  "crafting_duration": 40,
+  "result": {
+    "id": "minecraft:cooked_rabbit",
+    "count": 2
+  }
+}

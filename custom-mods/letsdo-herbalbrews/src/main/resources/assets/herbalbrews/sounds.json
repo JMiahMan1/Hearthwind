@@ -1,0 +1,8 @@
+{
+  "tea_kettle_boiling": {
+    "subtitle": "subtitles.herbalbrews.tea_kettle_boiling",
+    "sounds": [
+      "herbalbrews:tea_kettle_boiling"
+    ]
+  }
+}

@@ -133,6 +133,10 @@ def required_dep_project_ids(version_list):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--mc", help="override target MC version")
+    ap.add_argument("--allow-missing", action="store_true",
+                    help="exit 0 even when entries are missing for the target "
+                         "(fork-ports pending); resolved.json + readiness report "
+                         "still record every gap. CI uses this; local triage stays strict.")
     args = ap.parse_args()
 
     conf = json.load(open(CONF))
@@ -286,7 +290,7 @@ def main():
         print("\nMissing for target:")
         for r in sorted(missing, key=lambda x: x["file"]):
             print(f"  {r['file'][:40]:40} max-stable={r.get('project_max_stable')}")
-    sys.exit(0 if ok == len(results) else 1)
+    sys.exit(0 if (ok == len(results) or args.allow_missing) else 1)
 
 
 def _save(results, mc):

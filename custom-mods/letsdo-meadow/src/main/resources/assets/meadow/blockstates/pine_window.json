@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "": {
+      "model": "meadow:block/pine_window",
+      "render_type": "minecraft:translucent"
+    }
+  }
+}

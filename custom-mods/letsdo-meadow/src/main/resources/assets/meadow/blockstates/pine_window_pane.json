@@ -1,0 +1,376 @@
+{
+  "multipart": [
+    {
+      "when": {
+        "part": 3
+      },
+      "apply": {
+        "model": "meadow:block/pine_window_pane_top_post",
+        "render_type": "minecraft:translucent"
+      }
+    },
+    {
+      "when": {
+        "north": "true",
+        "part": 3
+      },
+      "apply": {
+        "model": "meadow:block/pine_window_pane_top_side",
+        "render_type": "minecraft:translucent"
+      }
+    },
+    {
+      "when": {
+        "east": "true",
+        "part": 3
+      },
+      "apply": {
+        "model": "meadow:block/pine_window_pane_top_side",
+        "y": 90,
+        "render_type": "minecraft:translucent"
+      }
+    },
+    {
+      "when": {
+        "south": "true",
+        "part": 3
+      },
+      "apply": {
+        "model": "meadow:block/pine_window_pane_top_side_alt",
+        "render_type": "minecraft:translucent"
+      }
+    },
+    {
+      "when": {
+        "west": "true",
+        "part": 3
+      },
+      "apply": {
+        "model": "meadow:block/pine_window_pane_top_side_alt",
+        "y": 90,
+        "render_type": "minecraft:translucent"
+      }
+    },
+    {
+      "when": {
+        "north": "false",
+        "part": 3
+      },
+      "apply": {
+        "model": "meadow:block/pine_window_pane_top_noside",
+        "render_type": "minecraft:translucent"
+      }
+    },
+    {
+      "when": {
+        "east": "false",
+        "part": 3
+      },
+      "apply": {
+        "model": "meadow:block/pine_window_pane_top_noside_alt",
+        "render_type": "minecraft:translucent"
+      }
+    },
+    {
+      "when": {
+        "south": "false",
+        "part": 3
+      },
+      "apply": {
+        "model": "meadow:block/pine_window_pane_top_noside_alt",
+        "y": 90,
+        "render_type": "minecraft:translucent"
+      }
+    },
+    {
+      "when": {
+        "west": "false",
+        "part": 3
+      },
+      "apply": {
+        "model": "meadow:block/pine_window_pane_top_noside",
+        "y": 270,
+        "render_type": "minecraft:translucent"
+      }
+    },
+    {
+      "when": {
+        "part": 2
+      },
+      "apply": {
+        "model": "meadow:block/pine_window_pane_mid_post",
+        "render_type": "minecraft:translucent"
+      }
+    },
+    {
+      "when": {
+        "north": "true",
+        "part": 2
+      },
+      "apply": {
+        "model": "meadow:block/pine_window_pane_mid_side",
+        "render_type": "minecraft:translucent"
+      }
+    },
+    {
+      "when": {
+        "east": "true",
+        "part": 2
+      },
+      "apply": {
+        "model": "meadow:block/pine_window_pane_mid_side",
+        "y": 90,
+        "render_type": "minecraft:translucent"
+      }
+    },
+    {
+      "when": {
+        "south": "true",
+        "part": 2
+      },
+      "apply": {
+        "model": "meadow:block/pine_window_pane_mid_side_alt",
+        "render_type": "minecraft:translucent"
+      }
+    },
+    {
+      "when": {
+        "west": "true",
+        "part": 2
+      },
+      "apply": {
+        "model": "meadow:block/pine_window_pane_mid_side_alt",
+        "y": 90,
+        "render_type": "minecraft:translucent"
+      }
+    },
+    {
+      "when": {
+        "north": "false",
+        "part": 2
+      },
+      "apply": {
+        "model": "meadow:block/pine_window_pane_mid_noside",
+        "render_type": "minecraft:translucent"
+      }
+    },
+    {
+      "when": {
+        "east": "false",
+        "part": 2
+      },
+      "apply": {
+        "model": "meadow:block/pine_window_pane_mid_noside_alt",
+        "render_type": "minecraft:translucent"
+      }
+    },
+    {
+      "when": {
+        "south": "false",
+        "part": 2
+      },
+      "apply": {
+        "model": "meadow:block/pine_window_pane_mid_noside_alt",
+        "y": 90,
+        "render_type": "minecraft:translucent"
+      }
+    },
+    {
+      "when": {
+        "west": "false",
+        "part": 2
+      },
+      "apply": {
+        "model": "meadow:block/pine_window_pane_mid_noside",
+        "y": 270,
+        "render_type": "minecraft:translucent"
+      }
+    },
+    {
+      "when": {
+        "part": 1
+      },
+      "apply": {
+        "model": "meadow:block/pine_window_pane_bottom_post",
+        "render_type": "minecraft:translucent"
+      }
+    },
+    {
+      "when": {
+        "north": "true",
+        "part": 1
+      },
+      "apply": {
+        "model": "meadow:block/pine_window_pane_bottom_side",
+        "render_type": "minecraft:translucent"
+      }
+    },
+    {
+      "when": {
+        "east": "true",
+        "part": 1
+      },
+      "apply": {
+        "model": "meadow:block/pine_window_pane_bottom_side",
+        "y": 90,
+        "render_type": "minecraft:translucent"
+      }
+    },
+    {
+      "when": {
+        "south": "true",
+        "part": 1
+      },
+      "apply": {
+        "model": "meadow:block/pine_window_pane_bottom_side_alt",
+        "render_type": "minecraft:translucent"
+      }
+    },
+    {
+      "when": {
+        "west": "true",
+        "part": 1
+      },
+      "apply": {
+        "model": "meadow:block/pine_window_pane_bottom_side_alt",
+        "y": 90,
+        "render_type": "minecraft:translucent"
+      }
+    },
+    {
+      "when": {
+        "north": "false",
+        "part": 1
+      },
+      "apply": {
+        "model": "meadow:block/pine_window_pane_bottom_noside",
+        "render_type": "minecraft:translucent"
+      }
+    },
+    {
+      "when": {
+        "east": "false",
+        "part": 1
+      },
+      "apply": {
+        "model": "meadow:block/pine_window_pane_bottom_noside_alt",
+        "render_type": "minecraft:translucent"
+      }
+    },
+    {
+      "when": {
+        "south": "false",
+        "part": 1
+      },
+      "apply": {
+        "model": "meadow:block/pine_window_pane_bottom_noside_alt",
+        "y": 90,
+        "render_type": "minecraft:translucent"
+      }
+    },
+    {
+      "when": {
+        "west": "false",
+        "part": 1
+      },
+      "apply": {
+        "model": "meadow:block/pine_window_pane_bottom_noside",
+        "y": 270,
+        "render_type": "minecraft:translucent"
+      }
+    },
+    {
+      "when": {
+        "part": 0
+      },
+      "apply": {
+        "model": "meadow:block/pine_window_pane_main_post",
+        "render_type": "minecraft:translucent"
+      }
+    },
+    {
+      "when": {
+        "north": "true",
+        "part": 0
+      },
+      "apply": {
+        "model": "meadow:block/pine_window_pane_main_side",
+        "render_type": "minecraft:translucent"
+      }
+    },
+    {
+      "when": {
+        "east": "true",
+        "part": 0
+      },
+      "apply": {
+        "model": "meadow:block/pine_window_pane_main_side",
+        "y": 90,
+        "render_type": "minecraft:translucent"
+      }
+    },
+    {
+      "when": {
+        "south": "true",
+        "part": 0
+      },
+      "apply": {
+        "model": "meadow:block/pine_window_pane_main_side_alt",
+        "render_type": "minecraft:translucent"
+      }
+    },
+    {
+      "when": {
+        "west": "true",
+        "part": 0
+      },
+      "apply": {
+        "model": "meadow:block/pine_window_pane_main_side_alt",
+        "y": 90,
+        "render_type": "minecraft:translucent"
+      }
+    },
+    {
+      "when": {
+        "north": "false",
+        "part": 0
+      },
+      "apply": {
+        "model": "meadow:block/pine_window_pane_main_noside",
+        "render_type": "minecraft:translucent"
+      }
+    },
+    {
+      "when": {
+        "east": "false",
+        "part": 0
+      },
+      "apply": {
+        "model": "meadow:block/pine_window_pane_main_noside_alt",
+        "render_type": "minecraft:translucent"
+      }
+    },
+    {
+      "when": {
+        "south": "false",
+        "part": 0
+      },
+      "apply": {
+        "model": "meadow:block/pine_window_pane_main_noside_alt",
+        "y": 90,
+        "render_type": "minecraft:translucent"
+      }
+    },
+    {
+      "when": {
+        "west": "false",
+        "part": 0
+      },
+      "apply": {
+        "model": "meadow:block/pine_window_pane_main_noside",
+        "y": 270,
+        "render_type": "minecraft:translucent"
+      }
+    }
+  ]
+}

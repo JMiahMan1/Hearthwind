@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "group": "faucet",
+  "pattern": [
+    "  i",
+    " i ",
+    "B  "
+  ],
+  "key": {
+    "i": "minecraft:iron_ingot",
+    "B": "#minecraft:planks"
+  },
+  "result": {
+    "id": "bakery:bread_knife"
+  }
+}

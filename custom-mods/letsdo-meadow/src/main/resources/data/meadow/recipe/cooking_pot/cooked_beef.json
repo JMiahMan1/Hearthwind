@@ -1,0 +1,13 @@
+{
+  "type": "meadow:cooking",
+  "ingredients": [
+    "minecraft:beef",
+    "#c:salts"
+  ],
+  "fluid_amount": 2,
+  "crafting_duration": 30,
+  "result": {
+    "id": "minecraft:cooked_beef",
+    "count": 4
+  }
+}

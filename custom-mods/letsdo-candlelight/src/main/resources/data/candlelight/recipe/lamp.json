@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "BXB",
+    " # ",
+    "###"
+  ],
+  "key": {
+    "#": "candlelight:floorboard",
+    "B": "#minecraft:wool",
+    "X": "minecraft:torch"
+  },
+  "result": {
+    "id": "candlelight:lamp",
+    "count": 2
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "variants": {
+    "facing=east": {
+      "model": "farm_and_charm:block/sturdy_ladder",
+      "y": 90,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=north": {
+      "model": "farm_and_charm:block/sturdy_ladder",
+      "render_type": "minecraft:cutout"
+    },
+    "facing=south": {
+      "model": "farm_and_charm:block/sturdy_ladder",
+      "y": 180,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=west": {
+      "model": "farm_and_charm:block/sturdy_ladder",
+      "y": 270,
+      "render_type": "minecraft:cutout"
+    }
+  }
+}

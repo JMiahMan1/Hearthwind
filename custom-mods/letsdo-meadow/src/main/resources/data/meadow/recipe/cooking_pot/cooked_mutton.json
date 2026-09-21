@@ -1,0 +1,13 @@
+{
+  "type": "meadow:cooking",
+  "ingredients": [
+    "minecraft:mutton",
+    "#c:salts"
+  ],
+  "fluid_amount": 5,
+  "crafting_duration": 20,
+  "result": {
+    "id": "minecraft:cooked_mutton",
+    "count": 2
+  }
+}

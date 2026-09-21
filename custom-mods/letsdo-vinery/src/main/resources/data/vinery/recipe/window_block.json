@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "iCi",
+    "BBB",
+    "iCi"
+  ],
+  "key": {
+    "i": "minecraft:black_stained_glass_pane",
+    "C": "minecraft:yellow_stained_glass_pane",
+    "B": "minecraft:red_stained_glass_pane"
+  },
+  "result": {
+    "count": 4,
+    "id": "vinery:window"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " i ",
+    "iMi",
+    "III"
+  ],
+  "key": {
+    "i": "minecraft:iron_ingot",
+    "M": "minecraft:torch",
+    "I": "minecraft:iron_nugget"
+  },
+  "result": {
+    "id": "meadow:oil_lantern",
+    "count": 3
+  }
+}

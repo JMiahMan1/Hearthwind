@@ -1,0 +1,53 @@
+package net.satisfy.brewery.core.effect;
+
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffectCategory;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+
+public class MiningEffect extends MobEffect {
+    public MiningEffect(MobEffectCategory statusEffectCategory, int color) {
+        super(statusEffectCategory, color);
+    }
+
+    @Override
+    public boolean applyEffectTick(ServerLevel level, LivingEntity entity, int amplifier) {
+        if (entity instanceof Player player) {
+            int y = player.getBlockY();
+            MobEffectInstance currentEffect = player.getEffect(MobEffects.HASTE);
+            MobEffectInstance newEffect = determineEffectByYLevel(y);
+
+            if (shouldUpdateEffect(currentEffect, newEffect)) {
+                player.removeEffect(MobEffects.HASTE);
+                player.addEffect(newEffect);
+            }
+        }
+        return super.applyEffectTick(level, entity, amplifier);
+    }
+
+    private MobEffectInstance determineEffectByYLevel(int y) {
+        if (y >= 50) {
+            return new MobEffectInstance(MobEffects.HASTE, 200, 0, false, false);
+        } else if (y >= 30) {
+            return new MobEffectInstance(MobEffects.HASTE, 200, 1, false, false);
+        } else if (y >= 0) {
+            return new MobEffectInstance(MobEffects.HASTE, 200, 2, false, false);
+        } else if (y >= -20) {
+            return new MobEffectInstance(MobEffects.HASTE, 200, 3, false, false);
+        } else {
+            return new MobEffectInstance(MobEffects.HASTE, 200, 4, false, false);
+        }
+    }
+
+    private boolean shouldUpdateEffect(MobEffectInstance currentEffect, MobEffectInstance newEffect) {
+        return currentEffect == null || currentEffect.getAmplifier() != newEffect.getAmplifier();
+    }
+
+    @Override
+    public boolean shouldApplyEffectTickThisTick(int duration, int amplifier) {
+        return duration % 20 == 0;
+    }
+}

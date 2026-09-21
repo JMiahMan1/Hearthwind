@@ -1,0 +1,17 @@
+{
+  "type": "farm_and_charm:pot_cooking",
+  "ingredients": [
+    "brewery:mashed_potatoes",
+    "#farm_and_charm:cabbage"
+  ],
+  "requireContainer": true,
+  "container": {
+    "id": "minecraft:bowl",
+    "count": 1
+  },
+  "result": {
+    "id": "brewery:dumplings",
+    "count": 1
+  },
+  "requiresLearning": false
+}

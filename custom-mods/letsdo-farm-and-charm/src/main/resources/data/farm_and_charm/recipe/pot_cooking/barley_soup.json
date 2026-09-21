@@ -1,0 +1,19 @@
+{
+  "type": "farm_and_charm:pot_cooking",
+  "ingredients": [
+    "#farm_and_charm:barley",
+    "#farm_and_charm:barley",
+    "#farm_and_charm:water_bottles",
+    "minecraft:egg"
+  ],
+  "requireContainer": true,
+  "container": {
+    "id": "minecraft:bowl",
+    "count": 1
+  },
+  "result": {
+    "id": "farm_and_charm:barley_soup",
+    "count": 1
+  },
+  "requiresLearning": false
+}

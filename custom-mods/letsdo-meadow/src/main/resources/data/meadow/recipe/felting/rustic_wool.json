@@ -1,0 +1,8 @@
+{
+  "type": "meadow:felting",
+  "ingredient": "minecraft:brown_wool",
+  "result": {
+    "id": "meadow:rustic_wool",
+    "count": 1
+  }
+}

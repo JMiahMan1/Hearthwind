@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "group": "granite_kitchen",
+  "pattern": [
+    "III",
+    "BBB",
+    "BBB"
+  ],
+  "key": {
+    "I": "minecraft:iron_ingot",
+    "B": "minecraft:granite"
+  },
+  "result": {
+    "id": "candlelight:granite_counter"
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "replace": false,
+  "values": [
+    "#c:allows_cooking",
+    "minecraft:magma_block",
+    "minecraft:lava_cauldron"
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "type": "brewery:brewing",
+  "ingredients": [
+    "minecraft:cocoa_beans",
+    "minecraft:sugar",
+    "brewery:dried_wheat"
+  ],
+  "material": "WOOD",
+  "result": {
+    "id": "brewery:coffee"
+  }
+}

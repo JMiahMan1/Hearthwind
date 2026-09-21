@@ -1,0 +1,12 @@
+{
+  "type": "brewery:brewing",
+  "ingredients": [
+    "brewery:hops",
+    "farm_and_charm:wild_nettle",
+    "farm_and_charm:yeast"
+  ],
+  "material": "WOOD",
+  "result": {
+    "id": "brewery:beer_nettle"
+  }
+}

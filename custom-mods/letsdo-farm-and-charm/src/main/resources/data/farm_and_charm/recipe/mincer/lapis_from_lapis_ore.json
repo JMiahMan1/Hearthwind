@@ -1,0 +1,9 @@
+{
+  "type": "farm_and_charm:mincer",
+  "ingredient": "minecraft:lapis_ore",
+  "recipe_type": "METAL",
+  "result": {
+    "id": "minecraft:lapis_lazuli",
+    "count": 5
+  }
+}

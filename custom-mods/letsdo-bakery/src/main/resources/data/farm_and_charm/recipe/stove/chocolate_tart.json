@@ -1,0 +1,14 @@
+{
+  "type": "farm_and_charm:stove",
+  "ingredients": [
+    "#bakery:chocolate",
+    "bakery:sweet_dough",
+    "farm_and_charm:yeast"
+  ],
+  "result": {
+    "count": 1,
+    "id": "bakery:chocolate_tart"
+  },
+  "experience": 0.4,
+  "requiresLearning": false
+}

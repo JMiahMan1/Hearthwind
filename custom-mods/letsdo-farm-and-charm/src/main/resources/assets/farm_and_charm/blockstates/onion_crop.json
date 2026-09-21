@@ -1,0 +1,94 @@
+{
+  "variants": {
+    "age=0,big=false,giant=false": {
+      "model": "farm_and_charm:block/onion_stage0",
+      "render_type": "minecraft:cutout"
+    },
+    "age=0,big=true,giant=false": {
+      "model": "farm_and_charm:block/onion_stage0",
+      "render_type": "minecraft:cutout"
+    },
+    "age=0,big=false,giant=true": {
+      "model": "farm_and_charm:block/onion_stage0",
+      "render_type": "minecraft:cutout"
+    },
+    "age=0,big=true,giant=true": {
+      "model": "farm_and_charm:block/onion_stage0",
+      "render_type": "minecraft:cutout"
+    },
+    "age=1,big=false,giant=false": {
+      "model": "farm_and_charm:block/onion_stage1",
+      "render_type": "minecraft:cutout"
+    },
+    "age=1,big=true,giant=false": {
+      "model": "farm_and_charm:block/onion_stage1",
+      "render_type": "minecraft:cutout"
+    },
+    "age=1,big=false,giant=true": {
+      "model": "farm_and_charm:block/onion_stage1",
+      "render_type": "minecraft:cutout"
+    },
+    "age=1,big=true,giant=true": {
+      "model": "farm_and_charm:block/onion_stage1",
+      "render_type": "minecraft:cutout"
+    },
+    "age=2,big=false,giant=false": {
+      "model": "farm_and_charm:block/onion_stage2",
+      "render_type": "minecraft:cutout"
+    },
+    "age=2,big=true,giant=false": {
+      "model": "farm_and_charm:block/onion_stage2",
+      "render_type": "minecraft:cutout"
+    },
+    "age=2,big=false,giant=true": {
+      "model": "farm_and_charm:block/onion_stage2",
+      "render_type": "minecraft:cutout"
+    },
+    "age=2,big=true,giant=true": {
+      "model": "farm_and_charm:block/onion_stage2",
+      "render_type": "minecraft:cutout"
+    },
+    "age=3,big=false,giant=false": {
+      "model": "farm_and_charm:block/onion_stage3",
+      "render_type": "minecraft:cutout"
+    },
+    "age=3,big=true,giant=false": {
+      "model": "farm_and_charm:block/onion_stage3",
+      "render_type": "minecraft:cutout"
+    },
+    "age=3,big=false,giant=true": {
+      "model": "farm_and_charm:block/onion_stage3",
+      "render_type": "minecraft:cutout"
+    },
+    "age=3,big=true,giant=true": {
+      "model": "farm_and_charm:block/onion_stage3",
+      "render_type": "minecraft:cutout"
+    },
+    "age=4,big=false,giant=false": [
+      {
+        "model": "farm_and_charm:block/onion_stage4_1",
+        "render_type": "minecraft:cutout"
+      },
+      {
+        "model": "farm_and_charm:block/onion_stage4_2",
+        "render_type": "minecraft:cutout"
+      },
+      {
+        "model": "farm_and_charm:block/onion_stage4_3",
+        "render_type": "minecraft:cutout"
+      }
+    ],
+    "age=4,big=true,giant=false": {
+      "model": "farm_and_charm:block/onion_stage4_big",
+      "render_type": "minecraft:cutout"
+    },
+    "age=4,big=false,giant=true": {
+      "model": "farm_and_charm:block/onion_stage4_giant",
+      "render_type": "minecraft:cutout"
+    },
+    "age=4,big=true,giant=true": {
+      "model": "farm_and_charm:block/onion_stage4_giant",
+      "render_type": "minecraft:cutout"
+    }
+  }
+}

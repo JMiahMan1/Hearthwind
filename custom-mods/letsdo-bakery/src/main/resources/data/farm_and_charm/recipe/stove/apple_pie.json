@@ -1,0 +1,14 @@
+{
+  "type": "farm_and_charm:stove",
+  "ingredients": [
+    "minecraft:apple",
+    "bakery:sweet_dough",
+    "minecraft:sugar"
+  ],
+  "result": {
+    "id": "bakery:apple_pie",
+    "count": 1
+  },
+  "experience": 0.5,
+  "requiresLearning": false
+}

@@ -1,0 +1,14 @@
+{
+  "type": "meadow:cooking",
+  "ingredients": [
+    "minecraft:amethyst_cluster",
+    "#c:salts",
+    "#c:milks"
+  ],
+  "fluid_amount": 2,
+  "crafting_duration": 30,
+  "result": {
+    "id": "meadow:wooden_amethyst_milk_bucket",
+    "count": 1
+  }
+}

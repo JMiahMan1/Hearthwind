@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "III",
+    "###",
+    "#B#"
+  ],
+  "key": {
+    "#": "minecraft:bricks",
+    "B": "minecraft:campfire",
+    "I": "minecraft:iron_ingot"
+  },
+  "result": {
+    "id": "farm_and_charm:stove",
+    "count": 1
+  }
+}

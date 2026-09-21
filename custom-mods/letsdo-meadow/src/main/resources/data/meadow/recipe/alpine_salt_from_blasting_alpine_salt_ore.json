@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:blasting",
+  "category": "misc",
+  "cookingtime": 100,
+  "experience": 0.7,
+  "ingredient": "meadow:alpine_salt_ore",
+  "result": {
+    "id": "meadow:alpine_salt"
+  },
+  "count": 1
+}

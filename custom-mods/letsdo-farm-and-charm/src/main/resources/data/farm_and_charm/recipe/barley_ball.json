@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "###",
+    "###",
+    "###"
+  ],
+  "key": {
+    "#": "farm_and_charm:barley"
+  },
+  "result": {
+    "id": "farm_and_charm:barley_ball",
+    "count": 1
+  }
+}

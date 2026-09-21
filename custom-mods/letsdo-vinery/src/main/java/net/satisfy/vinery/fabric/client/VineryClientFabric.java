@@ -1,0 +1,105 @@
+package net.satisfy.vinery.fabric.client;
+
+import dev.architectury.registry.client.level.entity.EntityModelLayerRegistry;
+import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.fabricmc.fabric.api.client.rendering.v1.ArmorRenderer;
+import net.minecraft.client.model.geom.ModelLayerLocation;
+import net.minecraft.client.model.object.boat.BoatModel;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
+import net.minecraft.client.renderer.blockentity.HangingSignRenderer;
+import net.minecraft.client.renderer.blockentity.StandingSignRenderer;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.phys.Vec3;
+import net.satisfy.vinery.client.VineryClient;
+import net.satisfy.vinery.client.render.entity.DarkCherryBoatRenderer;
+import net.satisfy.vinery.core.Vinery;
+import net.satisfy.vinery.core.entity.DarkCherryBoatEntity;
+import net.satisfy.vinery.core.registry.EntityTypeRegistry;
+import net.satisfy.vinery.core.registry.MobEffectRegistry;
+import net.satisfy.vinery.core.registry.ObjectRegistry;
+import net.satisfy.vinery.fabric.client.renderer.StrawHatRenderer;
+import net.satisfy.vinery.fabric.client.renderer.WinemakerBootsRenderer;
+import net.satisfy.vinery.fabric.client.renderer.WinemakerChestplateRenderer;
+import net.satisfy.vinery.fabric.client.renderer.WinemakerLeggingsRenderer;
+
+public class VineryClientFabric implements ClientModInitializer {
+    private static boolean hasDoubleJumped = false;
+    private static boolean wasOnGround = true;
+    private static boolean spaceWasPressed = false;
+    @Override
+    public void onInitializeClient() {
+        VineryClient.preInitClient();
+        VineryClient.onInitializeClient();
+        registerBoatModels();
+        BlockEntityRenderers.register(EntityTypeRegistry.MOD_SIGN.get(), StandingSignRenderer::new);
+        BlockEntityRenderers.register(EntityTypeRegistry.MOD_HANGING_SIGN.get(), HangingSignRenderer::new);
+        ArmorRenderer.register(new StrawHatRenderer(), ObjectRegistry.STRAW_HAT.get());
+        ArmorRenderer.register(new WinemakerChestplateRenderer(), ObjectRegistry.WINEMAKER_APRON.get());
+        ArmorRenderer.register(new WinemakerLeggingsRenderer(), ObjectRegistry.WINEMAKER_LEGGINGS.get());
+        ArmorRenderer.register(new WinemakerBootsRenderer(), ObjectRegistry.WINEMAKER_BOOTS.get());
+        ClientTickEvents.END_CLIENT_TICK.register(client -> {
+            LocalPlayer player = client.player;
+
+            if (player == null || client.level == null) {
+                return;
+            }
+
+            if (!player.hasEffect(MobEffectRegistry.getHolder(MobEffectRegistry.IMPROVED_JUMP_BOOST))) return;
+            if (!canJump(player)) return;
+
+
+            boolean spacePressed = client.options.keyJump.isDown();
+
+
+            if (player.onGround()) {
+                hasDoubleJumped = false;
+                wasOnGround = true;
+                spaceWasPressed = false;
+            } else if (wasOnGround) {
+                wasOnGround = false;
+            }
+
+            if (spacePressed && !spaceWasPressed && !player.onGround() && !hasDoubleJumped && !wasOnGround) {
+                performDoubleJump(player);
+                hasDoubleJumped = true;
+            }
+
+            spaceWasPressed = spacePressed;
+        });
+    }
+
+    private static void performDoubleJump(Player player) {
+        Vec3 motion = player.getDeltaMovement();
+        player.setDeltaMovement(motion.x, 0.42, motion.z);
+
+    }
+
+    private static boolean canJump(LocalPlayer player) {
+        return !wearingUsableElytra(player)
+                && !player.isFallFlying()
+                && !player.isPassenger()
+                && !player.isInWater()
+                && !player.hasEffect(MobEffects.LEVITATION);
+    }
+
+    private static boolean wearingUsableElytra(LocalPlayer player) {
+        ItemStack chestItemStack = player.getItemBySlot(EquipmentSlot.CHEST);
+        return chestItemStack.getItem() == Items.ELYTRA
+                && chestItemStack.getDamageValue() < chestItemStack.getMaxDamage() - 1;
+    }
+
+    private void registerBoatModels() {
+        for (DarkCherryBoatEntity.Type type : DarkCherryBoatEntity.Type.values()) {
+            String modId = Vinery.MOD_ID;
+            EntityModelLayerRegistry.register(new ModelLayerLocation(Identifier.fromNamespaceAndPath(modId, type.getModelLocation()), "main"), BoatModel::createBoatModel);
+            EntityModelLayerRegistry.register(new ModelLayerLocation(Identifier.fromNamespaceAndPath(modId, type.getChestModelLocation()), "main"), BoatModel::createChestBoatModel);
+        }
+    }
+}

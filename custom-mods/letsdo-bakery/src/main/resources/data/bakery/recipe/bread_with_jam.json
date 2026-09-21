@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    "#bakery:bread",
+    "#bakery:jam"
+  ],
+  "result": {
+    "id": "bakery:bread_with_jam",
+    "count": 5
+  }
+}

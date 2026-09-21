@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    "#bakery:bread",
+    "minecraft:beetroot",
+    "minecraft:carrot",
+    "#farm_and_charm:cabbage",
+    "#farm_and_charm:tomato"
+  ],
+  "result": {
+    "id": "bakery:vegetable_sandwich",
+    "count": 4
+  }
+}

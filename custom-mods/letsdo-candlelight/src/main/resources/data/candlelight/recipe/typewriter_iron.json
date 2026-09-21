@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " # ",
+    "iRU",
+    "UUU"
+  ],
+  "key": {
+    "#": "minecraft:redstone",
+    "i": "minecraft:iron_ingot",
+    "R": "minecraft:repeater",
+    "U": "#minecraft:planks"
+  },
+  "result": {
+    "id": "candlelight:typewriter_iron",
+    "count": 1
+  }
+}

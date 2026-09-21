@@ -1,0 +1,17 @@
+{
+  "type": "farm_and_charm:pot_cooking",
+  "ingredients": [
+    "#bakery:eggs",
+    "#bakery:jam",
+    "#bakery:milk"
+  ],
+  "container": {
+    "id": "bakery:jar"
+  },
+  "result": {
+    "id": "bakery:pudding",
+    "count": 1
+  },
+  "requiresLearning": false,
+  "requireContainer": false
+}

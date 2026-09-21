@@ -1,0 +1,18 @@
+{
+  "type": "farm_and_charm:pot_cooking",
+  "ingredients": [
+    "minecraft:sugar",
+    "#farm_and_charm:water_bottles",
+    "minecraft:wheat"
+  ],
+  "requireContainer": true,
+  "container": {
+    "id": "minecraft:bowl",
+    "count": 1
+  },
+  "result": {
+    "id": "farm_and_charm:yeast",
+    "count": 12
+  },
+  "requiresLearning": false
+}

@@ -1,0 +1,13 @@
+{
+  "type": "farm_and_charm:crafting_bowl",
+  "ingredients": [
+    "#farm_and_charm:tomato",
+    "#farm_and_charm:onion",
+    "#farm_and_charm:cabbage",
+    "#farm_and_charm:strawberry"
+  ],
+  "result": {
+    "id": "farm_and_charm:farmer_salad",
+    "count": 2
+  }
+}

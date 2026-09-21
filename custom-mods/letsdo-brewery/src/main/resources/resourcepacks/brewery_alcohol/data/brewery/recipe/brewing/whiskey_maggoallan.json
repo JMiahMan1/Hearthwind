@@ -1,0 +1,12 @@
+{
+  "type": "brewery:brewing",
+  "ingredients": [
+    "brewery:dried_wheat",
+    "brewery:dried_wheat",
+    "farm_and_charm:yeast"
+  ],
+  "material": "COPPER",
+  "result": {
+    "id": "brewery:whiskey_maggoallan"
+  }
+}

@@ -1,0 +1,84 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:potion",
+          "functions": [
+            {
+              "function": "minecraft:set_components",
+              "components": {
+                "minecraft:potion_contents": {
+                  "potion": "minecraft:water",
+                  "custom_effects": [
+                    {
+                      "id": "minecraft:speed",
+                      "amplifier": 1,
+                      "duration": 3600
+                    },
+                    {
+                      "id": "minecraft:haste",
+                      "amplifier": 1,
+                      "duration": 3600
+                    },
+                    {
+                      "id": "minecraft:strength",
+                      "amplifier": 1,
+                      "duration": 3600
+                    },
+                    {
+                      "id": "minecraft:jump_boost",
+                      "amplifier": 1,
+                      "duration": 3600
+                    },
+                    {
+                      "id": "minecraft:regeneration",
+                      "amplifier": 1,
+                      "duration": 3600
+                    },
+                    {
+                      "id": "minecraft:resistance",
+                      "amplifier": 1,
+                      "duration": 3600
+                    },
+                    {
+                      "id": "minecraft:fire_resistance",
+                      "amplifier": 1,
+                      "duration": 3600
+                    },
+                    {
+                      "id": "minecraft:water_breathing",
+                      "amplifier": 1,
+                      "duration": 3600
+                    },
+                    {
+                      "id": "minecraft:invisibility",
+                      "amplifier": 1,
+                      "duration": 3600
+                    },
+                    {
+                      "id": "minecraft:health_boost",
+                      "amplifier": 1,
+                      "duration": 3600
+                    }
+                  ]
+                },
+                "minecraft:custom_name": "{\"text\":\"MissLilitus special Mixture\",\"italic\":false}",
+                "minecraft:lore": [
+                  "{\"text\":\"Boosted with all positive effects!\",\"color\":\"green\",\"italic\":false}"
+                ]
+              }
+            },
+            {
+              "function": "minecraft:set_count",
+              "count": 1
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

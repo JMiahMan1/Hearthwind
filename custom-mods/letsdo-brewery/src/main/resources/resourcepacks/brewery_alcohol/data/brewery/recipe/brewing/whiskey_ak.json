@@ -1,0 +1,12 @@
+{
+  "type": "brewery:brewing",
+  "ingredients": [
+    "brewery:dried_oat",
+    "brewery:dried_corn",
+    "farm_and_charm:yeast"
+  ],
+  "material": "COPPER",
+  "result": {
+    "id": "brewery:whiskey_ak"
+  }
+}

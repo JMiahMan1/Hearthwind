@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "X": "#minecraft:wool",
+    "B": "minecraft:gold_ingot"
+  },
+  "pattern": [
+    " X ",
+    " B ",
+    "XXX"
+  ],
+  "result": {
+    "id": "herbalbrews:witch_hat"
+  }
+}

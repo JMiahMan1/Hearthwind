@@ -1,0 +1,7 @@
+{
+  "textures": {
+    "particle": "farm_and_charm:block/oat_ball_side"
+  },
+  "render_type": "translucent"
+}
+

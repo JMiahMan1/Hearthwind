@@ -1,0 +1,42 @@
+{
+  "variants": {
+    "facing=east,lit=false": {
+      "model": "farm_and_charm:block/stove",
+      "y": 90,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=east,lit=true": {
+      "model": "farm_and_charm:block/stove_on",
+      "y": 90,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=north,lit=false": {
+      "model": "farm_and_charm:block/stove",
+      "render_type": "minecraft:cutout"
+    },
+    "facing=north,lit=true": {
+      "model": "farm_and_charm:block/stove_on",
+      "render_type": "minecraft:cutout"
+    },
+    "facing=south,lit=false": {
+      "model": "farm_and_charm:block/stove",
+      "y": 180,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=south,lit=true": {
+      "model": "farm_and_charm:block/stove_on",
+      "y": 180,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=west,lit=false": {
+      "model": "farm_and_charm:block/stove",
+      "y": 270,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=west,lit=true": {
+      "model": "farm_and_charm:block/stove_on",
+      "y": 270,
+      "render_type": "minecraft:cutout"
+    }
+  }
+}

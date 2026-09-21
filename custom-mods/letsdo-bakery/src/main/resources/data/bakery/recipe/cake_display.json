@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "BBB",
+    "###",
+    "WWW"
+  ],
+  "key": {
+    "#": "minecraft:glass_pane",
+    "B": "#minecraft:wooden_slabs",
+    "W": "#minecraft:planks"
+  },
+  "result": {
+    "id": "bakery:cake_display",
+    "count": 3
+  }
+}

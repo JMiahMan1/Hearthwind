@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "": {
+      "model": "vinery:block/spruce_lattice",
+      "render_type": "minecraft:cutout"
+    }
+  }
+}

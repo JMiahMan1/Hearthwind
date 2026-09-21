@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "X": "herbalbrews:dried_green_tea",
+    "B": "herbalbrews:dried_black_tea"
+  },
+  "pattern": [
+    "XXX",
+    "X B",
+    "BBB"
+  ],
+  "result": {
+    "id": "herbalbrews:mixed_tea_leaf_block"
+  }
+}

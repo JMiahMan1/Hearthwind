@@ -1,0 +1,9 @@
+{
+  "type": "farm_and_charm:mincer",
+  "ingredient": "#farm_and_charm:dough",
+  "recipe_type": "STONE",
+  "result": {
+    "id": "farm_and_charm:raw_pasta",
+    "count": 2
+  }
+}

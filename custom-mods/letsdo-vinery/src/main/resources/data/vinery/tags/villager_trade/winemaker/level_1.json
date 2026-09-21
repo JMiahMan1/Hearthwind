@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "vinery:winemaker/1/red_grape_bought",
+    "vinery:winemaker/1/white_grape_bought",
+    "vinery:winemaker/1/red_grape_seeds_sold",
+    "vinery:winemaker/1/white_grape_seeds_sold"
+  ]
+}

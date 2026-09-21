@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "I I",
+    "III"
+  ],
+  "key": {
+    "I": "minecraft:iron_nugget"
+  },
+  "result": {
+    "id": "farm_and_charm:iron_divider",
+    "count": 16
+  }
+}

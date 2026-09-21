@@ -1,0 +1,17 @@
+{
+  "wants": {
+    "id": "minecraft:emerald",
+    "count": {
+      "type": "minecraft:uniform",
+      "min": 6.0,
+      "max": 6.0
+    }
+  },
+  "gives": {
+    "id": "vinery:dark_cherry_beam",
+    "count": 4
+  },
+  "max_uses": 2.0,
+  "reputation_discount": 0.05,
+  "xp": 10.0
+}

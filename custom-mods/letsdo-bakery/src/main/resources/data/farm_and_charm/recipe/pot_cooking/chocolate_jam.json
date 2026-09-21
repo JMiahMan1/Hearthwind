@@ -1,0 +1,16 @@
+{
+  "type": "farm_and_charm:pot_cooking",
+  "ingredients": [
+    "#bakery:milk",
+    "#bakery:chocolate",
+    "minecraft:sugar"
+  ],
+  "container": {
+    "id": "bakery:jar"
+  },
+  "result": {
+    "id": "bakery:chocolate_jam"
+  },
+  "requiresLearning": false,
+  "requireContainer": true
+}

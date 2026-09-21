@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "#": "minecraft:iron_nugget",
+    "B": "minecraft:redstone"
+  },
+  "pattern": [
+    "#B"
+  ],
+  "result": {
+    "count": 1,
+    "id": "brewery:breathalyzer"
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "CCC",
+    "# #",
+    "# #"
+  ],
+  "key": {
+    "#": "minecraft:leather",
+    "C": "minecraft:rabbit_hide"
+  },
+  "result": {
+    "id": "meadow:fur_leggings",
+    "count": 1
+  }
+}

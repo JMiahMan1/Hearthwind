@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "group": "wood_fired_oven",
+  "pattern": [
+    "III",
+    "BBB",
+    "BBB"
+  ],
+  "key": {
+    "B": "minecraft:bricks",
+    "I": "#minecraft:wooden_slabs"
+  },
+  "result": {
+    "id": "bakery:brick_counter",
+    "count": 3
+  }
+}

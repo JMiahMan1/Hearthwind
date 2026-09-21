@@ -1,0 +1,14 @@
+{
+  "type": "farm_and_charm:stove",
+  "ingredients": [
+    "#bakery:eggs",
+    "minecraft:sugar",
+    "farm_and_charm:yeast"
+  ],
+  "result": {
+    "count": 1,
+    "id": "bakery:bundt_cake"
+  },
+  "experience": 0.4,
+  "requiresLearning": false
+}

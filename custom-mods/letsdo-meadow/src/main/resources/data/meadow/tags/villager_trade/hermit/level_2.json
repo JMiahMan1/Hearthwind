@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "meadow:hermit/2/cheese_sandwich_sold",
+    "meadow:hermit/2/pine_cabinet_bought",
+    "meadow:hermit/2/sheep_milk_bought",
+    "meadow:hermit/2/watering_can_sold"
+  ]
+}

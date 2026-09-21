@@ -1,0 +1,8 @@
+{
+  "type": "meadow:felting",
+  "ingredient": "minecraft:cyan_wool",
+  "result": {
+    "id": "meadow:warped_wool",
+    "count": 1
+  }
+}

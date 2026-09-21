@@ -1,0 +1,85 @@
+{
+  "variants": {
+    "facing=east,half=bottom,open=false": {
+      "model": "meadow:block/reclaimed_pine_trapdoor_bottom",
+      "y": 90,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=east,half=bottom,open=true": {
+      "model": "meadow:block/reclaimed_pine_trapdoor_open",
+      "y": 90,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=east,half=top,open=false": {
+      "model": "meadow:block/reclaimed_pine_trapdoor_top",
+      "y": 90,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=east,half=top,open=true": {
+      "model": "meadow:block/reclaimed_pine_trapdoor_open",
+      "x": 180,
+      "y": 270,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=north,half=bottom,open=false": {
+      "model": "meadow:block/reclaimed_pine_trapdoor_bottom",
+      "render_type": "minecraft:cutout"
+    },
+    "facing=north,half=bottom,open=true": {
+      "model": "meadow:block/reclaimed_pine_trapdoor_open",
+      "render_type": "minecraft:cutout"
+    },
+    "facing=north,half=top,open=false": {
+      "model": "meadow:block/reclaimed_pine_trapdoor_top",
+      "render_type": "minecraft:cutout"
+    },
+    "facing=north,half=top,open=true": {
+      "model": "meadow:block/reclaimed_pine_trapdoor_open",
+      "x": 180,
+      "y": 180,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=south,half=bottom,open=false": {
+      "model": "meadow:block/reclaimed_pine_trapdoor_bottom",
+      "y": 180,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=south,half=bottom,open=true": {
+      "model": "meadow:block/reclaimed_pine_trapdoor_open",
+      "y": 180,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=south,half=top,open=false": {
+      "model": "meadow:block/reclaimed_pine_trapdoor_top",
+      "y": 180,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=south,half=top,open=true": {
+      "model": "meadow:block/reclaimed_pine_trapdoor_open",
+      "x": 180,
+      "y": 0,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=west,half=bottom,open=false": {
+      "model": "meadow:block/reclaimed_pine_trapdoor_bottom",
+      "y": 270,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=west,half=bottom,open=true": {
+      "model": "meadow:block/reclaimed_pine_trapdoor_open",
+      "y": 270,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=west,half=top,open=false": {
+      "model": "meadow:block/reclaimed_pine_trapdoor_top",
+      "y": 270,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=west,half=top,open=true": {
+      "model": "meadow:block/reclaimed_pine_trapdoor_open",
+      "x": 180,
+      "y": 90,
+      "render_type": "minecraft:cutout"
+    }
+  }
+}

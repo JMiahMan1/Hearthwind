@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "S S",
+    " S "
+  ],
+  "key": {
+    "S": "minecraft:spruce_slab"
+  },
+  "result": {
+    "id": "vinery:storage_pot"
+  }
+}

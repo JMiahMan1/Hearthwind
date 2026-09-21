@@ -1,0 +1,17 @@
+{
+  "type": "meadow:cooking",
+  "ingredients": [
+    "meadow:raw_buffalo_meat",
+    "meadow:raw_buffalo_meat",
+    "meadow:raw_buffalo_meat",
+    "#c:salts",
+    "minecraft:potato",
+    "minecraft:carrot"
+  ],
+  "fluid_amount": 5,
+  "crafting_duration": 40,
+  "result": {
+    "id": "meadow:roasted_buffalo_ham",
+    "count": 2
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:smithing_transform",
+  "addition": "minecraft:netherite_ingot",
+  "base": "meadow:meadow_banner",
+  "result": {
+    "id": "meadow:meadow_banner",
+    "count": 2
+  },
+  "template": "minecraft:netherite_upgrade_smithing_template"
+}

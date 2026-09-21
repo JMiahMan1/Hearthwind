@@ -1,0 +1,15 @@
+{
+  "replace": false,
+  "values": [
+    "minecraft:meadow",
+    "#minecraft:is_taiga",
+    {
+      "id": "terralith:alpine_highlands",
+      "required": false
+    },
+    {
+      "id": "terralith:shield_clearing",
+      "required": false
+    }
+  ]
+}

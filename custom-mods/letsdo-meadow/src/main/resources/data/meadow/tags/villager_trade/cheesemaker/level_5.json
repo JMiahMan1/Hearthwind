@@ -1,0 +1,10 @@
+{
+  "replace": false,
+  "values": [
+    "meadow:cheesemaker/5/amethyst_cheese_wheel_sold",
+    "meadow:cheesemaker/5/cheese_form_sold",
+    "meadow:cheesemaker/5/cheese_wheel_sold",
+    "meadow:cheesemaker/5/grain_cheese_wheel_sold",
+    "meadow:cheesemaker/5/warped_milk_bucket_sold"
+  ]
+}

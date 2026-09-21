@@ -1,0 +1,21 @@
+{
+  "replace": false,
+  "values": [
+    "brewery:bench",
+    "brewery:table",
+    "brewery:bar_counter",
+    "brewery:barrel_head_right",
+    "brewery:barrel_main_head",
+    "brewery:barrel_right",
+    "brewery:barrel_main",
+    "brewery:wooden_brewingstation",
+    "brewery:beer_mug",
+    "brewery:sideboard",
+    "brewery:wall_cabinet",
+    "brewery:cabinet",
+    "brewery:drawer",
+    "brewery:brew_whistle",
+    "brewery:brew_oven",
+    "brewery:brew_timer"
+  ]
+}

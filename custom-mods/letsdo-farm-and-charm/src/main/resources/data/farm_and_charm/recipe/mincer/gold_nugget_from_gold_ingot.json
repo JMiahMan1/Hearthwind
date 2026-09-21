@@ -1,0 +1,9 @@
+{
+  "type": "farm_and_charm:mincer",
+  "ingredient": "minecraft:gold_ingot",
+  "recipe_type": "METAL",
+  "result": {
+    "id": "minecraft:gold_nugget",
+    "count": 9
+  }
+}

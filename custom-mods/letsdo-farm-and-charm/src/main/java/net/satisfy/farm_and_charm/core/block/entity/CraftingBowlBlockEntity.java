@@ -1,0 +1,259 @@
+package net.satisfy.farm_and_charm.core.block.entity;
+
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.NonNullList;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.world.ContainerHelper;
+import net.minecraft.world.WorldlyContainer;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.ChestMenu;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.RecipeHolder;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
+import net.minecraft.world.level.block.entity.RandomizableContainerBlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.satisfy.farm_and_charm.core.block.CraftingBowlBlock;
+import net.satisfy.farm_and_charm.core.recipe.CraftingBowlRecipe;
+import net.satisfy.farm_and_charm.core.registry.EntityTypeRegistry;
+import net.satisfy.farm_and_charm.core.registry.RecipeTypeRegistry;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.IntStream;
+
+public class CraftingBowlBlockEntity extends RandomizableContainerBlockEntity implements WorldlyContainer, BlockEntityTicker<CraftingBowlBlockEntity> {
+    private NonNullList<ItemStack> stacks = NonNullList.withSize(5, ItemStack.EMPTY);
+    private float whiskAngle;
+    private float whiskAnglePrev;
+    private float whiskSpeed;
+    private float whiskTargetSpeed;
+
+    public CraftingBowlBlockEntity(BlockPos position, BlockState state) {
+        super(EntityTypeRegistry.CRAFTING_BOWL_BLOCK_ENTITY.get(), position, state);
+    }
+
+    @Override
+    protected void loadAdditional(net.minecraft.world.level.storage.ValueInput input) {
+        super.loadAdditional(input);
+        if (!this.tryLoadLootTable(input)) this.stacks = NonNullList.withSize(this.getContainerSize(), ItemStack.EMPTY);
+        ContainerHelper.loadAllItems(input, this.stacks);
+        this.whiskSpeed = input.getFloatOr("WhiskSpeed", 0.0F);
+        this.whiskTargetSpeed = input.getFloatOr("WhiskTargetSpeed", 0.0F);
+    }
+
+    @Override
+    protected void saveAdditional(net.minecraft.world.level.storage.ValueOutput output) {
+        super.saveAdditional(output);
+        if (!this.trySaveLootTable(output)) ContainerHelper.saveAllItems(output, this.stacks);
+        output.putFloat("WhiskSpeed", this.whiskSpeed);
+        output.putFloat("WhiskTargetSpeed", this.whiskTargetSpeed);
+    }
+
+    @Override
+    public ClientboundBlockEntityDataPacket getUpdatePacket() {
+        return ClientboundBlockEntityDataPacket.create(this);
+    }
+
+    @Override
+    public @NotNull CompoundTag getUpdateTag(HolderLookup.Provider provider) {
+        return this.saveWithoutMetadata(provider);
+    }
+
+    @Override
+    public int getContainerSize() {
+        return stacks.size();
+    }
+
+    @Override
+    public boolean isEmpty() {
+        for (ItemStack itemstack : this.stacks) if (!itemstack.isEmpty()) return false;
+        return true;
+    }
+
+    @Override
+    public @NotNull Component getDefaultName() {
+        return Component.literal("crafting_bowl");
+    }
+
+    @Override
+    public @NotNull AbstractContainerMenu createMenu(int id, Inventory inventory) {
+        return ChestMenu.threeRows(id, inventory);
+    }
+
+    @Override
+    public int getMaxStackSize() {
+        return 64;
+    }
+
+    @Override
+    public boolean canPlaceItem(int index, ItemStack stack) {
+        return index >= 0 && index < 4;
+    }
+
+    @Override
+    public @NotNull NonNullList<ItemStack> getItems() {
+        return this.stacks;
+    }
+
+    @Override
+    protected void setItems(NonNullList<ItemStack> stacks) {
+        this.stacks = stacks;
+    }
+
+    public boolean canAddItem() {
+        for (int i = 0; i < 4; i++) if (this.getItem(i).isEmpty()) return true;
+        return false;
+    }
+
+    public void addItemStack(ItemStack stack) {
+        for (int j = 0; j < 4; ++j) {
+            if (this.getItem(j).isEmpty()) {
+                ItemStack one = stack.copy();
+                one.setCount(1);
+                this.setItem(j, one);
+                setChanged();
+                return;
+            }
+        }
+    }
+
+    @Override
+    public int @NotNull [] getSlotsForFace(Direction side) {
+        return IntStream.range(0, this.getContainerSize()).toArray();
+    }
+
+    @Override
+    public boolean canPlaceItemThroughFace(int index, ItemStack stack, @Nullable Direction direction) {
+        return this.canPlaceItem(index, stack);
+    }
+
+    @Override
+    public boolean canTakeItemThroughFace(int index, ItemStack stack, Direction direction) {
+        return true;
+    }
+
+    private ItemStack getRemainderItem(ItemStack stack) {
+        if ((stack.getItem().getCraftingRemainder().item().value() != net.minecraft.world.item.Items.AIR)) {
+            return new ItemStack(stack.getItem().getCraftingRemainder().item().value());
+        }
+        return ItemStack.EMPTY;
+    }
+
+    public int getStirringProgress() {
+        return this.getBlockState().getValue(CraftingBowlBlock.STIRRED);
+    }
+
+    public Optional<CraftingBowlRecipe> findRecipe(Level level) {
+        if (!this.getItem(4).isEmpty()) return Optional.empty();
+        List<RecipeHolder<CraftingBowlRecipe>> all = ((net.minecraft.server.level.ServerLevel) level).recipeAccess().getRecipes().stream().filter(h -> h.value() instanceof net.satisfy.farm_and_charm.core.recipe.CraftingBowlRecipe).map(h -> (net.minecraft.world.item.crafting.RecipeHolder<net.satisfy.farm_and_charm.core.recipe.CraftingBowlRecipe>) h).toList();
+        return Optional.ofNullable(matchExact(all));
+    }
+
+    private int numberOfIngredientsInBowl() {
+        int num = 0;
+        if (!this.getItem(0).isEmpty()) num += 1;
+        if (!this.getItem(1).isEmpty()) num += 1;
+        if (!this.getItem(2).isEmpty()) num += 1;
+        if (!this.getItem(3).isEmpty()) num += 1;
+        return num;
+    }
+
+    private CraftingBowlRecipe matchExact(List<RecipeHolder<CraftingBowlRecipe>> recipes) {
+        int present = this.numberOfIngredientsInBowl();
+        for (RecipeHolder<CraftingBowlRecipe> holder : recipes) {
+            CraftingBowlRecipe r = holder.value();
+            int needed = 0;
+            for (Ingredient ing : r.getIngredients()) if (!ing.isEmpty()) needed++;
+            if (present != needed) continue;
+            boolean[] used = new boolean[4];
+            boolean ok = true;
+            for (Ingredient ing : r.getIngredients()) {
+                if (ing.isEmpty()) continue;
+                boolean matched = false;
+                for (int i = 0; i < 4; i++) {
+                    ItemStack item = this.getItem(i);
+                    if (!used[i] && !item.isEmpty() && ing.test(item)) {
+                        used[i] = true;
+                        matched = true;
+                        break;
+                    }
+                }
+                if (!matched) { ok = false; break; }
+            }
+            if (ok) return r;
+        }
+        return null;
+    }
+
+    public float getInterpolatedWhiskAngle(float partial) {
+        float a0 = this.whiskAnglePrev;
+        float a1 = this.whiskAngle;
+        float da = a1 - a0;
+        float tau = (float) (Math.PI * 2D);
+        if (da > Math.PI) da -= tau;
+        if (da < -Math.PI) da += tau;
+        return a0 + da * partial;
+    }
+
+    public void addWhiskImpulse(float v) {
+        this.whiskTargetSpeed = Math.min(0.5F, this.whiskTargetSpeed + v);
+    }
+
+    @Override
+    public void tick(Level level, BlockPos pos, BlockState state, CraftingBowlBlockEntity be) {
+        this.whiskAnglePrev = this.whiskAngle;
+        int stirring = state.getValue(CraftingBowlBlock.STIRRING);
+        if (stirring > 0) {
+            this.whiskTargetSpeed = 0.5F;
+        } else {
+            this.whiskTargetSpeed = 0F;
+        }
+        float k = 0.22F;
+        this.whiskSpeed += (this.whiskTargetSpeed - this.whiskSpeed) * k;
+        if (stirring == 0) this.whiskSpeed *= 0.96F;
+        this.whiskAngle += this.whiskSpeed;
+        float tau = (float) (Math.PI * 2D);
+        if (this.whiskAngle > tau) this.whiskAngle -= tau;
+        if (this.whiskAngle < 0F) this.whiskAngle += tau;
+
+        if (!level.isClientSide() && state.getBlock() instanceof CraftingBowlBlock) {
+            int stirred = state.getValue(CraftingBowlBlock.STIRRED);
+            if (stirring > 0) {
+                if (stirred < CraftingBowlBlock.STIRS_NEEDED) stirred += 1;
+                if (stirred == CraftingBowlBlock.STIRS_NEEDED && this.numberOfIngredientsInBowl() > 0) {
+                    Optional<CraftingBowlRecipe> recipe = be.findRecipe(level);
+                    if (recipe.isPresent()) {
+                        stirred += 1;
+                        for (int i = 0; i < 4; i++) {
+                            ItemStack stack = be.getItem(i);
+                            ItemStack remainder = getRemainderItem(stack);
+                            be.setItem(i, remainder);
+                        }
+                        ItemStack resultItem = net.satisfy.farm_and_charm.core.recipe.RecipeDisplays26.resultOf(recipe.get()).copy();
+                        resultItem.setCount(recipe.get().getOutputCount());
+                        be.setItem(4, resultItem);
+                    }
+                }
+                stirring -= 1;
+                level.setBlock(pos, state.setValue(CraftingBowlBlock.STIRRING, stirring).setValue(CraftingBowlBlock.STIRRED, stirred), 3);
+            } else {
+                int stirredNow = state.getValue(CraftingBowlBlock.STIRRED);
+                if (stirredNow > 0 && stirredNow < CraftingBowlBlock.STIRS_NEEDED) {
+                    level.setBlock(pos, state.setValue(CraftingBowlBlock.STIRRED, 0), 3);
+                }
+            }
+            if (level.getGameTime() % 5L == 0L) setChanged();
+        }
+    }
+}

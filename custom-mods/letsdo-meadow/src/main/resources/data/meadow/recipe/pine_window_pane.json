@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "###",
+    "###"
+  ],
+  "key": {
+    "#": "meadow:pine_window"
+  },
+  "result": {
+    "id": "meadow:pine_window_pane",
+    "count": 16
+  }
+}

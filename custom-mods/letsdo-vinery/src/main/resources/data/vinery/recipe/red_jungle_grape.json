@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "#"
+  ],
+  "key": {
+    "#": "vinery:red_jungle_grape_bag"
+  },
+  "result": {
+    "count": 9,
+    "id": "vinery:jungle_grapes_red"
+  }
+}

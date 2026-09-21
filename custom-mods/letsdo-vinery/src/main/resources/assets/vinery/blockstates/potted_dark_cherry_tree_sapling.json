@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "": {
+      "model": "vinery:block/potted_cherry_tree_sapling",
+      "render_type": "minecraft:cutout"
+    }
+  }
+}

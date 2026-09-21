@@ -1,0 +1,17 @@
+{
+  "type": "farm_and_charm:pot_cooking",
+  "ingredients": [
+    "minecraft:salmon",
+    "#candlelight:white_effect",
+    "#farm_and_charm:butter"
+  ],
+  "requireContainer": true,
+  "container": {
+    "id": "minecraft:bowl"
+  },
+  "result": {
+    "id": "candlelight:salmon_on_white_wine",
+    "count": 2
+  },
+  "requiresLearning": false
+}

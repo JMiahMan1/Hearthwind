@@ -1,0 +1,80 @@
+{
+  "variants": {
+    "half=lower,facing=north,open=false": {
+      "model": "meadow:block/pine_wardrobe_bottom_closed",
+      "render_type": "minecraft:cutout"
+    },
+    "half=lower,facing=north,open=true": {
+      "model": "meadow:block/pine_wardrobe_bottom_open",
+      "render_type": "minecraft:cutout"
+    },
+    "half=lower,facing=south,open=false": {
+      "model": "meadow:block/pine_wardrobe_bottom_closed",
+      "y": 180,
+      "render_type": "minecraft:cutout"
+    },
+    "half=lower,facing=south,open=true": {
+      "model": "meadow:block/pine_wardrobe_bottom_open",
+      "y": 180,
+      "render_type": "minecraft:cutout"
+    },
+    "half=lower,facing=west,open=false": {
+      "model": "meadow:block/pine_wardrobe_bottom_closed",
+      "y": 270,
+      "render_type": "minecraft:cutout"
+    },
+    "half=lower,facing=west,open=true": {
+      "model": "meadow:block/pine_wardrobe_bottom_open",
+      "y": 270,
+      "render_type": "minecraft:cutout"
+    },
+    "half=lower,facing=east,open=false": {
+      "model": "meadow:block/pine_wardrobe_bottom_closed",
+      "y": 90,
+      "render_type": "minecraft:cutout"
+    },
+    "half=lower,facing=east,open=true": {
+      "model": "meadow:block/pine_wardrobe_bottom_open",
+      "y": 90,
+      "render_type": "minecraft:cutout"
+    },
+    "half=upper,facing=north,open=false": {
+      "model": "meadow:block/pine_wardrobe_top_closed",
+      "render_type": "minecraft:cutout"
+    },
+    "half=upper,facing=north,open=true": {
+      "model": "meadow:block/pine_wardrobe_top_open",
+      "render_type": "minecraft:cutout"
+    },
+    "half=upper,facing=south,open=false": {
+      "model": "meadow:block/pine_wardrobe_top_closed",
+      "y": 180,
+      "render_type": "minecraft:cutout"
+    },
+    "half=upper,facing=south,open=true": {
+      "model": "meadow:block/pine_wardrobe_top_open",
+      "y": 180,
+      "render_type": "minecraft:cutout"
+    },
+    "half=upper,facing=west,open=false": {
+      "model": "meadow:block/pine_wardrobe_top_closed",
+      "y": 270,
+      "render_type": "minecraft:cutout"
+    },
+    "half=upper,facing=west,open=true": {
+      "model": "meadow:block/pine_wardrobe_top_open",
+      "y": 270,
+      "render_type": "minecraft:cutout"
+    },
+    "half=upper,facing=east,open=false": {
+      "model": "meadow:block/pine_wardrobe_top_closed",
+      "y": 90,
+      "render_type": "minecraft:cutout"
+    },
+    "half=upper,facing=east,open=true": {
+      "model": "meadow:block/pine_wardrobe_top_open",
+      "y": 90,
+      "render_type": "minecraft:cutout"
+    }
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "values": [
+    "#minecraft:is_taiga",
+    {
+      "id": "terralith:shield_clearing",
+      "required": false
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "wants": {
+    "id": "minecraft:emerald",
+    "count": {
+      "type": "minecraft:uniform",
+      "min": 4.0,
+      "max": 4.0
+    }
+  },
+  "gives": {
+    "id": "vinery:lilitu_wine",
+    "count": 1
+  },
+  "max_uses": 2.0,
+  "reputation_discount": 0.05,
+  "xp": 10.0
+}

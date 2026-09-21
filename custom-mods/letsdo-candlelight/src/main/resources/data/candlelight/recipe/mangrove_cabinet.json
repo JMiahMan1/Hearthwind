@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "group": "mangrove_rack",
+  "pattern": [
+    "#_#",
+    "_B_",
+    "#B#"
+  ],
+  "key": {
+    "#": "minecraft:mangrove_planks",
+    "_": "minecraft:mangrove_slab",
+    "B": "minecraft:barrel"
+  },
+  "result": {
+    "id": "candlelight:mangrove_cabinet"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    "herbalbrews:wild_coffee_plant"
+  ],
+  "result": {
+    "id": "herbalbrews:coffee_beans"
+  }
+}

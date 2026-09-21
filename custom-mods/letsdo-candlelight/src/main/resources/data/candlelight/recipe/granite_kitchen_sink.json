@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "group": "granite_kitchen",
+  "pattern": [
+    "iCi",
+    "BBB"
+  ],
+  "key": {
+    "i": "minecraft:iron_ingot",
+    "C": "minecraft:cauldron",
+    "B": "minecraft:granite"
+  },
+  "result": {
+    "id": "candlelight:granite_kitchen_sink"
+  }
+}

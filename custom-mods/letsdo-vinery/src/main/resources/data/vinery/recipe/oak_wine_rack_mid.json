@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "group": "oak_rack",
+  "pattern": [
+    "# #",
+    " B ",
+    "# #"
+  ],
+  "key": {
+    "#": "minecraft:oak_planks",
+    "B": "minecraft:glass_pane"
+  },
+  "result": {
+    "id": "vinery:oak_wine_rack_mid"
+  }
+}

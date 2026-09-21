@@ -1,0 +1,9 @@
+{
+  "type": "farm_and_charm:mincer",
+  "ingredient": "minecraft:acacia_wood",
+  "recipe_type": "WOOD",
+  "result": {
+    "id": "minecraft:stripped_acacia_wood",
+    "count": 1
+  }
+}

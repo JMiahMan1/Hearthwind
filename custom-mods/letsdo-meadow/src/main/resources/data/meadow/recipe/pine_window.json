@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "###",
+    "#B#",
+    "###"
+  ],
+  "key": {
+    "B": "meadow:pine_planks",
+    "#": "minecraft:glass"
+  },
+  "result": {
+    "id": "meadow:pine_window",
+    "count": 8
+  }
+}

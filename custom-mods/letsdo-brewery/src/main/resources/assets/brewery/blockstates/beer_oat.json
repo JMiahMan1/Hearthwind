@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "fake_model=false": {
+      "model": "brewery:block/beer_oat"
+    },
+    "fake_model=true": {
+      "model": "brewery:block/transparent"
+    }
+  }
+}

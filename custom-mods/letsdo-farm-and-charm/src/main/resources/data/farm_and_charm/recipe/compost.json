@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "## ",
+    "## "
+  ],
+  "key": {
+    "#": "farm_and_charm:fertilizer"
+  },
+  "result": {
+    "id": "farm_and_charm:compost",
+    "count": 1
+  }
+}

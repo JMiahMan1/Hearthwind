@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "###",
+    "###",
+    " C "
+  ],
+  "key": {
+    "#": "#candlelight:chocolate",
+    "C": "minecraft:chest"
+  },
+  "result": {
+    "id": "candlelight:chocolate_box",
+    "count": 1
+  }
+}

@@ -1,0 +1,79 @@
+{
+  "variants": {
+    "snowy=false,type=bottom": [
+      {
+        "model": "vinery:block/grass_slab",
+        "render_type": "minecraft:cutout"
+      },
+      {
+        "model": "vinery:block/grass_slab",
+        "y": 90,
+        "render_type": "minecraft:cutout"
+      },
+      {
+        "model": "vinery:block/grass_slab",
+        "y": 180,
+        "render_type": "minecraft:cutout"
+      },
+      {
+        "model": "vinery:block/grass_slab",
+        "y": 270,
+        "render_type": "minecraft:cutout"
+      }
+    ],
+    "snowy=true,type=bottom": {
+      "model": "vinery:block/grass_slab_snow",
+      "render_type": "minecraft:cutout"
+    },
+    "snowy=false,type=top": [
+      {
+        "model": "vinery:block/grass_slab_top",
+        "render_type": "minecraft:cutout"
+      },
+      {
+        "model": "vinery:block/grass_slab_top",
+        "y": 90,
+        "render_type": "minecraft:cutout"
+      },
+      {
+        "model": "vinery:block/grass_slab_top",
+        "y": 180,
+        "render_type": "minecraft:cutout"
+      },
+      {
+        "model": "vinery:block/grass_slab_top",
+        "y": 270,
+        "render_type": "minecraft:cutout"
+      }
+    ],
+    "snowy=true,type=top": {
+      "model": "vinery:block/grass_slab_top_snow",
+      "render_type": "minecraft:cutout"
+    },
+    "snowy=false,type=double": [
+      {
+        "model": "minecraft:block/grass_block",
+        "render_type": "minecraft:cutout"
+      },
+      {
+        "model": "minecraft:block/grass_block",
+        "y": 90,
+        "render_type": "minecraft:cutout"
+      },
+      {
+        "model": "minecraft:block/grass_block",
+        "y": 180,
+        "render_type": "minecraft:cutout"
+      },
+      {
+        "model": "minecraft:block/grass_block",
+        "y": 270,
+        "render_type": "minecraft:cutout"
+      }
+    ],
+    "snowy=true,type=double": {
+      "model": "minecraft:block/grass_block_snow",
+      "render_type": "minecraft:cutout"
+    }
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "group": "birch_rack",
+  "pattern": [
+    "# #",
+    " B ",
+    "# #"
+  ],
+  "key": {
+    "#": "minecraft:birch_planks",
+    "B": "minecraft:barrel"
+  },
+  "result": {
+    "id": "candlelight:birch_drawer"
+  }
+}

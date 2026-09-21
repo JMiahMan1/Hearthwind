@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "BBB",
+    "BBB",
+    "#B#"
+  ],
+  "key": {
+    "#": "minecraft:string",
+    "B": "#minecraft:wool"
+  },
+  "result": {
+    "id": "candlelight:trousers_and_vest",
+    "count": 1
+  }
+}

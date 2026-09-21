@@ -1,0 +1,14 @@
+{
+  "type": "farm_and_charm:stove",
+  "ingredients": [
+    "minecraft:beef",
+    "minecraft:carrot",
+    "#candlelight:red_effect"
+  ],
+  "result": {
+    "id": "candlelight:roastbeef_with_glazed_carrots",
+    "count": 6
+  },
+  "experience": 0.2,
+  "requiresLearning": false
+}

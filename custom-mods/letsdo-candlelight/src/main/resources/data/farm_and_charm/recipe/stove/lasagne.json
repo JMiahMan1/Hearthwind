@@ -1,0 +1,14 @@
+{
+  "type": "farm_and_charm:stove",
+  "ingredients": [
+    "candlelight:bolognese",
+    "#farm_and_charm:pasta",
+    "#candlelight:cheeses"
+  ],
+  "result": {
+    "id": "candlelight:lasagne",
+    "count": 2
+  },
+  "experience": 0.75,
+  "requiresLearning": false
+}

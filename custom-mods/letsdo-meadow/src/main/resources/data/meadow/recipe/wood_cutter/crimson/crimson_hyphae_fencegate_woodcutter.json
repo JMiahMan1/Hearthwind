@@ -1,0 +1,8 @@
+{
+  "type": "meadow:woodcutting",
+  "inputItem": "#minecraft:crimson_stems",
+  "outputItem": {
+    "count": 1,
+    "id": "minecraft:crimson_fence_gate"
+  }
+}

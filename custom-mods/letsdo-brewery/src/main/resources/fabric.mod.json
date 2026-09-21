@@ -1,0 +1,44 @@
+{
+  "schemaVersion": 1,
+  "id": "brewery",
+  "version": "${version}",
+  "name": "[Let's Do] Brewery",
+  "description": "Ozapft is! Brau Bier, beiss in a Bretzn – willkomme zum Braufescht!",
+  "authors": [
+    "satisfy"
+  ],
+  "contributors": [
+    "MissLilitu",
+    "CR-055"
+  ],
+  "contact": {
+    "issues": "https://github.com/satisfyu/Let-s-Do-Hub",
+    "sources": "https://github.com/satisfyu/Brewery"
+  },
+  "license": "Custom",
+  "icon": "pack.png",
+  "environment": "*",
+  "entrypoints": {
+    "fabric-gametest": [
+      "net.satisfy.brewery.BreweryGameTests"
+    ],
+    "main": [
+      "net.satisfy.brewery.fabric.BreweryFabric"
+    ],
+    "client": [
+      "net.satisfy.brewery.fabric.client.BreweryClientFabric"
+    ],
+    "rei_client": [
+      "net.satisfy.brewery.fabric.core.rei.BreweryREIClientPluginFabric"
+    ]
+  },
+  "mixins": [
+    "brewery-common.mixins.json"
+  ],
+  "depends": {
+    "fabric-api": "*",
+    "minecraft": ">=1.20",
+    "architectury": ">=9.0.8",
+    "farm_and_charm": "*"
+  }
+}

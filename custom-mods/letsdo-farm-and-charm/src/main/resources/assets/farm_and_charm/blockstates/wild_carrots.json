@@ -1,0 +1,21 @@
+{
+  "variants": {
+    "": [
+      {
+        "model": "farm_and_charm:block/wild_carrots_1",
+        "weight": 1,
+        "render_type": "minecraft:cutout"
+      },
+      {
+        "model": "farm_and_charm:block/wild_carrots_2",
+        "weight": 1,
+        "render_type": "minecraft:cutout"
+      },
+      {
+        "model": "farm_and_charm:block/wild_carrots_3",
+        "weight": 1,
+        "render_type": "minecraft:cutout"
+      }
+    ]
+  }
+}

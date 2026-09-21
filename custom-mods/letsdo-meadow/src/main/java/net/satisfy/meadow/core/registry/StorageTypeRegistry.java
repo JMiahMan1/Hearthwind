@@ -1,0 +1,27 @@
+package net.satisfy.meadow.core.registry;
+
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.level.block.Block;
+import net.satisfy.meadow.Meadow;
+
+import java.util.Set;
+
+public class StorageTypeRegistry {
+    public static final Identifier WHEEL_BARROW = Meadow.identifier("wheel_barrow");
+    public static final Identifier CHEESE_RACK = Meadow.identifier("cheese_rack");
+    public static final Identifier FLOWER_POT_SMALL = Meadow.identifier("flower_pot_small");
+    public static final Identifier FLOWER_POT_BIG = Meadow.identifier("flower_pot_big");
+    public static final Identifier FLOWER_BOX = Meadow.identifier("flower_box");
+
+    public static Set<Block> registerBlocks(Set<Block> blocks) {
+        blocks.add(ObjectRegistry.WHEELBARROW.get());
+        blocks.add(ObjectRegistry.WOODEN_FLOWER_POT_SMALL.get());
+        blocks.add(ObjectRegistry.WOODEN_FLOWER_POT_BIG.get());
+        blocks.add(ObjectRegistry.WOODEN_FLOWER_BOX.get());
+        blocks.add(ObjectRegistry.PINE_CHEESE_RACK.get());
+        blocks.add(ObjectRegistry.PINE_CABINET.get());
+        blocks.add(ObjectRegistry.PINE_WALL_CABINET.get());
+        blocks.add(ObjectRegistry.PINE_DRESSER.get());
+        return blocks;
+    }
+}

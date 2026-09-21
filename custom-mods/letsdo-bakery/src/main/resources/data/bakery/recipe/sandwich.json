@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    "#bakery:bread",
+    "#bakery:cooked_beef",
+    "#farm_and_charm:cabbage"
+  ],
+  "result": {
+    "id": "bakery:sandwich",
+    "count": 2
+  }
+}

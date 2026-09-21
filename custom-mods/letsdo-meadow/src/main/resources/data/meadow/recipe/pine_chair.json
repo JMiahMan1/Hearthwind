@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "///",
+    "___",
+    "/ /"
+  ],
+  "key": {
+    "/": "minecraft:stick",
+    "_": "meadow:pine_slab"
+  },
+  "result": {
+    "id": "meadow:pine_chair",
+    "count": 1
+  }
+}

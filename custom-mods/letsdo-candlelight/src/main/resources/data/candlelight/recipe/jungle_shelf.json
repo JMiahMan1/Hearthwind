@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "group": "shelf",
+  "pattern": [
+    "###",
+    "_ _",
+    "_ _"
+  ],
+  "key": {
+    "#": "minecraft:jungle_slab",
+    "_": "minecraft:iron_nugget"
+  },
+  "result": {
+    "id": "candlelight:jungle_shelf",
+    "count": 2
+  }
+}

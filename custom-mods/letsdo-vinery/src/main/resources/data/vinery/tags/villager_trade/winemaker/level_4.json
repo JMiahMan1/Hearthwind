@@ -1,0 +1,10 @@
+{
+  "replace": false,
+  "values": [
+    "vinery:winemaker/4/window_sold",
+    "vinery:winemaker/4/dark_cherry_beam_sold",
+    "vinery:winemaker/4/grapevine_pot_sold",
+    "vinery:winemaker/4/taiga_red_grape_seeds_sold",
+    "vinery:winemaker/4/taiga_white_grape_seeds_sold"
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "type": "meadow:cooking",
+  "ingredients": [
+    "minecraft:chicken",
+    "#c:salts"
+  ],
+  "fluid_amount": 5,
+  "crafting_duration": 40,
+  "result": {
+    "id": "minecraft:cooked_chicken",
+    "count": 4
+  }
+}

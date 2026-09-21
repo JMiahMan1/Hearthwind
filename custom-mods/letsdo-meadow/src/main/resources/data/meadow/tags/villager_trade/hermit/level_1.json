@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "meadow:hermit/1/pine_bench_bought",
+    "meadow:hermit/1/pine_log_bought",
+    "meadow:hermit/1/pine_sapling_sold",
+    "meadow:hermit/1/pine_slab_sold"
+  ]
+}

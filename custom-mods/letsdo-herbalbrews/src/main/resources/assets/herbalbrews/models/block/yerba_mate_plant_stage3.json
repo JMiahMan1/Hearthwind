@@ -1,0 +1,6 @@
+{
+  "parent": "herbalbrews:block/template_cross_crop",
+  "textures": {
+    "cross": "herbalbrews:block/yerba_mate_plant_stage3"
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "group": "planks",
+  "ingredients": [
+    "vinery:stripped_dark_cherry_log"
+  ],
+  "result": {
+    "count": 4,
+    "id": "vinery:dark_cherry_planks"
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "type": "vinery:wine_fermentation",
+  "juice": {
+    "type": "red_jungle",
+    "amount": 12
+  },
+  "ingredients": [
+    "minecraft:spider_eye",
+    "minecraft:honey_bottle"
+  ],
+  "wine_bottle": {
+    "required": false
+  },
+  "result": {
+    "count": 1,
+    "id": "vinery:chenet_wine"
+  }
+}

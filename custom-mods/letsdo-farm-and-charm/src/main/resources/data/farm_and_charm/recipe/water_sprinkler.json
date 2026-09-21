@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "I#I",
+    "###",
+    "#B#"
+  ],
+  "key": {
+    "#": "#minecraft:planks",
+    "B": "#farm_and_charm:water_bottles",
+    "I": "minecraft:iron_ingot"
+  },
+  "result": {
+    "id": "farm_and_charm:water_sprinkler",
+    "count": 1
+  }
+}

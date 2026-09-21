@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    "farm_and_charm:dog_food_bag"
+  ],
+  "result": {
+    "id": "farm_and_charm:dog_food",
+    "count": 9
+  }
+}

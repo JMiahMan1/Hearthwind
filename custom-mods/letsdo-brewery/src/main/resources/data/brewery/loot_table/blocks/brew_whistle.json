@@ -1,0 +1,59 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "bonus_rolls": 0.0,
+      "conditions": [
+        {
+          "condition": "minecraft:survives_explosion"
+        }
+      ],
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "conditions": [
+            {
+              "block": "brewery:brew_whistle",
+              "condition": "minecraft:block_state_property",
+              "properties": {
+                "material": "copper",
+                "half": "lower"
+              }
+            }
+          ],
+          "name": "brewery:copper_brewingstation"
+        },
+        {
+          "type": "minecraft:item",
+          "conditions": [
+            {
+              "block": "brewery:brew_whistle",
+              "condition": "minecraft:block_state_property",
+              "properties": {
+                "material": "wood",
+                "half": "lower"
+              }
+            }
+          ],
+          "name": "brewery:wooden_brewingstation"
+        },
+        {
+          "type": "minecraft:item",
+          "conditions": [
+            {
+              "block": "brewery:brew_whistle",
+              "condition": "minecraft:block_state_property",
+              "properties": {
+                "material": "netherite",
+                "half": "lower"
+              }
+            }
+          ],
+          "name": "brewery:netherite_brewingstation"
+        }
+      ],
+      "rolls": 1.0
+    }
+  ],
+  "random_sequence": "brewery:blocks/brew_oven"
+}

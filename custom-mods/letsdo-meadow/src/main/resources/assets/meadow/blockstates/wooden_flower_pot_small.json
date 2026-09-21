@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "": {
+      "model": "meadow:block/wooden_flower_pot_small",
+      "render_type": "minecraft:cutout"
+    }
+  }
+}

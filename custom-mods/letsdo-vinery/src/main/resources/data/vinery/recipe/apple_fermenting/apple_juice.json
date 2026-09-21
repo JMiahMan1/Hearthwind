@@ -1,0 +1,11 @@
+{
+  "type": "vinery:apple_fermenting",
+  "input": "vinery:apple_mash",
+  "wine_bottle": {
+    "required": true
+  },
+  "output": {
+    "id": "vinery:apple_juice",
+    "count": 1
+  }
+}

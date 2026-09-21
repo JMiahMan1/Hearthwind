@@ -1,0 +1,11 @@
+{
+  "variants": {
+    "": [
+      {
+        "model": "farm_and_charm:block/wild_potatoes",
+        "weight": 1,
+        "render_type": "minecraft:cutout"
+      }
+    ]
+  }
+}

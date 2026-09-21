@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "###",
+    "#B#",
+    "# #"
+  ],
+  "key": {
+    "#": "meadow:pine_planks",
+    "B": "meadow:pine_slab"
+  },
+  "result": {
+    "id": "meadow:pine_railing",
+    "count": 8
+  }
+}

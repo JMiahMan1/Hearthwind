@@ -1,0 +1,12 @@
+{
+  "type": "brewery:brewing",
+  "ingredients": [
+    "minecraft:sugar",
+    "minecraft:sweet_berries",
+    "brewery:hops"
+  ],
+  "material": "WOOD",
+  "result": {
+    "id": "brewery:root_beer"
+  }
+}

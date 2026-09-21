@@ -1,0 +1,8 @@
+{
+  "type": "meadow:woodcutting",
+  "inputItem": "#minecraft:jungle_logs",
+  "outputItem": {
+    "count": 4,
+    "id": "minecraft:jungle_stairs"
+  }
+}

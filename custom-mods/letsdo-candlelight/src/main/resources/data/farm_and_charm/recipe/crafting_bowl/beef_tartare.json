@@ -1,0 +1,12 @@
+{
+  "type": "farm_and_charm:crafting_bowl",
+  "ingredients": [
+    "farm_and_charm:minced_beef",
+    "#candlelight:bowls",
+    "#farm_and_charm:onion"
+  ],
+  "result": {
+    "id": "candlelight:beef_tartare",
+    "count": 2
+  }
+}

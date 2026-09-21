@@ -1,0 +1,9 @@
+{
+  "type": "farm_and_charm:mincer",
+  "ingredient": "minecraft:stone",
+  "recipe_type": "STONE",
+  "result": {
+    "id": "minecraft:cobblestone",
+    "count": 2
+  }
+}

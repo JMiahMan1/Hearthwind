@@ -1,0 +1,12 @@
+{
+  "variants": {
+    "part=top": {
+      "model": "meadow:block/climbing_rope_top",
+      "render_type": "minecraft:cutout"
+    },
+    "part=segment": {
+      "model": "meadow:block/climbing_rope",
+      "render_type": "minecraft:cutout"
+    }
+  }
+}

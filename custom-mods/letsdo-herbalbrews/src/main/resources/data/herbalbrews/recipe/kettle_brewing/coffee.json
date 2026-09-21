@@ -1,0 +1,16 @@
+{
+  "type": "herbalbrews:kettle_brewing",
+  "experience": 0.8,
+  "crafting_duration": 20,
+  "fluid_amount": 20,
+  "heat_amount": 50,
+  "ingredients": [
+    "herbalbrews:coffee_beans",
+    "minecraft:glass_bottle"
+  ],
+  "result": {
+    "id": "herbalbrews:coffee"
+  },
+  "effect": "herbalbrews:deeprush",
+  "effect_duration": 1800
+}

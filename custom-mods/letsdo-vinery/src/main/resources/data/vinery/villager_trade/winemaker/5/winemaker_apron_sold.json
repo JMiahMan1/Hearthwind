@@ -1,0 +1,17 @@
+{
+  "wants": {
+    "id": "minecraft:emerald",
+    "count": {
+      "type": "minecraft:uniform",
+      "min": 18.0,
+      "max": 18.0
+    }
+  },
+  "gives": {
+    "id": "vinery:winemaker_apron",
+    "count": 1
+  },
+  "max_uses": 1.0,
+  "reputation_discount": 0.05,
+  "xp": 15.0
+}

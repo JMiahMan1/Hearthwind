@@ -1,0 +1,14 @@
+{
+  "type": "farm_and_charm:stove",
+  "ingredients": [
+    "minecraft:sugar",
+    "#bakery:dough",
+    "#bakery:milk"
+  ],
+  "result": {
+    "count": 3,
+    "id": "bakery:toast"
+  },
+  "experience": 0.2,
+  "requiresLearning": false
+}

@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " C ",
+    "###",
+    "B B"
+  ],
+  "key": {
+    "#": "minecraft:leather",
+    "B": "minecraft:rabbit_hide",
+    "C": "minecraft:feather"
+  },
+  "result": {
+    "id": "meadow:fur_helmet",
+    "count": 1
+  }
+}

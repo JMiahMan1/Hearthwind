@@ -1,0 +1,80 @@
+{
+  "variants": {
+    "facing=north,type=left": {
+      "model": "meadow:block/pine_sofa_jacquard_left",
+      "render_type": "minecraft:cutout"
+    },
+    "facing=east,type=left": {
+      "y": 90,
+      "model": "meadow:block/pine_sofa_jacquard_left",
+      "render_type": "minecraft:cutout"
+    },
+    "facing=west,type=middle": {
+      "y": 270,
+      "model": "meadow:block/pine_sofa_jacquard_middle",
+      "render_type": "minecraft:cutout"
+    },
+    "facing=west,type=left": {
+      "y": 270,
+      "model": "meadow:block/pine_sofa_jacquard_left",
+      "render_type": "minecraft:cutout"
+    },
+    "facing=north,type=right": {
+      "model": "meadow:block/pine_sofa_jacquard_right",
+      "render_type": "minecraft:cutout"
+    },
+    "facing=east,type=middle": {
+      "y": 90,
+      "model": "meadow:block/pine_sofa_jacquard_middle",
+      "render_type": "minecraft:cutout"
+    },
+    "facing=east,type=right": {
+      "y": 90,
+      "model": "meadow:block/pine_sofa_jacquard_right",
+      "render_type": "minecraft:cutout"
+    },
+    "facing=south,type=none": {
+      "y": 180,
+      "model": "meadow:block/pine_sofa_jacquard_single",
+      "render_type": "minecraft:cutout"
+    },
+    "facing=north,type=middle": {
+      "model": "meadow:block/pine_sofa_jacquard_middle",
+      "render_type": "minecraft:cutout"
+    },
+    "facing=north,type=none": {
+      "model": "meadow:block/pine_sofa_jacquard_single",
+      "render_type": "minecraft:cutout"
+    },
+    "facing=east,type=none": {
+      "y": 90,
+      "model": "meadow:block/pine_sofa_jacquard_single",
+      "render_type": "minecraft:cutout"
+    },
+    "facing=south,type=middle": {
+      "y": 180,
+      "model": "meadow:block/pine_sofa_jacquard_middle",
+      "render_type": "minecraft:cutout"
+    },
+    "facing=south,type=right": {
+      "y": 180,
+      "model": "meadow:block/pine_sofa_jacquard_right",
+      "render_type": "minecraft:cutout"
+    },
+    "facing=south,type=left": {
+      "y": 180,
+      "model": "meadow:block/pine_sofa_jacquard_left",
+      "render_type": "minecraft:cutout"
+    },
+    "facing=west,type=right": {
+      "y": 270,
+      "model": "meadow:block/pine_sofa_jacquard_right",
+      "render_type": "minecraft:cutout"
+    },
+    "facing=west,type=none": {
+      "y": 270,
+      "model": "meadow:block/pine_sofa_jacquard_single",
+      "render_type": "minecraft:cutout"
+    }
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "replace": false,
+  "values": [
+    "bakery:wall_cabinet",
+    "bakery:cabinet",
+    "bakery:drawer",
+    "bakery:street_sign",
+    "bakery:breadbox",
+    "bakery:tray",
+    "bakery:wall_display"
+  ]
+}

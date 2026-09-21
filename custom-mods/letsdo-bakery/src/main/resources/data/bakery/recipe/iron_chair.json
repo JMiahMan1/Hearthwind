@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "WBW",
+    "WWW",
+    "W W"
+  ],
+  "key": {
+    "B": "minecraft:iron_ingot",
+    "W": "minecraft:iron_nugget"
+  },
+  "result": {
+    "id": "bakery:iron_chair",
+    "count": 2
+  }
+}

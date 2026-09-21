@@ -1,0 +1,20 @@
+{
+  "variants": {
+    "age=0": {
+      "model": "vinery:block/taiga_grape_bush_stage0",
+      "render_type": "minecraft:cutout"
+    },
+    "age=1": {
+      "model": "vinery:block/taiga_grape_bush_stage1",
+      "render_type": "minecraft:cutout"
+    },
+    "age=2": {
+      "model": "vinery:block/taiga_grape_bush_stage2",
+      "render_type": "minecraft:cutout"
+    },
+    "age=3": {
+      "model": "vinery:block/taiga_grape_bush_stage3_red",
+      "render_type": "minecraft:cutout"
+    }
+  }
+}

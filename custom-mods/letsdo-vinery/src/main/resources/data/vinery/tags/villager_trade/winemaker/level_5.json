@@ -1,0 +1,8 @@
+{
+  "replace": false,
+  "values": [
+    "vinery:winemaker/5/wine_box_sold",
+    "vinery:winemaker/5/winemaker_apron_sold",
+    "vinery:winemaker/5/straw_hat_sold"
+  ]
+}

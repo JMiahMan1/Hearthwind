@@ -1,0 +1,42 @@
+{
+  "variants": {
+    "facing=north,half=lower": {
+      "model": "meadow:block/cooking_frame_lower",
+      "render_type": "minecraft:cutout"
+    },
+    "facing=east,half=lower": {
+      "model": "meadow:block/cooking_frame_lower",
+      "y": 90,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=south,half=lower": {
+      "model": "meadow:block/cooking_frame_lower",
+      "y": 180,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=west,half=lower": {
+      "model": "meadow:block/cooking_frame_lower",
+      "y": 270,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=north,half=upper": {
+      "model": "meadow:block/cooking_frame_upper",
+      "render_type": "minecraft:cutout"
+    },
+    "facing=east,half=upper": {
+      "model": "meadow:block/cooking_frame_upper",
+      "y": 90,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=south,half=upper": {
+      "model": "meadow:block/cooking_frame_upper",
+      "y": 180,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=west,half=upper": {
+      "model": "meadow:block/cooking_frame_upper",
+      "y": 270,
+      "render_type": "minecraft:cutout"
+    }
+  }
+}

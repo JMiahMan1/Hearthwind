@@ -1,0 +1,75 @@
+package net.satisfy.vinery.core.effect;
+
+import net.minecraft.core.BlockPos;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffectCategory;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.Nullable;
+
+public class TeleportEffect extends MobEffect {
+
+    @Override
+    public boolean isInstantaneous() {
+        return true;
+    }
+
+    public TeleportEffect() {
+        super(MobEffectCategory.BENEFICIAL, 0xFF69B4);
+    }
+
+    @Override
+    public void applyInstantaneousEffect(net.minecraft.server.level.ServerLevel level, @Nullable Entity source, @Nullable Entity attacker, LivingEntity target, int amplifier, double proximity) {
+        teleport(source);
+    }
+
+    @Override
+    public boolean applyEffectTick(net.minecraft.server.level.ServerLevel level, LivingEntity source, int i) {
+        teleport(source);
+        return true;
+    }
+
+    private void teleport(Entity source) {
+        if (!(source instanceof Player player)) return;
+
+        Level world = player.level();
+
+        for (int attempt = 0; attempt < 16; attempt++) {
+            double x = player.getX() + (player.getRandom().nextDouble() - 0.5) * 16.0;
+            double y = player.getY() + (player.getRandom().nextDouble() - 0.5) * 16.0;
+            double z = player.getZ() + (player.getRandom().nextDouble() - 0.5) * 16.0;
+
+            BlockPos pos = new BlockPos((int) Math.floor(x), (int) Math.floor(y), (int) Math.floor(z));
+
+            if (world.isInWorldBounds(pos) &&
+                    !world.getBlockState(pos).liquid() &&
+                    !world.getBlockState(pos.above()).liquid() &&
+                    !fullBlockAt(world, pos) &&
+                    !fullBlockAt(world, pos.above()) &&
+                    fullBlockAt(world, pos.below())) {
+
+                if (!player.level().isClientSide()) {
+                    player.teleportTo(x + 0.5, pos.getY() + 0.5, z + 0.5);
+                }
+                player.fallDistance = 0;
+                player.playSound(SoundEvents.CHORUS_FRUIT_TELEPORT, 1.0F, 1.0F);
+                return;
+            }
+        }
+    }
+
+    private static boolean fullBlockAt(Level world, BlockPos target){
+        return Block.isShapeFullBlock(world.getBlockState(target).getCollisionShape(world, target));
+    }
+
+    private void oldTeleport(Player player) {
+        Vec3 lookVec = player.getLookAngle();
+        Vec3 teleportPos = player.position().add(lookVec.x * 30, lookVec.y * 30, lookVec.z * 30);
+        player.teleportRelative(teleportPos.x, teleportPos.y, teleportPos.z);
+    }
+}

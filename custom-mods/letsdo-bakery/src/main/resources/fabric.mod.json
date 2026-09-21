@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "id": "bakery",
+  "version": "${version}",
+  "name": "[Let's Do] Bakery",
+  "description": "Build your own bakery and bake the finest pastries, delicious bread, and sweet cakes!",
+  "authors": [
+    "satisfy"
+  ],
+  "contributors": [
+    "MissLilitu",
+    "CR-055"
+  ],
+  "contact": {
+    "issues": "https://github.com/satisfyu/Let-s-Do-Hub",
+    "sources": "https://github.com/satisfyu/Bakery"
+  },
+  "license": "Custom",
+  "icon": "pack.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "net.satisfy.bakery.fabric.BakeryFabric"
+    ],
+    "client": [
+      "net.satisfy.bakery.fabric.client.BakeryClientFabric"
+    ],
+    "rei_client": [
+      "net.satisfy.bakery.fabric.core.rei.BakeryReiClientPluginFabric"
+    ],
+    "modmenu": [
+      "net.satisfy.bakery.fabric.core.config.ModMenu"
+    ],
+    "fabric-gametest": [
+      "net.satisfy.bakery.BakeryGameTests"
+    ]
+  },
+  "mixins": [],
+  "depends": {
+    "fabric-api": "*",
+    "minecraft": ">=1.20",
+    "architectury": ">=9.0.8",
+    "farm_and_charm": "*"
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "group": "sandstone_kitchen",
+  "pattern": [
+    "iCi",
+    "BBB"
+  ],
+  "key": {
+    "i": "minecraft:iron_ingot",
+    "C": "minecraft:cauldron",
+    "B": "minecraft:sandstone"
+  },
+  "result": {
+    "id": "candlelight:sandstone_kitchen_sink"
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "type": "meadow:felting",
+  "ingredient": "minecraft:blue_wool",
+  "result": {
+    "id": "meadow:chambray_wool",
+    "count": 1
+  }
+}

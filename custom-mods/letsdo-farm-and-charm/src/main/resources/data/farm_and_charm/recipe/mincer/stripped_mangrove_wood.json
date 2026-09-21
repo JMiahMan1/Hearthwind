@@ -1,0 +1,9 @@
+{
+  "type": "farm_and_charm:mincer",
+  "ingredient": "minecraft:mangrove_wood",
+  "recipe_type": "WOOD",
+  "result": {
+    "id": "minecraft:stripped_mangrove_wood",
+    "count": 1
+  }
+}

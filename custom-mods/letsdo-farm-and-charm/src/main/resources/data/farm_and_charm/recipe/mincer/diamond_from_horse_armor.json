@@ -1,0 +1,9 @@
+{
+  "type": "farm_and_charm:mincer",
+  "ingredient": "minecraft:diamond_horse_armor",
+  "recipe_type": "METAL",
+  "result": {
+    "id": "minecraft:diamond",
+    "count": 1
+  }
+}

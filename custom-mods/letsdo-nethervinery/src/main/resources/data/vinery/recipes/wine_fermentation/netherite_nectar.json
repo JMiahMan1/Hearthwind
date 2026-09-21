@@ -1,0 +1,19 @@
+{
+  "type": "vinery:wine_fermentation",
+  "juice": {
+    "type": "red_crimson",
+    "amount": 50
+  },
+  "ingredients": [
+    {
+      "item": "minecraft:netherite_scrap"
+    }
+  ],
+  "wine_bottle": {
+    "required": true
+  },
+  "result": {
+    "item": "nethervinery:netherite_nectar",
+    "count": 1
+  }
+}

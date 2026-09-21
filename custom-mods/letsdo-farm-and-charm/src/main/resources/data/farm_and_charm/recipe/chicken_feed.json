@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    "#farm_and_charm:wheat",
+    "#farm_and_charm:wheat",
+    "minecraft:carrot",
+    "minecraft:carrot",
+    "minecraft:wheat_seeds",
+    "minecraft:wheat_seeds"
+  ],
+  "result": {
+    "id": "farm_and_charm:chicken_feed",
+    "count": 3
+  }
+}

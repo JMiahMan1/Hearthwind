@@ -1,0 +1,11 @@
+{
+  "type": "brewery:brewing",
+  "ingredients": [
+    "brewery:dried_wheat",
+    "brewery:hops"
+  ],
+  "material": "WOOD",
+  "result": {
+    "id": "brewery:small_beer"
+  }
+}

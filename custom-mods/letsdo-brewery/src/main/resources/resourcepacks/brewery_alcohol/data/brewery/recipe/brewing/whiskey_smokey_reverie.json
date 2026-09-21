@@ -1,0 +1,12 @@
+{
+  "type": "brewery:brewing",
+  "ingredients": [
+    "brewery:dried_oat",
+    "brewery:dried_oat",
+    "farm_and_charm:yeast"
+  ],
+  "material": "NETHERITE",
+  "result": {
+    "id": "brewery:whiskey_smokey_reverie"
+  }
+}

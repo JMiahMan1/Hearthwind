@@ -1,0 +1,134 @@
+{
+  "parent": "meadow:main/place_cheese_form",
+  "display": {
+    "icon": {
+      "count": 1,
+      "id": "meadow:buffalo_cheese_wheel"
+    },
+    "title": {
+      "translate": "advancement.meadow.cheese_collector"
+    },
+    "description": {
+      "translate": "advancement.meadow.cheese_collector.desc"
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "rewards": {
+    "experience": 750,
+    "loot": [
+      "meadow:advancements/completionist"
+    ]
+  },
+  "criteria": {
+    "meadow:cheese_wheel": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "meadow:cheese_wheel"
+            ]
+          }
+        ]
+      }
+    },
+    "meadow:sheep_cheese_wheel": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "meadow:sheep_cheese_wheel"
+            ]
+          }
+        ]
+      }
+    },
+    "meadow:grain_cheese_wheel": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "meadow:grain_cheese_wheel"
+            ]
+          }
+        ]
+      }
+    },
+    "meadow:amethyst_cheese_wheel": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "meadow:amethyst_cheese_wheel"
+            ]
+          }
+        ]
+      }
+    },
+    "meadow:buffalo_cheese_wheel": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "meadow:buffalo_cheese_wheel"
+            ]
+          }
+        ]
+      }
+    },
+    "meadow:goat_cheese_wheel": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "meadow:goat_cheese_wheel"
+            ]
+          }
+        ]
+      }
+    },
+    "meadow:warped_cheese_wheel": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "meadow:warped_cheese_wheel"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "meadow:cheese_wheel"
+    ],
+    [
+      "meadow:sheep_cheese_wheel"
+    ],
+    [
+      "meadow:grain_cheese_wheel"
+    ],
+    [
+      "meadow:amethyst_cheese_wheel"
+    ],
+    [
+      "meadow:buffalo_cheese_wheel"
+    ],
+    [
+      "meadow:goat_cheese_wheel"
+    ],
+    [
+      "meadow:warped_cheese_wheel"
+    ]
+  ]
+}

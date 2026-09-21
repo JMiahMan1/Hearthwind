@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "i i",
+    " i ",
+    " L "
+  ],
+  "key": {
+    "i": "minecraft:iron_ingot",
+    "L": "minecraft:lead"
+  },
+  "result": {
+    "id": "meadow:climbing_rope",
+    "count": 2
+  }
+}

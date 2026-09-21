@@ -1,0 +1,9 @@
+{
+  "parent": "farm_and_charm:block/template_window_sill",
+  "textures": {
+    "0": "block/flower_pot",
+    "1": "block/dirt",
+    "2": "farm_and_charm:block/window_sill",
+    "particle": "farm_and_charm:block/window_sill"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "wants": {
+    "id": "minecraft:emerald",
+    "count": 12.0
+  },
+  "gives": {
+    "id": "farm_and_charm:pitchfork"
+  },
+  "max_uses": 2.0,
+  "reputation_discount": 0.05,
+  "xp": 2.0
+}

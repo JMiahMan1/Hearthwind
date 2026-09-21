@@ -1,0 +1,12 @@
+{
+  "variants": {
+    "half=lower": {
+      "model": "meadow:block/small_fir_bottom",
+      "render_type": "minecraft:cutout"
+    },
+    "half=upper": {
+      "model": "meadow:block/small_fir_top",
+      "render_type": "minecraft:cutout"
+    }
+  }
+}

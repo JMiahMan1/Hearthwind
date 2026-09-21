@@ -1,0 +1,21 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "#c:ropes",
+      "required": false
+    },
+    {
+      "id": "farm_and_charm:rope",
+      "required": false
+    },
+    {
+      "id": "farm_and_charm:rope_knot",
+      "required": false
+    },
+    {
+      "id": "farmersdelight:rope",
+      "required": false
+    }
+  ]
+}

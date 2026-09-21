@@ -1,0 +1,8 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": "meadow:limestone",
+  "result": {
+    "id": "meadow:limestone_brick_slab",
+    "count": 2
+  }
+}

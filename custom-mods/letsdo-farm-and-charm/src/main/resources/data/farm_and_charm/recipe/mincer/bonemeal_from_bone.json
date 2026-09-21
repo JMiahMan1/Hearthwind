@@ -1,0 +1,9 @@
+{
+  "type": "farm_and_charm:mincer",
+  "ingredient": "minecraft:bone",
+  "recipe_type": "MEAT",
+  "result": {
+    "id": "minecraft:bone_meal",
+    "count": 5
+  }
+}

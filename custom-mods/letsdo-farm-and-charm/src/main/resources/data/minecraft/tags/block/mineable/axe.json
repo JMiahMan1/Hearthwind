@@ -1,0 +1,14 @@
+{
+  "replace": false,
+  "values": [
+    "farm_and_charm:feeding_trough",
+    "farm_and_charm:water_sprinkler",
+    "farm_and_charm:silo_wood",
+    "farm_and_charm:chicken_coop",
+    "farm_and_charm:pet_bowl",
+    "farm_and_charm:rope_knot",
+    "farm_and_charm:rope",
+    "farm_and_charm:sturdy_ladder",
+    "farm_and_charm:chicken_fence"
+  ]
+}

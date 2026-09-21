@@ -1,0 +1,156 @@
+{
+  "variants": {
+    "stack=1,facing=north": {
+      "model": "farm_and_charm:block/pancake_1",
+      "render_type": "minecraft:cutout"
+    },
+    "stack=1,facing=east": {
+      "model": "farm_and_charm:block/pancake_1",
+      "y": 90,
+      "render_type": "minecraft:cutout"
+    },
+    "stack=1,facing=south": {
+      "model": "farm_and_charm:block/pancake_1",
+      "y": 180,
+      "render_type": "minecraft:cutout"
+    },
+    "stack=1,facing=west": {
+      "model": "farm_and_charm:block/pancake_1",
+      "y": 270,
+      "render_type": "minecraft:cutout"
+    },
+    "stack=2,facing=north": {
+      "model": "farm_and_charm:block/pancake_2",
+      "render_type": "minecraft:cutout"
+    },
+    "stack=2,facing=east": {
+      "model": "farm_and_charm:block/pancake_2",
+      "y": 90,
+      "render_type": "minecraft:cutout"
+    },
+    "stack=2,facing=south": {
+      "model": "farm_and_charm:block/pancake_2",
+      "y": 180,
+      "render_type": "minecraft:cutout"
+    },
+    "stack=2,facing=west": {
+      "model": "farm_and_charm:block/pancake_2",
+      "y": 270,
+      "render_type": "minecraft:cutout"
+    },
+    "stack=3,facing=north": {
+      "model": "farm_and_charm:block/pancake_3",
+      "render_type": "minecraft:cutout"
+    },
+    "stack=3,facing=east": {
+      "model": "farm_and_charm:block/pancake_3",
+      "y": 90,
+      "render_type": "minecraft:cutout"
+    },
+    "stack=3,facing=south": {
+      "model": "farm_and_charm:block/pancake_3",
+      "y": 180,
+      "render_type": "minecraft:cutout"
+    },
+    "stack=3,facing=west": {
+      "model": "farm_and_charm:block/pancake_3",
+      "y": 270,
+      "render_type": "minecraft:cutout"
+    },
+    "stack=4,facing=north": {
+      "model": "farm_and_charm:block/pancake_4",
+      "render_type": "minecraft:cutout"
+    },
+    "stack=4,facing=east": {
+      "model": "farm_and_charm:block/pancake_4",
+      "y": 90,
+      "render_type": "minecraft:cutout"
+    },
+    "stack=4,facing=south": {
+      "model": "farm_and_charm:block/pancake_4",
+      "y": 180,
+      "render_type": "minecraft:cutout"
+    },
+    "stack=4,facing=west": {
+      "model": "farm_and_charm:block/pancake_4",
+      "y": 270,
+      "render_type": "minecraft:cutout"
+    },
+    "stack=5,facing=north": {
+      "model": "farm_and_charm:block/pancake_5",
+      "render_type": "minecraft:cutout"
+    },
+    "stack=5,facing=east": {
+      "model": "farm_and_charm:block/pancake_5",
+      "y": 90,
+      "render_type": "minecraft:cutout"
+    },
+    "stack=5,facing=south": {
+      "model": "farm_and_charm:block/pancake_5",
+      "y": 180,
+      "render_type": "minecraft:cutout"
+    },
+    "stack=5,facing=west": {
+      "model": "farm_and_charm:block/pancake_5",
+      "y": 270,
+      "render_type": "minecraft:cutout"
+    },
+    "stack=6,facing=north": {
+      "model": "farm_and_charm:block/pancake_6",
+      "render_type": "minecraft:cutout"
+    },
+    "stack=6,facing=east": {
+      "model": "farm_and_charm:block/pancake_6",
+      "y": 90,
+      "render_type": "minecraft:cutout"
+    },
+    "stack=6,facing=south": {
+      "model": "farm_and_charm:block/pancake_6",
+      "y": 180,
+      "render_type": "minecraft:cutout"
+    },
+    "stack=6,facing=west": {
+      "model": "farm_and_charm:block/pancake_6",
+      "y": 270,
+      "render_type": "minecraft:cutout"
+    },
+    "stack=7,facing=north": {
+      "model": "farm_and_charm:block/pancake_7",
+      "render_type": "minecraft:cutout"
+    },
+    "stack=7,facing=east": {
+      "model": "farm_and_charm:block/pancake_7",
+      "y": 90,
+      "render_type": "minecraft:cutout"
+    },
+    "stack=7,facing=south": {
+      "model": "farm_and_charm:block/pancake_7",
+      "y": 180,
+      "render_type": "minecraft:cutout"
+    },
+    "stack=7,facing=west": {
+      "model": "farm_and_charm:block/pancake_7",
+      "y": 270,
+      "render_type": "minecraft:cutout"
+    },
+    "stack=8,facing=north": {
+      "model": "farm_and_charm:block/pancake_8",
+      "render_type": "minecraft:cutout"
+    },
+    "stack=8,facing=east": {
+      "model": "farm_and_charm:block/pancake_8",
+      "y": 90,
+      "render_type": "minecraft:cutout"
+    },
+    "stack=8,facing=south": {
+      "model": "farm_and_charm:block/pancake_8",
+      "y": 180,
+      "render_type": "minecraft:cutout"
+    },
+    "stack=8,facing=west": {
+      "model": "farm_and_charm:block/pancake_8",
+      "y": 270,
+      "render_type": "minecraft:cutout"
+    }
+  }
+}

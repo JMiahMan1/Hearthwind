@@ -1,0 +1,14 @@
+{
+  "type": "farm_and_charm:stove",
+  "ingredients": [
+    "minecraft:glow_berries",
+    "bakery:sweet_dough",
+    "minecraft:sugar"
+  ],
+  "result": {
+    "count": 1,
+    "id": "bakery:glowberry_tart"
+  },
+  "experience": 0.2,
+  "requiresLearning": false
+}

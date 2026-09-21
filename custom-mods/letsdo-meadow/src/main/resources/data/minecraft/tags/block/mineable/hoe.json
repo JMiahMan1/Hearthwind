@@ -1,0 +1,20 @@
+{
+  "replace": false,
+  "values": [
+    "meadow:rustic_wool",
+    "meadow:linen",
+    "meadow:jacquard_wool",
+    "meadow:plaid_wool",
+    "meadow:chambray_wool",
+    "meadow:tweed_wool",
+    "meadow:warped_wool",
+    "meadow:rustic_carpet",
+    "meadow:linen_carpet",
+    "meadow:jacquard_carpet",
+    "meadow:plaid_carpet",
+    "meadow:chambray_carpet",
+    "meadow:tweed_carpet",
+    "meadow:warped_carpet",
+    "meadow:doormat"
+  ]
+}

@@ -1,0 +1,253 @@
+package net.satisfy.farm_and_charm.core.block.entity;
+
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.NonNullList;
+import net.minecraft.core.Position;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.ContainerHelper;
+import net.minecraft.world.WorldlyContainer;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.ChestMenu;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.RecipeHolder;
+import net.minecraft.world.item.crafting.RecipeManager;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
+import net.minecraft.world.level.block.entity.RandomizableContainerBlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
+import net.satisfy.farm_and_charm.core.block.MincerBlock;
+import net.satisfy.farm_and_charm.core.recipe.MincerRecipe;
+import net.satisfy.farm_and_charm.core.registry.EntityTypeRegistry;
+import net.satisfy.farm_and_charm.core.registry.RecipeTypeRegistry;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.IntStream;
+
+public class MincerBlockEntity extends RandomizableContainerBlockEntity implements WorldlyContainer, BlockEntityTicker<MincerBlockEntity> {
+    public final int SLOT_COUNT = 2;
+    public final int INPUT_SLOT = 0;
+    public final int OUTPUT_SLOT = 1;
+    private NonNullList<ItemStack> stacks = NonNullList.withSize(SLOT_COUNT, ItemStack.EMPTY);
+    private float crankAngle;
+    private float crankAnglePrev;
+    private float crankSpeed;
+    private float crankTargetSpeed;
+
+    public MincerBlockEntity(BlockPos position, BlockState state) {
+        super(EntityTypeRegistry.MINCER_BLOCK_ENTITY.get(), position, state);
+    }
+
+    public static void spawnItem(Level world, ItemStack stack, int speed, Direction side, Position pos) {
+        double d = pos.x();
+        double e = pos.y();
+        double f = pos.z();
+        if (side.getAxis() == Direction.Axis.Y) e -= 0.125; else e -= 0.15625;
+        ItemEntity itemEntity = new ItemEntity(world, d, e, f, stack);
+        double g = world.getRandom().nextDouble() * 0.1 + 0.2;
+        itemEntity.setDeltaMovement(world.getRandom().triangle((double) side.getStepX() * g, 0.0172275 * (double) speed), world.getRandom().triangle(0.2, 0.0172275 * (double) speed), world.getRandom().triangle((double) side.getStepZ() * g, 0.0172275 * (double) speed));
+        world.addFreshEntity(itemEntity);
+    }
+
+    @Override
+    protected void loadAdditional(net.minecraft.world.level.storage.ValueInput input) {
+        super.loadAdditional(input);
+        if (!this.tryLoadLootTable(input)) this.stacks = NonNullList.withSize(this.getContainerSize(), ItemStack.EMPTY);
+        ContainerHelper.loadAllItems(input, this.stacks);
+        this.crankSpeed = input.getFloatOr("CrankSpeed", 0.0F);
+        this.crankTargetSpeed = input.getFloatOr("CrankTargetSpeed", 0.0F);
+    }
+
+    @Override
+    protected void saveAdditional(net.minecraft.world.level.storage.ValueOutput output) {
+        super.saveAdditional(output);
+        if (!this.trySaveLootTable(output)) ContainerHelper.saveAllItems(output, this.stacks);
+        output.putFloat("CrankSpeed", this.crankSpeed);
+        output.putFloat("CrankTargetSpeed", this.crankTargetSpeed);
+    }
+
+    @Override
+    public ClientboundBlockEntityDataPacket getUpdatePacket() {
+        return ClientboundBlockEntityDataPacket.create(this);
+    }
+
+    @Override
+    public @NotNull CompoundTag getUpdateTag(HolderLookup.Provider provider) {
+        return this.saveWithoutMetadata(provider);
+    }
+
+    @Override
+    public boolean isEmpty() {
+        for (ItemStack itemstack : this.stacks) if (!itemstack.isEmpty()) return false;
+        return true;
+    }
+
+    @Override
+    public @NotNull Component getDefaultName() {
+        return Component.literal("mincer");
+    }
+
+    @Override
+    public @NotNull AbstractContainerMenu createMenu(int id, Inventory inventory) {
+        return ChestMenu.threeRows(id, inventory);
+    }
+
+    private void dropItemsInOutputSlot(Level level, BlockPos pos, BlockState state, MincerBlockEntity mincer) {
+        Direction direction = state.getValue(MincerBlock.FACING).getClockWise();
+        if (!level.isClientSide() && !this.stacks.get(OUTPUT_SLOT).isEmpty()) {
+            ItemStack droppedStack = new ItemStack(mincer.stacks.get(OUTPUT_SLOT).getItem());
+            droppedStack.setCount(mincer.stacks.get(OUTPUT_SLOT).getCount());
+            this.stacks.set(OUTPUT_SLOT, ItemStack.EMPTY);
+            Vec3 vec3d = Vec3.atCenterOf(pos);
+            Vec3 vec3d2 = vec3d.relative(direction, 0.7);
+            ((ServerLevel) level).sendParticles(ParticleTypes.SPIT, vec3d2.x(), vec3d2.y(), vec3d2.z(), 3, 0.2, 0.1, 0, 0.1);
+            spawnItem(level, droppedStack, 6, direction, vec3d2);
+        }
+    }
+
+    @Override
+    public int getMaxStackSize() {
+        return 64;
+    }
+
+    @Override
+    public int getContainerSize() {
+        return stacks.size();
+    }
+
+    @Override
+    public boolean canPlaceItem(int index, ItemStack stack) {
+        ItemStack inputSlotItemStack = this.stacks.get(INPUT_SLOT);
+        return (index == INPUT_SLOT) && inputSlotItemStack.isEmpty() || (stack.is(inputSlotItemStack.getItem()) && (inputSlotItemStack.getCount() < inputSlotItemStack.getMaxStackSize()));
+    }
+
+    @Override
+    public @NotNull ItemStack getItem(int index) {
+        return this.getItems().get(index);
+    }
+
+    @Override
+    public @NotNull NonNullList<ItemStack> getItems() {
+        return this.stacks;
+    }
+
+    @Override
+    protected void setItems(NonNullList<ItemStack> stacks) {
+        this.stacks = stacks;
+    }
+
+    @Override
+    public int @NotNull [] getSlotsForFace(Direction side) {
+        return IntStream.range(0, this.getContainerSize()).toArray();
+    }
+
+    @Override
+    public boolean canPlaceItemThroughFace(int index, ItemStack stack, @Nullable Direction direction) {
+        return this.canPlaceItem(index, stack);
+    }
+
+    @Override
+    public boolean canTakeItemThroughFace(int index, ItemStack stack, Direction direction) {
+        return (direction == Direction.UP) && canPlaceItem(index, stack);
+    }
+
+    private MincerRecipe getRecipe(List<RecipeHolder<MincerRecipe>> recipes, NonNullList<ItemStack> inventory) {
+        for (RecipeHolder<MincerRecipe> recipeHolder : recipes) {
+            MincerRecipe recipe = recipeHolder.value();
+            boolean ok = true;
+            for (Ingredient ingredient : recipe.getIngredients()) {
+                boolean found = false;
+                for (ItemStack slotItem : inventory) {
+                    if (ingredient.test(slotItem)) { found = true; break; }
+                }
+                if (!found) { ok = false; break; }
+            }
+            if (ok) return recipe;
+        }
+        return null;
+    }
+
+    public float getInterpolatedCrankAngle(float partial) {
+        float a0 = this.crankAnglePrev;
+        float a1 = this.crankAngle;
+        float da = a1 - a0;
+        float tau = (float) (Math.PI * 2D);
+        if (da > Math.PI) da -= tau;
+        if (da < -Math.PI) da += tau;
+        return a0 + da * partial;
+    }
+
+    public void addCrankImpulse(float v) {
+        this.crankTargetSpeed = Math.min(0.5F, this.crankTargetSpeed + v);
+    }
+
+    @Override
+    public void tick(Level level, BlockPos pos, BlockState state, MincerBlockEntity mincer) {
+        dropItemsInOutputSlot(level, pos, state, mincer);
+        int crank = state.getValue(MincerBlock.CRANK);
+
+        this.crankAnglePrev = this.crankAngle;
+        this.crankTargetSpeed = (crank > 0) ? 0.5F : 0F;
+        float k = 0.22F;
+        this.crankSpeed += (this.crankTargetSpeed - this.crankSpeed) * k;
+        if (crank == 0) this.crankSpeed *= 0.96F;
+        this.crankAngle += this.crankSpeed;
+        float tau = (float) (Math.PI * 2D);
+        if (this.crankAngle > tau) this.crankAngle -= tau;
+        if (this.crankAngle < 0F) this.crankAngle += tau;
+
+        if (!level.isClientSide() && state.getBlock() instanceof MincerBlock) {
+            int cranked = state.getValue(MincerBlock.CRANKED);
+            if (crank > 0) {
+                if (cranked < MincerBlock.CRANKS_NEEDED) cranked += 1;
+                crank -= 1;
+                if (cranked >= MincerBlock.CRANKS_NEEDED) {
+                    cranked = 0;
+                    RecipeManager rm = ((net.minecraft.server.level.ServerLevel) level).recipeAccess();
+                    List<RecipeHolder<MincerRecipe>> recipes = rm.getRecipes().stream().filter(h -> h.value() instanceof net.satisfy.farm_and_charm.core.recipe.MincerRecipe).map(h -> (net.minecraft.world.item.crafting.RecipeHolder<net.satisfy.farm_and_charm.core.recipe.MincerRecipe>) h).toList();
+                    MincerRecipe recipe = getRecipe(recipes, stacks);
+                    if (recipe != null) {
+                        ItemStack inputStack = this.stacks.get(INPUT_SLOT);
+                        inputStack.shrink(1);
+                        inputStack = inputStack.isEmpty() ? ItemStack.EMPTY : inputStack;
+                        mincer.setItem(INPUT_SLOT, inputStack);
+                        mincer.setItem(OUTPUT_SLOT, net.satisfy.farm_and_charm.core.recipe.RecipeDisplays26.resultOf(recipe));
+                    }
+                }
+            } else if (cranked > 0 && cranked < MincerBlock.CRANKS_NEEDED) {
+                cranked = 0;
+            }
+            level.setBlock(pos, state.setValue(MincerBlock.CRANK, crank).setValue(MincerBlock.CRANKED, cranked), Block.UPDATE_ALL);
+            if (level.getGameTime() % 5L == 0L) setChanged();
+        }
+    }
+
+    public boolean hasValidRecipe(Level level, ItemStack stack) {
+        if (level == null || level.isClientSide() || stack.isEmpty()) return false;
+
+        RecipeManager recipeManager = ((net.minecraft.server.level.ServerLevel) level).recipeAccess();
+        List<RecipeHolder<MincerRecipe>> recipes =
+                recipeManager.getRecipes().stream().filter(h -> h.value() instanceof net.satisfy.farm_and_charm.core.recipe.MincerRecipe).map(h -> (net.minecraft.world.item.crafting.RecipeHolder<net.satisfy.farm_and_charm.core.recipe.MincerRecipe>) h).toList();
+
+        NonNullList<ItemStack> testInventory = NonNullList.withSize(this.getContainerSize(), ItemStack.EMPTY);
+        testInventory.set(INPUT_SLOT, stack.copy());
+
+        return getRecipe(recipes, testInventory) != null;
+    }
+}

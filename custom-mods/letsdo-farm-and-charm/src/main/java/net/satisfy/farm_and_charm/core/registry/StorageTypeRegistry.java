@@ -1,0 +1,20 @@
+package net.satisfy.farm_and_charm.core.registry;
+
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.level.block.Block;
+import net.satisfy.farm_and_charm.FarmAndCharm;
+
+import java.util.Set;
+
+public class StorageTypeRegistry {
+    public static final Identifier TOOL_RACK = FarmAndCharm.identifier("tool_rack");
+    public static final Identifier WINDOW_SILL = FarmAndCharm.identifier("window_sill");
+    public static final Identifier CHICKEN_NEST = FarmAndCharm.identifier("chicken_nest");
+
+    public static Set<Block> registerBlocks(Set<Block> blocks) {
+        blocks.add(ObjectRegistry.TOOL_RACK.get());
+        blocks.add(ObjectRegistry.WINDOW_SILL.get());
+        blocks.add(ObjectRegistry.CHICKEN_NEST.get());
+        return blocks;
+    }
+}

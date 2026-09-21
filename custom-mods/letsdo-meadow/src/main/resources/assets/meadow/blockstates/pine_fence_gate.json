@@ -1,0 +1,96 @@
+{
+  "variants": {
+    "facing=east,in_wall=false,open=false": {
+      "uvlock": true,
+      "y": 270,
+      "model": "meadow:block/pine_fence_gate",
+      "render_type": "minecraft:cutout"
+    },
+    "facing=east,in_wall=false,open=true": {
+      "uvlock": true,
+      "y": 270,
+      "model": "meadow:block/pine_fence_gate_open",
+      "render_type": "minecraft:cutout"
+    },
+    "facing=east,in_wall=true,open=false": {
+      "uvlock": true,
+      "y": 270,
+      "model": "meadow:block/pine_fence_gate_wall",
+      "render_type": "minecraft:cutout"
+    },
+    "facing=east,in_wall=true,open=true": {
+      "uvlock": true,
+      "y": 270,
+      "model": "meadow:block/pine_fence_gate_wall_open",
+      "render_type": "minecraft:cutout"
+    },
+    "facing=north,in_wall=false,open=false": {
+      "uvlock": true,
+      "y": 180,
+      "model": "meadow:block/pine_fence_gate",
+      "render_type": "minecraft:cutout"
+    },
+    "facing=north,in_wall=false,open=true": {
+      "uvlock": true,
+      "y": 180,
+      "model": "meadow:block/pine_fence_gate_open",
+      "render_type": "minecraft:cutout"
+    },
+    "facing=north,in_wall=true,open=false": {
+      "uvlock": true,
+      "y": 180,
+      "model": "meadow:block/pine_fence_gate_wall",
+      "render_type": "minecraft:cutout"
+    },
+    "facing=north,in_wall=true,open=true": {
+      "uvlock": true,
+      "y": 180,
+      "model": "meadow:block/pine_fence_gate_wall_open",
+      "render_type": "minecraft:cutout"
+    },
+    "facing=south,in_wall=false,open=false": {
+      "uvlock": true,
+      "model": "meadow:block/pine_fence_gate",
+      "render_type": "minecraft:cutout"
+    },
+    "facing=south,in_wall=false,open=true": {
+      "uvlock": true,
+      "model": "meadow:block/pine_fence_gate_open",
+      "render_type": "minecraft:cutout"
+    },
+    "facing=south,in_wall=true,open=false": {
+      "uvlock": true,
+      "model": "meadow:block/pine_fence_gate_wall",
+      "render_type": "minecraft:cutout"
+    },
+    "facing=south,in_wall=true,open=true": {
+      "uvlock": true,
+      "model": "meadow:block/pine_fence_gate_wall_open",
+      "render_type": "minecraft:cutout"
+    },
+    "facing=west,in_wall=false,open=false": {
+      "uvlock": true,
+      "y": 90,
+      "model": "meadow:block/pine_fence_gate",
+      "render_type": "minecraft:cutout"
+    },
+    "facing=west,in_wall=false,open=true": {
+      "uvlock": true,
+      "y": 90,
+      "model": "meadow:block/pine_fence_gate_open",
+      "render_type": "minecraft:cutout"
+    },
+    "facing=west,in_wall=true,open=false": {
+      "uvlock": true,
+      "y": 90,
+      "model": "meadow:block/pine_fence_gate_wall",
+      "render_type": "minecraft:cutout"
+    },
+    "facing=west,in_wall=true,open=true": {
+      "uvlock": true,
+      "y": 90,
+      "model": "meadow:block/pine_fence_gate_wall_open",
+      "render_type": "minecraft:cutout"
+    }
+  }
+}

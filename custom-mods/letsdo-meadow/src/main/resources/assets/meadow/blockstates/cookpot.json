@@ -1,0 +1,84 @@
+{
+  "variants": {
+    "facing=north,stage=normal": {
+      "model": "meadow:block/cookpot",
+      "y": 0,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=east,stage=normal": {
+      "model": "meadow:block/cookpot",
+      "y": 90,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=south,stage=normal": {
+      "model": "meadow:block/cookpot",
+      "y": 180,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=west,stage=normal": {
+      "model": "meadow:block/cookpot",
+      "y": 270,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=north,stage=warm": {
+      "model": "meadow:block/cookpot_warm",
+      "y": 0,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=east,stage=warm": {
+      "model": "meadow:block/cookpot_warm",
+      "y": 90,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=south,stage=warm": {
+      "model": "meadow:block/cookpot_warm",
+      "y": 180,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=west,stage=warm": {
+      "model": "meadow:block/cookpot_warm",
+      "y": 270,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=north,stage=cooking": {
+      "model": "meadow:block/cookpot_filled",
+      "y": 0,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=east,stage=cooking": {
+      "model": "meadow:block/cookpot_filled",
+      "y": 90,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=south,stage=cooking": {
+      "model": "meadow:block/cookpot_filled",
+      "y": 180,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=west,stage=cooking": {
+      "model": "meadow:block/cookpot_filled",
+      "y": 270,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=north,stage=filled": {
+      "model": "meadow:block/cookpot_filled",
+      "y": 0,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=east,stage=filled": {
+      "model": "meadow:block/cookpot_filled",
+      "y": 90,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=south,stage=filled": {
+      "model": "meadow:block/cookpot_filled",
+      "y": 180,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=west,stage=filled": {
+      "model": "meadow:block/cookpot_filled",
+      "y": 270,
+      "render_type": "minecraft:cutout"
+    }
+  }
+}

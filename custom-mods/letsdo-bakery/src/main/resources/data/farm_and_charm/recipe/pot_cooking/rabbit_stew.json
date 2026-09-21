@@ -1,0 +1,17 @@
+{
+  "type": "farm_and_charm:pot_cooking",
+  "ingredients": [
+    "minecraft:potato",
+    "minecraft:brown_mushroom",
+    "minecraft:carrot",
+    "minecraft:rabbit"
+  ],
+  "container": {
+    "id": "minecraft:bowl"
+  },
+  "result": {
+    "id": "minecraft:rabbit_stew"
+  },
+  "requiresLearning": false,
+  "requireContainer": true
+}

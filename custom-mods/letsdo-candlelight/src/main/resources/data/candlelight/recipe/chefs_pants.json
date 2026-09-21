@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "XUX",
+    "I N",
+    "N I"
+  ],
+  "key": {
+    "X": "minecraft:leather",
+    "U": "minecraft:gold_ingot",
+    "I": "minecraft:black_wool",
+    "N": "minecraft:light_gray_wool"
+  },
+  "result": {
+    "id": "candlelight:chefs_pants"
+  }
+}

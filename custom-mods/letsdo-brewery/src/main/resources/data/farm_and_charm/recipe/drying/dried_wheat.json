@@ -1,0 +1,9 @@
+{
+  "type": "farm_and_charm:drying",
+  "ingredient": "minecraft:wheat",
+  "recipe_type": "MEAT",
+  "result": {
+    "id": "brewery:dried_wheat",
+    "count": 1
+  }
+}

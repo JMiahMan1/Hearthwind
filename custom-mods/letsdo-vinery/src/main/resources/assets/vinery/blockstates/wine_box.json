@@ -1,0 +1,42 @@
+{
+  "variants": {
+    "facing=east,open=false": {
+      "model": "vinery:block/wine_box_closed",
+      "y": 90,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=north,open=false": {
+      "model": "vinery:block/wine_box_closed",
+      "render_type": "minecraft:cutout"
+    },
+    "facing=south,open=false": {
+      "model": "vinery:block/wine_box_closed",
+      "y": 180,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=west,open=false": {
+      "model": "vinery:block/wine_box_closed",
+      "y": 270,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=east,open=true": {
+      "model": "vinery:block/wine_box_open",
+      "y": 90,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=north,open=true": {
+      "model": "vinery:block/wine_box_open",
+      "render_type": "minecraft:cutout"
+    },
+    "facing=south,open=true": {
+      "model": "vinery:block/wine_box_open",
+      "y": 180,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=west,open=true": {
+      "model": "vinery:block/wine_box_open",
+      "y": 270,
+      "render_type": "minecraft:cutout"
+    }
+  }
+}

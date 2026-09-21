@@ -1,0 +1,21 @@
+{
+  "type": "farm_and_charm:roaster",
+  "ingredients": [
+    "#candlelight:tomato_soups",
+    "farm_and_charm:minced_beef",
+    "farm_and_charm:bacon",
+    "#farm_and_charm:onion",
+    "minecraft:carrot",
+    "#candlelight:red_effect"
+  ],
+  "container": {
+    "id": "minecraft:bowl",
+    "count": 1,
+    "consume": true
+  },
+  "result": {
+    "id": "candlelight:bolognese",
+    "count": 4
+  },
+  "requiresLearning": false
+}

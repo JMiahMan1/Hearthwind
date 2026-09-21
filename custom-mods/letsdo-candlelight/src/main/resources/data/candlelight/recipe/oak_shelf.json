@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "group": "shelf",
+  "pattern": [
+    "###",
+    "_ _",
+    "_ _"
+  ],
+  "key": {
+    "#": "minecraft:oak_slab",
+    "_": "minecraft:iron_nugget"
+  },
+  "result": {
+    "id": "candlelight:oak_shelf",
+    "count": 2
+  }
+}

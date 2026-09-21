@@ -1,0 +1,156 @@
+{
+  "variants": {
+    "facing=east,lit=false,roasting=false,hanging=false": {
+      "model": "farm_and_charm:block/roaster",
+      "y": 90,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=north,lit=false,roasting=false,hanging=false": {
+      "model": "farm_and_charm:block/roaster",
+      "render_type": "minecraft:cutout"
+    },
+    "facing=south,lit=false,roasting=false,hanging=false": {
+      "model": "farm_and_charm:block/roaster",
+      "y": 180,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=west,lit=false,roasting=false,hanging=false": {
+      "model": "farm_and_charm:block/roaster",
+      "y": 270,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=east,lit=true,roasting=false,hanging=false": {
+      "model": "farm_and_charm:block/roaster",
+      "y": 90,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=north,lit=true,roasting=false,hanging=false": {
+      "model": "farm_and_charm:block/roaster",
+      "render_type": "minecraft:cutout"
+    },
+    "facing=south,lit=true,roasting=false,hanging=false": {
+      "model": "farm_and_charm:block/roaster",
+      "y": 180,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=west,lit=true,roasting=false,hanging=false": {
+      "model": "farm_and_charm:block/roaster",
+      "y": 270,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=east,lit=false,roasting=true,hanging=false": {
+      "model": "farm_and_charm:block/roaster",
+      "y": 90,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=north,lit=false,roasting=true,hanging=false": {
+      "model": "farm_and_charm:block/roaster",
+      "render_type": "minecraft:cutout"
+    },
+    "facing=south,lit=false,roasting=true,hanging=false": {
+      "model": "farm_and_charm:block/roaster",
+      "y": 180,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=west,lit=false,roasting=true,hanging=false": {
+      "model": "farm_and_charm:block/roaster",
+      "y": 270,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=east,lit=true,roasting=true,hanging=false": {
+      "model": "farm_and_charm:block/roaster",
+      "y": 90,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=north,lit=true,roasting=true,hanging=false": {
+      "model": "farm_and_charm:block/roaster",
+      "render_type": "minecraft:cutout"
+    },
+    "facing=south,lit=true,roasting=true,hanging=false": {
+      "model": "farm_and_charm:block/roaster",
+      "y": 180,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=west,lit=true,roasting=true,hanging=false": {
+      "model": "farm_and_charm:block/roaster",
+      "y": 270,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=east,lit=false,roasting=false,hanging=true": {
+      "model": "farm_and_charm:block/roaster_hanging",
+      "y": 90,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=north,lit=false,roasting=false,hanging=true": {
+      "model": "farm_and_charm:block/roaster_hanging",
+      "render_type": "minecraft:cutout"
+    },
+    "facing=south,lit=false,roasting=false,hanging=true": {
+      "model": "farm_and_charm:block/roaster_hanging",
+      "y": 180,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=west,lit=false,roasting=false,hanging=true": {
+      "model": "farm_and_charm:block/roaster_hanging",
+      "y": 270,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=east,lit=true,roasting=false,hanging=true": {
+      "model": "farm_and_charm:block/roaster_hanging",
+      "y": 90,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=north,lit=true,roasting=false,hanging=true": {
+      "model": "farm_and_charm:block/roaster_hanging",
+      "render_type": "minecraft:cutout"
+    },
+    "facing=south,lit=true,roasting=false,hanging=true": {
+      "model": "farm_and_charm:block/roaster_hanging",
+      "y": 180,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=west,lit=true,roasting=false,hanging=true": {
+      "model": "farm_and_charm:block/roaster_hanging",
+      "y": 270,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=east,lit=false,roasting=true,hanging=true": {
+      "model": "farm_and_charm:block/roaster_hanging",
+      "y": 90,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=north,lit=false,roasting=true,hanging=true": {
+      "model": "farm_and_charm:block/roaster_hanging",
+      "render_type": "minecraft:cutout"
+    },
+    "facing=south,lit=false,roasting=true,hanging=true": {
+      "model": "farm_and_charm:block/roaster_hanging",
+      "y": 180,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=west,lit=false,roasting=true,hanging=true": {
+      "model": "farm_and_charm:block/roaster_hanging",
+      "y": 270,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=east,lit=true,roasting=true,hanging=true": {
+      "model": "farm_and_charm:block/roaster_hanging",
+      "y": 90,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=north,lit=true,roasting=true,hanging=true": {
+      "model": "farm_and_charm:block/roaster_hanging",
+      "render_type": "minecraft:cutout"
+    },
+    "facing=south,lit=true,roasting=true,hanging=true": {
+      "model": "farm_and_charm:block/roaster_hanging",
+      "y": 180,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=west,lit=true,roasting=true,hanging=true": {
+      "model": "farm_and_charm:block/roaster_hanging",
+      "y": 270,
+      "render_type": "minecraft:cutout"
+    }
+  }
+}

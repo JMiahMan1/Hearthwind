@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "  #",
+    "###",
+    "# #"
+  ],
+  "key": {
+    "#": "minecraft:acacia_planks"
+  },
+  "result": {
+    "id": "candlelight:acacia_chair",
+    "count": 2
+  }
+}

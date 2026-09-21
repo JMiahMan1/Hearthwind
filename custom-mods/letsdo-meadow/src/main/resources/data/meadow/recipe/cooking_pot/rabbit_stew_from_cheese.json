@@ -1,0 +1,16 @@
+{
+  "type": "meadow:cooking",
+  "ingredients": [
+    "minecraft:baked_potato",
+    "minecraft:cooked_rabbit",
+    "minecraft:bowl",
+    "minecraft:carrot",
+    "#c:cheese"
+  ],
+  "fluid_amount": 20,
+  "crafting_duration": 80,
+  "result": {
+    "id": "minecraft:rabbit_stew",
+    "count": 6
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:simple_block",
+  "config": {
+    "to_place": {
+      "type": "minecraft:weighted_state_provider",
+      "entries": [
+        {
+          "weight": 85,
+          "data": {
+            "Name": "meadow:eriophorum"
+          }
+        },
+        {
+          "weight": 15,
+          "data": {
+            "Name": "meadow:tall_eriophorum",
+            "Properties": {
+              "half": "lower"
+            }
+          }
+        }
+      ]
+    }
+  }
+}

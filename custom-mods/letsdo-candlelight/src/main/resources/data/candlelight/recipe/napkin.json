@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "  #",
+    " G ",
+    "#  "
+  ],
+  "key": {
+    "#": "minecraft:paper",
+    "G": "minecraft:gold_nugget"
+  },
+  "result": {
+    "id": "candlelight:napkin",
+    "count": 4
+  }
+}

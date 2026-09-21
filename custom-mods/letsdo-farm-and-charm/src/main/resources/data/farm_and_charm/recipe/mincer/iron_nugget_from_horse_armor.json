@@ -1,0 +1,9 @@
+{
+  "type": "farm_and_charm:mincer",
+  "ingredient": "minecraft:iron_horse_armor",
+  "recipe_type": "WOOD",
+  "result": {
+    "id": "minecraft:iron_nugget",
+    "count": 12
+  }
+}

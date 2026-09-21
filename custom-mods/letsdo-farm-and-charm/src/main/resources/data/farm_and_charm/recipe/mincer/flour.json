@@ -1,0 +1,9 @@
+{
+  "type": "farm_and_charm:mincer",
+  "ingredient": "#farm_and_charm:wheat",
+  "recipe_type": "STONE",
+  "result": {
+    "id": "farm_and_charm:flour",
+    "count": 4
+  }
+}

@@ -1,0 +1,52 @@
+{
+  "schemaVersion": 1,
+  "id": "farm_and_charm",
+  "version": "${version}",
+  "name": "[Let's Do] Farm & Charm",
+  "description": "The farm calls: Experience the art of advanced agriculture and farmhouse cuisine! Use mincers, cooking pots, as well as new grains and fruit varieties to enhance your culinary and agricultural skills.",
+  "authors": [
+    "satisfy, jason13"
+  ],
+  "contact": {
+    "issues": "https://github.com/satisfyu/Let-s-Do-Hub",
+    "sources": "https://github.com/satisfyu/FarmAndCharm"
+  },
+  "license": "custom",
+  "icon": "pack.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "net.satisfy.farm_and_charm.fabric.FarmAndCharmFabric"
+    ],
+    "client": [
+      "net.satisfy.farm_and_charm.fabric.client.FarmAndCharmClientFabric"
+    ],
+    "modmenu": [
+      "net.satisfy.farm_and_charm.fabric.core.config.ModMenu"
+    ],
+    "rei_client": [
+      "net.satisfy.farm_and_charm.fabric.core.rei.FarmAndCharmReiClientPluginFabric"
+    ],
+    "fabric-gametest": [
+      "net.satisfy.farm_and_charm.FarmAndCharmGameTests"
+    ]
+  },
+  "mixins": [
+    "FarmAndCharm.mixins.json"
+  ],
+  "depends": {
+    "fabric-api": "*",
+    "minecraft": ">=1.20",
+    "architectury": ">=9.0.8"
+  },
+  "conflicts": {
+    "bakery": "<2.0.0",
+    "brewery": "<2.0.0",
+    "candlelight": "<2.0.0"
+  },
+  "suggests": {
+    "Bakery - Farm&Charm compat": ">=2.0.0",
+    "Brewery - Farm&Charm compat": ">=2.0.0",
+    "Candlelight - Farm&Charm compat": ">=2.0.0"
+  }
+}

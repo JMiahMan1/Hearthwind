@@ -1,0 +1,13 @@
+{
+  "type": "farm_and_charm:crafting_bowl",
+  "ingredients": [
+    "#farm_and_charm:cooked_beef",
+    "#farm_and_charm:raw_fishes",
+    "#farm_and_charm:raw_chicken",
+    "#farm_and_charm:raw_pork"
+  ],
+  "result": {
+    "id": "farm_and_charm:cat_food",
+    "count": 6
+  }
+}

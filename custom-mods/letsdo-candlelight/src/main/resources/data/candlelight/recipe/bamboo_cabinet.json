@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "group": "bamboo_rack",
+  "pattern": [
+    "#V#",
+    "VBV",
+    "#B#"
+  ],
+  "key": {
+    "#": "minecraft:bamboo_planks",
+    "V": "minecraft:bamboo_slab",
+    "B": "minecraft:barrel"
+  },
+  "result": {
+    "id": "candlelight:bamboo_cabinet"
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "parent": "brewery:block/template_beer_mug",
+  "textures": {
+    "0": "brewery:block/beer_wheat",
+    "1": "brewery:block/beer_wheat",
+    "particle": "brewery:block/beer_wheat"
+  }
+}

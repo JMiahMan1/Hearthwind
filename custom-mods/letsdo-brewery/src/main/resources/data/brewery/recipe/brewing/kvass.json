@@ -1,0 +1,12 @@
+{
+  "type": "brewery:brewing",
+  "ingredients": [
+    "minecraft:bread",
+    "minecraft:sugar",
+    "farm_and_charm:yeast"
+  ],
+  "material": "WOOD",
+  "result": {
+    "id": "brewery:kvass"
+  }
+}

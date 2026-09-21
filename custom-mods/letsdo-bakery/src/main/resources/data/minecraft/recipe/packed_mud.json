@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    "minecraft:mud",
+    "#bakery:wheat"
+  ],
+  "result": {
+    "id": "minecraft:packed_mud"
+  },
+  "replace": true
+}

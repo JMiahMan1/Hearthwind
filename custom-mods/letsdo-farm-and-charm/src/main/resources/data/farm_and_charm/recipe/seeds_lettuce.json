@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    "farm_and_charm:lettuce"
+  ],
+  "result": {
+    "id": "farm_and_charm:lettuce_seeds",
+    "count": 3
+  }
+}

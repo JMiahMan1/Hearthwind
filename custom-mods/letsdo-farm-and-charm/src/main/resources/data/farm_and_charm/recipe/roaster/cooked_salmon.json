@@ -1,0 +1,18 @@
+{
+  "type": "farm_and_charm:roaster",
+  "ingredients": [
+    "#farm_and_charm:corn",
+    "#farm_and_charm:cabbage",
+    "minecraft:salmon",
+    "#farm_and_charm:butter"
+  ],
+  "container": {
+    "id": "minecraft:bowl",
+    "count": 1
+  },
+  "result": {
+    "id": "farm_and_charm:cooked_salmon",
+    "count": 1
+  },
+  "requiresLearning": false
+}

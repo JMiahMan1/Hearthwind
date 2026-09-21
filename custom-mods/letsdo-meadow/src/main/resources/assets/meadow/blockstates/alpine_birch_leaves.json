@@ -1,0 +1,12 @@
+{
+  "variants": {
+    "hanging=false": {
+      "model": "meadow:block/alpine_birch_leaves",
+      "render_type": "minecraft:cutout"
+    },
+    "hanging=true": {
+      "model": "meadow:block/alpine_birch_leaves_hanging",
+      "render_type": "minecraft:cutout"
+    }
+  }
+}

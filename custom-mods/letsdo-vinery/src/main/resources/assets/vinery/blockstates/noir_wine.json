@@ -1,0 +1,12 @@
+{
+  "variants": {
+    "fake_model=false": {
+      "model": "vinery:block/noir_wine",
+      "render_type": "minecraft:cutout"
+    },
+    "fake_model=true": {
+      "model": "vinery:block/transparent",
+      "render_type": "minecraft:cutout"
+    }
+  }
+}

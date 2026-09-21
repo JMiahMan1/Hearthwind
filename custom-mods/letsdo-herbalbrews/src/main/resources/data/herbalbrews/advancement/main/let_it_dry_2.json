@@ -1,0 +1,38 @@
+{
+  "parent": "herbalbrews:main/let_it_dry",
+  "display": {
+    "icon": {
+      "id": "herbalbrews:black_tea_leaf_block",
+      "count": 1
+    },
+    "title": {
+      "translate": "herbalbrews.advancement.dry_2"
+    },
+    "description": {
+      "translate": "herbalbrews.advancement.dry_2.desc"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "dried_black_tea": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "herbalbrews:dried_black_tea"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "dried_black_tea"
+    ]
+  ]
+}

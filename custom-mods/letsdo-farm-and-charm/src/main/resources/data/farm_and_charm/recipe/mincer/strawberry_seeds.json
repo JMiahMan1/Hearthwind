@@ -1,0 +1,9 @@
+{
+  "type": "farm_and_charm:mincer",
+  "ingredient": "farm_and_charm:strawberry",
+  "recipe_type": "MEAT",
+  "result": {
+    "id": "farm_and_charm:strawberry_seeds",
+    "count": 4
+  }
+}

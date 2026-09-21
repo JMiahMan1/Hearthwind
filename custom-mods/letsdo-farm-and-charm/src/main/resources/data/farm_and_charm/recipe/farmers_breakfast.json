@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    "#farm_and_charm:bread",
+    "farm_and_charm:bacon_with_eggs",
+    "farm_and_charm:roasted_corn"
+  ],
+  "result": {
+    "id": "farm_and_charm:farmers_breakfast",
+    "count": 1
+  }
+}

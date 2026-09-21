@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:smithing_transform",
+  "addition": "minecraft:netherite_ingot",
+  "base": "brewery:copper_brewingstation",
+  "result": {
+    "id": "brewery:netherite_brewingstation",
+    "count": 1
+  },
+  "template": "minecraft:netherite_upgrade_smithing_template"
+}

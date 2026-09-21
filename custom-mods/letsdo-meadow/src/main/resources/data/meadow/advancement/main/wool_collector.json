@@ -1,0 +1,131 @@
+{
+  "parent": "meadow:main/find_meadow",
+  "display": {
+    "icon": {
+      "count": 1,
+      "id": "meadow:rustic_wool"
+    },
+    "title": {
+      "translate": "advancement.meadow.wool_collector"
+    },
+    "description": {
+      "translate": "advancement.meadow.wool_collector.desc"
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "rewards": {
+    "experience": 250
+  },
+  "criteria": {
+    "meadow:rustic_wool": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "meadow:rustic_wool"
+            ]
+          }
+        ]
+      }
+    },
+    "meadow:linen": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "meadow:linen"
+            ]
+          }
+        ]
+      }
+    },
+    "meadow:jacquard_wool": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "meadow:jacquard_wool"
+            ]
+          }
+        ]
+      }
+    },
+    "meadow:plaid_wool": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "meadow:plaid_wool"
+            ]
+          }
+        ]
+      }
+    },
+    "meadow:chambray_wool": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "meadow:chambray_wool"
+            ]
+          }
+        ]
+      }
+    },
+    "meadow:tweed_wool": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "meadow:tweed_wool"
+            ]
+          }
+        ]
+      }
+    },
+    "meadow:warped_wool": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "meadow:warped_wool"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "meadow:rustic_wool"
+    ],
+    [
+      "meadow:linen"
+    ],
+    [
+      "meadow:jacquard_wool"
+    ],
+    [
+      "meadow:plaid_wool"
+    ],
+    [
+      "meadow:chambray_wool"
+    ],
+    [
+      "meadow:tweed_wool"
+    ],
+    [
+      "meadow:warped_wool"
+    ]
+  ]
+}

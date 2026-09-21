@@ -1,0 +1,6 @@
+{
+  "parent": "herbalbrews:block/template_cross_crop",
+  "textures": {
+    "cross": "herbalbrews:block/rooibos_plant_stage3"
+  }
+}

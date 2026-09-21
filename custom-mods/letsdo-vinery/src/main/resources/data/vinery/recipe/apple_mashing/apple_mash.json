@@ -1,0 +1,8 @@
+{
+  "type": "vinery:apple_mashing",
+  "input": "minecraft:apple",
+  "output": {
+    "id": "vinery:apple_mash",
+    "count": 1
+  }
+}

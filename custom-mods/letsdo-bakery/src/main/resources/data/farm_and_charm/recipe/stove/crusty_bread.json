@@ -1,0 +1,14 @@
+{
+  "type": "farm_and_charm:stove",
+  "ingredients": [
+    "#bakery:dough",
+    "farm_and_charm:yeast",
+    "#bakery:water_bottles"
+  ],
+  "result": {
+    "count": 4,
+    "id": "bakery:crusty_bread"
+  },
+  "experience": 0.3,
+  "requiresLearning": false
+}

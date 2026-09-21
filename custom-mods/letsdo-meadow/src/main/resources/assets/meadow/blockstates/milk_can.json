@@ -1,0 +1,80 @@
+{
+  "variants": {
+    "facing=north,fill_level=0": {
+      "model": "meadow:block/milk_can_0",
+      "render_type": "minecraft:cutout"
+    },
+    "facing=east,fill_level=0": {
+      "model": "meadow:block/milk_can_0",
+      "y": 90,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=south,fill_level=0": {
+      "model": "meadow:block/milk_can_0",
+      "y": 180,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=west,fill_level=0": {
+      "model": "meadow:block/milk_can_0",
+      "y": 270,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=north,fill_level=1": {
+      "model": "meadow:block/milk_can_1",
+      "render_type": "minecraft:cutout"
+    },
+    "facing=east,fill_level=1": {
+      "model": "meadow:block/milk_can_1",
+      "y": 90,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=south,fill_level=1": {
+      "model": "meadow:block/milk_can_1",
+      "y": 180,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=west,fill_level=1": {
+      "model": "meadow:block/milk_can_1",
+      "y": 270,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=north,fill_level=2": {
+      "model": "meadow:block/milk_can_2",
+      "render_type": "minecraft:cutout"
+    },
+    "facing=east,fill_level=2": {
+      "model": "meadow:block/milk_can_2",
+      "y": 90,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=south,fill_level=2": {
+      "model": "meadow:block/milk_can_2",
+      "y": 180,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=west,fill_level=2": {
+      "model": "meadow:block/milk_can_2",
+      "y": 270,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=north,fill_level=3": {
+      "model": "meadow:block/milk_can_3",
+      "render_type": "minecraft:cutout"
+    },
+    "facing=east,fill_level=3": {
+      "model": "meadow:block/milk_can_3",
+      "y": 90,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=south,fill_level=3": {
+      "model": "meadow:block/milk_can_3",
+      "y": 180,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=west,fill_level=3": {
+      "model": "meadow:block/milk_can_3",
+      "y": 270,
+      "render_type": "minecraft:cutout"
+    }
+  }
+}

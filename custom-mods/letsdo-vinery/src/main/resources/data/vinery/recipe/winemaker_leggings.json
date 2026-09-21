@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "group": "winemaker_set",
+  "pattern": [
+    "XUX",
+    "I N",
+    "N I"
+  ],
+  "key": {
+    "X": "minecraft:leather",
+    "U": "minecraft:gold_ingot",
+    "I": "minecraft:white_wool",
+    "N": "minecraft:blue_wool"
+  },
+  "result": {
+    "id": "vinery:winemaker_leggings"
+  }
+}

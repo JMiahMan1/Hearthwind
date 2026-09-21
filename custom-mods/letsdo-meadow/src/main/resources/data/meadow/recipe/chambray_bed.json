@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "group": "bed",
+  "key": {
+    "#": "meadow:chambray_wool",
+    "X": "#minecraft:planks"
+  },
+  "pattern": [
+    "###",
+    "XXX"
+  ],
+  "result": {
+    "id": "meadow:chambray_bed",
+    "count": 1
+  }
+}

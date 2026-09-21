@@ -1,0 +1,8 @@
+{
+  "replace": false,
+  "values": [
+    "meadow:hermit/5/alpine_salt_sold",
+    "meadow:hermit/5/iron_axe_sold",
+    "meadow:hermit/5/wooden_cauldron_sold"
+  ]
+}

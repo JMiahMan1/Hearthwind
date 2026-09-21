@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "group": "warped_rack",
+  "pattern": [
+    "#_#",
+    "_B_",
+    "#B#"
+  ],
+  "key": {
+    "#": "minecraft:warped_planks",
+    "_": "minecraft:warped_slab",
+    "B": "minecraft:barrel"
+  },
+  "result": {
+    "id": "candlelight:warped_cabinet"
+  }
+}

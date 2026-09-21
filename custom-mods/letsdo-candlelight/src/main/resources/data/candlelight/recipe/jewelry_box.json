@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    "minecraft:chest",
+    "minecraft:green_dye"
+  ],
+  "result": {
+    "id": "candlelight:jewelry_box",
+    "count": 1
+  }
+}

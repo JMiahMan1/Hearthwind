@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "id": "nethervinery",
+  "version": "${version}",
+  "name": "[Let's Do] NetherVinery",
+  "description": "Welcome to Nether Vinery! New grapes, new decor - all in the style of the Nether.",
+  "authors": [
+    "satisfy"
+  ],
+  "contact": {
+    "sources": "https://github.com/satisfyu/NetherVinery",
+    "issues": "https://github.com/satisfyu/Let-s-Do-Hub"
+  },
+  "license": "Custom",
+  "icon": "pack.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "net.satisfy.nethervinery.fabric.NetherVineryFabric"
+    ],
+    "client": [
+      "net.satisfy.nethervinery.fabric.client.NetherVineryClientFabric"
+    ],
+    "preLaunch": [
+      "net.satisfy.nethervinery.fabric.NetherVineryFabricPre"
+    ]
+  },
+  "mixins": [
+    "nethervinery-common.mixins.json"
+  ],
+  "depends": {
+    "fabric-api": "*",
+    "minecraft": ">=1.20",
+    "architectury": ">=9.0.8",
+    "vinery": ">=1.4.32"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "type": "farm_and_charm:crafting_bowl",
+  "ingredients": [
+    "#farm_and_charm:cabbage",
+    "#farm_and_charm:tomato",
+    "#candlelight:bowls",
+    "#candlelight:cheeses"
+  ],
+  "result": {
+    "id": "candlelight:salad",
+    "count": 4
+  }
+}

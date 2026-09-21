@@ -1,0 +1,156 @@
+{
+  "variants": {
+    "stack=1,facing=north": {
+      "model": "bakery:block/jar_empty_0",
+      "render_type": "minecraft:cutout"
+    },
+    "stack=1,facing=east": {
+      "model": "bakery:block/jar_empty_0",
+      "y": 90,
+      "render_type": "minecraft:cutout"
+    },
+    "stack=1,facing=south": {
+      "model": "bakery:block/jar_empty_0",
+      "y": 180,
+      "render_type": "minecraft:cutout"
+    },
+    "stack=1,facing=west": {
+      "model": "bakery:block/jar_empty_0",
+      "y": 270,
+      "render_type": "minecraft:cutout"
+    },
+    "stack=2,facing=north": {
+      "model": "bakery:block/jar_empty_1",
+      "render_type": "minecraft:cutout"
+    },
+    "stack=2,facing=east": {
+      "model": "bakery:block/jar_empty_1",
+      "y": 90,
+      "render_type": "minecraft:cutout"
+    },
+    "stack=2,facing=south": {
+      "model": "bakery:block/jar_empty_1",
+      "y": 180,
+      "render_type": "minecraft:cutout"
+    },
+    "stack=2,facing=west": {
+      "model": "bakery:block/jar_empty_1",
+      "y": 270,
+      "render_type": "minecraft:cutout"
+    },
+    "stack=3,facing=north": {
+      "model": "bakery:block/jar_empty_2",
+      "render_type": "minecraft:cutout"
+    },
+    "stack=3,facing=east": {
+      "model": "bakery:block/jar_empty_2",
+      "y": 90,
+      "render_type": "minecraft:cutout"
+    },
+    "stack=3,facing=south": {
+      "model": "bakery:block/jar_empty_2",
+      "y": 180,
+      "render_type": "minecraft:cutout"
+    },
+    "stack=3,facing=west": {
+      "model": "bakery:block/jar_empty_2",
+      "y": 270,
+      "render_type": "minecraft:cutout"
+    },
+    "stack=4,facing=north": {
+      "model": "bakery:block/jar_empty_3",
+      "render_type": "minecraft:cutout"
+    },
+    "stack=4,facing=east": {
+      "model": "bakery:block/jar_empty_3",
+      "y": 90,
+      "render_type": "minecraft:cutout"
+    },
+    "stack=4,facing=south": {
+      "model": "bakery:block/jar_empty_3",
+      "y": 180,
+      "render_type": "minecraft:cutout"
+    },
+    "stack=4,facing=west": {
+      "model": "bakery:block/jar_empty_3",
+      "y": 270,
+      "render_type": "minecraft:cutout"
+    },
+    "stack=5,facing=north": {
+      "model": "bakery:block/jar_empty_0",
+      "render_type": "minecraft:cutout"
+    },
+    "stack=5,facing=east": {
+      "model": "bakery:block/jar_empty_0",
+      "y": 90,
+      "render_type": "minecraft:cutout"
+    },
+    "stack=5,facing=south": {
+      "model": "bakery:block/jar_empty_0",
+      "y": 180,
+      "render_type": "minecraft:cutout"
+    },
+    "stack=5,facing=west": {
+      "model": "bakery:block/jar_empty_0",
+      "y": 270,
+      "render_type": "minecraft:cutout"
+    },
+    "stack=6,facing=north": {
+      "model": "bakery:block/jar_empty_0",
+      "render_type": "minecraft:cutout"
+    },
+    "stack=6,facing=east": {
+      "model": "bakery:block/jar_empty_0",
+      "y": 90,
+      "render_type": "minecraft:cutout"
+    },
+    "stack=6,facing=south": {
+      "model": "bakery:block/jar_empty_0",
+      "y": 180,
+      "render_type": "minecraft:cutout"
+    },
+    "stack=6,facing=west": {
+      "model": "bakery:block/jar_empty_0",
+      "y": 270,
+      "render_type": "minecraft:cutout"
+    },
+    "stack=7,facing=north": {
+      "model": "bakery:block/jar_empty_0",
+      "render_type": "minecraft:cutout"
+    },
+    "stack=7,facing=east": {
+      "model": "bakery:block/jar_empty_0",
+      "y": 90,
+      "render_type": "minecraft:cutout"
+    },
+    "stack=7,facing=south": {
+      "model": "bakery:block/jar_empty_0",
+      "y": 180,
+      "render_type": "minecraft:cutout"
+    },
+    "stack=7,facing=west": {
+      "model": "bakery:block/jar_empty_0",
+      "y": 270,
+      "render_type": "minecraft:cutout"
+    },
+    "stack=8,facing=north": {
+      "model": "bakery:block/jar_empty_0",
+      "render_type": "minecraft:cutout"
+    },
+    "stack=8,facing=east": {
+      "model": "bakery:block/jar_empty_0",
+      "y": 90,
+      "render_type": "minecraft:cutout"
+    },
+    "stack=8,facing=south": {
+      "model": "bakery:block/jar_empty_0",
+      "y": 180,
+      "render_type": "minecraft:cutout"
+    },
+    "stack=8,facing=west": {
+      "model": "bakery:block/jar_empty_0",
+      "y": 270,
+      "render_type": "minecraft:cutout"
+    }
+  }
+}

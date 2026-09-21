@@ -1,0 +1,80 @@
+{
+  "variants": {
+    "facing=north,type=none": {
+      "model": "meadow:block/pine_table_single",
+      "render_type": "minecraft:cutout"
+    },
+    "facing=east,type=none": {
+      "model": "meadow:block/pine_table_single",
+      "y": 90,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=south,type=none": {
+      "model": "meadow:block/pine_table_single",
+      "y": 180,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=west,type=none": {
+      "model": "meadow:block/pine_table_single",
+      "y": 270,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=north,type=middle": {
+      "model": "meadow:block/pine_table_connected_middle",
+      "render_type": "minecraft:cutout"
+    },
+    "facing=east,type=middle": {
+      "model": "meadow:block/pine_table_connected_middle",
+      "y": 90,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=south,type=middle": {
+      "model": "meadow:block/pine_table_connected_middle",
+      "y": 180,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=west,type=middle": {
+      "model": "meadow:block/pine_table_connected_middle",
+      "y": 270,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=north,type=left": {
+      "model": "meadow:block/pine_table_connected_left",
+      "render_type": "minecraft:cutout"
+    },
+    "facing=east,type=left": {
+      "model": "meadow:block/pine_table_connected_left",
+      "y": 90,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=south,type=left": {
+      "model": "meadow:block/pine_table_connected_left",
+      "y": 180,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=west,type=left": {
+      "model": "meadow:block/pine_table_connected_left",
+      "y": 270,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=north,type=right": {
+      "model": "meadow:block/pine_table_connected_right",
+      "y": 180,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=east,type=right": {
+      "model": "meadow:block/pine_table_connected_right",
+      "y": 270,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=south,type=right": {
+      "model": "meadow:block/pine_table_connected_right",
+      "render_type": "minecraft:cutout"
+    },
+    "facing=west,type=right": {
+      "model": "meadow:block/pine_table_connected_right",
+      "y": 90,
+      "render_type": "minecraft:cutout"
+    }
+  }
+}

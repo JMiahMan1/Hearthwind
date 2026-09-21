@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "": {
+      "model": "meadow:block/pine_leaves",
+      "render_type": "minecraft:cutout"
+    }
+  }
+}

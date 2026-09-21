@@ -1,0 +1,12 @@
+{
+  "type": "farm_and_charm:crafting_bowl",
+  "ingredients": [
+    "minecraft:beetroot",
+    "#candlelight:bowls",
+    "#candlelight:cheeses"
+  ],
+  "result": {
+    "id": "candlelight:beetroot_salad",
+    "count": 2
+  }
+}

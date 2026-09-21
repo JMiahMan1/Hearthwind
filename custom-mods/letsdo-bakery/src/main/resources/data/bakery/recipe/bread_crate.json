@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " U ",
+    "_BV",
+    " # "
+  ],
+  "key": {
+    "#": "bakery:tray",
+    "_": "bakery:baguette",
+    "B": "bakery:bun",
+    "V": "bakery:braided_bread",
+    "U": "#bakery:bread"
+  },
+  "result": {
+    "id": "bakery:bread_crate",
+    "count": 1
+  }
+}

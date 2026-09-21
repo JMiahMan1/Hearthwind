@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "###",
+    "# #",
+    "# #"
+  ],
+  "key": {
+    "#": "minecraft:oak_planks"
+  },
+  "result": {
+    "id": "candlelight:oak_table"
+  }
+}

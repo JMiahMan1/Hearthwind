@@ -1,0 +1,12 @@
+{
+  "type": "meadow:cooking",
+  "ingredients": [
+    "minecraft:calcite"
+  ],
+  "fluid_amount": 50,
+  "crafting_duration": 120,
+  "result": {
+    "id": "meadow:alpine_salt",
+    "count": 2
+  }
+}

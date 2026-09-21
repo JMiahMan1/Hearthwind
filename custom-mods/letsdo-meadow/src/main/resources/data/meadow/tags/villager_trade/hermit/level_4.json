@@ -1,0 +1,8 @@
+{
+  "replace": false,
+  "values": [
+    "meadow:hermit/4/firewood_sold",
+    "meadow:hermit/4/rabbit_hide_sold",
+    "meadow:hermit/4/wooden_bucket_sold"
+  ]
+}

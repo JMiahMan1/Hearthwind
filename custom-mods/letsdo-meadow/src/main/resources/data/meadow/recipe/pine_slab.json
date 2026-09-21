@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "group": "slab",
+  "pattern": [
+    "###"
+  ],
+  "key": {
+    "#": "meadow:pine_planks"
+  },
+  "result": {
+    "id": "meadow:pine_slab",
+    "count": 6
+  }
+}

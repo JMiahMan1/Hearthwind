@@ -1,0 +1,12 @@
+{
+  "wants": {
+    "id": "minecraft:emerald",
+    "count": 2.0
+  },
+  "gives": {
+    "id": "farm_and_charm:fertilizer"
+  },
+  "max_uses": 24.0,
+  "reputation_discount": 0.05,
+  "xp": 30.0
+}

@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:smithing_transform",
+  "addition": "minecraft:netherite_ingot",
+  "base": "bakery:bakery_banner",
+  "result": {
+    "id": "bakery:bakery_banner",
+    "count": 2
+  },
+  "template": "minecraft:netherite_upgrade_smithing_template"
+}

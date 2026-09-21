@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "": {
+      "model": "vinery:block/dark_oak_lattice",
+      "render_type": "minecraft:cutout"
+    }
+  }
+}

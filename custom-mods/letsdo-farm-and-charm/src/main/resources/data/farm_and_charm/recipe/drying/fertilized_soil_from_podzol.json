@@ -1,0 +1,9 @@
+{
+  "type": "farm_and_charm:drying",
+  "ingredient": "minecraft:podzol",
+  "recipe_type": "MEAT",
+  "result": {
+    "id": "farm_and_charm:fertilized_soil",
+    "count": 1
+  }
+}

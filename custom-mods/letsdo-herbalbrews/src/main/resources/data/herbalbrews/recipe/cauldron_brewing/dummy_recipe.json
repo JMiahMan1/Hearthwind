@@ -1,0 +1,11 @@
+{
+  "type": "herbalbrews:cauldron_brewing",
+  "ingredients": [
+    "minecraft:potion",
+    "minecraft:potion",
+    "minecraft:potion"
+  ],
+  "result": {
+    "id": "herbalbrews:flask"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "replace": false,
+  "values": [
+    "nethervinery:lava_fizz",
+    "nethervinery:nether_fizz",
+    "nethervinery:netherite_nectar",
+    "nethervinery:improved_lava_fizz",
+    "nethervinery:improved_nether_fizz"
+  ]
+}

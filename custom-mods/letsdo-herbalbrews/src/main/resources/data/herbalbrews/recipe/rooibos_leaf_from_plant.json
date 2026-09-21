@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    "herbalbrews:wild_rooibos_plant"
+  ],
+  "result": {
+    "id": "herbalbrews:rooibos_leaf"
+  }
+}

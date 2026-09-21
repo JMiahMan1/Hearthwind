@@ -1,0 +1,17 @@
+{
+  "wants": {
+    "id": "minecraft:emerald",
+    "count": {
+      "type": "minecraft:uniform",
+      "min": 6.0,
+      "max": 6.0
+    }
+  },
+  "gives": {
+    "id": "meadow:stove_tiles",
+    "count": 1
+  },
+  "max_uses": 12.0,
+  "reputation_discount": 0.05,
+  "xp": 10.0
+}

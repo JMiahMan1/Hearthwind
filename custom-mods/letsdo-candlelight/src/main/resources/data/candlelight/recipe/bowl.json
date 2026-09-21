@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " # ",
+    "#W#",
+    " # "
+  ],
+  "key": {
+    "#": "minecraft:brick",
+    "W": "minecraft:white_dye"
+  },
+  "result": {
+    "id": "candlelight:bowl",
+    "count": 2
+  }
+}

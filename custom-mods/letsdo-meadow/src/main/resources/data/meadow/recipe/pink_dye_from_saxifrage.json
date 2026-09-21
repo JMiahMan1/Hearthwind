@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "group": "pink_dye",
+  "ingredients": [
+    "meadow:saxifrage"
+  ],
+  "result": {
+    "id": "minecraft:pink_dye",
+    "count": 2
+  }
+}

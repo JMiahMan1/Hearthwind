@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "A": "#bakery:milk",
+    "B": "minecraft:sugar",
+    "C": "#bakery:wheat",
+    "E": "#bakery:eggs"
+  },
+  "pattern": [
+    "AAA",
+    "BEB",
+    "CCC"
+  ],
+  "result": {
+    "id": "minecraft:cake"
+  },
+  "replace": true
+}

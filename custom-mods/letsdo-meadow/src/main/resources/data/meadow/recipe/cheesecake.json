@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "E/E",
+    "WWW"
+  ],
+  "key": {
+    "/": "#c:cheese",
+    "E": "#c:eggs",
+    "W": "#c:wheat"
+  },
+  "result": {
+    "id": "meadow:cheesecake",
+    "count": 4
+  }
+}

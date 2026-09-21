@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "III",
+    "I I",
+    "BCB"
+  ],
+  "key": {
+    "B": "minecraft:stick",
+    "C": "minecraft:cobblestone",
+    "I": "minecraft:iron_nugget"
+  },
+  "result": {
+    "id": "farm_and_charm:cattlegrid",
+    "count": 2
+  }
+}

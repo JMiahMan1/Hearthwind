@@ -1,0 +1,9 @@
+{
+  "type": "farm_and_charm:mincer",
+  "ingredient": "minecraft:emerald_ore",
+  "recipe_type": "METAL",
+  "result": {
+    "id": "minecraft:emerald",
+    "count": 2
+  }
+}

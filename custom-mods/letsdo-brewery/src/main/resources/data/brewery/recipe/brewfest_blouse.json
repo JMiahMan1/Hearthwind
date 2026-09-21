@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "X": "brewery:patterned_wool",
+    "A": "minecraft:white_wool"
+  },
+  "pattern": [
+    "X X",
+    "AAA",
+    "AAA"
+  ],
+  "result": {
+    "id": "brewery:brewfest_blouse"
+  },
+  "show_notification": true
+}

@@ -1,0 +1,16 @@
+{
+  "type": "herbalbrews:kettle_brewing",
+  "experience": 0.8,
+  "crafting_duration": 20,
+  "fluid_amount": 0,
+  "heat_amount": 50,
+  "ingredients": [
+    "herbalbrews:coffee",
+    "#herbalbrews:is_milk"
+  ],
+  "result": {
+    "id": "herbalbrews:milk_coffee"
+  },
+  "effect": "herbalbrews:deeprush",
+  "effect_duration": 2600
+}

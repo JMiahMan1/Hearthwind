@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "   ",
+    "# #",
+    "___"
+  ],
+  "key": {
+    "#": "#minecraft:planks",
+    "_": "#minecraft:wooden_slabs"
+  },
+  "result": {
+    "id": "bakery:tray",
+    "count": 4
+  }
+}

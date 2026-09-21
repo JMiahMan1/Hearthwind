@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "": {
+      "model": "vinery:block/window_block",
+      "render_type": "minecraft:translucent"
+    }
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "BIB",
+    "BIB"
+  ],
+  "key": {
+    "I": "minecraft:iron_nugget",
+    "B": "minecraft:stick"
+  },
+  "result": {
+    "id": "farm_and_charm:chicken_fence",
+    "count": 16
+  }
+}

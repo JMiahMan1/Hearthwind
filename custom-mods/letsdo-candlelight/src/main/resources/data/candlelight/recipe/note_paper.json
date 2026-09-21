@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "##",
+    "##"
+  ],
+  "key": {
+    "#": "minecraft:paper"
+  },
+  "result": {
+    "id": "candlelight:note_paper",
+    "count": 2
+  }
+}

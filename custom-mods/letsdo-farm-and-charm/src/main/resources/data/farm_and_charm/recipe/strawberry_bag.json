@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "group": "grape_bag",
+  "pattern": [
+    "###",
+    "###",
+    "###"
+  ],
+  "key": {
+    "#": "farm_and_charm:strawberry"
+  },
+  "result": {
+    "id": "farm_and_charm:strawberry_bag",
+    "count": 1
+  }
+}

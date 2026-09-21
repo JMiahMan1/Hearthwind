@@ -1,0 +1,32 @@
+{
+  "variants": {
+    "facing=east": [
+      {
+        "model": "bakery:block/tray",
+        "y": 90,
+        "render_type": "minecraft:cutout"
+      }
+    ],
+    "facing=north": [
+      {
+        "model": "bakery:block/tray",
+        "weight": 1,
+        "render_type": "minecraft:cutout"
+      }
+    ],
+    "facing=south": [
+      {
+        "model": "bakery:block/tray",
+        "y": 180,
+        "render_type": "minecraft:cutout"
+      }
+    ],
+    "facing=west": [
+      {
+        "model": "bakery:block/tray",
+        "y": 270,
+        "render_type": "minecraft:cutout"
+      }
+    ]
+  }
+}

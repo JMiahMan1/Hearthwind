@@ -1,0 +1,9 @@
+{
+  "type": "farm_and_charm:mincer",
+  "ingredient": "minecraft:leather_horse_armor",
+  "recipe_type": "WOOD",
+  "result": {
+    "id": "minecraft:leather",
+    "count": 5
+  }
+}

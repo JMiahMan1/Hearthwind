@@ -1,0 +1,9 @@
+{
+  "type": "farm_and_charm:mincer",
+  "ingredient": "farm_and_charm:lettuce",
+  "recipe_type": "MEAT",
+  "result": {
+    "id": "farm_and_charm:lettuce_seeds",
+    "count": 4
+  }
+}

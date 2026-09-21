@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "group": "oak_rack",
+  "pattern": [
+    "#_#",
+    "_B_",
+    "#B#"
+  ],
+  "key": {
+    "#": "minecraft:oak_planks",
+    "_": "minecraft:oak_slab",
+    "B": "minecraft:barrel"
+  },
+  "result": {
+    "id": "candlelight:oak_cabinet"
+  }
+}

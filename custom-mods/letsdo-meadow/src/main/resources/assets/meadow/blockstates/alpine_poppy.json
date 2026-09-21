@@ -1,0 +1,21 @@
+{
+  "variants": {
+    "": [
+      {
+        "model": "meadow:block/alpine_poppy_0",
+        "weight": 1,
+        "render_type": "minecraft:cutout"
+      },
+      {
+        "model": "meadow:block/alpine_poppy_1",
+        "weight": 1,
+        "render_type": "minecraft:cutout"
+      },
+      {
+        "model": "meadow:block/alpine_poppy_2",
+        "weight": 1,
+        "render_type": "minecraft:cutout"
+      }
+    ]
+  }
+}

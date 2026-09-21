@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " B ",
+    "ISI",
+    " I "
+  ],
+  "key": {
+    "B": "farm_and_charm:barley_ball",
+    "S": "farm_and_charm:scarecrow",
+    "I": "minecraft:stick"
+  },
+  "result": {
+    "id": "farm_and_charm:scarecrow",
+    "count": 2
+  }
+}

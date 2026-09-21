@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "group": "end_stone_bricks_kitchen",
+  "pattern": [
+    "III",
+    "BCB",
+    "BBB"
+  ],
+  "key": {
+    "I": "minecraft:iron_ingot",
+    "B": "minecraft:end_stone_bricks",
+    "C": "minecraft:campfire"
+  },
+  "result": {
+    "id": "candlelight:end_stove"
+  }
+}

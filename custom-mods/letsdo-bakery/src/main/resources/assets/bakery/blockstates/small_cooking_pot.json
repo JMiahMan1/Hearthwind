@@ -1,0 +1,156 @@
+{
+  "variants": {
+    "facing=north,stage=normal,needs_support=false": {
+      "model": "bakery:block/small_cooking_pot",
+      "render_type": "minecraft:cutout"
+    },
+    "facing=east,stage=normal,needs_support=false": {
+      "model": "bakery:block/small_cooking_pot",
+      "y": 90,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=south,stage=normal,needs_support=false": {
+      "model": "bakery:block/small_cooking_pot",
+      "y": 180,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=west,stage=normal,needs_support=false": {
+      "model": "bakery:block/small_cooking_pot",
+      "y": 270,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=north,stage=warm,needs_support=false": {
+      "model": "bakery:block/small_cooking_pot",
+      "render_type": "minecraft:cutout"
+    },
+    "facing=east,stage=warm,needs_support=false": {
+      "model": "bakery:block/small_cooking_pot",
+      "y": 90,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=south,stage=warm,needs_support=false": {
+      "model": "bakery:block/small_cooking_pot",
+      "y": 180,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=west,stage=warm,needs_support=false": {
+      "model": "bakery:block/small_cooking_pot",
+      "y": 270,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=north,stage=cooking,needs_support=false": {
+      "model": "bakery:block/small_cooking_pot_cooking",
+      "render_type": "minecraft:cutout"
+    },
+    "facing=east,stage=cooking,needs_support=false": {
+      "model": "bakery:block/small_cooking_pot_cooking",
+      "y": 90,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=south,stage=cooking,needs_support=false": {
+      "model": "bakery:block/small_cooking_pot_cooking",
+      "y": 180,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=west,stage=cooking,needs_support=false": {
+      "model": "bakery:block/small_cooking_pot_cooking",
+      "y": 270,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=north,stage=filled,needs_support=false": {
+      "model": "bakery:block/small_cooking_pot_cooking",
+      "render_type": "minecraft:cutout"
+    },
+    "facing=east,stage=filled,needs_support=false": {
+      "model": "bakery:block/small_cooking_pot_cooking",
+      "y": 90,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=south,stage=filled,needs_support=false": {
+      "model": "bakery:block/small_cooking_pot_cooking",
+      "y": 180,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=west,stage=filled,needs_support=false": {
+      "model": "bakery:block/small_cooking_pot_cooking",
+      "y": 270,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=north,stage=normal,needs_support=true": {
+      "model": "bakery:block/small_cooking_pot_cooking_with_support",
+      "render_type": "minecraft:cutout"
+    },
+    "facing=east,stage=normal,needs_support=true": {
+      "model": "bakery:block/small_cooking_pot_cooking_with_support",
+      "y": 90,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=south,stage=normal,needs_support=true": {
+      "model": "bakery:block/small_cooking_pot_cooking_with_support",
+      "y": 180,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=west,stage=normal,needs_support=true": {
+      "model": "bakery:block/small_cooking_pot_cooking_with_support",
+      "y": 270,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=north,stage=warm,needs_support=true": {
+      "model": "bakery:block/small_cooking_pot_cooking_with_support",
+      "render_type": "minecraft:cutout"
+    },
+    "facing=east,stage=warm,needs_support=true": {
+      "model": "bakery:block/small_cooking_pot_cooking_with_support",
+      "y": 90,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=south,stage=warm,needs_support=true": {
+      "model": "bakery:block/small_cooking_pot_cooking_with_support",
+      "y": 180,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=west,stage=warm,needs_support=true": {
+      "model": "bakery:block/small_cooking_pot_cooking_with_support",
+      "y": 270,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=north,stage=cooking,needs_support=true": {
+      "model": "bakery:block/small_cooking_pot_cooking_with_support",
+      "render_type": "minecraft:cutout"
+    },
+    "facing=east,stage=cooking,needs_support=true": {
+      "model": "bakery:block/small_cooking_pot_cooking_with_support",
+      "y": 90,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=south,stage=cooking,needs_support=true": {
+      "model": "bakery:block/small_cooking_pot_cooking_with_support",
+      "y": 180,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=west,stage=cooking,needs_support=true": {
+      "model": "bakery:block/small_cooking_pot_cooking_with_support",
+      "y": 270,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=north,stage=filled,needs_support=true": {
+      "model": "bakery:block/small_cooking_pot_cooking_with_support",
+      "render_type": "minecraft:cutout"
+    },
+    "facing=east,stage=filled,needs_support=true": {
+      "model": "bakery:block/small_cooking_pot_cooking_with_support",
+      "y": 90,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=south,stage=filled,needs_support=true": {
+      "model": "bakery:block/small_cooking_pot_cooking_with_support",
+      "y": 180,
+      "render_type": "minecraft:cutout"
+    },
+    "facing=west,stage=filled,needs_support=true": {
+      "model": "bakery:block/small_cooking_pot_cooking_with_support",
+      "y": 270,
+      "render_type": "minecraft:cutout"
+    }
+  }
+}

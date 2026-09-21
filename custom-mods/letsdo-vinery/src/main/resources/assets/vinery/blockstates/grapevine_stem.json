@@ -1,0 +1,184 @@
+{
+  "variants": {
+    "age=0": {
+      "model": "vinery:block/grapevine_stem",
+      "render_type": "minecraft:cutout"
+    },
+    "age=1,grape=red": {
+      "model": "vinery:block/grapevine",
+      "render_type": "minecraft:cutout"
+    },
+    "age=1,grape=white": {
+      "model": "vinery:block/grapevine",
+      "render_type": "minecraft:cutout"
+    },
+    "age=1,grape=none": {
+      "model": "vinery:block/grapevine",
+      "render_type": "minecraft:cutout"
+    },
+    "age=2,grape=red": {
+      "model": "vinery:block/grapevine",
+      "render_type": "minecraft:cutout"
+    },
+    "age=2,grape=white": {
+      "model": "vinery:block/grapevine",
+      "render_type": "minecraft:cutout"
+    },
+    "age=2,grape=none": {
+      "model": "vinery:block/grapevine",
+      "render_type": "minecraft:cutout"
+    },
+    "age=3,grape=red": {
+      "model": "vinery:block/grapevine",
+      "render_type": "minecraft:cutout"
+    },
+    "age=3,grape=white": {
+      "model": "vinery:block/grapevine",
+      "render_type": "minecraft:cutout"
+    },
+    "age=3,grape=none": {
+      "model": "vinery:block/grapevine",
+      "render_type": "minecraft:cutout"
+    },
+    "age=4,grape=red": {
+      "model": "vinery:block/grapevine_red_grown",
+      "render_type": "minecraft:cutout"
+    },
+    "age=4,grape=white": {
+      "model": "vinery:block/grapevine_white_grown",
+      "render_type": "minecraft:cutout"
+    },
+    "age=4,grape=none": {
+      "model": "vinery:block/grapevine",
+      "render_type": "minecraft:cutout"
+    },
+    "age=1,grape=taiga_red": {
+      "model": "vinery:block/taiga_grapevine",
+      "render_type": "minecraft:cutout"
+    },
+    "age=1,grape=taiga_white": {
+      "model": "vinery:block/taiga_grapevine",
+      "render_type": "minecraft:cutout"
+    },
+    "age=2,grape=taiga_red": {
+      "model": "vinery:block/taiga_grapevine",
+      "render_type": "minecraft:cutout"
+    },
+    "age=2,grape=taiga_white": {
+      "model": "vinery:block/taiga_grapevine",
+      "render_type": "minecraft:cutout"
+    },
+    "age=3,grape=taiga_red": {
+      "model": "vinery:block/taiga_grapevine",
+      "render_type": "minecraft:cutout"
+    },
+    "age=3,grape=taiga_white": {
+      "model": "vinery:block/taiga_grapevine",
+      "render_type": "minecraft:cutout"
+    },
+    "age=4,grape=taiga_red": {
+      "model": "vinery:block/taiga_grapevine_red_grown",
+      "render_type": "minecraft:cutout"
+    },
+    "age=4,grape=taiga_white": {
+      "model": "vinery:block/taiga_grapevine_white_grown",
+      "render_type": "minecraft:cutout"
+    },
+    "age=1,grape=savanna_red": {
+      "model": "vinery:block/savanna_grapevine",
+      "render_type": "minecraft:cutout"
+    },
+    "age=1,grape=savanna_white": {
+      "model": "vinery:block/savanna_grapevine",
+      "render_type": "minecraft:cutout"
+    },
+    "age=2,grape=savanna_red": {
+      "model": "vinery:block/savanna_grapevine",
+      "render_type": "minecraft:cutout"
+    },
+    "age=2,grape=savanna_white": {
+      "model": "vinery:block/savanna_grapevine",
+      "render_type": "minecraft:cutout"
+    },
+    "age=3,grape=savanna_red": {
+      "model": "vinery:block/savanna_grapevine",
+      "render_type": "minecraft:cutout"
+    },
+    "age=3,grape=savanna_white": {
+      "model": "vinery:block/savanna_grapevine",
+      "render_type": "minecraft:cutout"
+    },
+    "age=4,grape=savanna_red": {
+      "model": "vinery:block/savanna_grapevine_red_grown",
+      "render_type": "minecraft:cutout"
+    },
+    "age=4,grape=savanna_white": {
+      "model": "vinery:block/savanna_grapevine_white_grown",
+      "render_type": "minecraft:cutout"
+    },
+    "age=1,grape=jungle_red": {
+      "model": "vinery:block/grapevine_stem",
+      "render_type": "minecraft:cutout"
+    },
+    "age=1,grape=jungle_white": {
+      "model": "vinery:block/grapevine_stem",
+      "render_type": "minecraft:cutout"
+    },
+    "age=2,grape=jungle_red": {
+      "model": "vinery:block/grapevine_stem",
+      "render_type": "minecraft:cutout"
+    },
+    "age=2,grape=jungle_white": {
+      "model": "vinery:block/grapevine_stem",
+      "render_type": "minecraft:cutout"
+    },
+    "age=3,grape=jungle_red": {
+      "model": "vinery:block/grapevine_stem",
+      "render_type": "minecraft:cutout"
+    },
+    "age=3,grape=jungle_white": {
+      "model": "vinery:block/grapevine_stem",
+      "render_type": "minecraft:cutout"
+    },
+    "age=4,grape=jungle_red": {
+      "model": "vinery:block/grapevine_stem",
+      "render_type": "minecraft:cutout"
+    },
+    "age=4,grape=jungle_white": {
+      "model": "vinery:block/grapevine_stem",
+      "render_type": "minecraft:cutout"
+    },
+    "age=1,grape=crimson": {
+      "model": "vinery:block/grapevine",
+      "render_type": "minecraft:cutout"
+    },
+    "age=1,grape=warped": {
+      "model": "vinery:block/grapevine",
+      "render_type": "minecraft:cutout"
+    },
+    "age=2,grape=crimson": {
+      "model": "vinery:block/grapevine",
+      "render_type": "minecraft:cutout"
+    },
+    "age=2,grape=warped": {
+      "model": "vinery:block/grapevine",
+      "render_type": "minecraft:cutout"
+    },
+    "age=3,grape=crimson": {
+      "model": "vinery:block/grapevine",
+      "render_type": "minecraft:cutout"
+    },
+    "age=3,grape=warped": {
+      "model": "vinery:block/grapevine",
+      "render_type": "minecraft:cutout"
+    },
+    "age=4,grape=crimson": {
+      "model": "vinery:block/grapevine_red_grown",
+      "render_type": "minecraft:cutout"
+    },
+    "age=4,grape=warped": {
+      "model": "vinery:block/grapevine_white_grown",
+      "render_type": "minecraft:cutout"
+    }
+  }
+}

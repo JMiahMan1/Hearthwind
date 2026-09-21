@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "group": "slab",
+  "ingredients": [
+    "minecraft:coarse_dirt",
+    "minecraft:coarse_dirt",
+    "minecraft:coarse_dirt"
+  ],
+  "result": {
+    "count": 6,
+    "id": "vinery:coarse_dirt_slab"
+  }
+}

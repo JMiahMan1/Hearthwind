@@ -1,0 +1,14 @@
+{
+  "type": "farm_and_charm:stove",
+  "ingredients": [
+    "minecraft:milk_bucket",
+    "bakery:sweet_dough",
+    "minecraft:sugar"
+  ],
+  "result": {
+    "count": 4,
+    "id": "bakery:cornet"
+  },
+  "experience": 0.2,
+  "requiresLearning": false
+}

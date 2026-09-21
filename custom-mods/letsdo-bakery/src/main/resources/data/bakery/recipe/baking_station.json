@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "III",
+    "BAB",
+    "BBB"
+  ],
+  "key": {
+    "B": "minecraft:bricks",
+    "I": "#minecraft:wooden_slabs",
+    "A": "minecraft:sugar"
+  },
+  "result": {
+    "id": "bakery:baker_station"
+  }
+}

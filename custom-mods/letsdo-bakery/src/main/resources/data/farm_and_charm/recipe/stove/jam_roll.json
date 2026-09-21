@@ -1,0 +1,14 @@
+{
+  "type": "farm_and_charm:stove",
+  "ingredients": [
+    "#bakery:jam",
+    "bakery:sweet_dough",
+    "minecraft:sugar"
+  ],
+  "result": {
+    "count": 5,
+    "id": "bakery:jam_roll"
+  },
+  "experience": 0.2,
+  "requiresLearning": false
+}

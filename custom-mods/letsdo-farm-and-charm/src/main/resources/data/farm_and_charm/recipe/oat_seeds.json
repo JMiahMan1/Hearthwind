@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    "minecraft:wheat_seeds",
+    "minecraft:bone_meal",
+    "minecraft:wheat_seeds",
+    "minecraft:bone_meal"
+  ],
+  "result": {
+    "id": "farm_and_charm:oat_seeds",
+    "count": 2
+  }
+}

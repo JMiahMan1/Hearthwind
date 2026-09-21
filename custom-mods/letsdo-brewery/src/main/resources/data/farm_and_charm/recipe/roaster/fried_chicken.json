@@ -1,0 +1,18 @@
+{
+  "type": "farm_and_charm:roaster",
+  "ingredients": [
+    "farm_and_charm:chicken_parts",
+    "minecraft:chicken",
+    "#farm_and_charm:tomato",
+    "#farm_and_charm:flour",
+    "#farm_and_charm:butter"
+  ],
+  "container": {
+    "id": "minecraft:bowl"
+  },
+  "result": {
+    "id": "brewery:fried_chicken",
+    "count": 2
+  },
+  "requiresLearning": false
+}

@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "": {
+      "model": "meadow:block/rustic_carpet",
+      "render_type": "minecraft:cutout"
+    }
+  }
+}

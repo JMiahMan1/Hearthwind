@@ -1,0 +1,14 @@
+{
+  "type": "farm_and_charm:stove",
+  "ingredients": [
+    "farm_and_charm:lamb_ham",
+    "#farm_and_charm:dough",
+    "candlelight:mushroom_soup"
+  ],
+  "result": {
+    "id": "candlelight:beef_wellington",
+    "count": 1
+  },
+  "experience": 0.5,
+  "requiresLearning": false
+}

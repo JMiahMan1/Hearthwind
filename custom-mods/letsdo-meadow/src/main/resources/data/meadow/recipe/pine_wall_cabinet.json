@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    "meadow:pine_cabinet"
+  ],
+  "result": {
+    "id": "meadow:pine_wall_cabinet",
+    "count": 2
+  }
+}

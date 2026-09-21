@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "#c:crops/cabbage",
+    "#c:crops/corn",
+    "#c:crops/onion",
+    "#c:crops/tomato"
+  ]
+}

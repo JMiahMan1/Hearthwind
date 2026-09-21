@@ -1,0 +1,7 @@
+{
+  "replace": false,
+  "values": [
+    "brewery:hops_crop_body",
+    "brewery:hops_crop"
+  ]
+}
