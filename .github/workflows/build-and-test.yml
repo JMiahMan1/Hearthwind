@@ -3,6 +3,7 @@ name: build-and-test
 on:
   push:
     branches: [server-26.2, master]
+    tags: ['v*']
   pull_request:
   workflow_dispatch:
 
