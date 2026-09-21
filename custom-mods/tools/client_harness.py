@@ -104,7 +104,9 @@ def build_classpath():
                 p = libs_root / c["path"]
                 if p.exists():
                     cp.append(str(p))
-    cache = pathlib.Path.home() / ".gradle/caches/modules-2/files-2.1"
+    cache = pathlib.Path(
+        os.environ.get("GRADLE_USER_HOME", str(pathlib.Path.home() / ".gradle"))
+    ) / "caches/modules-2/files-2.1"
 
     def first(pat):
         hits = sorted(glob.glob(str(cache / pat)))

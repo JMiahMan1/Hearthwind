@@ -13,6 +13,14 @@ public final class HearthwindWorldGameTests {
     public HearthwindWorldGameTests() {}
 
     @GameTest
+    public void seasonLengthDefaultsToAgedParity(GameTestHelper helper) {
+        // Aged (fabric-seasons) runs 18 days per season.
+        helper.assertTrue(HearthwindWorldConfig.get().daysPerSeason == 18,
+                "daysPerSeason must default to 18, got " + HearthwindWorldConfig.get().daysPerSeason);
+        helper.succeed();
+    }
+
+    @GameTest
     public void seasonFromDayCyclesCorrectly(GameTestHelper helper) {
         int days = 18;
         helper.assertTrue(Season.fromDay(0, days) == Season.SPRING, "day 0 -> spring");
@@ -151,8 +159,25 @@ public final class HearthwindWorldGameTests {
     @GameTest
     public void seasonCropCorpusLoads(GameTestHelper helper) {
         SeasonCrops.load(helper.getLevel().getServer().getResourceManager());
-        helper.assertTrue(SeasonCrops.count() >= 10,
-                "per-crop season corpus must load (10+ crops), loaded " + SeasonCrops.count());
+        helper.assertTrue(SeasonCrops.count() >= 30,
+                "per-crop season corpus must load (30+ crops incl. letsdo), loaded " + SeasonCrops.count());
+        helper.succeed();
+    }
+
+    @GameTest
+    public void letsdoCropsObeySeasons(GameTestHelper helper) {
+        SeasonCrops.load(helper.getLevel().getServer().getResourceManager());
+        var tomato = BuiltInRegistries.BLOCK.getValue(Identifier.fromNamespaceAndPath("farm_and_charm", "tomato_crop"));
+        helper.assertTrue(SeasonCrops.multiplier(tomato, Season.WINTER) == 0.0,
+                "frost-tender tomato must not grow in winter");
+        helper.assertTrue(SeasonCrops.multiplier(tomato, Season.SUMMER) == 1.5,
+                "tomato must peak in summer");
+        var oats = BuiltInRegistries.BLOCK.getValue(Identifier.fromNamespaceAndPath("farm_and_charm", "oat_crop"));
+        helper.assertTrue(SeasonCrops.multiplier(oats, Season.WINTER) > 0.0,
+                "hardy oats must still grow (slowly) in winter");
+        var grapes = BuiltInRegistries.BLOCK.getValue(Identifier.fromNamespaceAndPath("vinery", "red_grape_bush"));
+        helper.assertTrue(SeasonCrops.multiplier(grapes, Season.AUTUMN) == 1.5,
+                "grapes must peak in fall harvest season");
         helper.succeed();
     }
 

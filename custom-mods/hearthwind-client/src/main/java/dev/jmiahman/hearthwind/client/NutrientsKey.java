@@ -47,20 +47,17 @@ public final class NutrientsKey {
             }
             while (openSkills.consumeClick()) {
                 if (client.player != null) {
-                    Minecraft.getInstance().setScreenAndShow(
-                            new SurvivalInfoScreen(SurvivalInfoScreen.Kind.SKILLS));
+                    Minecraft.getInstance().setScreenAndShow(new SkillsScreen());
                 }
             }
             while (openJobs.consumeClick()) {
                 if (client.player != null) {
-                    Minecraft.getInstance().setScreenAndShow(
-                            new SurvivalInfoScreen(SurvivalInfoScreen.Kind.JOBS));
+                    Minecraft.getInstance().setScreenAndShow(new JobsScreen());
                 }
             }
             while (openParty.consumeClick()) {
                 if (client.player != null) {
-                    Minecraft.getInstance().setScreenAndShow(
-                            new SurvivalInfoScreen(SurvivalInfoScreen.Kind.PARTY));
+                    Minecraft.getInstance().setScreenAndShow(new PartyScreen());
                 }
             }
         });

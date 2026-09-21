@@ -11,13 +11,13 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.*;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.Function;
 
 @SuppressWarnings({"CodeBlock2Expr", "UnstableApiUsage"})
 public class ModItemsImpl {
-    private static final Map<String, Item> entries = new HashMap<>();
+    private static final Map<String, Item> entries = new LinkedHashMap<>();
 
     public static Item getItem(String id) {
         return entries.get(id);
@@ -38,7 +38,7 @@ public class ModItemsImpl {
 
         ResourceKey<CreativeModeTab> creativeModeTab = ResourceKey.create(Registries.CREATIVE_MODE_TAB, Identifier.fromNamespaceAndPath(SmallShipsMod.MOD_ID, "creative_mode_tab"));
         CreativeModeTab customCreativeModeTab = CreativeModeTab.builder(CreativeModeTab.Row.TOP, 0)
-                .title(Component.translatable("itemGroup.smallships"))
+                .title(Component.translatable("smallships.creative_mode_tab"))
                 .icon(() -> new ItemStack(ModItems.CANNON))
                 .displayItems((itemDisplayParameters, output) -> {
                     for (Item item : entries.values()) {

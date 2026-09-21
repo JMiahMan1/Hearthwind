@@ -1,45 +1,63 @@
 package dev.jmiahman.hearthwind.client;
 
+import net.minecraft.util.Mth;
+
 /**
- * Client-side copy of body temperature for HUD rendering.
- * Updated via hearthwind:temp payload from server.
- * Scale: -10..+10, matching HearthwindSurvivalTemperature MIN/MAX.
+ * Client-side copy of the EnvironmentZ temperature values for HUD rendering.
+ * Updated via the hearthwind_survival:temp payload from the server.
+ *
+ * <p>Scale (EnvironmentZ 2.0.8 / Aged 3.1.2 defaults): body temperature is an
+ * integer in [-2400, 2400] with bands -2400/-1800/-240/0/240/1800/2400;
+ * wetness is 0..200; the thermometer reading is roughly +-6 with bands
+ * -6/-3/3/6. The band constants are the data defaults - the server-side
+ * manager tables are not synced separately.
  */
 public final class ClientTempData {
-    private static float temperature = 0f;
-    // Trend tracking for the thermometer arrow: +1 warming, -1 cooling,
-    // 0 stable. Arrow lingers briefly after the last change, like Aged.
-    private static int trend = 0;
-    private static long trendUntilMs = 0L;
+    public static final int BODY_MAX_VERY_COLD = -2400;
+    public static final int BODY_MAX_COLD = -1800;
+    public static final int BODY_MIN_COLD = -240;
+    public static final int BODY_NORMAL = 0;
+    public static final int BODY_MIN_HOT = 240;
+    public static final int BODY_MAX_HOT = 1800;
+    public static final int BODY_MAX_VERY_HOT = 2400;
+
+    public static final int WETNESS_MAX = 200;
+    public static final int WETNESS_SOAKED = 180;
+
+    public static final int THERMOMETER_VERY_COLD = -6;
+    public static final int THERMOMETER_COLD = -3;
+    public static final int THERMOMETER_HOT = 3;
+    public static final int THERMOMETER_VERY_HOT = 6;
+
+    private static int bodyTemperature = 0;
+    private static int wetness = 0;
+    private static int thermometer = 0;
 
     private ClientTempData() {}
 
-    public static void setTemperature(float t) {
-        float clamped = Math.max(-10f, Math.min(10f, t));
-        if (clamped > temperature + 0.01f) {
-            trend = 1;
-            trendUntilMs = System.currentTimeMillis() + 3000L;
-        } else if (clamped < temperature - 0.01f) {
-            trend = -1;
-            trendUntilMs = System.currentTimeMillis() + 3000L;
-        }
-        temperature = clamped;
+    public static void set(int body, int wetness, int thermometer) {
+        bodyTemperature = Mth.clamp(body, BODY_MAX_VERY_COLD, BODY_MAX_VERY_HOT);
+        ClientTempData.wetness = Mth.clamp(wetness, 0, WETNESS_MAX);
+        ClientTempData.thermometer = thermometer;
     }
 
-    public static float getTemperature() {
-        return temperature;
+    public static int getBodyTemperature() {
+        return bodyTemperature;
     }
 
-    /** +1 warming, -1 cooling, 0 no recent change. */
-    public static int trendDirection() {
-        return System.currentTimeMillis() > trendUntilMs ? 0 : trend;
+    public static int getWetness() {
+        return wetness;
+    }
+
+    public static int getThermometer() {
+        return thermometer;
     }
 
     public static boolean isFreezing() {
-        return temperature <= -8f;
+        return bodyTemperature <= BODY_MAX_COLD;
     }
 
     public static boolean isOverheating() {
-        return temperature >= 9f;
+        return bodyTemperature >= BODY_MAX_HOT;
     }
 }

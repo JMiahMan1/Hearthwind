@@ -108,8 +108,8 @@ public final class JobGates {
         if (gate == null) {
             return true;
         }
-        return JobState.level(player) >= gate.level()
-                && JobState.jobId(player).equals(gate.jobId());
+        return JobState.employed(player, gate.jobId())
+                && JobState.level(player, gate.jobId()) >= gate.level();
     }
 
     /** For gametests: expose loaded counts without leaking internals. */

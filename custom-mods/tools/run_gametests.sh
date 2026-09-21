@@ -72,7 +72,7 @@ HAVE_LETS_DO=""
 for m in $LETS_DO; do [ -d "$m" ] && HAVE_LETS_DO="$HAVE_LETS_DO $m"; done
 HAVE_LETS_DO_WIRED=""
 for m in $HAVE_LETS_DO; do grep -q "^include '$m'$" settings.gradle && HAVE_LETS_DO_WIRED="$HAVE_LETS_DO_WIRED $m"; done
-find hearthwind-survival hearthwind-skills hearthwind-jobs hearthwind-primitive hearthwind-world hearthwind-client athena chipped dungeonz $HAVE_LETS_DO_WIRED -name "*.jar" \
+find hearthwind-survival hearthwind-skills hearthwind-jobs hearthwind-primitive hearthwind-world hearthwind-client athena chipped dungeonz exposure passable-foliage $HAVE_LETS_DO_WIRED -name "*.jar" \
      -path "*build/libs/*" ! -name "*-sources.jar" -exec cp {} "$SRV/mods/" \;
 # Install gametest harness
 cp "$CACHE/fabric-gametest-api-v1.jar" "$SRV/mods/"

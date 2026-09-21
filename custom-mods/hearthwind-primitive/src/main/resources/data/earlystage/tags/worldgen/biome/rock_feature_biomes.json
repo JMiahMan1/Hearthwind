@@ -1,6 +1,7 @@
 {
   "replace": false,
   "values": [
-    "#minecraft:is_overworld"
+    "minecraft:mushroom_fields",
+    "minecraft:stony_shore"
   ]
 }

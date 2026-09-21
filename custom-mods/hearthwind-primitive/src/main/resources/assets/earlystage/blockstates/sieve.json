@@ -14,10 +14,6 @@
     "facing=west": {
       "model": "earlystage:block/sieve",
       "y": 270
-    },
-    "": {
-      "model": "earlystage:block/sieve",
-      "y": 90
     }
   }
 }

@@ -35,7 +35,7 @@ public final class SkillAttributes {
         return switch (skill) {
             case HEALTH -> (b.baseStartingHealth - 20.0) + (level * b.healthHpPerLevel);
             case STRENGTH -> level * b.strengthDamagePerLevel;
-            case AGILITY -> level * b.agilitySpeedFractionPerLevel;
+            case AGILITY -> (b.agilityBaseMovement - 0.1) + (level * b.agilitySpeedFractionPerLevel);
             case DEFENSE -> level * b.defenseArmorPerLevel;
             case MINING -> level * b.miningSpeedFractionPerLevel;
             case LUCK -> level * b.luckPerLevel;

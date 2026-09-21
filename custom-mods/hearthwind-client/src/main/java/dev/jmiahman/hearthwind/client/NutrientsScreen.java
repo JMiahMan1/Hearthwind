@@ -1,5 +1,8 @@
 package dev.jmiahman.hearthwind.client;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
@@ -11,6 +14,7 @@ import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvents;
@@ -20,55 +24,50 @@ import net.minecraft.world.item.Items;
 import org.lwjgl.glfw.GLFW;
 
 /**
- * Exact Aged 3.1.2 NutritionZ parity panel:
- * - Vanilla grey #C6C6C6 panel (176x166) with 4-tab strip at top.
- * - 5 rows, pitch 24 GUI px (Fruits, Vegetables, Grains, Proteins, Sugars).
- * - Segmented 140x5 bars with authentic Aged palettes:
- *   Row 1 (Fruits): Red #E54016 / #591E08
- *   Row 2 (Vegetables): Amber #F1910C / #322202
- *   Row 3 (Grains): Yellow #F0DE1A / #312905
- *   Row 4 (Proteins): Green #64CA0C / #0C2800
- *   Row 5 (Sugars): Tan #99916E / #312905
+ * Pixel-exact rebuild of NutritionZ 1.0.11's {@code NutritionScreen}
+ * (the version Aged 3.1.2 ships), on the 26.2 GuiGraphicsExtractor API.
+ *
+ * <p>Panel 176x142 centred, title at y+7, five rows at 23 px pitch with a
+ * 141x5 bar, hover tooltips on the 31 px zones at x+27 / x+137 and the
+ * 11x10 back arrow at (x+5, y+5). All coordinates come from
+ * {@code assets/hearthwind/textures/gui/nutritionz_icons.png}.
  */
 @Environment(EnvType.CLIENT)
 public class NutrientsScreen extends Screen {
-    private static final Identifier PANEL = Identifier.fromNamespaceAndPath("hearthwind", "nutrition/panel");
-    private static final Identifier ARROW = Identifier.fromNamespaceAndPath("hearthwind", "nutrition/arrow");
-    private static final Identifier ARROW_HOVER = Identifier.fromNamespaceAndPath("hearthwind", "nutrition/arrow_hover");
-    private static final Identifier[] BAR_BG = {
-            Identifier.fromNamespaceAndPath("hearthwind", "nutrition/bar_bg_fruits"),
-            Identifier.fromNamespaceAndPath("hearthwind", "nutrition/bar_bg_vegetables"),
-            Identifier.fromNamespaceAndPath("hearthwind", "nutrition/bar_bg_grains"),
-            Identifier.fromNamespaceAndPath("hearthwind", "nutrition/bar_bg_proteins"),
-            Identifier.fromNamespaceAndPath("hearthwind", "nutrition/bar_bg_sugars") };
-    private static final Identifier[] BAR_FILL = {
-            Identifier.fromNamespaceAndPath("hearthwind", "nutrition/bar_fill_fruits"),
-            Identifier.fromNamespaceAndPath("hearthwind", "nutrition/bar_fill_vegetables"),
-            Identifier.fromNamespaceAndPath("hearthwind", "nutrition/bar_fill_grains"),
-            Identifier.fromNamespaceAndPath("hearthwind", "nutrition/bar_fill_proteins"),
-            Identifier.fromNamespaceAndPath("hearthwind", "nutrition/bar_fill_sugars") };
-    private static final Item[] ICONS = { Items.APPLE, Items.CARROT, Items.BREAD, Items.COOKED_BEEF, Items.SUGAR };
-    private static final String[] LABEL_KEYS = { "fruits", "vegetables", "grains", "proteins", "sugars" };
+    public static final Identifier ICONS =
+            Identifier.fromNamespaceAndPath("hearthwind", "textures/gui/nutritionz_icons.png");
 
-    // Authentic text colors against #C6C6C6 panel
-    private static final int TITLE = 0xFF2A2A2A;
-    private static final int INK = 0xFF222222;
-    private static final int VALUE = 0xFF444444;
-    private static final int BALANCED_COLOR = 0xFF2E7D32;
-    private static final int UNBALANCED_COLOR = 0xFF666666;
+    private static final int TITLE_COLOR = 0xFF3F3F3F;
+    private static final int INK = 0xFF3F3F3F;
 
+    private final List<ItemStack> nutritionItems = new ArrayList<>();
     private int x;
     private int y;
 
     public NutrientsScreen() {
-        super(Component.translatable("screen.hearthwind.nutrients"));
+        super(Component.translatable("screen.nutritionz"));
+        var cfg = dev.jmiahman.hearthwind.survival.HearthwindSurvivalConfig.get().diet;
+        this.nutritionItems.add(stack(cfg.carbohydrateItemId));
+        this.nutritionItems.add(stack(cfg.proteinItemId));
+        this.nutritionItems.add(stack(cfg.fatItemId));
+        this.nutritionItems.add(stack(cfg.vitaminItemId));
+        this.nutritionItems.add(stack(cfg.mineralItemId));
+    }
+
+    private static ItemStack stack(String id) {
+        Identifier identifier = Identifier.tryParse(id);
+        if (identifier == null) {
+            return new ItemStack(Items.AIR);
+        }
+        Item item = BuiltInRegistries.ITEM.getOptional(identifier).orElse(Items.AIR);
+        return new ItemStack(item);
     }
 
     @Override
     protected void init() {
         super.init();
-        this.x = (this.width - 176) / 2;
-        this.y = (this.height - 166) / 2;
+        this.x = this.width / 2 - (176 / 2);
+        this.y = this.height / 2 - (141 / 2);
     }
 
     @Override
@@ -76,99 +75,63 @@ public class NutrientsScreen extends Screen {
         super.extractRenderState(graphics, mouseX, mouseY, delta);
         Font font = Minecraft.getInstance().font;
 
-        // Draw vanilla-grey panel background + 4 tab strip
-        graphics.blitSprite(RenderPipelines.GUI_TEXTURED, PANEL, this.x, this.y, 176, 166);
-        TabStrip.draw(graphics, font, this.x, this.y, null, mouseX, mouseY);
-
+        graphics.blit(RenderPipelines.GUI_TEXTURED, ICONS, this.x, this.y, 0f, 0f,
+                176, 142, 256, 256, 0xFFFFFFFF);
         String title = this.title.getString();
-        graphics.text(font, title, this.x + 88 - font.width(title) / 2, this.y + 6, TITLE, false);
+        graphics.text(font, title, this.x + 176 / 2 - font.width(title) / 2, this.y + 7,
+                TITLE_COLOR, false);
 
-        boolean allBalanced = true;
-        String hoveredTooltip = null;
+        int extraY = 0;
+        int extraBarY = 0;
+        int max = ClientDietData.max();
         for (int i = 0; i < 5; i++) {
-            // Row pitch: 24 GUI px
-            int rowRelY = 18 + i * 24;
-            int rowY = this.y + rowRelY;
-            int level = Math.round(ClientDietData.get(i));
-            if (level < 50) {
-                allBalanced = false;
-            }
-
-            // Food item icon (16x16)
-            graphics.item(new ItemStack(ICONS[i]), this.x + 8, rowY);
-
-            // Group label
+            graphics.item(this.nutritionItems.get(i), this.x + 7, this.y + 25 + extraY);
             graphics.text(font,
-                    Component.translatable("screen.hearthwind.nutrients." + LABEL_KEYS[i]).getString(),
-                    this.x + 28, rowY + 1, INK, false);
+                    Component.translatable("screen.nutritionz."
+                            + dev.jmiahman.hearthwind.survival.HearthwindSurvivalDiet.NUTRIENT_NAMES[i]),
+                    this.x + 28, this.y + 26 + extraY, INK, false);
 
-            // Segmented 141x5 Bar Background & Fill (crop left portion, never squish)
-            graphics.blitSprite(RenderPipelines.GUI_TEXTURED, BAR_BG[i], this.x + 28, rowY + 11, 141, 5);
-            int fill = Math.min(141, Math.round(141f * level / 100f));
-            if (fill > 0) {
-                graphics.blitSprite(RenderPipelines.GUI_TEXTURED, BAR_FILL[i], 0, 0, this.x + 28, rowY + 11, fill, 5, 141, 5);
+            graphics.blit(RenderPipelines.GUI_TEXTURED, ICONS, this.x + 27, this.y + 36 + extraY,
+                    0f, 206f + extraBarY, 141, 5, 256, 256, 0xFFFFFFFF);
+            int level = ClientDietData.get(i);
+            if (level > 0) {
+                int fill = 140 * level / max;
+                if (fill > 0) {
+                    graphics.blit(RenderPipelines.GUI_TEXTURED, ICONS, this.x + 27, this.y + 36 + extraY,
+                            0f, 211f + extraBarY, fill, 5, 256, 256, 0xFFFFFFFF);
+                }
             }
+            graphics.text(font,
+                    Component.translatable("screen.nutritionz.nutritionValue", level, max),
+                    this.x + 127, this.y + 26 + extraY, INK, false);
 
-            // Numeric indicator "level/100"
-            String valStr = level + "/100";
-            graphics.text(font, valStr, this.x + 168 - font.width(valStr), rowY + 1, VALUE, false);
-
-            // Row hover tooltip
-            boolean rowHover = mouseX >= this.x + 8 && mouseX < this.x + 168 && mouseY >= rowY && mouseY < rowY + 22;
-            if (rowHover) {
-                hoveredTooltip = switch (i) {
-                    case 0 -> "Fruits (Deficiency: Mining Fatigue)";
-                    case 1 -> "Vegetables (Deficiency: Weakness)";
-                    case 2 -> "Grains (Deficiency: Slowness)";
-                    case 3 -> "Proteins (Deficiency: Weakness)";
-                    case 4 -> "Sugars (Energy & Saturation)";
-                    default -> null;
-                };
+            List<Component> tooltips = new ArrayList<>();
+            if (isPointWithinBounds(27, 36 + extraY, 31, 5, mouseX, mouseY)) {
+                tooltips.addAll(ClientNutritionData.effectTooltip(i, false));
+            } else if (isPointWithinBounds(137, 36 + extraY, 31, 5, mouseX, mouseY)) {
+                tooltips.addAll(ClientNutritionData.effectTooltip(i, true));
             }
+            if (!tooltips.isEmpty()) {
+                graphics.setComponentTooltipForNextFrame(font, tooltips, mouseX, mouseY);
+            }
+            extraY += 23;
+            extraBarY += 10;
         }
 
-        // Status banner
-        Component status = allBalanced
-                ? Component.translatable("screen.hearthwind.nutrients.balanced")
-                : Component.translatable("screen.hearthwind.nutrients.unbalanced");
-        int statusColor = allBalanced ? BALANCED_COLOR : UNBALANCED_COLOR;
-        String statusText = status.getString();
-        graphics.text(font, statusText, this.x + 88 - font.width(statusText) / 2, this.y + 148, statusColor, false);
-
-        // Back-arrow in top-left of panel (11x10 native sprite)
-        boolean arrowHovered = mouseX >= this.x + 5 && mouseX < this.x + 16 && mouseY >= this.y + 5 && mouseY < this.y + 15;
-        graphics.blitSprite(RenderPipelines.GUI_TEXTURED, arrowHovered ? ARROW_HOVER : ARROW, this.x + 5, this.y + 5, 11, 10);
-        if (arrowHovered) {
-            hoveredTooltip = "Back to Inventory [E]";
-        }
-
-        if (hoveredTooltip != null) {
-            graphics.setTooltipForNextFrame(Component.literal(hoveredTooltip), mouseX, mouseY);
-        }
+        boolean arrowHovered = isPointWithinBounds(5, 5, 11, 10, mouseX, mouseY);
+        graphics.blit(RenderPipelines.GUI_TEXTURED, ICONS, this.x + 5, this.y + 5,
+                arrowHovered ? 187f : 176f, 0f, 11, 10, 256, 256, 0xFFFFFFFF);
     }
 
     @Override
     public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
-        if (event.button() == 0) {
-            double mx = event.x();
-            double my = event.y();
-
-            // Tab bar click
-            TabStrip.Tab clickedTab = TabStrip.clicked(mx, my, this.x, this.y);
-            if (clickedTab != null) {
-                Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0f));
-                TabStrip.open(clickedTab);
-                return true;
+        if (event.button() == 0 && isPointWithinBounds(5, 5, 11, 10, event.x(), event.y())) {
+            Minecraft minecraft = Minecraft.getInstance();
+            minecraft.getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0f));
+            if (minecraft.player != null) {
+                minecraft.setScreenAndShow(new InventoryScreen(minecraft.player));
             }
-
-            // Back-arrow click (11x10 hitbox)
-            if (mx >= this.x + 5 && mx < this.x + 16 && my >= this.y + 5 && my < this.y + 15) {
-                Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0f));
-                if (this.minecraft != null && this.minecraft.player != null) {
-                    this.minecraft.setScreenAndShow(new InventoryScreen(this.minecraft.player));
-                }
-                return true;
-            }
+            return true;
         }
         return super.mouseClicked(event, doubleClick);
     }
@@ -185,7 +148,7 @@ public class NutrientsScreen extends Screen {
             return true;
         }
         if (NutrientsKey.openParty.matches(event)) {
-            mc.setScreenAndShow(new SurvivalInfoScreen(SurvivalInfoScreen.Kind.PARTY));
+            TabStrip.open(TabStrip.Tab.PARTY);
             return true;
         }
         if (mc.options.keyInventory.matches(event)
@@ -200,5 +163,11 @@ public class NutrientsScreen extends Screen {
     @Override
     public boolean isPauseScreen() {
         return false;
+    }
+
+    private boolean isPointWithinBounds(int bx, int by, int bw, int bh, double pointX, double pointY) {
+        double relX = pointX - this.x;
+        double relY = pointY - this.y;
+        return relX >= bx - 1 && relX < bx + bw + 1 && relY >= by - 1 && relY < by + bh + 1;
     }
 }

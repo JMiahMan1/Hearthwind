@@ -6,7 +6,8 @@
     "AbstractContainerScreenClickMixin",
     "AgedTitleScreenMixin",
     "InventoryScreenButtonMixin",
-    "LogoRendererMixin"
+    "LogoRendererMixin",
+    "FluidStateModelSetMixin"
   ],
   "injectors": {
     "defaultRequire": 1

@@ -39,17 +39,36 @@ public class HearthwindClient implements ClientModInitializer {
         // Diet sync from server -> ClientDietData for HUD left of hunger bar.
         try {
             ClientPlayNetworking.registerGlobalReceiver(DietSyncPayload.TYPE, (payload, context) -> {
-                context.client().execute(() -> ClientDietData.setNutrients(payload.nutrients()));
+                context.client().execute(() -> ClientDietData.set(new int[] {
+                        payload.carbohydrates(), payload.protein(), payload.fat(),
+                        payload.vitamins(), payload.minerals() }));
             });
             LOGGER.info("Hearthwind Client networking: receiver for {}", DietSyncPayload.TYPE.id());
         } catch (Exception e) {
             LOGGER.warn("Failed to register diet receiver", e);
         }
 
+        // Nutrition item map (Shift tooltip) + threshold effect names (panel).
+        try {
+            ClientPlayNetworking.registerGlobalReceiver(
+                    dev.jmiahman.hearthwind.survival.NutritionItemMapPayload.TYPE, (payload, context) -> {
+                        context.client().execute(() -> ClientNutritionData.setItemMap(payload.entries()));
+                    });
+            ClientPlayNetworking.registerGlobalReceiver(
+                    dev.jmiahman.hearthwind.survival.NutritionEffectsPayload.TYPE, (payload, context) -> {
+                        context.client().execute(
+                                () -> ClientNutritionData.setEffects(payload.positive(), payload.negative()));
+                    });
+            LOGGER.info("Hearthwind Client networking: receivers for nutrition item map + effects");
+        } catch (Exception e) {
+            LOGGER.warn("Failed to register nutrition receivers", e);
+        }
+
         // Temperature sync from server -> ClientTempData for HUD right of hunger bar.
         try {
             ClientPlayNetworking.registerGlobalReceiver(TempSyncPayload.TYPE, (payload, context) -> {
-                context.client().execute(() -> ClientTempData.setTemperature(payload.temperature()));
+                context.client().execute(() -> ClientTempData.set(
+                        payload.bodyTemperature(), payload.wetness(), payload.thermometer()));
             });
             LOGGER.info("Hearthwind Client networking: receiver for {}", TempSyncPayload.TYPE.id());
         } catch (Exception e) {
@@ -65,6 +84,19 @@ public class HearthwindClient implements ClientModInitializer {
             LOGGER.info("Hearthwind Client networking: receiver for {}", JobSyncPayload.TYPE.id());
         } catch (Exception e) {
             LOGGER.warn("Failed to register job receiver", e);
+        }
+
+        // Full multi-job sync (all jobs, employed list, cooldown) for the Jobs screen.
+        try {
+            ClientPlayNetworking.registerGlobalReceiver(dev.jmiahman.hearthwind.jobs.JobsSyncPayload.TYPE,
+                    (payload, context) -> {
+                        context.client().execute(() -> ClientJobData.updateAll(
+                                payload.employed(), payload.ids(), payload.levels(), payload.xp(),
+                                payload.nextCost(), payload.cooldownTicks(), payload.maxEmployed()));
+                    });
+            LOGGER.info("Hearthwind Client networking: receiver for {}", dev.jmiahman.hearthwind.jobs.JobsSyncPayload.TYPE.id());
+        } catch (Exception e) {
+            LOGGER.warn("Failed to register multi-job receiver", e);
         }
 
         // Full skill-state sync from server
@@ -141,6 +173,11 @@ public class HearthwindClient implements ClientModInitializer {
             dev.jmiahman.hearthwind.client.render.FaunaEntityRenderer.registerAll();
 
             net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback.EVENT.register((stack, tooltipContext, tooltipType, lines) -> {
+                net.minecraft.client.Minecraft minecraft = net.minecraft.client.Minecraft.getInstance();
+                if (minecraft != null && com.mojang.blaze3d.platform.InputConstants.isKeyDown(
+                        minecraft.getWindow(), org.lwjgl.glfw.GLFW.GLFW_KEY_LEFT_SHIFT)) {
+                    ClientNutritionData.appendShiftTooltip(stack, lines);
+                }
                 ClientSkillGates.Requirement req = ClientSkillGates.getItemRequirement(stack);
                 if (req != null) {
                     int playerLvl = ClientSkillData.knownLevels().getOrDefault(req.skill(), 0);

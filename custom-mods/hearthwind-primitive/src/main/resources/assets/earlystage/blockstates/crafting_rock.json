@@ -14,10 +14,6 @@
     "facing=west": {
       "model": "earlystage:block/crafting_rock",
       "y": 270
-    },
-    "": {
-      "model": "earlystage:block/crafting_rock",
-      "y": 90
     }
   }
 }

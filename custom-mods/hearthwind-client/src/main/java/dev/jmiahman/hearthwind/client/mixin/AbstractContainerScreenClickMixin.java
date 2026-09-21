@@ -14,11 +14,14 @@ import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.inventory.Slot;
+import dev.jmiahman.hearthwind.client.NutrientsScreen;
 import dev.jmiahman.hearthwind.client.TabStrip;
 
 /**
- * Handles clicks on the 6-tab strip while on the Inventory screen.
- * Dispatches navigation to the matching Hearthwind survival panel.
+ * Handles clicks on the 4-tab strip and the NutritionZ nutrients tab while
+ * on the Inventory screen. The 9x9 nutrients tab only responds when no
+ * inventory slot is hovered (original focusedSlot == null check).
  */
 @Environment(EnvType.CLIENT)
 @Mixin(AbstractContainerScreen.class)
@@ -30,11 +33,15 @@ public abstract class AbstractContainerScreenClickMixin {
     @Shadow
     protected int topPos;
 
+    @Shadow
+    protected Slot hoveredSlot;
+
     @Inject(method = "mouseClicked", at = @At("HEAD"), cancellable = true)
     private void hearthwind$onTabClick(MouseButtonEvent event, boolean doubled,
             CallbackInfoReturnable<Boolean> cir) {
         if ((Object) this instanceof InventoryScreen && event.button() == 0) {
-            TabStrip.Tab tab = TabStrip.clicked(event.x(), event.y(), this.leftPos, this.topPos);
+            TabStrip.Tab tab = TabStrip.clicked(event.x(), event.y(), this.leftPos, this.topPos,
+                    TabStrip.Tab.INVENTORY);
             if (tab != null && tab != TabStrip.Tab.INVENTORY) {
                 Minecraft.getInstance().getSoundManager()
                         .play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
@@ -43,12 +50,13 @@ public abstract class AbstractContainerScreenClickMixin {
                 return;
             }
 
-            // Nutrition drumstick button on top-right of inventory
-            if (event.x() >= this.leftPos + 152 && event.x() < this.leftPos + 170
-                    && event.y() >= this.topPos + 4 && event.y() < this.topPos + 22) {
+            // NutritionZ nutrients tab on the top-right of the inventory panel.
+            if (this.hoveredSlot == null
+                    && event.x() >= this.leftPos + 162 && event.x() < this.leftPos + 171
+                    && event.y() >= this.topPos + 5 && event.y() < this.topPos + 14) {
                 Minecraft.getInstance().getSoundManager()
                         .play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
-                Minecraft.getInstance().setScreenAndShow(new dev.jmiahman.hearthwind.client.NutrientsScreen());
+                Minecraft.getInstance().setScreenAndShow(new NutrientsScreen());
                 cir.setReturnValue(true);
             }
         }

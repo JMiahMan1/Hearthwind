@@ -9,14 +9,12 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.Items;
 import org.lwjgl.glfw.GLFW;
 
-import java.util.Map;
-
 /**
- * Full diet-loop integration: give an apple, eat it through the real input
- * pipeline (hold use-key, watch isUsingItem start AND finish), then assert
- * on the SERVER that the fruits nutrient attachment actually moved and the
- * player survived the consume hook (guards against the historical
- * Consumable mixin clinit crash class that disconnected live players).
+ * Full diet-loop integration against NutritionZ semantics: give an apple,
+ * eat it through the real input pipeline (hold use-key, watch isUsingItem
+ * start AND finish), then assert on the SERVER that the nutrition
+ * attachment moved by the vanilla_items.json values (vitamins +15,
+ * minerals +5) and the player survived the consume hook.
  */
 public class DietGameTests implements FabricClientGameTest {
     private static final int SLOW_TIMEOUT_TICKS = 20 * 300;
@@ -56,7 +54,8 @@ public class DietGameTests implements FabricClientGameTest {
             });
             context.waitTicks(2);
 
-            double fruitsBefore = nutrient(world.getServer(), "fruits");
+            int vitaminsBefore = nutrient(world.getServer(), 3);
+            int mineralsBefore = nutrient(world.getServer(), 4);
 
             // StarterKit fills the hotbar (guide book, bottle, campfire) on join,
             // so clear the inventory first to give the apple a predictable slot 0.
@@ -116,10 +115,15 @@ public class DietGameTests implements FabricClientGameTest {
             context.getInput().releaseKey(options -> options.keyUse);
             context.waitTicks(10);
 
-            double fruitsAfter = nutrient(world.getServer(), "fruits");
-            if (fruitsAfter <= fruitsBefore) {
-                throw new AssertionError("fruits nutrient did not increase after eating an apple: "
-                        + fruitsBefore + " -> " + fruitsAfter);
+            int vitaminsAfter = nutrient(world.getServer(), 3);
+            int mineralsAfter = nutrient(world.getServer(), 4);
+            if (vitaminsAfter != Math.min(300, vitaminsBefore + 15)) {
+                throw new AssertionError("apple must add vitamins +15 (vitamins: "
+                        + vitaminsBefore + " -> " + vitaminsAfter + ")");
+            }
+            if (mineralsAfter != Math.min(300, mineralsBefore + 5)) {
+                throw new AssertionError("apple must add minerals +5 (minerals: "
+                        + mineralsBefore + " -> " + mineralsAfter + ")");
             }
 
             // Player must still be online (a Ticking-player crash would kick them)
@@ -157,12 +161,11 @@ public class DietGameTests implements FabricClientGameTest {
         }
     }
 
-    private static double nutrient(TestServerContext server, String key) {
-        Double v = server.computeOnServer(minecraftServer -> {
+    private static int nutrient(TestServerContext server, int index) {
+        Integer v = server.computeOnServer(minecraftServer -> {
             ServerPlayer p = minecraftServer.getPlayerList().getPlayers().get(0);
-            Map<String, Double> nutrients = p.getAttached(HearthwindSurvivalDiet.NUTRIENTS);
-            return nutrients == null ? 0.0D : nutrients.getOrDefault(key, 0.0D);
+            return HearthwindSurvivalDiet.getLevel(p, index);
         });
-        return v == null ? 0.0D : v;
+        return v == null ? 0 : v;
     }
 }

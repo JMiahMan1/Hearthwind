@@ -13,31 +13,6 @@ import zlib
 from pathlib import Path
 
 MODS = {
-    "aged-primitive": {
-        "earlystage": {
-            "rock": "#7a7a72",
-            "flint": "#2b2b30",
-            "flint_pickaxe": "#2b2b30",
-            "flint_axe": "#2b2b30",
-            "flint_shovel": "#2b2b30",
-            "flint_hoe": "#2b2b30",
-            "flint_sword": "#2b2b30",
-            "stone_shears": "#8a8a82",
-        },
-        "agedaddition": {
-            "coal_piece": "#1c1c1c",
-            "copper_nugget": "#c46f43",
-            "diamond_piece": "#4aedd9",
-            "emerald_piece": "#17dd62",
-            "lapis_lazuli_piece": "#2545c4",
-            "nether_star_piece": "#fdfdd8",
-            "netherite_scrap_piece": "#654735",
-            "quartz_piece": "#eae5da",
-            "raw_copper_nugget": "#9c6238",
-            "raw_gold_nugget": "#d8a83c",
-            "raw_iron_nugget": "#c8b39a",
-        },
-    },
     "hearthwind-survival": {
         "dehydration": {
             "water_bowl": "#5a7a3a",  # tainted swamp green
@@ -78,12 +53,6 @@ MODS = {
 
 # Equipment assets + entity textures (client visuals; server ignores them).
 EQUIPMENT = {
-    "aged-survival": {
-        "environmentz": {
-            "wolf": "#5a4a38",
-            "wanderer": "#c8b48c",
-        },
-    },
 }
 
 HANDHELD = {

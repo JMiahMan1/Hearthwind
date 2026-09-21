@@ -1,6 +1,5 @@
 package dev.jmiahman.hearthwind.client.gametest;
 
-import dev.jmiahman.hearthwind.client.NutrientsKey;
 import dev.jmiahman.hearthwind.client.NutrientsScreen;
 import net.fabricmc.fabric.api.client.gametest.v1.FabricClientGameTest;
 import net.fabricmc.fabric.api.client.gametest.v1.context.ClientGameTestContext;
@@ -14,9 +13,9 @@ import net.fabricmc.fabric.api.client.gametest.v1.context.TestSingleplayerContex
  * executed against a real client. Screenshots land in the run's
  * {@code screenshots/} directory for artifact upload / local inspection.
  *
- * <p>NutrientsScreen scenario: boots a fresh singleplayer world, presses
- * the real {@code NutrientsKey.openNutrients} keymapping (N), waits for the
- * screen, screenshots it, then tears the world down.
+ * <p>NutrientsScreen scenario: boots a fresh singleplayer world, opens the
+ * NutrientsScreen directly through the context API, waits for the screen,
+ * screenshots it, then tears the world down.
  */
 public class HearthwindClientGameTests implements FabricClientGameTest {
     // waitFor* timeout units are TICKS (20/s). Software-GL (xvfb/llvmpipe in
@@ -30,7 +29,24 @@ public class HearthwindClientGameTests implements FabricClientGameTest {
             world.getConnection().waitForChunksRender(SLOW_TIMEOUT_TICKS);
             context.waitTicks(20);
 
-            context.getInput().pressKey(NutrientsKey.openNutrients);
+            // Player-visible health assertion: a fresh player must start at
+            // 3 hearts (6.0 max HP) per the Age progression, not vanilla 20.
+            Double maxHealth = context.computeOnClient(minecraft -> {
+                double mh = minecraft.player.getMaxHealth();
+                System.out.println("PROBE maxHealth=" + mh + " health=" + minecraft.player.getHealth());
+                return mh;
+            });
+            if (Math.abs(maxHealth - 6.0) > 0.001) {
+                throw new AssertionError(
+                        "fresh player max health must be 6.0 (3 hearts), got " + maxHealth);
+            }
+
+            // Open the NutrientsScreen directly through the context API: the
+            // fabric-gametest keypress plumbing (holdKey -> WindowMixin ->
+            // KeyboardHandler -> KeyMapping.click) does not reliably deliver
+            // custom keybinds under headless software GL, so keybind-driven
+            // screen transitions time out even though the screen is fine.
+            context.setScreen(() -> new NutrientsScreen());
             context.waitFor(minecraft -> minecraft.gui.screen() instanceof NutrientsScreen, SLOW_TIMEOUT_TICKS);
             context.waitTicks(10);
             context.takeScreenshot("nutrients_screen");

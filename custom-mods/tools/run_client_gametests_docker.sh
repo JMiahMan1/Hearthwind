@@ -20,7 +20,6 @@ docker build -f "$DIR/docker/client-gametest.Dockerfile" -t hearthwind-client-ga
 
 exec docker run --rm \
   -v "$REPO":/work/repo \
-  -v "$HOME/.gradle:/root/.gradle:ro" \
   -w /work/repo/custom-mods \
   -e CGT_ENV=ci \
   -e CGT_XVFB=1 \

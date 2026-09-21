@@ -236,8 +236,8 @@ public final class JobState {
         long cooldownEnd = player.level().getGameTime() + Math.max(0, cfg.jobChangeTime);
         player.setAttached(STATE,
                 new Data(id, xpByJob.getOrDefault(id, 0.0), employed, xpByJob, cooldownEnd));
-        player.sendSystemMessage(Component.literal(
-                "Joined the " + id + " job. Good luck out there."));
+        // Aged parity: selecting a job is silent (screen updates + JobsSync
+        // packet); no "Joined the X job..." chat/title dialogue.
         return true;
     }
 
@@ -255,7 +255,7 @@ public final class JobState {
         String primary = employed.isEmpty() ? "" : employed.get(0);
         player.setAttached(STATE, new Data(primary, d.xpByJob().getOrDefault(primary, 0.0),
                 employed, d.xpByJob(), cooldownEnd));
-        player.sendSystemMessage(Component.literal("Left the " + id + " job."));
+        // Aged parity: leaving a job is silent (screen packet covers it)
         return true;
     }
 
@@ -265,7 +265,7 @@ public final class JobState {
         long cooldownEnd = d.employed().isEmpty() ? d.cooldownEnd()
                 : player.level().getGameTime() + Math.max(0, HearthwindJobsConfig.get().jobChangeTime);
         player.setAttached(STATE, new Data("", 0.0, List.of(), d.xpByJob(), cooldownEnd));
-        player.sendSystemMessage(Component.literal("You are now unemployed."));
+        // Aged parity: bulk leave is silent
     }
 
     /** Awards XP to every employed job whose ladder lists {@code id}. */

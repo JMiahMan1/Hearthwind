@@ -70,6 +70,9 @@ public class HearthwindSkills implements ModInitializer {
 		net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry.clientboundPlay().register(
 				dev.jmiahman.hearthwind.survival.PartySyncPayload.TYPE,
 				dev.jmiahman.hearthwind.survival.PartySyncPayload.CODEC);
+		net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry.clientboundPlay().register(
+				SkillGateHintPayload.TYPE,
+				SkillGateHintPayload.CODEC);
 		net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry.serverboundPlay().register(
 				dev.jmiahman.hearthwind.survival.PartySyncPayload.TYPE,
 				dev.jmiahman.hearthwind.survival.PartySyncPayload.CODEC);
@@ -94,8 +97,9 @@ public class HearthwindSkills implements ModInitializer {
 					} catch (IllegalArgumentException ignored) {
 					}
 				});
-		LOGGER.info("Hearthwind Skills initialized: 12 skills (base {} xp/level), mob scaling {}, gates {}",
-				SkillsConfig.get().levels.baseXpPerLevel,
+		LOGGER.info("Hearthwind Skills initialized: 12 skills (Aged curve {}+{}*L), mob scaling {}, gates {}",
+				SkillsConfig.get().levels.xpBaseCost,
+				SkillsConfig.get().levels.xpCostMultiplicator,
 				SkillsConfig.get().mobScaling.enabled ? "on" : "off",
 				SkillsConfig.get().gates.enabled ? "on" : "off");
 		LOGGER.info("Skill procs {}", SkillsConfig.get().procs.enabled ? "on" : "off");

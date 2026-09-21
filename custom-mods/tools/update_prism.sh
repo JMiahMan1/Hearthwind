@@ -27,7 +27,7 @@ fi
 [ -d "$INST_ROOT" ] || { echo "no Prism installs at $INST_ROOT"; exit 1; }
 
 replaced=0; skipped=0; added=0
-for moddir in hearthwind-* letsdo-* smallships villagesandpillages athena chipped dungeonz; do
+for moddir in hearthwind-* letsdo-* smallships villagesandpillages athena chipped dungeonz exposure; do
   [ -d "$moddir" ] || continue
   # plain jar only: newest non-sources jar in build/libs
   jar=$(ls -t "$moddir"/build/libs/*.jar 2>/dev/null | grep -v -- "-sources\.jar$" | head -1)

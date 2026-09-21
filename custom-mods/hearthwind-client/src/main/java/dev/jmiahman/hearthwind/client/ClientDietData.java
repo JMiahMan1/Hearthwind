@@ -1,37 +1,39 @@
 package dev.jmiahman.hearthwind.client;
 
 /**
- * Client-side copy of the five nutrient groups for HUD rendering.
- * Updated via hearthwind:diet payload from server.
- * Indices: 0=fruits, 1=vegetables, 2=grains, 3=proteins, 4=sugars.
- * Values are 0..100.
+ * Client-side mirror of the five NutritionZ nutrients (0..maxNutrition),
+ * updated from the server via the hearthwind_survival:diet payload.
+ * Order: 0 carbohydrates, 1 protein, 2 fat, 3 vitamins, 4 minerals.
  */
 public final class ClientDietData {
-    private static float[] nutrients = new float[] {0f, 0f, 0f, 0f, 0f};
+    private static int maxNutrition = 300;
+    private static int[] levels = { 150, 150, 150, 150, 150 };
 
     private ClientDietData() {}
 
-    public static void setNutrients(float[] vals) {
-        for (int i = 0; i < 5 && i < vals.length; i++) {
-            nutrients[i] = Math.max(0f, Math.min(100f, vals[i]));
+    public static void set(int[] values) {
+        maxNutrition = dev.jmiahman.hearthwind.survival.HearthwindSurvivalConfig.get().diet.maxNutrition;
+        for (int i = 0; i < levels.length && i < values.length; i++) {
+            levels[i] = Math.max(0, Math.min(maxNutrition, values[i]));
         }
     }
 
-    public static float getFruits() { return nutrients[0]; }
-    public static float getVegetables() { return nutrients[1]; }
-    public static float getGrains() { return nutrients[2]; }
-    public static float getProteins() { return nutrients[3]; }
-    public static float getSugars() { return nutrients[4]; }
-
-    public static float get(int index) {
-        if (index < 0 || index >= 5) return 0f;
-        return nutrients[index];
+    public static int get(int index) {
+        if (index < 0 || index >= levels.length) {
+            return 0;
+        }
+        return levels[index];
     }
 
-    public static boolean isBalanced() {
-        for (float v : nutrients) {
-            if (v < 50f) return false;
-        }
-        return true;
+    public static int max() {
+        return maxNutrition;
+    }
+
+    public static boolean isLow(int index, int threshold) {
+        return get(index) <= threshold;
+    }
+
+    public static boolean isHigh(int index, int threshold) {
+        return get(index) >= threshold;
     }
 }

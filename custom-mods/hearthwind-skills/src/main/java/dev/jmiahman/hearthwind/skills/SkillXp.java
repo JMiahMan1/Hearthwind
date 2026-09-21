@@ -14,8 +14,9 @@ import net.minecraft.world.entity.Entity;
  * a data attachment under the original levelz namespace so any migrated
  * tuning that references levelz keeps working.
  *
- * Level curve: reaching level L costs <code>baseXpPerLevel * L</code> XP,
- * so cumulative XP for level L is base * L*(L+1)/2 (triangular numbers).
+ * Level curve (Aged/LevelZ): the cost to go from level L to L+1 is
+ * <code>(int)(xpBaseCost + xpCostMultiplicator * L^xpExponent)</code> -
+ * 25, 26, 28, 29, 31 ... with the Aged config.
  */
 public final class SkillXp {
     public static final AttachmentType<Map<String, Double>> XP =
@@ -90,10 +91,20 @@ public final class SkillXp {
         }
     }
 
-    /** Cumulative XP needed to reach {@code level}. */
+    /** Cost to advance from {@code currentLevel} to the next (LevelZ formula). */
+    public static int nextCost(int currentLevel) {
+        SkillsConfig.Levels c = SkillsConfig.get().levels;
+        return (int) (c.xpBaseCost
+                + c.xpCostMultiplicator * Math.pow(currentLevel, c.xpExponent));
+    }
+
+    /** Cumulative XP needed to reach {@code level} (exact per-level costs). */
     public static long xpForLevel(int level) {
-        long b = SkillsConfig.get().levels.baseXpPerLevel;
-        return b * (long) level * (level + 1) / 2;
+        long total = 0L;
+        for (int l = 0; l < level && l < maxLevel(); l++) {
+            total += nextCost(l);
+        }
+        return total;
     }
 
     /** Current level derived from total XP; capped at maxLevel. */
@@ -102,10 +113,17 @@ public final class SkillXp {
     }
 
     public static int levelFor(double totalXp) {
-        // invert triangular sum: L = floor((sqrt(8*x/b + 1) - 1) / 2)
-        double b = SkillsConfig.get().levels.baseXpPerLevel;
-        int level = (int) ((Math.sqrt(8.0 * totalXp / b + 1.0) - 1.0) / 2.0);
-        return Math.max(0, Math.min(maxLevel(), level));
+        long accumulated = 0L;
+        int level = 0;
+        while (level < maxLevel()) {
+            int cost = nextCost(level);
+            if (totalXp < accumulated + cost) {
+                break;
+            }
+            accumulated += cost;
+            level++;
+        }
+        return level;
     }
 
     public static int maxLevel() {

@@ -37,6 +37,8 @@ for d in "$REPO"/custom-mods/hearthwind-*/build/libs \
          "$REPO"/custom-mods/athena/build/libs \
          "$REPO"/custom-mods/chipped/build/libs \
          "$REPO"/custom-mods/dungeonz/build/libs \
+          "$REPO"/custom-mods/exposure/build/libs \
+          "$REPO"/custom-mods/passable-foliage/build/libs \
          "$REPO"/custom-mods/smallships/build/libs \
          "$REPO"/custom-mods/villagesandpillages/build/libs \
          "$REPO"/custom-mods/letsdo-*/build/libs; do

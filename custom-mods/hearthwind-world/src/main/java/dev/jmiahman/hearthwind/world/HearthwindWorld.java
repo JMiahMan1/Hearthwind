@@ -41,6 +41,7 @@ public class HearthwindWorld implements ModInitializer {
 		dev.jmiahman.hearthwind.world.snow.WinterSnowAccumulation.register();
 		dev.jmiahman.hearthwind.world.fauna.WaterfowlFauna.register();
 		dev.jmiahman.hearthwind.world.fauna.NaturalistFauna.registerAll();
+		dev.jmiahman.hearthwind.world.pine.PineCoarseDirtLedges.register();
 		dev.jmiahman.hearthwind.world.exploration.ExplorationItems.registerAll();
 		dev.jmiahman.hearthwind.world.endrem.EndRemasteredItems.registerAll(msg -> LOGGER.info(msg));
 		ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {

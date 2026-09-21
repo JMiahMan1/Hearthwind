@@ -15,6 +15,14 @@ public final class HearthwindJobsConfig {
 
     public int pointsPerLevel = 100;
     public int xpPerAction = 10;
+    /** Aged jobsaddon.json5: 3 employed jobs, 150 max level, 24000 tick change cooldown. */
+    public int employedJobs = 3;
+    public int jobMaxLevel = 150;
+    public int jobChangeTime = 24000;
+    /** Aged XP curve: cost(L -> L+1) = jobXPBaseCost + jobXPCostMultiplicator * L^jobXPExponent. */
+    public int jobXPBaseCost = 100;
+    public double jobXPCostMultiplicator = 1.6;
+    public double jobXPExponent = 1.0;
     /**
      * Block crafting of items that a job ladder lists unless the player holds
      * that job at the required level. Off by default: the reference model lets

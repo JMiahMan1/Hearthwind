@@ -27,7 +27,7 @@ public class BiomeTempGameTests implements FabricClientGameTest {
             world.getConnection().waitForChunksRender(SLOW_TIMEOUT_TICKS);
             context.waitTicks(40);
 
-            double tempBefore = temp(world);
+            int tempBefore = bodyTemp(world);
 
             String desertPos = world.getServer().computeOnServer(server -> {
                 ServerPlayer p = server.getPlayerList().getPlayers().get(0);
@@ -53,9 +53,9 @@ public class BiomeTempGameTests implements FabricClientGameTest {
             world.getServer().runCommand("tp @p " + x + " " + y + " " + z);
             context.waitTicks(240); // let the temperature system tick in the hot biome
 
-            double tempAfter = temp(world);
+            int tempAfter = bodyTemp(world);
             if (tempAfter <= tempBefore) {
-                throw new AssertionError("temperature did not rise after teleporting into a desert: "
+                throw new AssertionError("body temperature did not rise after teleporting into a desert: "
                         + tempBefore + " -> " + tempAfter);
             }
 
@@ -63,12 +63,11 @@ public class BiomeTempGameTests implements FabricClientGameTest {
         }
     }
 
-    private static double temp(TestSingleplayerContext world) {
-        Double v = world.getServer().computeOnServer(server -> {
+    private static int bodyTemp(TestSingleplayerContext world) {
+        Integer v = world.getServer().computeOnServer(server -> {
             ServerPlayer p = server.getPlayerList().getPlayers().get(0);
-            Double t = p.getAttached(HearthwindSurvivalTemperature.TEMPERATURE);
-            return t == null ? 0.0D : t;
+            return HearthwindSurvivalTemperature.getState(p).body();
         });
-        return v == null ? 0.0D : v;
+        return v == null ? 0 : v;
     }
 }

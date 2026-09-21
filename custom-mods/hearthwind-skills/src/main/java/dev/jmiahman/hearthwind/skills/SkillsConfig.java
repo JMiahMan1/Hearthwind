@@ -28,10 +28,16 @@ public final class SkillsConfig {
     public SkillsConfig() {}
 
     public static class Levels {
-        /** Maximum reachable level per skill (levelz parity). */
+        /** Maximum reachable level per skill (Aged/LevelZ maxLevel). */
         public int maxLevel = 30;
-        /** XP needed to go from level N-1 to N equals baseXpPerLevel * N. */
-        public int baseXpPerLevel = 30;
+        /**
+         * Aged/LevelZ XP curve: the cost to go from level L to L+1 is
+         * <code>(int)(xpBaseCost + xpCostMultiplicator * L^xpExponent)</code>
+         * (25 + 1.6*L with the Aged config).
+         */
+        public int xpBaseCost = 25;
+        public double xpCostMultiplicator = 1.6;
+        public double xpExponent = 1.0;
     }
 
     public static class Xp {
@@ -70,18 +76,20 @@ public final class SkillsConfig {
     public static class Bonuses {
         /** Base starting player health in HP (6.0 = 3 hearts, authentic Aged / LevelZ progression). */
         public double baseStartingHealth = 6.0;
-        /** Bonus max health (HP) per HEALTH level (+1 HP per level = +0.5 heart). */
+        /** Bonus max health (HP) per HEALTH level (LevelZ healthBonus 1.0). */
         public double healthHpPerLevel = 1.0;
-        /** Bonus attack damage per STRENGTH level. */
-        public double strengthDamagePerLevel = 0.25;
-        /** Fractional movement speed bonus per AGILITY level (0.005 = 0.5%). */
-        public double agilitySpeedFractionPerLevel = 0.005;
-        /** Armor points per DEFENSE level. */
-        public double defenseArmorPerLevel = 0.3;
+        /** Bonus attack damage per STRENGTH level (LevelZ attackBonus 0.2). */
+        public double strengthDamagePerLevel = 0.2;
+        /** LevelZ movementBase: player base movement speed at level 0. */
+        public double agilityBaseMovement = 0.09;
+        /** Fractional movement speed bonus per AGILITY level (LevelZ movementBonus 0.001). */
+        public double agilitySpeedFractionPerLevel = 0.001;
+        /** Armor points per DEFENSE level (LevelZ defenseBonus 0.2). */
+        public double defenseArmorPerLevel = 0.2;
         /** Fractional block-break speed bonus per MINING level. */
         public double miningSpeedFractionPerLevel = 0.01;
-        /** Luck points per LUCK level. */
-        public double luckPerLevel = 0.1;
+        /** Luck points per LUCK level (LevelZ luckBonus 0.05). */
+        public double luckPerLevel = 0.05;
     }
 
     public static class MobScaling {

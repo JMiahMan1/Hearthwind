@@ -2,6 +2,7 @@
   "type": "earlystage:blasting_extra",
   "category": "misc",
   "ingredient": "minecraft:iron_ingot",
+  "count": 2,
   "extraingredient": "minecraft:coal",
   "extra_count": 2,
   "result": {

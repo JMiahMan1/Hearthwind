@@ -12,7 +12,7 @@ ROOT="$(cd "$DIR/.." && pwd)"                              # custom-mods
 REPO="$(cd "$ROOT/.." && pwd)"
 WORK="$ROOT/.tmp/cgt-game"
 LOG="$ROOT/.tmp/logs/cgt-client.log"
-TIMEOUT=${CGT_TIMEOUT:-900}
+TIMEOUT=${CGT_TIMEOUT:-1800}
 KEEP=0
 [ "${1:-}" = "--keep-dir" ] && KEEP=1
 
@@ -48,9 +48,13 @@ if [ -z "$CGT_API" ]; then
   exit 1
 fi
 cp "$CGT_API" "$WORK/mods/"
-for j in "$ROOT"/hearthwind-*/build/libs/*26.2+0.1.0.jar "$ROOT"/smallships/build/libs/smallships-26.2+0.1.0.jar; do
+# Overlay EVERY locally built module (fresh source wins over CLIENT_MODS,
+# which may hold stale dist jars - stale jars once masked real failures).
+for j in "$ROOT"/hearthwind-*/build/libs/*26.2+0.1.0.jar "$ROOT"/letsdo-*/build/libs/*26.2+0.1.0.jar "$ROOT"/athena/build/libs/*26.2+0.1.0.jar "$ROOT"/chipped/build/libs/*26.2+0.1.0.jar "$ROOT"/smallships/build/libs/smallships-26.2+0.1.0.jar "$ROOT"/villagesandpillages/build/libs/villagesandpillages-26.2+0.1.0.jar; do
   [ -f "$j" ] || continue
   case "$j" in *sources*) continue ;; esac
+  base="$(basename "$j")"; mod="${base%-26.2*}"
+  rm -f "$WORK/mods/$mod"-*.jar
   cp "$j" "$WORK/mods/"
 done
 echo "mods staged: $(ls "$WORK/mods" | wc -l | tr -d ' ')"
@@ -79,7 +83,7 @@ PY
 ) || { echo "ERROR: classpath build failed" >&2; exit 1; }
 { read -r LOADER; read -r MIXIN; read -r MIXEX; read -r ASM; read -r MCCP; read -r GAME_JAR; read -r ASSET_IDX; } <<< "$CPINFO"
 
-VMARGS=(-Xmx3G "--enable-native-access=ALL-UNNAMED" "--sun-misc-unsafe-memory-access=allow"
+VMARGS=(-Xmx4G "-Xms2G" "-XX:+UseG1GC" "-XX:MaxGCPauseMillis=50" "-XX:G1HeapRegionSize=8M" "--enable-native-access=ALL-UNNAMED" "--sun-misc-unsafe-memory-access=allow"
   "-Dfabric.gameJarPath=$GAME_JAR" "-Dfabric.client.gametest"
   "-Dfabric.client.gametest.screenshotDir=$WORK/screenshots")
 case "$(uname)" in
@@ -98,6 +102,11 @@ if [ "${CGT_XVFB:-0}" = "1" ]; then
   LAUNCH=(xvfb-run -a -s "-screen 0 1280x800x24")
   export LIBGL_ALWAYS_SOFTWARE=1
 fi
+
+# Pre-create the default world save dir: graphlib's onCreate fires during
+# ChunkMap.<init> (before the framework lazily creates the world dir) and
+# crashes with NoSuchFileException if it is absent.
+mkdir -p "$WORK/saves/New World"
 
 echo "== launching client gametest run (log: $LOG)"
 : > "$LOG"
@@ -130,6 +139,16 @@ echo "screenshots: $SHOTS in $WORK/screenshots"
 ls -l "$WORK/screenshots" 2>/dev/null || true
 if grep -qE "Exception in thread|GameTest.*(failed|FAILED)" "$LOG"; then
   echo "FAIL: exceptions/failures found in log"
+  RC=1
+fi
+# Missing-texture gate scoped to OUR content only: upstream mods ship their
+# own broken refs (e.g. natures_spirit pizza) which we neither own nor fix.
+OUR_NS="meadow|bakery|brewery|candlelight|farm_and_charm|herbalbrews|vinery|nethervinery|smallships|dehydration|environmentz|hearthwind|hearthwind_survival|hearthwind_world|hearthwind_primitive|hearthwind_jobs|hearthwind_skills|hearthwind_client|earlystage|agedaddition|levelz|naturalist|adventurez|antiqueatlas|exposure|inmis"
+OUR_MISSING=$(grep -E "Missing textures? in model|Missing texture references in model" "$LOG" \
+  | sed 's/.*WARN]: //' | grep -E "($OUR_NS):" | sort -u)
+if [ -n "$OUR_MISSING" ]; then
+  echo "FAIL: client reported missing textures in OUR content:"
+  echo "$OUR_MISSING" | head -20
   RC=1
 fi
 if [ "$SHOTS" -lt 1 ]; then

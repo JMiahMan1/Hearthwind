@@ -32,29 +32,49 @@ public final class JobCommands {
                                 return 0;
                             }
                             boolean ok = JobState.join(p, id);
+                            if (ok) {
+                                JobsSync.send(p);
+                            }
                             return ok ? 1 : 0;
                         })))
                 .then(Commands.literal("leave")
                     .executes(ctx -> {
                         ServerPlayer p = ctx.getSource().getPlayerOrException();
-                        if (JobState.jobId(p).isEmpty()) {
+                        if (JobState.employedJobs(p).isEmpty()) {
                             ctx.getSource().sendFailure(Component.literal("You have no job to leave."));
                             return 0;
                         }
                         JobState.leave(p);
+                        JobsSync.send(p);
                         return 1;
-                    }))
+                    })
+                    .then(Commands.argument("job", StringArgumentType.word())
+                        .suggests(jobSuggestions)
+                        .executes(ctx -> {
+                            ServerPlayer p = ctx.getSource().getPlayerOrException();
+                            String id = StringArgumentType.getString(ctx, "job");
+                            boolean ok = JobState.leave(p, id);
+                            if (ok) {
+                                JobsSync.send(p);
+                            }
+                            return ok ? 1 : 0;
+                        })))
                 .then(Commands.literal("info")
                     .executes(ctx -> {
                         ServerPlayer p = ctx.getSource().getPlayerOrException();
-                        String jid = JobState.jobId(p);
-                        if (jid.isEmpty()) {
-                            ctx.getSource().sendSuccess(() -> Component.literal("Unemployed. XP 0"), false);
-                        } else {
-                            int lvl = JobState.level(p);
-                            double xp = JobState.xp(p);
+                        var employed = JobState.employedJobs(p);
+                        if (employed.isEmpty()) {
                             ctx.getSource().sendSuccess(() -> Component.literal(
-                                "Job: " + jid + " Lv." + lvl + " (" + (int) xp + " xp)"), false);
+                                "Unemployed (cooldown " + (JobState.cooldownTicks(p) / 20) + "s)."), false);
+                        } else {
+                            StringBuilder sb = new StringBuilder("Jobs:");
+                            for (String jid : employed) {
+                                sb.append(' ').append(jid)
+                                        .append(" Lv.").append(JobState.level(p, jid))
+                                        .append(" (").append((int) JobState.xp(p, jid)).append(" xp)").append(';');
+                            }
+                            String text = sb.toString();
+                            ctx.getSource().sendSuccess(() -> Component.literal(text), false);
                         }
                         return 1;
                     }))

@@ -36,6 +36,15 @@ public final class ClientSkillData {
     public static String skillId() { return skillId; }
     public static Map<String, Integer> knownLevels() { return KNOWN_LEVELS; }
     public static int level() { return level; }
+
+    /** LevelZ "overall level": the sum of every known skill level. */
+    public static int overallLevel() {
+        int total = 0;
+        for (int value : KNOWN_LEVELS.values()) {
+            total += value;
+        }
+        return total;
+    }
     public static boolean isActive() {
         Minecraft mc = net.minecraft.client.Minecraft.getInstance();
         return !skillId.isEmpty() && mc.level != null && mc.level.getGameTime() < expireTick;

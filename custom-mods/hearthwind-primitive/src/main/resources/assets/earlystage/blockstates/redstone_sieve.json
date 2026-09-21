@@ -29,10 +29,6 @@
     "powered=true,facing=west": {
       "model": "earlystage:block/redstone_sieve_powered",
       "y": 270
-    },
-    "": {
-      "model": "earlystage:block/redstone_sieve",
-      "y": 90
     }
   }
 }

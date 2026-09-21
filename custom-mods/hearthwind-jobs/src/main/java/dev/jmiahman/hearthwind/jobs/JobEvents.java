@@ -40,11 +40,6 @@ public final class JobEvents {
     }
 
     private static void sendJobSync(ServerPlayer sp) {
-        dev.jmiahman.hearthwind.survival.JobSyncPayload payload =
-                new dev.jmiahman.hearthwind.survival.JobSyncPayload(
-                        JobState.jobId(sp), JobState.level(sp), JobState.xp(sp),
-                        HearthwindJobsConfig.get().pointsPerLevel);
-        net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking.send(
-                sp, payload);
+        JobsSync.send(sp);
     }
 }
