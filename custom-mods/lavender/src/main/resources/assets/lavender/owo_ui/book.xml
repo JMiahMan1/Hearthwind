@@ -1,0 +1,408 @@
+<owo-ui xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/wisp-forest/owo-lib/1.20.3/owo-ui.xsd">
+
+    <components>
+
+        <!-- The actual base component in this screen is quite empty since we instantiate it
+             as a template from code to supply the correct book texture -->
+
+        <flow-layout direction="vertical">
+            <children>
+
+            </children>
+
+            <horizontal-alignment>center</horizontal-alignment>
+            <vertical-alignment>center</vertical-alignment>
+
+            <surface>
+                <vanilla-translucent/>
+            </surface>
+        </flow-layout>
+    </components>
+
+    <templates>
+        <template name="primary-panel">
+            <flow-layout direction="vertical" id="primary-panel">
+                <children>
+                    <texture texture="{{book-texture}}" texture-width="512" texture-height="256"
+                             region-width="267" region-height="180"/>
+
+                    <flow-layout direction="vertical" id="left-page-anchor">
+                        <children/>
+                        <positioning type="absolute">15,15</positioning>
+                        <sizing>
+                            <horizontal method="fixed">112</horizontal>
+                            <vertical method="fixed">153</vertical>
+                        </sizing>
+                    </flow-layout>
+
+                    <flow-layout direction="vertical" id="right-page-anchor">
+                        <children/>
+                        <positioning type="absolute">139,15</positioning>
+                        <sizing>
+                            <horizontal method="fixed">112</horizontal>
+                            <vertical method="fixed">153</vertical>
+                        </sizing>
+                    </flow-layout>
+
+                    <button id="previous-button">
+                        <tooltip-text translate="true">text.lavender.book.previous</tooltip-text>
+
+                        <renderer>
+                            <texture texture="{{book-texture}}" u="0" v="180" texture-width="512"
+                                     texture-height="256"/>
+                        </renderer>
+
+                        <sizing>
+                            <horizontal method="fixed">18</horizontal>
+                            <vertical method="fixed">10</vertical>
+                        </sizing>
+
+                        <positioning type="absolute">-3,174</positioning>
+                        <active>false</active>
+                    </button>
+
+                    <button id="back-button">
+                        <tooltip-text translate="true">text.lavender.book.back</tooltip-text>
+
+                        <renderer>
+                            <texture texture="{{book-texture}}" u="18" v="180" texture-width="512"
+                                     texture-height="256"/>
+                        </renderer>
+
+                        <sizing>
+                            <horizontal method="fixed">18</horizontal>
+                            <vertical method="fixed">10</vertical>
+                        </sizing>
+
+                        <positioning type="absolute">122,176</positioning>
+                        <active>false</active>
+                    </button>
+
+                    <button id="next-button">
+                        <tooltip-text translate="true">text.lavender.book.next</tooltip-text>
+
+                        <renderer>
+                            <texture texture="{{book-texture}}" u="36" v="180" texture-width="512"
+                                     texture-height="256"/>
+                        </renderer>
+
+                        <sizing>
+                            <horizontal method="fixed">18</horizontal>
+                            <vertical method="fixed">10</vertical>
+                        </sizing>
+
+                        <positioning type="absolute">252,174</positioning>
+                        <active>false</active>
+                    </button>
+
+                    <scroll direction="horizontal" id="bookmark-scroll">
+                        <flow-layout direction="horizontal" id="bookmark-panel">
+                            <children/>
+                            <gap>2</gap>
+                        </flow-layout>
+
+                        <positioning type="absolute">6,-14</positioning>
+                        <sizing>
+                            <horizontal method="fixed">255</horizontal>
+                            <vertical method="fixed">14</vertical>
+                        </sizing>
+
+                        <scrollbar-thiccness>2</scrollbar-thiccness>
+                    </scroll>
+
+                    <text-box id="search-box">
+                        <show-background>false</show-background>
+
+                        <sizing>
+                            <horizontal method="fixed">100</horizontal>
+                        </sizing>
+
+                        <positioning type="absolute">145,174</positioning>
+                    </text-box>
+                </children>
+
+                <allow-overflow>true</allow-overflow>
+
+                <padding>
+                    <all>25</all>
+                </padding>
+            </flow-layout>
+        </template>
+
+        <!-- Base page layout templates -->
+
+        <template name="empty-page-content">
+            <texture texture="{{book-texture}}" texture-width="512" texture-height="256" u="163" v="180"
+                     region-width="9" region-height="11">
+                <blend>true</blend>
+                <positioning type="relative">50,50</positioning>
+            </texture>
+        </template>
+
+        <template name="page-title-header">
+            <flow-layout direction="vertical">
+                <children>
+                    <label id="title-label">
+                        <color>dark-gray</color>
+
+                        <horizontal-text-alignment>center</horizontal-text-alignment>
+
+                        <margins>
+                            <top>2</top>
+                        </margins>
+                        <sizing>
+                            <horizontal method="fill">100</horizontal>
+                        </sizing>
+                    </label>
+
+                    <texture texture="{{book-texture}}" texture-width="512" texture-height="256" u="54"
+                             v="180" region-width="109" region-height="3">
+                        <blend>true</blend>
+                        <margins>
+                            <top>5</top>
+                            <bottom>7</bottom>
+                        </margins>
+                    </texture>
+                </children>
+
+                <horizontal-alignment>center</horizontal-alignment>
+                <sizing>
+                    <horizontal method="fill">100</horizontal>
+                </sizing>
+            </flow-layout>
+        </template>
+
+        <!-- Landing page -->
+
+        <template name="landing-page-header">
+            <flow-layout direction="vertical">
+                <children>
+                    <texture texture="{{book-texture}}" texture-width="512" texture-height="256" u="267"
+                             v="100" region-width="100" region-height="29">
+                        <blend>true</blend>
+                    </texture>
+
+                    <label id="title-label">
+                        <text>{{page-title}}</text>
+                        <color>dark-gray</color>
+                        <horizontal-text-alignment>center</horizontal-text-alignment>
+
+                        <positioning type="relative">50,50</positioning>
+                        <margins>
+                            <bottom>3</bottom>
+                        </margins>
+
+                        <sizing>
+                            <horizontal method="fill">80</horizontal>
+                        </sizing>
+                    </label>
+                </children>
+
+                <horizontal-alignment>center</horizontal-alignment>
+
+                <sizing>
+                    <horizontal method="fill">100</horizontal>
+                </sizing>
+
+                <margins>
+                    <bottom>7</bottom>
+                </margins>
+            </flow-layout>
+        </template>
+
+        <!-- Index / entry lists -->
+
+        <template name="completion-bar">
+            <flow-layout direction="vertical">
+                <children>
+                    <template name="horizontal-rule@lavender:book_components"/>
+                    <flow-layout direction="vertical">
+                        <children>
+                            <label id="completion-label"/>
+                            <flow-layout direction="vertical">
+                                <children>
+                                    <texture texture="{{book-texture}}" texture-width="512" texture-height="256"
+                                             u="268" v="129" region-width="100" region-height="5">
+                                    </texture>
+                                    <texture texture="{{book-texture}}" texture-width="512" texture-height="256"
+                                             u="268" v="134" region-width="100" region-height="5">
+
+                                        <visible-area>
+                                            <width>{{progress}}</width>
+                                        </visible-area>
+
+                                        <positioning type="absolute">0,0</positioning>
+                                    </texture>
+                                </children>
+                            </flow-layout>
+                        </children>
+
+                        <margins>
+                            <top>4</top>
+                        </margins>
+                    </flow-layout>
+                </children>
+
+                <horizontal-alignment>center</horizontal-alignment>
+
+                <margins>
+                    <bottom>3</bottom>
+                </margins>
+                <positioning type="relative">50,100</positioning>
+            </flow-layout>
+        </template>
+
+        <template name="index-item">
+            <flow-layout direction="horizontal">
+                <children>
+                    <stack-layout id="icon-anchor">
+                        <children/>
+                        <margins>
+                            <left>2</left>
+                            <right>4</right>
+                        </margins>
+
+                        <sizing>
+                            <horizontal method="fixed">8</horizontal>
+                            <vertical method="fixed">8</vertical>
+                        </sizing>
+                    </stack-layout>
+
+                    <label id="index-label">
+                        <color>black</color>
+                        <cursor-style>hand</cursor-style>
+                        <line-height>7</line-height>
+                        <line-spacing>0</line-spacing>
+
+                        <sizing>
+                            <horizontal method="expand">100</horizontal>
+                        </sizing>
+                    </label>
+                </children>
+
+                <vertical-alignment>center</vertical-alignment>
+                <margins>
+                    <vertical>1</vertical>
+                </margins>
+
+                <sizing>
+                    <horizontal method="fill">100</horizontal>
+                </sizing>
+            </flow-layout>
+        </template>
+
+        <template name="locked-index-item">
+            <flow-layout direction="horizontal">
+                <children>
+                    <texture texture="{{book-texture}}" texture-width="512" texture-height="256"
+                             u="172" v="180" region-width="16" region-height="16">
+                        <blend>true</blend>
+
+                        <margins>
+                            <vertical>1</vertical>
+                            <left>2</left>
+                            <right>4</right>
+                        </margins>
+
+                        <sizing>
+                            <horizontal method="fixed">8</horizontal>
+                            <vertical method="fixed">8</vertical>
+                        </sizing>
+                    </texture>
+
+                    <label id="index-label">
+                        <color>black</color>
+                        <line-height>7</line-height>
+                    </label>
+                </children>
+
+                <vertical-alignment>center</vertical-alignment>
+
+                <sizing>
+                    <horizontal method="fill">100</horizontal>
+                </sizing>
+            </flow-layout>
+        </template>
+
+        <template name="locked-category-button">
+            <texture texture="{{book-texture}}" texture-width="512" texture-height="256"
+                     u="172" v="180" region-width="16" region-height="16">
+                <blend>true</blend>
+                <margins>
+                    <all>4</all>
+                </margins>
+            </texture>
+        </template>
+
+        <!-- Bookmark elements -->
+
+        <template name="bookmark-button">
+            <flow-layout direction="vertical">
+                <children>
+                    <button id="bookmark-button">
+                        <renderer>
+                            <texture texture="{{book-texture}}" u="0" v="210" texture-width="512"
+                                     texture-height="256"/>
+                        </renderer>
+
+                        <sizing>
+                            <horizontal method="fixed">14</horizontal>
+                            <vertical method="fixed">14</vertical>
+                        </sizing>
+                    </button>
+                    <template-child id="icon">
+                        <cursor-style>hand</cursor-style>
+                        <positioning type="absolute">3,4</positioning>
+                        <sizing>
+                            <horizontal method="fixed">8</horizontal>
+                            <vertical method="fixed">8</vertical>
+                        </sizing>
+                    </template-child>
+                </children>
+
+                <margins>
+                    <top>1</top>
+                </margins>
+            </flow-layout>
+        </template>
+
+        <template name="bookmark">
+            <template name="bookmark-button">
+                <child id="icon">
+                    <stack-layout id="bookmark-preview">
+                        <children/>
+                    </stack-layout>
+                </child>
+            </template>
+        </template>
+
+        <template name="add-bookmark">
+            <template name="bookmark-button">
+                <child id="icon">
+                    <texture texture="{{book-texture}}" texture-width="512" texture-height="256" u="14"
+                             v="211" region-width="8" region-height="8">
+                    </texture>
+                </child>
+            </template>
+        </template>
+
+        <template name="reload-button">
+            <button>
+                <renderer>
+                    <texture texture="{{book-texture}}" u="21" v="210"
+                             texture-width="512" texture-height="256"/>
+                </renderer>
+
+                <tooltip-text translate="true">text.lavender.book.reload</tooltip-text>
+
+                <sizing>
+                    <horizontal method="fixed">16</horizontal>
+                    <vertical method="fixed">16</vertical>
+                </sizing>
+
+                <positioning type="absolute">-9,150</positioning>
+            </button>
+        </template>
+    </templates>
+</owo-ui>

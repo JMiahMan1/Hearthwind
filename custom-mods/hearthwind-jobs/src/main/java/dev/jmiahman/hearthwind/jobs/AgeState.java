@@ -8,7 +8,8 @@ import net.minecraft.resources.Identifier;
 
 /**
  * Per-player current Age (0 = Stranded, 1 = Camp, 2 = Copper, ...).
- * Wired to advancements later; currently set via {@code /job age} command.
+ * Advanced automatically by the {@code hearthwind:age/ageN} chain via
+ * {@link PlayerAdvancementTracker}; {@code /job age} remains a debug override.
  */
 public final class AgeState {
     private static final AttachmentType<Integer> AGE =

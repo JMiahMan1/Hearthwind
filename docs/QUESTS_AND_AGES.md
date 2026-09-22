@@ -49,9 +49,7 @@ the between-Age tech walls.
 
 - The Aged Lavender book content (61 Markdown files) is staged for
   re-hosting under the `hearthwind:` namespace, rewritten per-Age.
-- Until the Lavender fork-port lands, the `/guide` written book
-  (`StarterKit.java`) is the in-game fallback and works on vanilla
-  clients.
-- Lavender upstream has no 26.x build (max 1.21.4); the port plan is
-  a jsr305-first slim port to dodge the missing owo-lib, then a full
-  upstream merge.
+- Lavender is now ported and vendored (`lavender-26.2+0.1.0.jar`,
+  boot-verified); the `/guide` written book (`StarterKit.java`) remains
+  as a vanilla-client fallback. Next: re-host the 61 Markdown entries
+  under `hearthwind:` and wire them into the Lavender book.

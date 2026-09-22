@@ -1,0 +1,26 @@
+{
+  "parent": "hearthwind:age/age4",
+  "criteria": {
+    "mechanical_rail": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          { "items": "minecraft:rail" }
+        ]
+      }
+    }
+  },
+  "display": {
+    "title": "Age 5 - Mechanical",
+    "description": "Lay iron on timber: smithing 20 and builder job level 3 open the Mechanical Age.",
+    "icon": { "id": "minecraft:rail" },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "rewards": {
+    "function": "hearthwind:age/age5"
+  },
+  "sends_telemetry_event": true
+}

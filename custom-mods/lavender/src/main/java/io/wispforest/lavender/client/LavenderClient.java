@@ -1,0 +1,166 @@
+package io.wispforest.lavender.client;
+
+import io.wispforest.lavender.Lavender;
+import io.wispforest.lavender.LavenderClientRecipeCache;
+import io.wispforest.lavender.LavenderCommands;
+import io.wispforest.lavender.book.*;
+import io.wispforest.lavender.md.ItemListComponent;
+import io.wispforest.lavender.structure.LavenderStructures;
+import io.wispforest.owo.ui.component.UIComponents;
+import io.wispforest.owo.ui.container.UIContainers;
+import io.wispforest.owo.ui.container.FlowLayout;
+import io.wispforest.owo.ui.core.Insets;
+import io.wispforest.owo.ui.core.Positioning;
+import io.wispforest.owo.ui.core.Size;
+import io.wispforest.owo.ui.core.Sizing;
+import io.wispforest.owo.ui.hud.Hud;
+import io.wispforest.owo.ui.parsing.UIParsing;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.fabricmc.fabric.api.client.model.loading.v1.ModelLoadingPlugin;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.fabricmc.fabric.api.event.player.UseBlockCallback;
+import net.minecraft.client.Minecraft;
+import com.mojang.blaze3d.pipeline.RenderTarget;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.client.renderer.item.ItemModels;
+import net.minecraft.world.item.Items;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.phys.BlockHitResult;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.Objects;
+import java.util.UUID;
+
+@Environment(EnvType.CLIENT)
+public class LavenderClient implements ClientModInitializer {
+
+    public static final BlitCutoutProgram BLIT_CUTOUT_PROGRAM = new BlitCutoutProgram();
+    public static final BlitAlphaProgram BLIT_ALPHA_PROGRAM = new BlitAlphaProgram();
+
+    private static final Int2ObjectMap<Size> TEXTURE_SIZES = new Int2ObjectOpenHashMap<>();
+    private static final Identifier ENTRY_HUD_ID = Lavender.id("entry_hud");
+
+    private static UUID currentWorldId = null;
+
+    public static @Nullable RenderTarget mainTargetOverride = null;
+
+    @Override
+    public void onInitializeClient() {
+        ClientCommandRegistrationCallback.EVENT.register(LavenderCommands.Client::register);
+
+        ItemModels.ID_MAPPER.put(Lavender.id("dynamic_book_model"), UnbakedBookModel.CODEC);
+
+//        ModelLoadingPlugin.register(pluginContext -> {
+//            pluginContext.modifyModelOnLoad().register((model, context) -> {
+//                if (!Objects.equals(context.id(), Lavender.id("item/dynamic_book"))) return model;
+//                return new BookBakedModel.Unbaked();
+//            });
+//
+//            // pluginContext.resolveModel().register(context -> {
+//            //     if (!context.id().equals(Lavender.id("item/dynamic_book"))) return null;
+//            //     return new BookBakedModel.Unbaked();
+//            // });
+//        });
+
+        StructureOverlayRenderer.initialize();
+        OffhandBookRenderer.initialize();
+
+        LavenderStructures.initialize();
+        BookLoader.initialize();
+        BookContentLoader.initialize();
+
+        ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> {
+            BookLoader.reload(Minecraft.getInstance().getResourceManager());
+            BookContentLoader.reloadContents(Minecraft.getInstance().getResourceManager());
+        });
+
+        Hud.add(ENTRY_HUD_ID, () -> UIContainers.horizontalFlow(Sizing.content(), Sizing.content()).gap(5).positioning(Positioning.across(50, 52)));
+        ClientTickEvents.END_CLIENT_TICK.register(client -> {
+            if (client.level == null || !(Hud.getComponent(ENTRY_HUD_ID) instanceof FlowLayout hudComponent)) return;
+
+            hudComponent.<FlowLayout>configure(container -> {
+                container.clearChildren();
+
+                Book book = LavenderBookItem.bookOf(client.player.getMainHandItem());
+                if (book == null) book = LavenderBookItem.bookOf(client.player.getOffhandItem());
+                if (book == null) return;
+
+                if (!(client.hitResult instanceof BlockHitResult hitResult)) return;
+                var item = client.level.getBlockState(hitResult.getBlockPos()).getBlock().asItem();
+                if (item == Items.AIR) return;
+
+                var associatedEntry = book.entryByAssociatedItem(item.getDefaultInstance());
+                if (associatedEntry == null || !associatedEntry.canPlayerView(client.player)) return;
+
+                container.child(UIContainers.verticalFlow(Sizing.content(), Sizing.content())
+                    .child(associatedEntry.iconFactory().apply(Sizing.fixed(16)).margins(Insets.of(0, 1, 0, 1)))
+                    .child(UIComponents.item(LavenderBookItem.itemOf(book)).sizing(Sizing.fixed(8)).positioning(Positioning.absolute(9, 9))));
+                container.child(UIContainers.verticalFlow(Sizing.content(), Sizing.content())
+                    .child(UIComponents.label(Component.literal(associatedEntry.title())).shadow(true))
+                    .child(UIComponents.label(Component.translatable(client.player.isShiftKeyDown() ? "text.lavender.entry_hud.click_to_view" : "text.lavender.entry_hud.sneak_to_view"))));
+            });
+        });
+
+        UseBlockCallback.EVENT.register((player, world, hand, hitResult) -> {
+            var stack = player.getItemInHand(hand);
+            if (!player.isShiftKeyDown()) return InteractionResult.PASS;
+
+            var book = LavenderBookItem.bookOf(stack);
+            if (book == null) return InteractionResult.PASS;
+
+            var item = world.getBlockState(hitResult.getBlockPos()).getBlock().asItem();
+            if (item == Items.AIR) return InteractionResult.PASS;
+
+            var associatedEntry = book.entryByAssociatedItem(item.getDefaultInstance());
+            if (associatedEntry == null || !associatedEntry.canPlayerView((LocalPlayer) player)) {
+                return InteractionResult.PASS;
+            }
+
+            LavenderBookScreen.pushEntry(book, associatedEntry);
+            Minecraft.getInstance().setScreenAndShow(new LavenderBookScreen(book));
+
+            player.swing(hand);
+            return InteractionResult.FAIL;
+        });
+
+        ClientNewEntriesUnlockedCallback.EVENT.register((client, book, newEntryCount) -> {
+            if (book.newEntriesToast() != null) {
+                client.gui.toastManager().addToast(new NewEntriesToast(book.newEntriesToast()));
+            }
+        });
+
+        LavenderClientRecipeCache.initializeClient();
+
+        ClientPlayNetworking.registerGlobalReceiver(Lavender.WorldUUIDPayload.ID, (payload, context) -> {
+            currentWorldId = payload.worldUuid();
+        });
+
+        UIParsing.registerFactory(Lavender.id("ingredient"), element -> {
+            Lavender.LOGGER.warn("Deprecated <ingredient> element used, migrate to <item-list> instead");
+            return new ItemListComponent();
+        });
+
+        UIParsing.registerFactory(Lavender.id("item-list"), element -> new ItemListComponent());
+    }
+
+    public static UUID currentWorldId() {
+        return currentWorldId;
+    }
+
+    public static void registerTextureSize(int textureId, int width, int height) {
+        TEXTURE_SIZES.put(textureId, Size.of(width, height));
+    }
+
+    public static @Nullable Size getTextureSize(Identifier texture) {
+        return TEXTURE_SIZES.getOrDefault(texture, null);
+    }
+}

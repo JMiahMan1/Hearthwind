@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "id": "entitycollisionfpsfix",
+  "version": "${version}",
+  "name": "Entity Collision FPS Fix",
+  "description": "Removes client side collision checks, which boosts FPS. Fixes MC-228976. Hearthwind 26.2 port of CorgiTaco/No-Client-Side-Entity-Collision-Checks.",
+  "authors": [
+    "Corgi Taco",
+    "jklw10"
+  ],
+  "contact": {
+    "homepage": "https://github.com/CorgiTaco/No-Client-Side-Entity-Collision-Checks",
+    "sources": "https://github.com/CorgiTaco/No-Client-Side-Entity-Collision-Checks"
+  },
+  "license": "CC0-1.0",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "corgitaco.entitycollisionfpsfix.EntityCollisionFpsFixFabric"
+    ]
+  },
+  "mixins": [
+    "entitycollisionfpsfix.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.19.5",
+    "minecraft": "~26.2",
+    "java": ">=25"
+  }
+}

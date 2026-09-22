@@ -14,7 +14,9 @@
     "AbstractFurnaceBlockEntityItemsAccessor",
     "AbstractFurnaceBlockEntityTimingsAccessor",
     "ResultSlotTieredMixin",
-    "RecipeManagerRemovalMixin"
+    "RecipeManagerRemovalMixin",
+    "PlayerMixin",
+    "ConsumableMealMixin"
   ],
   "client": [
     "client.BlastFurnaceScreenMixin"

@@ -1,0 +1,26 @@
+{
+  "parent": "hearthwind:age/age2",
+  "criteria": {
+    "iron_smelted": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          { "items": "minecraft:iron_ingot" }
+        ]
+      }
+    }
+  },
+  "display": {
+    "title": "Age 3 - Iron & Steel",
+    "description": "Smelt your first iron ingot. Steel lies ahead.",
+    "icon": { "id": "minecraft:iron_ingot" },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "rewards": {
+    "function": "hearthwind:age/age3"
+  },
+  "sends_telemetry_event": true
+}

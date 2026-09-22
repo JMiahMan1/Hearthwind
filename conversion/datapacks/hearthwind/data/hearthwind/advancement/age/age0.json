@@ -1,0 +1,34 @@
+{
+  "criteria": {
+    "has_rock": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          { "items": "earlystage:rock" }
+        ]
+      }
+    },
+    "has_flint": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          { "items": "earlystage:flint" }
+        ]
+      }
+    }
+  },
+  "display": {
+    "title": "Age 0 - Stranded",
+    "description": "Pick up a rock and a flint. Everything starts from stone.",
+    "icon": { "id": "earlystage:rock" },
+    "background": "minecraft:gui/advancements/backgrounds/stone",
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "rewards": {
+    "function": "hearthwind:age/age0"
+  },
+  "sends_telemetry_event": true
+}

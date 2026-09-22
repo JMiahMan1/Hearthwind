@@ -23,7 +23,7 @@ import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
 
 /**
- * Earlystage "extra blasting": 3 iron ingots + 1 coal -> 1 steel ingot in a
+ * Earlystage "extra blasting": 2 iron ingots + 2 coal -> 1 steel ingot in a
  * blast furnace. The blast furnace gains a 4th slot (see mixins) which holds
  * the extra ingredient while the input slot holds the main ingredient stack.
  *

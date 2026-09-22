@@ -25,6 +25,20 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(net.minecraft.world.level.block.CampfireBlock.class)
 abstract class CampfireBlockMixin {
 
+    @Inject(method = "getStateForPlacement", at = @At("RETURN"), cancellable = true)
+    private void hearthwind$placeUnlit(net.minecraft.world.item.context.BlockPlaceContext ctx,
+            CallbackInfoReturnable<BlockState> cir) {
+        BlockState placed = cir.getReturnValue();
+        if (placed != null && placed.hasProperty(
+                net.minecraft.world.level.block.state.properties.BlockStateProperties.LIT)
+                && placed.getValue(
+                        net.minecraft.world.level.block.state.properties.BlockStateProperties.LIT)) {
+            cir.setReturnValue(placed.setValue(
+                    net.minecraft.world.level.block.state.properties.BlockStateProperties.LIT,
+                    Boolean.FALSE));
+        }
+    }
+
     @Inject(method = "useItemOn", at = @At("HEAD"), cancellable = true)
     private void hearthwind$barkLightsCampfire(ItemStack stack, BlockState state, net.minecraft.world.level.Level level,
             BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit,

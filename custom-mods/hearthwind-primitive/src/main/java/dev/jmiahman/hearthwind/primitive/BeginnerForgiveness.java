@@ -40,9 +40,27 @@ public final class BeginnerForgiveness {
     /** Saved inventories awaiting return after forgiveness death. */
     private static final Map<UUID, ItemStack[]> SAVED_INVENTORIES = new ConcurrentHashMap<>();
 
+    /** UUIDs currently marked as sleeping (rising-edge detector). */
+    private static final Map<UUID, Boolean> LAST_SLEEPING = new ConcurrentHashMap<>();
+
     private BeginnerForgiveness() {}
 
     public static void register() {
+        // Sleep reset: detect isSleeping rising edge (no Fabric sleep event
+        // in this API generation; startSleepInBed is the only reliable signal
+        // and a mixin would need a new class for a one-liner).
+        net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents.END_SERVER_TICK
+                .register(server -> {
+                    for (ServerPlayer player : server.getPlayerList().getPlayers()) {
+                        boolean sleeping = player.isSleeping();
+                        if (sleeping && !LAST_SLEEPING.put(player.getUUID(), Boolean.TRUE)) {
+                            onSleep(player);
+                        } else if (!sleeping) {
+                            LAST_SLEEPING.remove(player.getUUID());
+                        }
+                    }
+                });
+
         // Intercept lethal damage BEFORE vanilla dropAllDeathLoot() spills inventory
         ServerLivingEntityEvents.ALLOW_DEATH.register((entity, damageSource, damageAmount) -> {
             if (entity instanceof ServerPlayer player && shouldForgive(player)) {

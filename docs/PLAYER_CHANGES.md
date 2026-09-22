@@ -12,7 +12,7 @@ contract of what the pack does. Grown from the Aged fork; server-side only.
   On first world spawn, every player is automatically granted:
   - **Hearthwind Survival Guide**: An in-game written book containing comprehensive survival rules, temperature guides, nutrient details, Age 0 rock gathering, skill gates, and job instructions. (Use `/guide` or `/guidebook` anytime to receive a replacement copy).
   - **Glass Bottle**: For collecting water and managing early hydration.
-  - **Campfire**: For immediate shelter heating against freezing conditions and cooking raw perishables.
+  - **Campfire**: For immediate shelter heating against freezing conditions and cooking raw perishables. Campfires **place unlit** - strike them yourself.
 - **Health Skill Scaling**:
   Leveling up the **Health** skill unlocks +0.5 heart (+1.0 HP) per level:
   - Level 0: 3 Hearts (6.0 HP)
@@ -20,6 +20,9 @@ contract of what the pack does. Grown from the Aged fork; server-side only.
   - Level 30: 18 Hearts (36.0 HP - end-game powerhouse)
 - **Attribute Modifiers**:
   Transient modifiers keyed `hearthwind_skills:<skill>` for Strength (attack damage), Agility (speed), Defense (armor), Mining (dig speed), and Luck.
+- **Ages advance via advancements**: the `hearthwind:age/age0..5` chain is awarded automatically when its criteria are met (Age 0 starts with rock+flint in inventory; each later Age builds on the previous milestone). Age 5 (Mechanical) also requires **smithing 20 + builder job 3** before the advancement can complete - craft a rail once the gates are open (`PlayerAdvancementTracker`). `/job age` remains a debug override.
+- **Beginner death forgiveness**: your first `beginnerDeathCount` lethal deaths (default 3, `config/hearthwind_primitive.json`) keep your inventory. The counter **resets when you finish eating food** or **sleep in a bed**. After the budget is spent, deaths drop items normally.
+- **Wooden shield (earlystage)**: off-hand wooden shield with vanilla-style `BLOCKS_ATTACKS` (90% reduction, 3 damage threshold, durability cost). Axes (and other disable-blocking attackers) put it on a **100-tick** disable cooldown.
 
 ## Survival needs (replaces Dehydration + EnvironmentZ + NutritionZ)
 

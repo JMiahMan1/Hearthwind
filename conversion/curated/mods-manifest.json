@@ -99,7 +99,8 @@
    "file": "log-begone",
    "slug": "log-begone",
    "action": "keep",
-   "cat": "perf"
+   "cat": "perf",
+   "note": "Ported to 26.2 in custom-mods/logbegone; vendored as logbegone-26.2+0.1.0.jar"
   },
   {
    "file": "c2me",
@@ -640,9 +641,9 @@
   {
    "file": "endrem",
    "slug": "endrem",
-   "action": "keep",
+   "action": "rebuild",
    "cat": "progression",
-   "note": "Eyes quest gives early-game direction; ready 26.1"
+   "note": "Eyes quest gives early-game direction; rebuild/port for 26.2 (upstream max 26.1.2)"
   },
   {
    "file": "lootr",
@@ -870,7 +871,7 @@
    "slug": "lavender",
    "action": "keep",
    "reason": "Guidebook lib for cut mods",
-   "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
+   "note": "Ported to 26.2 in custom-mods/lavender (lavender-md inlined); vendored as lavender-26.2+0.1.0.jar"
   },
   {
    "file": "scholar",
@@ -883,7 +884,7 @@
    "slug": "pockets",
    "action": "keep",
    "reason": "Micro-storage niche",
-   "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
+   "note": "Ported to 26.2 in custom-mods/pockets; vendored as pockets-26.2+0.1.0.jar"
   },
   {
    "file": "ExtendedDrawers",
@@ -917,21 +918,21 @@
    "slug": "couplings",
    "action": "keep",
    "reason": "Double doors; vanilla parity coming",
-   "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
+   "note": "Ported to 26.2 in custom-mods/couplings; vendored as couplings-26.2+0.1.0.jar"
   },
   {
    "file": "async-locator",
    "slug": "async-locator",
    "action": "keep",
    "reason": "Vanilla /locate fast on modern MC",
-   "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
+   "note": "Ported to 26.2 in custom-mods/async-locator; vendored as async-locator-26.2+0.1.0.jar"
   },
   {
    "file": "memoryleakfix",
    "slug": "memoryleakfix",
    "action": "keep",
    "reason": "Obsolete on modern JVM/MC",
-   "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
+   "note": "Slimmed 26.2 port in custom-mods/memoryleakfix (biome temp ThreadLocal + client crosshair target only); vendored as memoryleakfix-26.2+0.1.0.jar"
   },
   {
    "file": "modernfix",
@@ -952,7 +953,7 @@
    "slug": "entity-collision-fps-fix",
    "action": "keep",
    "reason": "Client perf fix era; modern MC improved",
-   "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
+   "note": "Ported to 26.2 in custom-mods/entitycollisionfpsfix; vendored as entitycollisionfpsfix-26.2+0.1.0.jar"
   },
   {
    "file": "geckolib",

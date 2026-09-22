@@ -80,6 +80,8 @@
     "#minecraft:sand",
     "#minecraft:wool",
     "#minecraft:stone_crafting_materials",
-    "#minecraft:stone_bricks"
+    "#minecraft:stone_bricks",
+    "#aged:campfire_ingredient",
+    "#c:wheat"
   ]
 }

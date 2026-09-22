@@ -1,0 +1,26 @@
+{
+  "parent": "hearthwind:age/age3",
+  "criteria": {
+    "steel_ingot_blasted": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          { "items": "earlystage:steel_ingot" }
+        ]
+      }
+    }
+  },
+  "display": {
+    "title": "Age 4 - Steel & Craft",
+    "description": "Blast your first steel ingot. Robust tools and storage await.",
+    "icon": { "id": "earlystage:steel_ingot" },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "rewards": {
+    "function": "hearthwind:age/age4"
+  },
+  "sends_telemetry_event": true
+}

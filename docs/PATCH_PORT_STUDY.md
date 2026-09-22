@@ -39,7 +39,7 @@ Standing rules: re-run the YUNG clone→build→boot loop whenever the upstream
 PRs move; switch to official artifacts if YUNG-GANG publishes 26.2 releases
 (retire our forks, never the mods).
 
-## Auto-resolve watchlist (6): authors actively publishing 26.1.x
+## Auto-resolve watchlist (5): authors actively publishing 26.1.x
 
 These ship `26.1.x` builds and are actively maintained. Path: rerun
 `resolve_deps.py` each bump; if a mod is still missing one full bump cycle
@@ -48,20 +48,42 @@ later, fork and rebuild for 26.2 (same treatment the YUNG suite got).
 | Mod | Max stable | Updated | Notes |
 |---|---|---|---|
 | Kiwi | 26.1.2 | 2026-08-29 | Very active; only needed if a kept mod depends on it — re-audit dependency need |
-| endrem | 26.1.2 | 2026-07-25 | Eyes quest = early-game direction |
 | medieval_buildings | 26.1.2 | 2026-04-20 | |
 | modernfix | 26.1.2 | 2026-08-24 | Verify still useful alongside lithium on 26.2 (overlap audit, not a drop) |
 | tlc (The Lost Castle) | 26.1.2 | 2026-05-10 | |
 
-## Stalled upstream — we carry the port (4)
+endrem (upstream max 26.1.2, updated 2026-07-25) left the watchlist: eyes
+quest is progression-critical, so manifest action is `rebuild` — fork and
+port for 26.2 at the eyes-quest milestone; do not wait on the resolver.
+
+## Ported locally: custom-mods 1.20.1 → 26.2 (2026-09-22)
+
+Six mods no longer wait on upstream — sources live under `custom-mods/`,
+built `*-26.2+0.1.0.jar` artifacts vendored in `conversion/vendored/`, each
+boot-smoke verified (`Done`, 0 fail greps):
+
+| Mod | Module | Notes |
+|---|---|---|
+| logbegone | `custom-mods/logbegone` | log-filter port |
+| entitycollisionfpsfix | `custom-mods/entitycollisionfpsfix` | collision perf port |
+| pockets | `custom-mods/pockets` | `PocketUtil` widened to `Player` |
+| couplings | `custom-mods/couplings` | door/fence/trapdoor coupling; no fabric networking |
+| memoryleakfix | `custom-mods/memoryleakfix` | slimmed: biome temp ThreadLocal + client crosshair target only (rest obsolete on 26.2) |
+| async-locator | `custom-mods/async-locator` | slimmed: locate command / exploration maps / ender eye / dolphin treasure; dropped ServiceLoader+SparkConfig (plain properties), villager TreasureMapForEmeralds (class gone on 26.2), SetNameFunction defer (CUSTOM_NAME component path); MAP_ID/CUSTOM_DATA/Holder\<MapDecorationType\> |
+| lavender | `custom-mods/lavender` | guidebook API + inlined lavender-md; 13 mixins disabled (structure overlay, book renderer, translation injection — v1 stubs); lang flattened to plain strings; depends fabricloader/owo-lib (dropped stale `"fabric"` id — 26.x fabric-api id is `fabric-api`) |
+
+Queue open: (lavender + owo-lib shipped; next from stalled-upstream list).
+
+## Stalled upstream — we carry the port (3)
 
 | Mod | Max stable | Last update | We build for 26.2 how |
 |---|---|---|---|
 | antique-atlas | 1.21.1 | 2026-01-05 | Exploration identity item. Fork and port (AtlasScreen is the heavy part). Interim: equivalent exploration surface (vanilla explorer maps + cartographer trades, or a hearthwind-client map panel) keeps the feature alive while the port lands. |
 | exposure | 1.21.1 | 2026-06-09 | Photography. Fork + port (camera item, photo renderer, clapper UI). Author still active 2026-06 — ping upstream first. |
 | herdspanic | 1.21.1 | 2024-09-10 | Small mixin mod (panic AI); fork + port is day-scale. |
-| log-begone | 1.21.1 | 2024-08-08 | Fork + port (log-filter mixin/config). Equivalent log4j2 filter in the server distribution is the interim; mod returns once ported. |
 | noisium | 1.21.6 | 2025-06-24 | Worldgen perf fork + port; re-baseline against 26.2 vanilla first (vanilla optimized noise paths) and port only the remaining delta. |
+
+(log-begone moved to the ported section above.)
 
 ## Re-evaluation triggers
 

@@ -1,0 +1,46 @@
+{
+  "parent": "hearthwind:age/age0",
+  "criteria": {
+    "crafting_rock": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          { "items": "earlystage:crafting_rock" }
+        ]
+      }
+    },
+    "lit_campfire": {
+      "trigger": "minecraft:item_used_on_block",
+      "conditions": {
+        "location": [
+          {
+            "condition": "minecraft:location_check",
+            "predicate": {
+              "block": {
+                "blocks": "minecraft:campfire",
+                "state": { "lit": "true" }
+              }
+            }
+          },
+          {
+            "condition": "minecraft:match_tool",
+            "predicate": { "items": "minecraft:flint_and_steel" }
+          }
+        ]
+      }
+    }
+  },
+  "display": {
+    "title": "Age 1 - Camp",
+    "description": "Craft a crafting rock and light a campfire. Make a home of it.",
+    "icon": { "id": "minecraft:campfire" },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "rewards": {
+    "function": "hearthwind:age/age1"
+  },
+  "sends_telemetry_event": true
+}

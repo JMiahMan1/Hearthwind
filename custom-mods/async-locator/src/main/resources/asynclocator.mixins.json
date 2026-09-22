@@ -1,0 +1,23 @@
+{
+	"required": true,
+	"package": "brightspark.asynclocator.mixins",
+	"compatibilityLevel": "JAVA_25",
+	"mixins": [
+		"CommandSourceStackAccess",
+		"DolphinSwimToTreasureGoalMixin",
+		"DolphinTreasurePosAccess",
+		"EnderEyeItemMixin",
+		"ExplorationMapFunctionMixin",
+		"EyeOfEnderAccess",
+		"EyeOfEnderMixin",
+		"LocateCommandAccess",
+		"LocateCommandMixin",
+		"MapItemAccess",
+		"SlotMixin"
+	],
+	"client": [],
+	"minVersion": "0.8",
+	"injectors": {
+		"defaultRequire": 1
+	}
+}

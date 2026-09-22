@@ -302,6 +302,10 @@ public final class JobState {
                 p.sendSystemMessage(Component.literal(
                         "Job level up! You are now " + jobId + " level " + after + "."));
                 JobRewards.apply(p, jobId, after);
+                // Builder 3 can open Age 5 when the rail criterion was held
+                // closed by the age5 skill/job gates (vanilla triggers cannot
+                // see job levels - PlayerAdvancementTracker re-awards it).
+                PlayerAdvancementTracker.tryCompleteAge5(p);
             }
         }
         if (changed) {

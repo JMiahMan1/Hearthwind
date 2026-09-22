@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "id": "pockets",
+  "version": "${version}",
+  "name": "Pockets",
+  "description": "Gives tagged armor pockets to store items in. Hearthwind 26.2 port of apace100/pockets.",
+  "authors": [
+    "Apace"
+  ],
+  "contact": {
+    "homepage": "https://github.com/apace100/pockets",
+    "sources": "https://github.com/apace100/pockets"
+  },
+  "license": "MIT",
+  "icon": "assets/pockets/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "io.github.apace100.pockets.Pockets"
+    ]
+  },
+  "mixins": [
+    "pockets.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.19.5",
+    "minecraft": "~26.2",
+    "java": ">=25"
+  }
+}

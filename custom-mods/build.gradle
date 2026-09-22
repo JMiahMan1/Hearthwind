@@ -10,6 +10,7 @@ subprojects {
 	repositories {
 		maven { url = 'https://maven.architectury.dev/' }
 		maven { url = 'https://maven.shedaniel.me/' }
+		maven { url = 'https://maven.wispforest.io/' }
 	}
 
 	dependencies {
@@ -135,6 +136,18 @@ subprojects {
 			modCompileClasspath "net.fabricmc.fabric.api:fabric-recipe-api-v1:9.0.20+11e1c9a39e"
 			// workbench 3D preview PIP renderer (PictureInPictureRendererRegistry)
 			modCompileClasspath "net.fabricmc.fabric.api:fabric-rendering-v1:25.3.2+515ac5339e"
+		}
+	}
+	if (project.name == 'lavender') {
+		loom {
+			accessWidenerPath = file("src/main/resources/lavender.accesswidener")
+		}
+		dependencies {
+			// owo + nested endec are already built for 26.2 (official mappings).
+			// Put them on compileClasspath as plain files; fabric-api (root
+			// subprojects implementation) already supplies every fabric-*.vN module.
+			implementation files("${rootDir}/../conversion/vendored/compile-libs/owo-lib-0.13.1+26.2.jar")
+			implementation files("${rootDir}/../conversion/vendored/compile-libs/endec-0.1.12.jar")
 		}
 	}
 	if (project.name == 'surveyor') {

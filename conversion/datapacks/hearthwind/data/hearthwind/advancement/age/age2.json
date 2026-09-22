@@ -1,0 +1,30 @@
+{
+  "parent": "hearthwind:age/age1",
+  "criteria": {
+    "copper_ore_mined": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          { "items": "minecraft:copper_ore" },
+          { "items": "minecraft:deepslate_copper_ore" },
+          { "items": "minecraft:raw_copper" },
+          { "items": "agedaddition:raw_copper_nugget" },
+          { "items": "agedaddition:copper_nugget" }
+        ]
+      }
+    }
+  },
+  "display": {
+    "title": "Age 2 - Copper",
+    "description": "Mine your first copper. The Copper Age begins.",
+    "icon": { "id": "minecraft:raw_copper" },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "rewards": {
+    "function": "hearthwind:age/age2"
+  },
+  "sends_telemetry_event": true
+}

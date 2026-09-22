@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "id": "memoryleakfix",
+  "version": "${version}",
+  "name": "MemoryLeakFix",
+  "description": "Fixes memory leaks in Minecraft. Hearthwind 26.2 port of Fx Moris/memoryleakfix (surviving fixes only).",
+  "authors": [
+    "Fx Moris"
+  ],
+  "contact": {
+    "homepage": "https://modrinth.com/mod/memoryleakfix",
+    "sources": "https://github.com/FxMoris/MemoryLeakFix"
+  },
+  "license": "LGPL-2.1-only",
+  "icon": "icon.png",
+  "environment": "*",
+  "mixins": [
+    "memoryleakfix.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.19.5",
+    "minecraft": "~26.2",
+    "java": ">=25"
+  }
+}

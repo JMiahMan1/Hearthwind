@@ -629,6 +629,53 @@ public final class HearthwindPrimitiveGameTests {
     }
 
     @GameTest
+    public void beginnerForgivenessMealResetsDeathCount(GameTestHelper helper) {
+        ServerPlayer mockPlayer = helper.makeMockServerPlayerInLevel();
+        BeginnerForgiveness.incrementDeathCount(mockPlayer);
+        BeginnerForgiveness.incrementDeathCount(mockPlayer);
+        helper.assertTrue(BeginnerForgiveness.getDeathCount(mockPlayer) == 2,
+                "death count should be 2 after two increments, got "
+                        + BeginnerForgiveness.getDeathCount(mockPlayer));
+
+        BeginnerForgiveness.onMeal(mockPlayer);
+        helper.assertTrue(BeginnerForgiveness.getDeathCount(mockPlayer) == 0,
+                "onMeal must reset death count to 0, got "
+                        + BeginnerForgiveness.getDeathCount(mockPlayer));
+        helper.succeed();
+    }
+
+    @GameTest
+    public void beginnerForgivenessSleepResetsDeathCount(GameTestHelper helper) {
+        ServerPlayer mockPlayer = helper.makeMockServerPlayerInLevel();
+        BeginnerForgiveness.incrementDeathCount(mockPlayer);
+        BeginnerForgiveness.incrementDeathCount(mockPlayer);
+        BeginnerForgiveness.incrementDeathCount(mockPlayer);
+        helper.assertTrue(BeginnerForgiveness.getDeathCount(mockPlayer) == 3,
+                "death count should be 3 after three increments");
+
+        BeginnerForgiveness.onSleep(mockPlayer);
+        helper.assertTrue(BeginnerForgiveness.getDeathCount(mockPlayer) == 0,
+                "onSleep must reset death count to 0, got "
+                        + BeginnerForgiveness.getDeathCount(mockPlayer));
+        helper.succeed();
+    }
+
+    @GameTest
+    public void beginnerForgivenessForgivesUnderConfiguredLimit(GameTestHelper helper) {
+        ServerPlayer mockPlayer = helper.makeMockServerPlayerInLevel();
+        var config = HearthwindPrimitiveConfig.get();
+        helper.assertTrue(BeginnerForgiveness.shouldForgive(mockPlayer),
+                "fresh player with 0 deaths must be forgiven");
+
+        for (int i = 0; i < config.beginnerDeathCount; i++) {
+            BeginnerForgiveness.incrementDeathCount(mockPlayer);
+        }
+        helper.assertTrue(!BeginnerForgiveness.shouldForgive(mockPlayer),
+                "player at beginnerDeathCount must no longer be forgiven");
+        helper.succeed();
+    }
+
+    @GameTest
     public void craftRockConfigValuesAreReasonable(GameTestHelper helper) {
         var config = HearthwindPrimitiveConfig.get();
         helper.assertTrue(config.craftRockCraftHits >= 1,

@@ -1,0 +1,5 @@
+tasks.register('printCompileCp') {
+    doLast {
+        configurations.compileClasspath.each { println "CP: ${it}" }
+    }
+}

@@ -1,0 +1,15 @@
+{
+	"required": true,
+	"minVersion": "0.8",
+	"package": "io.wispforest.lavender.mixin",
+	"compatibilityLevel": "JAVA_25",
+	"mixins": [
+		"access.RegistryOpsAccessor"
+	],
+	"client": [
+		"FramebufferMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	}
+}

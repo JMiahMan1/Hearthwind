@@ -1,0 +1,16 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "io.github.apace100.pockets.mixin",
+  "compatibilityLevel": "JAVA_25",
+  "mixins": [
+    "ItemMixin",
+    "ItemStackMixin"
+  ],
+  "client": [
+    "GuiGraphicsExtractorMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

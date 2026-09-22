@@ -215,9 +215,29 @@ public final class HearthwindPrimitiveItems {
     public static final Item LAVA_BRICK_BUCKET = new Buckets.BrickBucketItem(
             net.minecraft.world.level.material.Fluids.LAVA,
             new Item.Properties().stacksTo(1).setId(key("earlystage", "lava_brick_bucket")));
-    // earlystage wooden shield: vanilla ShieldItem behavior, wooden durability
+    // earlystage wooden shield: vanilla ShieldItem behavior, wooden durability.
+    // 26.x blocking is data-driven via BLOCKS_ATTACKS (no damageShield method);
+    // match vanilla SHIELD so getItemBlockingWith() works. ItemDamageFunction
+    // (threshold 3, base 1, factor 1) equals earlystage's 1+floor(amount) when
+    // amount >= 3. disableCooldownScale keeps earlystage's ~100-tick disable
+    // relative to attacker secondsToDisableBlocking.
     public static final Item WOODEN_SHIELD = new net.minecraft.world.item.ShieldItem(new Item.Properties()
             .durability(69)
+            .equippableUnswappable(net.minecraft.world.entity.EquipmentSlot.OFFHAND)
+            .delayedComponent(
+                    net.minecraft.core.component.DataComponents.BLOCKS_ATTACKS,
+                    context -> new net.minecraft.world.item.component.BlocksAttacks(
+                            0.25F,
+                            5.0F,
+                            java.util.List.of(new net.minecraft.world.item.component.BlocksAttacks.DamageReduction(
+                                    90.0F, java.util.Optional.empty(), 0.0F, 1.0F)),
+                            new net.minecraft.world.item.component.BlocksAttacks.ItemDamageFunction(3.0F, 1.0F, 1.0F),
+                            java.util.Optional.of(context.getOrThrow(
+                                    net.minecraft.tags.DamageTypeTags.BYPASSES_SHIELD)),
+                            java.util.Optional.of(net.minecraft.sounds.SoundEvents.SHIELD_BLOCK),
+                            java.util.Optional.of(net.minecraft.sounds.SoundEvents.SHIELD_BREAK)))
+            .component(net.minecraft.core.component.DataComponents.BREAK_SOUND,
+                    net.minecraft.sounds.SoundEvents.SHIELD_BREAK)
             .setId(key("earlystage", "wooden_shield")));
 
     static {
