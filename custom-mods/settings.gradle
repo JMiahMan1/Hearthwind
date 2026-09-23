@@ -39,5 +39,6 @@ include 'couplings'
 include 'memoryleakfix'
 include 'async-locator'
 include 'lavender'
+include 'profundis'
 // include 'surveyor' // TEMP-OFF 2026-09-21: 26.1->26.2 nudge WIP (~324 compile errors); re-enable when :surveyor:compileJava is green
 // NOTE: letsdo-brewery/candlelight/herbalbrews/meadow sources are present

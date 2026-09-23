@@ -33,6 +33,17 @@ over (with reason)
 | `gardens-of-the-dead` | `contrib/gardens-of-the-dead/` | ✅ | Nether overhauls: Soulblight Forest & Whistling Woods biomes, flora, wood sets |
 | `natures_spirit` | `conversion/vendored/` | ✅ | Diverse Overworld biomes, blooming canopies, Kaolin clay, diet integration |
 
+## custom-mods 26.2 fork-ports (2026-09-22)
+
+| Mod | Module | Status |
+|---|---|---|
+| lavender (+ owo-lib) | `lavender` | ✅ guidebook API; Prism + vendored |
+| logbegone / pockets / couplings / entitycollisionfpsfix / memoryleakfix / async-locator / passable-foliage | same-named modules | ✅ Prism + vendored |
+| athena / chipped / exposure / dungeonz / smallships / villagesandpillages | same-named modules | ✅ wired in `settings.gradle` |
+
+**Remaining for complete Aged parity**: see `docs/NOT_IMPLEMENTED.md`
+(true open set = resolver missing − 28 already-local).
+
 ## Deliberately not carried over
 
 | Item | Reason |

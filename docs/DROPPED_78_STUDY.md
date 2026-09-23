@@ -24,9 +24,10 @@ server mod ids — zero ready-but-missing). User decisions recorded:
   held — conflicts with realism north star, revisit with user).
   - **Wave 3**: gear/decor/utility (inmis+backslot+trinkets cluster as ONE best,
     amarite, medievalweapons, another_furniture, bbb,
-    couplings, villager-transportation, smarterfarmers, exposure,
-    antique-atlas, Pockets, async-locator, noisium;
-    **athena: DONE, chipped: DONE**).
+    villager-transportation, smarterfarmers, antique-atlas, noisium;
+    **athena, chipped, lavender, logbegone, pockets, couplings,
+    entitycollisionfpsfix, memoryleakfix, async-locator, passable-foliage,
+    exposure: DONE**).
 - **Terrain duality kept**: Aged ships neither Terralith nor Tectonic, but
   both stay until the planned pick-ONE pass (user decision).
 - **Solved since 8-29** (no port needed): herdspanic→`HerdPanic.java`,
@@ -97,21 +98,11 @@ with "COMPLETE look and feel and feature parity."
   visually verify Workbench GUI in client, run boot-smoke with full mod
   compatibility (Chipped + Athena + Resourcefullib + all other hearthwind mods).
 
-### Wave 1c: DungeonZ (largest Wave 1 fabric content mod, 89 classes) — STAGED
+### Wave 1c: DungeonZ (largest Wave 1 fabric content mod, 89 classes) — WIRED
 
 - Upstream: Globox1997/DungeonZ, MIT. Same author family as Athena work. Staged at `custom-mods/dungeonz/` (89 Java files, 25 packages, 25 mixins).
-- **Why hardest next**: largest remaining fabric content mod; dungeon structure generation,
-  custom mobs, bosses, tiles, loot tables, advancement integration. High feature density
-  means more rendering, entity, and recipe APIs to port.
-- **26.2 status**: no 26.2 build on Modrinth (max 1.21.1). Requires full fork-port.
-- **Staging state**: sources vendored under `custom-mods/dungeonz/` but NOT wired into
-  `settings.gradle` yet, so the full build stays green. Baseline compile (when wired):
-  ~2,942 errors, dominated by intermediary (`class_*`) names that must be mapped to 26.2 yarn.
-- **Key challenges expected**: `BlockAndTintGetter` → `BlockAndLightGetter`,
-  `ResourceLocation` → `Identifier`, `DripstoneThickness` → `SpeleothemThickness`,
-  `ThrownTrident` → `arrow.ThrownTrident`, render type APIs moved/removed,
-  custom entity rendering changes, `ItemBlockRenderTypes` removed.
-- **Target parity**: same as Chipped — compile clean, boot, all features load.
+- **26.2 status**: no official 26.2 on Modrinth (max 1.21.1) — full fork-port in-tree.
+- **Staging state**: sources under `custom-mods/dungeonz/`, **`include 'dungeonz'` in `settings.gradle`**, plain jar `dungeonz-26.2+0.1.0.jar` built and deployed to all Prism instances. Remaining: structure-generation / criteria / loot-content asserts (AGENTS.md).
 
 ## Porting pipeline summary
 
@@ -119,15 +110,16 @@ with "COMPLETE look and feel and feature parity."
 |---|---|---|---|---|---|
 | 1a | athena | 39 | **DONE** | No (26.1.2) | Full port, parity 100% |
 | 1b | chipped | 51+38k | **DONE** | No (1.21.1) | Full port, compiles, boots |
-| 1c | dungeonz | 89 | **STAGED** | No (1.21.1) | Sources vendored, not wired; mapping pending |
+| 1c | dungeonz | 89 | **WIRED** | No (1.21.1) | In-tree port, Prism deployed; feature asserts remaining |
 | 2 | lukis-grand-capitals | moderate | Not started | No (1.21.11) | Data-only may suffice |
 | 2 | spider-caves | small | Not started | No (1.20.4) | Fabric port |
 | 2 | profundis | moderate | Not started | No (1.21.4) | Cave biome port |
 | 2 | Dungeon Now Loading | moderate | Not started | No (1.20.1) | Heavy NBT |
 | 2 | dungeons+ | unknown | Not started | No (1.20.4) | Forge→fabric rewrite LAST |
 
-**Remaining fabric ports needing work**: 5 (lukis, spider-caves, profundis, DnL, dungeons+)
+**Remaining fabric ports needing work (structures)**: 5 (lukis, spider-caves, profundis, DnL, dungeons+)
 **Forge/neoforge ports (hardest, restart last)**: 1 (dungeons+)
+**Full remaining parity set (all waves)**: `docs/NOT_IMPLEMENTED.md`
 
 ### Next waves (unchanged):
 
@@ -233,9 +225,10 @@ Nothing in this document ends in "dropped permanently".
 ### Utility & UI
 | Mod | Max | Return action |
 |---|---|---|
-| surveyor / lavender / Pockets / villagerfix / smarterfarmers / extendeddrawersaddon | — | re-locate (slugs changed), then fork-port each (all small) |
-| couplings | 1.20.1 | fork-port (doors couple — tiny) |
-| async-locator | 1.20.2 | fork-port (server-side locate optimization) |
+| surveyor / villagerfix / smarterfarmers / extendeddrawersaddon | — | re-locate (slugs changed), then fork-port (surveyor in-tree TEMP-OFF) |
+| couplings | 1.20.1 | **DONE** — `custom-mods/couplings` |
+| async-locator | 1.20.2 | **DONE** — `custom-mods/async-locator` |
+| lavender / Pockets / log-begone / passable-foliage / memoryleakfix | — | **DONE** — local `custom-mods` ports |
 
 ### Libs & perf
 | Mod | Max | Return action |
@@ -254,10 +247,13 @@ Nothing in this document ends in "dropped permanently".
 
 1. **Now**: adopt Tier 1 (8 mods) at next pack review — zero port work.
 2. **Next**: re-locate the 17 unknown slugs (mechanical API/website search).
-3. **Then**: fork-port in value order: revive (co-op), niftycarts,
-   lukis-grand-capitals, connectiblechains, couplings, creeperoverhaul,
-   endermanoverhaul, naturalist.
-4. **Epics** (rebuild or big forks): Let's Do family collapse,
-    ship cluster, accessory-slot cluster (inmis/backslot/trinkets),
-    naturespirit/profundis worldgen profiles.
-    **athena and chipped: DONE (ports complete).**
+3. **Then** (value order): niftycarts, lukis-grand-capitals, connectiblechains,
+   creeperoverhaul, endermanoverhaul, naturalist, antique-atlas.
+4. **Epics** (rebuild or big forks): ship cluster, accessory-slot cluster
+   (inmis/backslot/trinkets), naturespirit/profundis worldgen profiles,
+   furniture (another-furniture) / villager-transportation.
+   **athena, chipped, lavender, logbegone, pockets, couplings,
+   entitycollisionfpsfix, memoryleakfix, async-locator, passable-foliage,
+   exposure, dungeonz: DONE (local ports).**
+5. **Full remaining parity set** (all waves, true open after subtracting
+   28 already-local solves): `docs/NOT_IMPLEMENTED.md`.

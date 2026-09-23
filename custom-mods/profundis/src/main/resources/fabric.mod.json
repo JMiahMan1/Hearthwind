@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "id": "profundis",
+  "version": "${version}",
+  "name": "Profundis",
+  "description": "A world generation mod adding in nine new underground biomes. Server-side safe. Hearthwind 26.2 port of FireNH/Profundis.",
+  "authors": [
+    "FireNH"
+  ],
+  "contact": {
+    "homepage": "https://modrinth.com/mod/profundis",
+    "sources": "https://github.com/firenh/Profundis"
+  },
+  "license": "LGPL-3.0",
+  "icon": "assets/profundis/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "firenh.profundis.Profundis"
+    ]
+  },
+  "mixins": [
+    "profundis.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.19.5",
+    "fabric-api": "*",
+    "minecraft": "~26.2",
+    "java": ">=25"
+  }
+}

@@ -7,16 +7,22 @@ status. Regenerate statuses with
 `python3 conversion/scripts/resolve_deps.py` (writes
 `conversion/build/resolved.json`); this document explains the *why*.
 
-Status snapshot (resolver run against target `26.2`):
+Status snapshot (resolver run against target `26.2`, 2026-09-22 —
+`conversion/build/readiness-report.json`: ready 57 / total 138, missing 66):
 
 | Disposition | Count | 26.2 status |
 |---|---|---|
-| keep | 50 | 34 resolve (`ok:exact`), 16 missing for target;
-    athena and chipped now have working 26.2 ports |
-| rebuild (our modules/datapacks) | 15 | n/a - shipped or planned in-house |
-| client-optional | 7 | packaged for the client bundle only |
-| drop | 78 | not shipped (reasons below) |
+| keep | 122 (manifest) | Modrinth resolves 57; **28 of the 66 "missing" are already solved** (vendored jar or `custom-mods` port). True open set for parity: see `docs/NOT_IMPLEMENTED.md`. |
+| rebuild (our modules/datapacks) | 28 (manifest groups + entries) | shipped or planned in-house (`hearthwind-*`, `letsdo-*`, datapack) |
+| client-optional | 7 | packaged for the client bundle only (EMI family still missing upstream 26.2) |
 | add (beyond Aged) | 1 | c2me, resolves |
+
+Local solutions the resolver does not see (still Modrinth-max ≤1.21.x):
+lavender, logbegone, pockets, couplings, entitycollisionfpsfix,
+memoryleakfix, async-locator, passable-foliage, athena, chipped, exposure,
+dungeonz, smallships, villagesandpillages, YUNG×6, gardens-of-the-dead,
+natures-spirit, tlc, medieval-buildings, true-ending, birds-boids, kiwi,
+arrp. In-house: endrem eyes, HerdPanic.
 
 Auto-added transitive dependencies (6): fabric-language-kotlin (for
 fzzy-config), almanac (for letmedespawn), player-animation-library (for
@@ -94,24 +100,43 @@ EMI + emi-loot/emi-ores/emi-enchanting/emiffect/emitrades and modmenu
 (+ placeholder-api): recipe/lookup HUD. Shipped in the client bundle,
 never required on the server; vanilla players unaffected.
 
-## 3. Kept but NOT yet 26.2-compatible (16) - gameplay impact
+## 3. Kept, still not on Modrinth 26.2 — but often already local
 
-| Mod | Aged role | Max stable | Impact while absent |
-|---|---|---|---|
-| yungs-api + better-desert-temples/end-island/jungle-temples/nether-fortresses/ocean-monuments (6) | Replaces 6 vanilla structure families with larger, loot-rich versions | 26.1.1 | Vanilla structures ship instead: fewer/blander destinations; flask/ore-piece loot economy slightly thinner. Return automatically when YUNG publishes 26.2 |
-| the-lost-castle | Big rogue-lite castle structure, mid-game combat spike | 26.1 | One fewer "dungeon boss" destination |
-| medieval-buildings | Medieval village houses spawn in vanilla villages | 26.1 | Villages stay vanilla-looking; cosmetic |
-| endrem | End eyes progression + End structures (Endergate) | 26.1 | Late-game End arc reduced to vanilla paths |
-| herdspanic | Herd AI: animals flock/flee realistically | 1.21.1 | Hunting = vanilla passive mobs; early food slightly easier |
-| antique-atlas-4 | Paper-style map item (map room without maps) | 1.21.1 | Use vanilla maps/cartography until port |
-| exposure | In-game photographs | 1.21.1 | Pure flavor, no systems impact |
-| modernfix | Startup/memory fixes | 26.1 | Longer boots, higher RAM; revisit at pack-boot-smoke time |
-| noisium | Faster worldgen noise | 1.21.6 | Slower chunk gen; c2me covers most of it |
-| log-begone | Suppresses log spam | 1.21.1 | Noisier logs only |
-| kiwi | Library for some structure mods | 26.1 | No direct impact (needed only by dropped/mods) |
+Resolver `missing` is **not** the same as "not in the pack." As of
+2026-09-22, 28 of 66 misses are vendored or ported under `custom-mods/`.
+Only the second table is genuine remaining port work for Aged parity.
 
-Watchlist: rerun `resolve_deps.py --mc <latest>` periodically; every
-entry above returns automatically once authors publish 26.2 builds.
+### Already solved locally (resolver still lists them missing)
+
+| Mod(s) | How we ship it |
+|---|---|
+| YUNG api + 5 overhauls (6) | `conversion/vendored/Yungs*-26.2-*.jar` |
+| the-lost-castle, medieval-buildings, true-ending, birds-boids | vendored 26.2 jars |
+| natures-spirit, gardens-of-the-dead | vendored 26.2 jars |
+| athena, chipped, exposure, dungeonz, smallships, villagesandpillages | `custom-mods/*` ports, wired in `settings.gradle` |
+| lavender, logbegone, pockets, couplings, entitycollisionfpsfix, memoryleakfix, async-locator, passable-foliage | `custom-mods/*` ports + Prism deploy |
+| kiwi, arrp | vendored (needed as libs) |
+| endrem, herdspanic | in-house: `hearthwind-world` `endrem/` + `HerdPanic` |
+| DEUF / entity-collision-fps-fix | superseded by `entitycollisionfpsfix` port |
+
+### True remaining (port / rebuild / watchlist)
+
+See the full grouped table in **`docs/NOT_IMPLEMENTED.md`**. Highlights:
+
+| Cluster | Mods | Impact while absent |
+|---|---|---|
+| Structures wave | lukis-grand-capitals, spider-caves, profundis, dungeon-now-loading, dungeons-plus | fewer dungeon destinations beyond YUNG/DungeonZ |
+| Mobs / adventure | adventurez, fleshz, creeper-overhaul, enderman-overhaul | fewer ambient/boss variants (astrocraft **held**) |
+| Accessory slots | trinkets + inmis + backslot cluster | vanilla bundles only; port as ONE best |
+| Gear / smith | medievalweapons, amarite, smitherz/libz, travelerz | weapon identity lives in tiered affixes |
+| Furniture / transport | another-furniture, grass-overhaul, niftycarts, villager-transportation | tighter palette; villager transport may already be partially in world |
+| Exploration | antique-atlas-4 | interim: vanilla explorer maps |
+| Surveyor | `surveyor` | TEMP-OFF in `settings.gradle` (~324 compile errors) |
+| Perf / libs | modernfix, noisium, moonlight | c2me/lithium cover most of it today |
+| Client-optional | EMI family (6) | client bundle only; never server-required |
+
+Watchlist: rerun `resolve_deps.py --mc <latest>` periodically; any
+upstream 26.2 publish returns automatically.
 
 ## 4. Dropped (78) and why
 
@@ -143,13 +168,15 @@ Grouped:
   backslot(+addon), trinkets, revive): APIs stalled pre-1.21.2;
   weapon identity moves into aged-primitive tiers + tiered affixes;
   backpacks stay vanilla (bundle rework); revive waits for co-op demand.
-- **Z-series replaced** (smitherz, travelerz, libz): smithing upgrades
+- **Z-series** (smitherz, travelerz, libz): not yet ported — smithing upgrades
   fold into primitive/skills; travelerz covered by vanilla locator bar.
-- **Obsolete infrastructure** (paxi, async-locator, memoryleakfix,
-  DEUF_Refabricated, arrp, MRU, OctoLib,
-  supermartijn642configlib/corelib, lavender, surveyor, time-and-wind):
-  we ship the migrated datapack natively, run 26.x, or the dependent
-  mod is dropped.
+  Still on the Wave-3 rebuild-or-fork list (`NOT_IMPLEMENTED.md`).
+- **Infrastructure handled in-house or already ported**: paxi → native
+  world datapack; time-and-wind → vanilla cycle; lavender / logbegone /
+  pockets / couplings / async-locator / memoryleakfix / DEUF → local
+  `custom-mods` ports (2026-09-22); arrp / supermartijn libs / kiwi →
+  vendored; surveyor → TEMP-OFF WIP; MRU / OctoLib → only if a
+  dependent returns.
 
 Net effect on players: same survival arc, tighter content set, one
 system per need (one sieve, one food pipeline, one structure suite per

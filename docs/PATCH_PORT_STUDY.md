@@ -1,9 +1,12 @@
-# Patch-port study: 16 kept mods without official 26.2 builds
+# Patch-port study: kept mods without official 26.2 builds
 
 Status snapshot 2026-08-29 via `resolve_deps.py` + Modrinth API
-(raw data: `.tmp/modrinth_status.json`). All 16 are classified `keep` in
-`conversion/curated/mods-manifest.json` but have no official 26.2 release yet,
-so the resolver leaves them out of the pack index.
+(raw data: `.tmp/modrinth_status.json`); local-port status refreshed
+2026-09-22. Mods classified `keep` in
+`conversion/curated/mods-manifest.json` with no official 26.2 release are
+omitted from the resolver index — many are now satisfied by vendored jars
+or `custom-mods` ports (see tables below). Full remaining open set:
+`docs/NOT_IMPLEMENTED.md`.
 
 **Policy (user directive, 2026-08-29): NO mod is ever dropped.** Every mod
 here is either already built locally, gets a fork port when upstream stalls,
@@ -71,19 +74,25 @@ boot-smoke verified (`Done`, 0 fail greps):
 | memoryleakfix | `custom-mods/memoryleakfix` | slimmed: biome temp ThreadLocal + client crosshair target only (rest obsolete on 26.2) |
 | async-locator | `custom-mods/async-locator` | slimmed: locate command / exploration maps / ender eye / dolphin treasure; dropped ServiceLoader+SparkConfig (plain properties), villager TreasureMapForEmeralds (class gone on 26.2), SetNameFunction defer (CUSTOM_NAME component path); MAP_ID/CUSTOM_DATA/Holder\<MapDecorationType\> |
 | lavender | `custom-mods/lavender` | guidebook API + inlined lavender-md; 13 mixins disabled (structure overlay, book renderer, translation injection — v1 stubs); lang flattened to plain strings; depends fabricloader/owo-lib (dropped stale `"fabric"` id — 26.x fabric-api id is `fabric-api`) |
+| passable-foliage | `custom-mods/passable-foliage` | walk-through leaves (Aged PassableFoliage 8.2.1 parity); 26.1→26.2 nudge |
 
-Queue open: (lavender + owo-lib shipped; next from stalled-upstream list).
+Queue open: next from the stalled-upstream / fork-port tables below
+(antique-atlas, noisium, then `NOT_IMPLEMENTED.md` waves). All eight
+ports above are vendored, boot-smoked, and deployed to Prism
+(Hearthwind-Full / Minimal / Dev-Client) via `tools/update_prism.sh`
+(glob includes these modules as of 2026-09-22).
 
-## Stalled upstream — we carry the port (3)
+## Stalled upstream — we carry the port
 
-| Mod | Max stable | Last update | We build for 26.2 how |
+| Mod | Max stable | Last update | Status / plan |
 |---|---|---|---|
-| antique-atlas | 1.21.1 | 2026-01-05 | Exploration identity item. Fork and port (AtlasScreen is the heavy part). Interim: equivalent exploration surface (vanilla explorer maps + cartographer trades, or a hearthwind-client map panel) keeps the feature alive while the port lands. |
-| exposure | 1.21.1 | 2026-06-09 | Photography. Fork + port (camera item, photo renderer, clapper UI). Author still active 2026-06 — ping upstream first. |
-| herdspanic | 1.21.1 | 2024-09-10 | Small mixin mod (panic AI); fork + port is day-scale. |
-| noisium | 1.21.6 | 2025-06-24 | Worldgen perf fork + port; re-baseline against 26.2 vanilla first (vanilla optimized noise paths) and port only the remaining delta. |
+| antique-atlas | 1.21.1 | 2026-01-05 | **OPEN.** Exploration identity item. Fork and port (AtlasScreen is the heavy part). Interim: vanilla explorer maps + cartographer trades. |
+| exposure | 1.21.1 | 2026-06-09 | **DONE** — `custom-mods/exposure` port shipped + wired. |
+| herdspanic | 1.21.1 | 2024-09-10 | **DONE in-house** — `hearthwind-world` `HerdPanic.java`. |
+| noisium | 1.21.6 | 2025-06-24 | **OPEN.** Worldgen perf fork; re-baseline against 26.2 vanilla noise paths first, port only the remaining delta. |
 
-(log-begone moved to the ported section above.)
+Moved to ported section above: log-begone, lavender, pockets, couplings,
+async-locator, memoryleakfix, passable-foliage, DEUF→entitycollisionfpsfix.
 
 ## Re-evaluation triggers
 

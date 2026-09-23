@@ -106,22 +106,29 @@ def main():
     mrpack = DIST / f"{slug.title()}-{ver}-mc{mc}.mrpack"  # Hearthwind-0.1.0-mc26.2.mrpack
     mrpack_legacy = DIST / f"HearthwindServer-{ver}-mc{mc}.mrpack"  # back-compat alias
 
-    datapack = ROOT / "conversion" / "datapacks" / "hearthwind"
-    if not (datapack / "pack.mcmeta").exists():
+    datapacks_root = ROOT / "conversion" / "datapacks"
+    datapacks = sorted(
+        d for d in datapacks_root.iterdir()
+        if d.is_dir() and (d / "pack.mcmeta").exists()
+    )
+    if not any(d.name == "hearthwind" for d in datapacks):
         raise SystemExit(
             "conversion/datapacks/hearthwind/pack.mcmeta missing - "
             "run conversion/scripts/migrate_datapack.py first"
         )
+    # keep name for callers/tests that expect the primary pack path
+    datapack = datapacks_root / "hearthwind"
 
     with zipfile.ZipFile(mrpack, "w", zipfile.ZIP_DEFLATED) as z:
         z.write(idx_path, "modrinth.index.json")
-        for p in sorted(datapack.rglob("*")):
-            if p.is_file():
-                z.write(
-                    p,
-                    "overrides/world/datapacks/hearthwind/"
-                    + str(p.relative_to(datapack)),
-                )
+        for dp in datapacks:
+            for p in sorted(dp.rglob("*")):
+                if p.is_file():
+                    z.write(
+                        p,
+                        f"overrides/world/datapacks/{dp.name}/"
+                        + str(p.relative_to(dp)),
+                    )
         ov = ROOT / "conversion" / "overrides"
         if ov.exists():
             for p in ov.rglob("*"):
@@ -154,9 +161,10 @@ def main():
     with zipfile.ZipFile(client_mrpack, "w", zipfile.ZIP_DEFLATED) as z:
         # reuse server datapack as overrides - client needs same world compat
         z.write(client_idx_path, "modrinth.index.json")
-        for p in sorted(datapack.rglob("*")):
-            if p.is_file():
-                z.write(p, "overrides/world/datapacks/hearthwind/" + str(p.relative_to(datapack)))
+        for dp in datapacks:
+            for p in sorted(dp.rglob("*")):
+                if p.is_file():
+                    z.write(p, f"overrides/world/datapacks/{dp.name}/" + str(p.relative_to(dp)))
         if resourcepacks.is_dir():
             for p in sorted(resourcepacks.glob("*.zip")):
                 z.write(p, "overrides/resourcepacks/" + p.name)
@@ -248,13 +256,14 @@ def main():
                 shutil.copy(j, sdir / "mods" / j.name)
                 # also copy server jars to client mods so client can run single-player
                 shutil.copy(j, cdir / "mods" / j.name)
-        wdp = sdir / "world" / "datapacks" / "hearthwind"
-        shutil.rmtree(wdp, ignore_errors=True)
-        shutil.copytree(datapack, wdp)
-        # client needs same datapack when hosting via client (singleplayer)
-        wdp_c = cdir / "world" / "datapacks" / "hearthwind"
-        shutil.rmtree(wdp_c, ignore_errors=True)
-        shutil.copytree(datapack, wdp_c)
+        for dp in datapacks:
+            wdp = sdir / "world" / "datapacks" / dp.name
+            shutil.rmtree(wdp, ignore_errors=True)
+            shutil.copytree(dp, wdp)
+            # client needs same datapack when hosting via client (singleplayer)
+            wdp_c = cdir / "world" / "datapacks" / dp.name
+            shutil.rmtree(wdp_c, ignore_errors=True)
+            shutil.copytree(dp, wdp_c)
         # Client resourcepacks (e.g. Fresh Animations) ship with the client dist
         if resourcepacks.is_dir():
             (cdir / "resourcepacks").mkdir(parents=True, exist_ok=True)

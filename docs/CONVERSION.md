@@ -24,6 +24,7 @@ path to future releases and snapshots.
 | `hearthwind-client` | client HUDs, tabs, main menu | 10 droplets + flask, thermometer trio, season widget, 4-tab strip, Aged main menu |
 | `contrib/yungs/` | yungs api + 5 structure overhauls | 26.2 patched builds for Nether Fortresses, End Island, Desert/Jungle Temples, Ocean Monuments |
 | `contrib/gardens-of-the-dead/` | gardens-of-the-dead 5.0.2 | 26.2 native port with Soulblight Forest & Whistling Woods biomes and flora |
+| `custom-mods/{lavender,logbegone,pockets,couplings,entitycollisionfpsfix,memoryleakfix,async-locator,passable-foliage,athena,chipped,exposure,dungeonz,smallships,villagesandpillages}` | assorted Aged deps stuck ≤1.21.x | Local 26.2 fork-ports; vendored to `conversion/vendored/` + Prism |
 
 ## Shipped Progression & Parity Highlights
 
@@ -55,8 +56,8 @@ path to future releases and snapshots.
 # Build custom mods
 cd custom-mods && ./gradlew build --no-daemon --max-workers=2
 
-# Run headless gametest suite (198/198 passed 100% green)
-bash tools/run_gametests.sh
+# Run headless gametest suite (296/296 passed 100% green, container)
+bash tools/run_gametests_container.sh
 
 # Sync jars to Prism Launcher & live dev server
 bash tools/sync_test_clients.sh

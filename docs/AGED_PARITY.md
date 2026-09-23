@@ -235,12 +235,15 @@ sum, so fires indoors matter far more. Chipped-compat entries (~97% of
     bundled digest (keeps the client presentation-only, server-authoritative).
 
 Mods that cannot be ported as jars are already mapped to in-house modules in
-`conversion/curated/mods-manifest.json` (`rebuild` = 15 entries: dehydration,
-environmentz, nutritionz, spoiledz → survival; levelz, jobsaddon, partyaddon,
-rpgdifficulty → skills; earlystage, tiered, reciperemover, autotag →
-primitive; fabric-seasons, seasonhud, crop_growth_modifier → world).
-Per-mod 26.2 availability is tracked in docs/NOT_IMPLEMENTED.md and
-docs/PATCH_PORT_STUDY.md.
+`conversion/curated/mods-manifest.json` (`rebuild` entries: dehydration,
+environmentz, nutritionz, spoiledz → survival; levelz, jobsaddon,
+partyaddon, rpgdifficulty → skills; earlystage, tiered, reciperemover,
+autotag → primitive; fabric-seasons, seasonhud, crop_growth_modifier,
+endrem, herdspanic → world).
+Per-mod 26.2 availability: **`docs/NOT_IMPLEMENTED.md`** is the
+authoritative remaining-port list (true open = resolver missing − 28
+already-local solves as of 2026-09-22). Also see `docs/PATCH_PORT_STUDY.md`
+and `docs/DROPPED_78_STUDY.md`.
 
 ---
 
