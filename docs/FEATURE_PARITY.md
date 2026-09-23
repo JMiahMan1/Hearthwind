@@ -51,6 +51,9 @@ over (with reason)
 | MoogsNether + MoogsEnd + StructureLib | ✅ | mns/mes 26.2 fabric family |
 | lukis-grand-capitals | ✅ | datapack `conversion/datapacks/`, pack_format 107 |
 | ForgeConfigAPIPort 26.2.1 | ✅ | dep for undergroundworlds |
+| desert-dungeon 1.0.1+26.2 | ✅ | DungeonZ data addon (`desert-dungeon-dungeonz-addon`, MIT) |
+| unnamed-desert 2.0.3+26.2 | ✅ | u_desert re-located (`unnamed-desert`, **ARR** — careful redistribution) |
+| betterendcities-vanilla 1.21.3+26.2 | ✅ | end city NBT overrides (`better-end-cities-base`, MIT) |
 
 **Remaining for complete Aged parity**: see `docs/NOT_IMPLEMENTED.md`
 (true open set = resolver missing − 28 already-local).

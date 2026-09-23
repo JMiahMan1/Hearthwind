@@ -125,7 +125,7 @@ See the full grouped table in **`docs/NOT_IMPLEMENTED.md`**. Highlights:
 
 | Cluster | Mods | Impact while absent |
 |---|---|---|
-| Structures wave | dungeon-now-loading, desert-dungeon/u-desert re-locate | fewer dungeon destinations beyond YUNG/DungeonZ + UndergroundWorlds/Dungeons+/Moogs/Profundis |
+| Structures wave | dungeon-now-loading **DEFER** (177-class); yungs-better-desert-temples waitlist | destinations already: YUNG/DungeonZ + UndergroundWorlds/Dungeons+/Moogs/Profundis/lukis + desert-dungeon/unnamed-desert/better-end-cities |
 | Mobs / adventure | adventurez, fleshz, creeper-overhaul, enderman-overhaul | fewer ambient/boss variants (astrocraft **held**) |
 | Accessory slots | trinkets + inmis + backslot cluster | vanilla bundles only; port as ONE best |
 | Gear / smith | medievalweapons, amarite, smitherz/libz, travelerz | weapon identity lives in tiered affixes |
@@ -150,11 +150,12 @@ Grouped:
   Effect: fewer ambient species - acceptable, tonal loss only.
 - **Structure mods superseded / adopted** (spider-caves +
   underground-jungle → UndergroundWorlds; dungeons-plus / mns / mes /
-  profundis / lukis adopted or ported 2026-09-22; desert-dungeon,
-  dungeonz, u-desert, true-ending, vanilla-end-city-overhaul,
+  profundis / lukis / desert-dungeon / unnamed-desert(u_desert) /
+  betterendcitiesvanilla adopted or ported 2026-09-22; dungeon-now-loading
+  **DEFER** (177-class yarn, empty source); true-ending,
   villages-and-pillages, moogs-endless): overlap - we keep ONE
-  structure suite per niche (Yungs/DnT/UndergroundWorlds/Moogs/Profundis).
-  De-kludge: count per need goes down.
+  structure suite per niche (Yungs/DnT/UndergroundWorlds/Moogs/Profundis
+  + data addons). De-kludge: count per need goes down.
 - **Let's Do family (all 12)**: food/crop ambience (bakery, brewery,
   vinery, candlelight, meadow, farm-charm, herbal-brews + do-api,
   moonlight). Duplicates diet/farming identity we own;

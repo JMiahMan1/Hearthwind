@@ -545,8 +545,8 @@
     "file": "Dungeon Now Loading",
     "slug": "dungeon-now-loading",
     "action": "keep",
-    "reason": "Stuck 1.20.1; open - decompile fabric jar or defer",
-    "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
+    "reason": "DEFER - 177-class yarn port, empty source; content covered by UW/Dungeons+/Moogs/Profundis",
+    "note": "Kept from Aged - not dropped; revisit only if structure niche opens"
    },
    {
     "file": "dungeons+-1.8.4b",
@@ -557,10 +557,10 @@
    },
   {
    "file": "desert-dungeon",
-   "slug": "desert-dungeon",
+   "slug": "desert-dungeon-dungeonz-addon",
    "action": "keep",
-   "reason": "Small niche dungeon",
-   "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
+   "reason": "Adopted desert-dungeon-1.0.1+26.2.jar (DungeonZ data addon, MIT)",
+   "note": "Re-located from desert-dungeon slug; vendored 2026-09-22"
   },
   {
    "file": "dungeonz",
@@ -571,10 +571,10 @@
   },
   {
    "file": "u_desert",
-   "slug": "u-desert",
+   "slug": "unnamed-desert",
    "action": "keep",
-   "reason": "Niche desert structures",
-   "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
+   "reason": "Adopted unnamed-desert-2.0.3+26.2.jar (u_desert re-located; ARR - redistribute carefully)",
+   "note": "Overlays stripped for 26.2; root worldgen data kept"
   },
    {
     "file": "underground-jungle",
@@ -598,10 +598,10 @@
   },
   {
    "file": "betterendcitiesvanilla",
-   "slug": "vanilla-end-city-overhaul",
+   "slug": "better-end-cities-base",
    "action": "keep",
-   "reason": "Tiny tweak datapack-style",
-   "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
+   "reason": "Adopted betterendcities-vanilla-1.21.3+26.2.jar (end city NBT overrides, MIT)",
+   "note": "Re-located from vanilla-end-city-overhaul; vendored 2026-09-22"
   },
    {
     "file": "profundis",

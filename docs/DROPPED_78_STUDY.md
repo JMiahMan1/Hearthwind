@@ -18,8 +18,10 @@ server mod ids — zero ready-but-missing). User decisions recorded:
   4. `profundis` (fabric ≤1.21.4, github firenh — cave biomes)
   5. `Dungeon Now Loading` (fabric ≤1.20.1, github hexnowloading — heavy NBT set)
   6. `dungeons+` LAST (forge/neoforge ONLY, gitlab modding-legacy — fabric port is a rewrite)
-  - Re-locate first (404 on current slugs): `desert-dungeon`, `u_desert`,
-    `underground-jungle`, `betterendcitiesvanilla`, `mns`, `mes`.
+  - Re-locate **DONE** (2026-09-22): `desert-dungeon`→`desert-dungeon-dungeonz-addon`,
+    `u_desert`→`unnamed-desert` (ARR), `betterendcitiesvanilla`→`better-end-cities-base`,
+    `underground-jungle`/`spider-caves`→UndergroundWorlds, `mns`/`mes` Moogs family
+    all adopted; DnL **DEFER**.
 - Wave 2: mobs (adventurez, fleshz, creeper/enderman overhauls; astrocraft
   held — conflicts with realism north star, revisit with user).
   - **Wave 3**: gear/decor/utility (inmis+backslot+trinkets cluster as ONE best,
@@ -114,11 +116,15 @@ with "COMPLETE look and feel and feature parity."
 | 2 | lukis-grand-capitals | moderate | **Shipped** (datapack) | No (1.21.11) | Data pack pack_format 107 |
 | 2 | spider-caves | small | **Superseded** by undergroundworlds | No (1.20.4) | Adopted UW 3.2.1 |
 | 2 | profundis | moderate | **Shipped** (yarn→mojmap) | No (1.21.4) | custom-mods/profundis boot-green |
-| 2 | Dungeon Now Loading | moderate | Not started | No (1.20.1) | Heavy NBT |
-| 2 | dungeons+ | unknown | Not started | No (1.20.4) | Forge→fabric rewrite LAST |
+| 2 | Dungeon Now Loading | moderate | **DEFER** | No (1.20.1) | 177-class yarn; empty source; content covered |
+| 2 | dungeons+ | unknown | **Adopted** | No (1.20.4) | fabric jar dungeons+-1.12.0 vendored |
+| 2 | desert-dungeon | small | **Adopted** 1.0.1+26.2 | No (1.21.1) | slug desert-dungeon-dungeonz-addon; MIT |
+| 2 | u_desert | moderate | **Adopted** 2.0.3+26.2 | No (1.21.11) | slug unnamed-desert; ARR |
+| 2 | betterendcitiesvanilla | tiny | **Adopted** 1.21.3+26.2 | No (1.21.3) | slug better-end-cities-base; MIT |
 
-**Remaining fabric ports needing work (structures)**: 1 (DnL) + re-locate desert-dungeon/u-desert/better-end-cities
+**Remaining fabric ports needing work (structures)**: 0 open (DnL deferred; re-locates adopted)
 **Forge/neoforge ports (hardest, restart last)**: 0 (dungeons+ adopted as fabric jar)
+**Waitlist**: yungs-better-desert-temples (max 26.1.2 fabric)
 **Full remaining parity set (all waves)**: `docs/NOT_IMPLEMENTED.md`
 
 ### Next waves (unchanged):
@@ -192,15 +198,17 @@ Nothing in this document ends in "dropped permanently".
 ### Structures & dungeons
 | Mod | Max | Return action |
 |---|---|---|
-| Dungeon Now Loading | 1.20.1 | fork-port; heavy NBT structure set — assets reusable |
+| Dungeon Now Loading | 1.20.1 | **DEFER** — 177 classes + empty source; not dropped |
 | dungeons+ | 1.20.4 | **Adopted** fabric jar dungeons+-1.12.0 |
-| dungeonz | 1.21.1 | fork-port |
-| spirder-caves | 1.20.4 | fork-port (small) |
+| dungeonz | 1.21.1 | **Shipped** custom-mods/dungeonz boot-green |
+| spirder-caves | 1.20.4 | **Superseded** by undergroundworlds 3.2.1 |
 | profundis | 1.21.4 | **Shipped** — custom-mods/profundis yarn→mojmap, boot-green 26.2 |
 | lukis-grand-capitals | 1.21.9 | **Shipped** — datapack conversion/datapacks/lukis-grand-capitals |
-| villagesandpillages | 1.21.4 | fork-port |
-| betterendcitiesvanilla | — | re-locate (slug changed); then fork-port |
-| u_desert / desert-dungeon / underground-jungle / mns / mes | — | re-locate (renames); then fork-port each |
+| villagesandpillages | 1.21.4 | **Shipped** custom-mods/villagesandpillages |
+| betterendcitiesvanilla | 1.21.3 | **Adopted** slug better-end-cities-base → 1.21.3+26.2 jar |
+| u_desert | 1.21.11 | **Adopted** slug unnamed-desert → 2.0.3+26.2 jar (ARR) |
+| desert-dungeon | 1.21.1 | **Adopted** slug desert-dungeon-dungeonz-addon → 1.0.1+26.2 jar |
+| underground-jungle / mns / mes | — | superseded/adopted (UW; Moogs family) |
 
 ### Let's Do food family (10) — all stalled ~1.20-1.21.1
 | Mod | Return action |
