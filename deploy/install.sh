@@ -26,7 +26,7 @@ if [ -d "conversion/build/dist/server/mods" ]; then
     cp "$f" "$DST/mods/"
   done
   if [ ! -f "$DST/fabric-server.jar" ]; then
-    curl -sL -o "$DST/fabric-server.jar" "https://meta.fabricmc.net/v2/versions/loader/26.2/0.19.3/1.1.0/server/jar"
+    curl -sL -o "$DST/fabric-server.jar" "https://meta.fabricmc.net/v2/versions/loader/26.2/0.19.5/1.1.0/server/jar"
   fi
 else
   echo "No local build found - download Hearthwind-*.mrpack or hearthwind-server zip from Releases and unpack to $DST"

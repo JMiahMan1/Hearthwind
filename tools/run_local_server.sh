@@ -47,8 +47,8 @@ for moddir in "$ROOT"/custom-mods/hearthwind-* "$ROOT"/custom-mods/letsdo-* \
 done
 
 if [ ! -f "$ROOT/dev-server/fabric-server.jar" ]; then
-  echo "== Fetching fabric-server.jar 0.19.3 for 26.2 =="
-  curl -sL -o "$ROOT/dev-server/fabric-server.jar" "https://meta.fabricmc.net/v2/versions/loader/26.2/0.19.3/1.1.0/server/jar"
+  echo "== Fetching fabric-server.jar 0.19.5 for 26.2 =="
+  curl -sL -o "$ROOT/dev-server/fabric-server.jar" "https://meta.fabricmc.net/v2/versions/loader/26.2/0.19.5/1.1.0/server/jar"
 fi
 
 echo "eula=true" > "$ROOT/dev-server/eula.txt"

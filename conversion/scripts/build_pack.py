@@ -43,9 +43,25 @@ def main():
     ready = [r for r in data["resolved"] if r["status"].startswith("ok")]
     ready_server = [r for r in ready if not r.get("client_only")]
     ready_client_only = [r for r in ready if r.get("client_only")]
+    fabric_api_version = None
+    for r in ready:
+        if r.get("slug") == "fabric-api" or (
+            r.get("picked", {}).get("file", {}).get("filename", "").startswith(
+                "fabric-api-"
+            )
+        ):
+            # "fabric-api-0.161.0+26.2.jar" -> "0.161.0+26.2"
+            name = r["picked"]["file"]["filename"]
+            fabric_api_version = name[len("fabric-api-") : -len(".jar")]
+            break
+    if not fabric_api_version:
+        raise SystemExit(
+            "fabric-api missing from resolved.json - run resolve_deps.py first"
+        )
     print(
         f"Building pack for MC {mc}: {len(ready)} mods "
-        f"({len(ready_server)} server, {len(ready_client_only)} client-only)"
+        f"({len(ready_server)} server, {len(ready_client_only)} client-only), "
+        f"fabric-api {fabric_api_version}"
     )
 
     def non_index_jars(mods_dir: Path, index_names: set):
@@ -89,6 +105,9 @@ def main():
         "dependencies": {
             "minecraft": mc,
             "fabric-loader": conf["targets"]["loader_version"],
+            # Some launchers (Modrinth App, MultiMC family) install fabric-api
+            # only when declared; pin the exact resolved version.
+            "fabric-api": fabric_api_version,
         },
     }
 

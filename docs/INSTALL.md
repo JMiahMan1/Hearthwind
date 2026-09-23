@@ -1,6 +1,6 @@
 # Installing & packaging Hearthwind - Server and Client
 
-Target: Minecraft **26.2**, Fabric loader 0.19.3+, Java 25. One repo builds
+Target: Minecraft **26.2**, Fabric loader 0.19.5+, Java 25. One repo builds
 **both** sides: server is required, client companion is optional (see
 `docs/PROJECT_DIRECTION.md#distribution-model`).
 
@@ -37,8 +37,15 @@ see vanilla mob models either way.
 Two files are published per release / CI artifact (`mod-jars` on
 [Actions](../../actions)):
 
-- `HearthwindServer-<ver>-mc26.2.mrpack` - **required** (server mods + `world/datapacks/hearthwind/`)
+- `HearthwindServer-<ver>-mc26.2.mrpack` - **required** (server mods + `world/datapacks/hearthwind/` and any other packs under `conversion/datapacks/`)
 - `HearthwindClient-<ver>-mc26.2.mrpack` - **optional** (players who want HUD/companion visuals)
+
+The mrpack declares `dependencies`: `minecraft 26.2`, `fabric-loader 0.19.5`,
+and `fabric-api <resolved>` so launchers that install API deps from the
+index (Modrinth App, MultiMC family) get a matching fabric-api automatically.
+Overrides place world datapacks at `world/datapacks/<name>/` - correct for a
+dedicated-server layout. For singleplayer, copy the same folders into
+`saves/<world>/datapacks/` (or re-open the world after importing).
 
 Server install:
 

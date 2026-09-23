@@ -59,7 +59,7 @@
    "file": "architectury",
    "slug": "architectury-api",
    "action": "keep",
-   "note": "CAP at 21.0.7 while loader is pinned 0.19.3 / fabric-api 0.159.0 (build.conf.json): 21.1.9+ needs loader>=0.19.5 and api>=0.160.0 - breaks boot. resolve_deps.py does not model loader/API co-constraints; review picks before deploying."
+    "note": "Pinned exact pick for MC 26.2. build.conf.json loader is 0.19.5 (architectury 21.1.9+ needs loader>=0.19.5 / api>=0.160.0). resolve_deps.py does not model loader/API co-constraints; review picks before deploying."
   },
   {
    "file": "forgeconfigapiport",

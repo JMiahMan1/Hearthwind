@@ -22,9 +22,9 @@ import json, pathlib
 p = pathlib.Path.home() / "Library/Application Support/PrismLauncher/instances/Hearthwind-Dev-Client/mmc-pack.json"
 data = json.loads(p.read_text())
 if not any(c.get("uid")=="net.fabricmc.fabric-loader" for c in data["components"]):
-    data["components"].append({"uid":"net.fabricmc.fabric-loader","version":"0.19.3","cachedName":"Fabric Loader","cachedVersion":"0.19.3"})
+    data["components"].append({"uid":"net.fabricmc.fabric-loader","version":"0.19.5","cachedName":"Fabric Loader","cachedVersion":"0.19.5"})
 p.write_text(json.dumps(data, indent=4))
-print("patched mmc-pack.json with fabric-loader 0.19.3")
+print("patched mmc-pack.json with fabric-loader 0.19.5")
 PY
 
 python3 - << 'PY'
@@ -81,9 +81,20 @@ for f in "$ROOT"/custom-mods/hearthwind-*/build/libs/*26.2+0.1.0.jar; do
   cp "$f" "$DST_SRV/mods/"
 done
 if [ ! -f "$DST_SRV/fabric-server.jar" ]; then
-  curl -sL -o "$DST_SRV/fabric-server.jar" "https://meta.fabricmc.net/v2/versions/loader/26.2/0.19.3/1.1.0/server/jar"
+  curl -sL -o "$DST_SRV/fabric-server.jar" "https://meta.fabricmc.net/v2/versions/loader/26.2/0.19.5/1.1.0/server/jar"
 fi
 echo "eula=true" > "$DST_SRV/eula.txt"
+# Ship every conversion/datapacks/* pack (hearthwind + lukis + ...)
+if [ -d "$ROOT/conversion/datapacks" ]; then
+  mkdir -p "$DST_SRV/world/datapacks"
+  for dp in "$ROOT"/conversion/datapacks/*/; do
+    [ -f "${dp}pack.mcmeta" ] || continue
+    name=$(basename "$dp")
+    rm -rf "$DST_SRV/world/datapacks/$name"
+    cp -R "$dp" "$DST_SRV/world/datapacks/$name"
+    echo "datapack: $name"
+  done
+fi
 cat > "$DST_SRV/server.properties" <<'PROPS'
 pause-when-empty-seconds=-1
 enable-rcon=true
@@ -98,6 +109,6 @@ PROPS
 echo "Dev server mods: $(ls "$DST_SRV/mods"/*.jar 2>/dev/null | wc -l) jars"
 echo ""
 echo "Done."
-echo "  Client: launch Hearthwind-Dev-Client in PrismLauncher (will download Fabric 0.19.3 on first launch)"
+echo "  Client: launch Hearthwind-Dev-Client in PrismLauncher (will download Fabric 0.19.5 on first launch)"
 echo "  Server: cd dev-server && java -Xmx3G -jar fabric-server.jar nogui"
 echo "  Connect client to localhost:25565 ; RCON: python3 custom-mods/tools/rcon.py 127.0.0.1 25575 agedtest list"
