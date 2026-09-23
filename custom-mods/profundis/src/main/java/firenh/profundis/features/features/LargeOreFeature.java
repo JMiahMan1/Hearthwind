@@ -7,18 +7,17 @@ import java.util.Optional;
 import com.mojang.serialization.Codec;
 
 import firenh.profundis.features.features.config.LargeOreFeatureConfig;
-import net.minecraft.block.BlockState;
-import net.minecraft.structure.rule.RuleTest;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.noise.InterpolatedNoiseSampler;
-import net.minecraft.util.math.random.Random;
-import net.minecraft.world.StructureWorldAccess;
-import net.minecraft.world.gen.densityfunction.DensityFunction.UnblendedNoisePos;
-import net.minecraft.world.gen.feature.Feature;
-import net.minecraft.world.gen.feature.OreFeatureConfig;
-import net.minecraft.world.gen.feature.util.FeatureContext;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.levelgen.structure.templatesystem.RuleTest;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.ChunkPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.level.levelgen.synth.ImprovedNoise;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.level.WorldGenLevel;
+import net.minecraft.world.level.levelgen.feature.Feature;
+import net.minecraft.world.level.levelgen.feature.configurations.OreConfiguration;
+import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
 
 public class LargeOreFeature extends Feature<LargeOreFeatureConfig> {
 
@@ -26,59 +25,56 @@ public class LargeOreFeature extends Feature<LargeOreFeatureConfig> {
         super(configCodec);
     }
 
-    protected Optional<BlockState> getBlockState(StructureWorldAccess world, BlockPos pos, BlockState currentState, Random random, List<OreFeatureConfig.Target> targets) {
-        for (OreFeatureConfig.Target t : targets) {
+    protected Optional<BlockState> getBlockState(WorldGenLevel world, BlockPos pos, BlockState currentState, RandomSource random, List<OreConfiguration.TargetBlockState> targets) {
+        for (OreConfiguration.TargetBlockState t : targets) {
             RuleTest rule = t.target;
-            
             if (rule.test(currentState, random)) {
                 return Optional.of(t.state);
             }
         }
-
         return Optional.empty();
     }
 
     @Override
-    public boolean generate(FeatureContext<LargeOreFeatureConfig> context) {
-        Random random = context.getRandom();
-        LargeOreFeatureConfig config = context.getConfig();
-        StructureWorldAccess world = context.getWorld();
-        BlockPos origin = context.getOrigin();
+    public boolean place(FeaturePlaceContext<LargeOreFeatureConfig> context) {
+        RandomSource random = context.random();
+        LargeOreFeatureConfig config = context.config();
+        WorldGenLevel world = context.level();
+        BlockPos origin = context.origin();
         boolean returnVal = false;
-        
-        List<OreFeatureConfig.Target> targets = config.targets();
-           int radius = config.radius().get(random);
-          double scale = config.scale();
-          double factor = config.factor();
-         double smearing = config.smearing();
+
+        List<OreConfiguration.TargetBlockState> targets = config.targets();
+        int radius = config.radius().sample(random);
+        double scale = config.scale();
+        double factor = config.factor();
+        double smearing = config.smearing();
         double valueRange = config.valueRange();
         double valueOffset = config.valueOffset();
-         boolean bordersAir = config.bordersAir();
+        boolean bordersAir = config.bordersAir();
 
         ChunkPos originChunkPos = new ChunkPos(origin.getX() / 16, origin.getZ() / 16);
-        InterpolatedNoiseSampler noise = new InterpolatedNoiseSampler(random, scale, scale, factor, factor, smearing);
+        ImprovedNoise noise = new ImprovedNoise(random);
 
-        Iterator<BlockPos> iter = BlockPos.iterateOutwards(origin, radius, radius, radius).iterator();
+        Iterator<BlockPos> iter = BlockPos.betweenClosed(
+            origin.offset(-radius, -radius, -radius),
+            origin.offset(radius, radius, radius)).iterator();
 
         while (iter.hasNext()) {
             BlockPos pos = iter.next();
-            if ((!origin.isWithinDistance(pos, radius))) continue;
+            if (origin.distSqr(pos) > (double) radius * (double) radius) continue;
 
-            if (Math.abs(originChunkPos.x - (pos.getX() / 16)) > 1 || Math.abs(originChunkPos.z - (pos.getZ() / 16)) > 1) continue; 
+            if (Math.abs(originChunkPos.x() - (pos.getX() / 16)) > 1 || Math.abs(originChunkPos.z() - (pos.getZ() / 16)) > 1) continue;
 
-            double value = noise.sample(new UnblendedNoisePos(pos.getX(), pos.getY(), pos.getZ()));
-            double distance = Math.sqrt(origin.getSquaredDistance(pos));
+            double value = noise.noise(pos.getX() * scale * factor, pos.getY() * scale * factor, pos.getZ() * scale * factor, smearing, smearing);
+            double distance = Math.sqrt(origin.distSqr(pos));
             double checkVal = value + (distance / radius);
 
-            // if (world.isValidForSetBlock(pos)) System.out.println("valid");
-
-            if (Math.abs(checkVal - valueOffset) < valueRange && world.isValidForSetBlock(pos)) {
+            if (Math.abs(checkVal - valueOffset) < valueRange && world.ensureCanWrite(pos)) {
                 boolean hasAir = false;
 
                 if (bordersAir) {
                     for (Direction d : Direction.values()) {
-                        if (!world.getBlockState(pos.offset(d)).isOpaque()) {
-                            // System.out.println("air");
+                        if (!world.getBlockState(pos.relative(d)).canOcclude()) {
                             hasAir = true;
                             break;
                         }
@@ -92,15 +88,13 @@ public class LargeOreFeature extends Feature<LargeOreFeatureConfig> {
                     Optional<BlockState> newState = getBlockState(world, pos, currentState, random, targets);
 
                     if (newState.isPresent()) {
-                        this.setBlockState(world, pos, newState.get());
+                        world.setBlock(pos, newState.get(), 3);
                         returnVal = true;
                     }
-
                 }
             }
         }
 
         return returnVal;
     }
-    
 }

@@ -5,14 +5,14 @@ import java.util.Iterator;
 import com.mojang.serialization.Codec;
 
 import firenh.profundis.features.features.config.ShelfFungiFeatureConfig;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.registry.tag.BlockTags;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.random.Random;
-import net.minecraft.world.StructureWorldAccess;
-import net.minecraft.world.gen.feature.Feature;
-import net.minecraft.world.gen.feature.util.FeatureContext;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.tags.BlockTags;
+import net.minecraft.core.BlockPos;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.level.WorldGenLevel;
+import net.minecraft.world.level.levelgen.feature.Feature;
+import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
 
 public class ShelfFungiFeature extends Feature<ShelfFungiFeatureConfig> {
     public ShelfFungiFeature(Codec<ShelfFungiFeatureConfig> configCodec) {
@@ -20,31 +20,31 @@ public class ShelfFungiFeature extends Feature<ShelfFungiFeatureConfig> {
     }
 
     @Override
-    public boolean generate(FeatureContext<ShelfFungiFeatureConfig> context) {
-        BlockPos origin = context.getOrigin();
-        ShelfFungiFeatureConfig config = context.getConfig();
-        Random random = context.getRandom();
-        StructureWorldAccess world = context.getWorld();
+    public boolean place(FeaturePlaceContext<ShelfFungiFeatureConfig> context) {
+        BlockPos origin = context.origin();
+        ShelfFungiFeatureConfig config = context.config();
+        RandomSource random = context.random();
+        WorldGenLevel world = context.level();
 
         BlockState upperState = config.upperState();
         BlockState underState = config.underState();
         boolean glowing = config.glowing();
-        int radius = config.radius().get(random);
-        int iterations = config.iterations().get(random);
+        int radius = config.radius().sample(random);
+        int iterations = config.iterations().sample(random);
         int radiusExt = (int)(radius * 1.5);
 
-        // this.setBlockState(world, origin, upperState);
+        // world.setBlock(origin, upperState, 3);
 
         boolean hasPlaced = false;
 
-        Iterator<BlockPos> iter = BlockPos.iterateOutwards(origin, radiusExt, 0, radiusExt).iterator();
+        Iterator<BlockPos> iter = BlockPos.betweenClosed(origin.offset(-(radiusExt), -(0), -(radiusExt)), origin.offset((radiusExt), (0), (radiusExt))).iterator();
 
         while (iter.hasNext()) {
             BlockPos next = iter.next();
-            // this.setBlockState(world, next, upperState);
+            // world.setBlock(next, upperState, 3);
 
             if (isValidLocation(origin, next, iterations, radius, random, world)) {
-                this.setBlockState(world, next, upperState);
+                world.setBlock(next, upperState, 3);
                 hasPlaced = true;
                 // Profundis.LOGGER.info("placements: " + placements);
             }
@@ -54,42 +54,42 @@ public class ShelfFungiFeature extends Feature<ShelfFungiFeatureConfig> {
 
         if (radius < 6) return hasPlaced;
 
-        Iterator<BlockPos> iter2 = BlockPos.iterateOutwards(origin.down(), radius, 0, radius).iterator();
+        Iterator<BlockPos> iter2 = BlockPos.betweenClosed(origin.below().offset(-(radius), -(0), -(radius)), origin.below().offset((radius), (0), (radius))).iterator();
 
         while (iter2.hasNext()) {
             BlockPos next = iter2.next();
-            if (isValidLocation(origin.down(), next, iterations, radius * 3 / 4, random, world)) {
+            if (isValidLocation(origin.below(), next, iterations, radius * 3 / 4, random, world)) {
                 if (glowing && random.nextFloat() < 0.05) {
-                    this.setBlockState(world, next, Blocks.SHROOMLIGHT.getDefaultState());
+                    world.setBlock(next, Blocks.SHROOMLIGHT.defaultBlockState(), 3);
 
                 } else {
-                    this.setBlockState(world, next, underState);
+                    world.setBlock(next, underState, 3);
                 }
             }
         }
 
         if (radius < 8) return hasPlaced;
 
-        Iterator<BlockPos> iter3 = BlockPos.iterateOutwards(origin.up(), radius, 0, radius).iterator();
+        Iterator<BlockPos> iter3 = BlockPos.betweenClosed(origin.above().offset(-(radius), -(0), -(radius)), origin.above().offset((radius), (0), (radius))).iterator();
 
         while (iter3.hasNext()) {
             BlockPos next = iter3.next();
-            if (isValidLocation(origin.up(), next, iterations, radius * 2 / 3, random, world)) {
-                this.setBlockState(world, next, upperState);
+            if (isValidLocation(origin.above(), next, iterations, radius * 2 / 3, random, world)) {
+                world.setBlock(next, upperState, 3);
             }
         }
 
         return hasPlaced;
     }
 
-    public boolean isValidLocation(BlockPos origin, BlockPos toPlaceAt, int iterations, int radius, Random random, StructureWorldAccess world) {
+    public boolean isValidLocation(BlockPos origin, BlockPos toPlaceAt, int iterations, int radius, RandomSource random, WorldGenLevel world) {
         BlockState placeAtState = world.getBlockState(toPlaceAt);
         
-        if (placeAtState.isOpaque()) {
-            if (placeAtState.isIn(BlockTags.MOSS_REPLACEABLE)) {
+        if (placeAtState.canOcclude()) {
+            if (placeAtState.is(BlockTags.MOSS_REPLACEABLE)) {
                 if (
-                    world.getBlockState(toPlaceAt.up()).isOpaque()
-                    && world.getBlockState(toPlaceAt.down()).isOpaque()
+                    world.getBlockState(toPlaceAt.above()).canOcclude()
+                    && world.getBlockState(toPlaceAt.below()).canOcclude()
                 ) {
                     return false;
                 }
@@ -112,7 +112,8 @@ public class ShelfFungiFeature extends Feature<ShelfFungiFeatureConfig> {
             );
         }
 
-        return origin.isWithinDistance(toPlaceAt, (1 + rad) * radius);
+        double r = (1 + rad) * radius;
+        return origin.distSqr(toPlaceAt) <= r * r;
     }
 
     double getAngle(double height, double base) {

@@ -259,7 +259,7 @@ def main():
                     "letsdo-candlelight", "letsdo-brewery", "letsdo-herbalbrews",
                     "letsdo-farm-and-charm", "letsdo-nethervinery",
                     "chipped", "dungeonz", "athena", "exposure",
-                    "passable-foliage"):
+                    "passable-foliage", "profundis"):
             custom_jars += [
                 j
                 for j in (ROOT / "custom-mods" / mod / "build" / "libs").glob("*26.2*.jar")

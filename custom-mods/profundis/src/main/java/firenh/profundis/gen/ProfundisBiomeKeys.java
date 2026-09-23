@@ -1,25 +1,25 @@
 package firenh.profundis.gen;
 
 import firenh.profundis.Profundis;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.registry.RegistryKeys;
-import net.minecraft.world.biome.Biome;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.world.level.biome.Biome;
 
 public class ProfundisBiomeKeys {
-    private static RegistryKey<Biome> register(String name) {
-        return RegistryKey.of(RegistryKeys.BIOME, Profundis.id(name));
+    private static ResourceKey<Biome> register(String name) {
+        return ResourceKey.create(Registries.BIOME, Profundis.id(name));
     }
 
-    public static final RegistryKey<Biome> FROZEN_CAVES = register("frozen_caves");
-    public static final RegistryKey<Biome> MUSHROOM_CAVES = register("mushroom_caves");
-    public static final RegistryKey<Biome> MOLTEN_CAVES = register("molten_caves");
-    public static final RegistryKey<Biome> AMETHYST_CAVES = register("amethyst_caves");
-    public static final RegistryKey<Biome> BLACK_CAVES = register("black_caves");
-    public static final RegistryKey<Biome> ARID_CAVES = register("arid_caves");
-    public static final RegistryKey<Biome> FLORAL_LUSH_CAVES = register("floral_lush_caves");
-    public static final RegistryKey<Biome> DIRT_CAVES = register("dirt_caves");
-    public static final RegistryKey<Biome> SPARSE_LUSH_CAVES = register("sparse_lush_caves");
-    public static final RegistryKey<Biome> WHITE_CAVES = register("white_caves");
-    public static final RegistryKey<Biome> PAINTED_CAVES = register("painted_caves");
+    public static final ResourceKey<Biome> FROZEN_CAVES = register("frozen_caves");
+    public static final ResourceKey<Biome> MUSHROOM_CAVES = register("mushroom_caves");
+    public static final ResourceKey<Biome> MOLTEN_CAVES = register("molten_caves");
+    public static final ResourceKey<Biome> AMETHYST_CAVES = register("amethyst_caves");
+    public static final ResourceKey<Biome> BLACK_CAVES = register("black_caves");
+    public static final ResourceKey<Biome> ARID_CAVES = register("arid_caves");
+    public static final ResourceKey<Biome> FLORAL_LUSH_CAVES = register("floral_lush_caves");
+    public static final ResourceKey<Biome> DIRT_CAVES = register("dirt_caves");
+    public static final ResourceKey<Biome> SPARSE_LUSH_CAVES = register("sparse_lush_caves");
+    public static final ResourceKey<Biome> WHITE_CAVES = register("white_caves");
+    public static final ResourceKey<Biome> PAINTED_CAVES = register("painted_caves");
 
 }

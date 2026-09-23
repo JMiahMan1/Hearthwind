@@ -94,6 +94,22 @@ PY
     fi
   fi
 
+  # Vendored structure/adoption jars (undergroundworlds, dungeons+, Moogs, ...)
+  # Only top-level mods (must have fabric.mod.json); nested JiJ libs like
+  # kaleido-config stay inside their host jar and must not land in mods/.
+  if [ -d "$mdir" ] && [ -d "$ROOT/conversion/vendored" ]; then
+    for vj in "$ROOT"/conversion/vendored/*.jar; do
+      [ -f "$vj" ] || continue
+      case "$vj" in *-sources.jar|*-javadoc.jar) continue ;; esac
+      unzip -l "$vj" 2>/dev/null | grep -q 'fabric.mod.json' || continue
+      vb=$(basename "$vj")
+      if [ ! -f "$mdir/$vb" ] || ! cmp -s "$vj" "$mdir/$vb"; then
+        cp "$vj" "$mdir/"
+        echo "  VEND $inst $vb"
+      fi
+    done
+  fi
+
   # datapacks -> world/datapacks + every singleplayer save
   if [ -d "$ROOT/conversion/datapacks" ] && [ -d "$idir/minecraft" ]; then
     dest_roots=("$idir/minecraft/world/datapacks")
@@ -124,7 +140,7 @@ done
 replaced=0; skipped=0; added=0
 # Module roots live under custom-mods/
 MODS_ROOT="$ROOT/custom-mods"
-for moddir in "$MODS_ROOT"/hearthwind-* "$MODS_ROOT"/letsdo-* "$MODS_ROOT"/smallships "$MODS_ROOT"/villagesandpillages "$MODS_ROOT"/athena "$MODS_ROOT"/chipped "$MODS_ROOT"/dungeonz "$MODS_ROOT"/exposure "$MODS_ROOT"/passable-foliage "$MODS_ROOT"/logbegone "$MODS_ROOT"/entitycollisionfpsfix "$MODS_ROOT"/pockets "$MODS_ROOT"/couplings "$MODS_ROOT"/memoryleakfix "$MODS_ROOT"/async-locator "$MODS_ROOT"/lavender; do
+for moddir in "$MODS_ROOT"/hearthwind-* "$MODS_ROOT"/letsdo-* "$MODS_ROOT"/smallships "$MODS_ROOT"/villagesandpillages "$MODS_ROOT"/athena "$MODS_ROOT"/chipped "$MODS_ROOT"/dungeonz "$MODS_ROOT"/exposure "$MODS_ROOT"/passable-foliage "$MODS_ROOT"/logbegone "$MODS_ROOT"/entitycollisionfpsfix "$MODS_ROOT"/pockets "$MODS_ROOT"/couplings "$MODS_ROOT"/memoryleakfix "$MODS_ROOT"/async-locator "$MODS_ROOT"/lavender "$MODS_ROOT"/profundis; do
   [ -d "$moddir" ] || continue
   # plain jar only: newest non-sources jar in build/libs
   jar=$(ls -t "$moddir"/build/libs/*.jar 2>/dev/null | grep -v -- "-sources\.jar$" | head -1)

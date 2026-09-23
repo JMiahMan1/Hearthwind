@@ -4,34 +4,34 @@ import java.util.Iterator;
 
 import com.mojang.serialization.Codec;
 
-import net.minecraft.block.Blocks;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.world.StructureWorldAccess;
-import net.minecraft.world.gen.feature.DefaultFeatureConfig;
-import net.minecraft.world.gen.feature.Feature;
-import net.minecraft.world.gen.feature.util.FeatureContext;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.level.WorldGenLevel;
+import net.minecraft.world.level.levelgen.feature.configurations.NoneFeatureConfiguration;
+import net.minecraft.world.level.levelgen.feature.Feature;
+import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
 
-public class FrozenWaterFeature extends Feature<DefaultFeatureConfig> {
+public class FrozenWaterFeature extends Feature<NoneFeatureConfiguration> {
     
     // private static final Direction[] DIRECTIONS = new Direction[]{Direction.NORTH, Direction.SOUTH, Direction.EAST, Direction.WEST};
 
-    public FrozenWaterFeature(Codec<DefaultFeatureConfig> configCodec) {
+    public FrozenWaterFeature(Codec<NoneFeatureConfiguration> configCodec) {
         super(configCodec);
     }
 
     @Override
-    public boolean generate(FeatureContext<DefaultFeatureConfig> context) {
-        StructureWorldAccess world = context.getWorld();
-        BlockPos pos = context.getOrigin();
+    public boolean place(FeaturePlaceContext<NoneFeatureConfiguration> context) {
+        WorldGenLevel world = context.level();
+        BlockPos pos = context.origin();
         int checks = 12;
 
-        while (world.isAir(pos) && checks > 0) {
-            pos = pos.down();
+        while (world.isEmptyBlock(pos) && checks > 0) {
+            pos = pos.below();
             checks -= 1;
         }
 
-        if (world.isWater(pos)) {
+        if (world.isWaterAt(pos)) {
             setIce(world, pos);
             return true;
         }
@@ -39,17 +39,17 @@ public class FrozenWaterFeature extends Feature<DefaultFeatureConfig> {
         return false;
     }
     
-    private void setIce(StructureWorldAccess world, BlockPos pos) {
-        if (world.isWater(pos) && !world.isWater(pos.up()) && !world.getBlockState(pos.up()).isOpaque()) {
-            this.setBlockState(world, pos, Blocks.ICE.getDefaultState());
+    private void setIce(WorldGenLevel world, BlockPos pos) {
+        if (world.isWaterAt(pos) && !world.isWaterAt(pos.above()) && !world.getBlockState(pos.above()).canOcclude()) {
+            world.setBlock(pos, Blocks.ICE.defaultBlockState(), 3);
 
-            Iterator<BlockPos.Mutable> iter = BlockPos.iterateInSquare(pos, 16, Direction.NORTH, Direction.WEST).iterator();
+            Iterator<BlockPos> iter = BlockPos.betweenClosed(pos.offset(-16, 0, -16), pos.offset(16, 0, 16)).iterator();
 
             while (iter.hasNext()) {
                 BlockPos next = iter.next();
 
-                if (pos.isWithinDistance(next, 16) && world.isWater(next) && !world.isWater(next.up()) && !world.getBlockState(next.up()).isOpaque()) {
-                    this.setBlockState(world, next, Blocks.ICE.getDefaultState());
+                if (pos.distSqr(next) <= (double)(16) * (double)(16) && world.isWaterAt(next) && !world.isWaterAt(next.above()) && !world.getBlockState(next.above()).canOcclude()) {
+                    world.setBlock(next, Blocks.ICE.defaultBlockState(), 3);
                 }
             }
         }

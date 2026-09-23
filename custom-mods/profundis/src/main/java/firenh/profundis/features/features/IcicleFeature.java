@@ -3,13 +3,13 @@ package firenh.profundis.features.features;
 import com.mojang.serialization.Codec;
 
 import firenh.profundis.features.features.config.IcicleFeatureConfig;
-import net.minecraft.block.BlockState;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.random.Random;
-import net.minecraft.world.StructureWorldAccess;
-import net.minecraft.world.gen.feature.Feature;
-import net.minecraft.world.gen.feature.util.FeatureContext;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.level.WorldGenLevel;
+import net.minecraft.world.level.levelgen.feature.Feature;
+import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
 
 public class IcicleFeature extends Feature<IcicleFeatureConfig> {
     public IcicleFeature(Codec<IcicleFeatureConfig> configCodec) {
@@ -19,22 +19,22 @@ public class IcicleFeature extends Feature<IcicleFeatureConfig> {
     private static final Direction[] DIRECTIONS = {Direction.NORTH, Direction.SOUTH, Direction.EAST, Direction.WEST};
 
     @Override
-    public boolean generate(FeatureContext<IcicleFeatureConfig> context) {
-        BlockPos origin = context.getOrigin();
-        StructureWorldAccess world = context.getWorld();
-        Random random = context.getRandom();
+    public boolean place(FeaturePlaceContext<IcicleFeatureConfig> context) {
+        BlockPos origin = context.origin();
+        WorldGenLevel world = context.level();
+        RandomSource random = context.random();
 
-        IcicleFeatureConfig config = context.getConfig();
-        int minSize = config.size().getMin();
-        int size = config.size().get(random);
-        int amount = config.amount().get(random);
-        int spread = config.spread().get(random) / 2;
+        IcicleFeatureConfig config = context.config();
+        int minSize = config.size().minInclusive();
+        int size = config.size().sample(random);
+        int amount = config.amount().sample(random);
+        int spread = config.spread().sample(random) / 2;
         BlockState innerState = config.innerState();
         BlockState outerState = config.outerState();
 
         spread = spread < 16 ? spread : 16;
 
-        if (!world.isAir(origin) || world.isAir(origin.up())) {
+        if (!world.isEmptyBlock(origin) || world.isEmptyBlock(origin.above())) {
             return false;
         }
 
@@ -43,24 +43,24 @@ public class IcicleFeature extends Feature<IcicleFeatureConfig> {
 
         while (amount > 0) {
             amount -= 1;
-            BlockPos.Mutable mutable = origin.mutableCopy();
-            mutable = mutable.add(random.nextInt(1 + spread * 2) - spread, 0, random.nextInt(1 + spread * 2) - spread).mutableCopy();
+            BlockPos.MutableBlockPos mutable = origin.mutable();
+            mutable = mutable.offset(random.nextInt(1 + spread * 2) - spread, 0, random.nextInt(1 + spread * 2) - spread).mutable();
 
             boolean bl = false;
             
-            if (world.isAir(mutable) && world.isAir(mutable.up())) {
+            if (world.isEmptyBlock(mutable) && world.isEmptyBlock(mutable.above())) {
                 for (int i = 0; i < 3 && !bl; i += 1) {
-                    mutable = mutable.add(0, 1, 0).mutableCopy();
+                    mutable = mutable.offset(0, 1, 0).mutable();
 
-                    if (world.isAir(mutable) && !world.isAir(mutable.up()) && !world.isAir(mutable.up(2))) {
+                    if (world.isEmptyBlock(mutable) && !world.isEmptyBlock(mutable.above()) && !world.isEmptyBlock(mutable.above(2))) {
                         bl = true;
                     }
                 }
-            } else if (!world.isAir(mutable)) {
+            } else if (!world.isEmptyBlock(mutable)) {
                 for (int i = 0; i < 3 && !bl; i += 1) {
-                    mutable = mutable.add(0, -1, 0).mutableCopy();
+                    mutable = mutable.offset(0, -1, 0).mutable();
 
-                    if (world.isAir(mutable) && !world.isAir(mutable.up()) && !world.isAir(mutable.up(2))) {
+                    if (world.isEmptyBlock(mutable) && !world.isEmptyBlock(mutable.above()) && !world.isEmptyBlock(mutable.above(2))) {
                         bl = true;
                     }
                 }
@@ -69,38 +69,38 @@ public class IcicleFeature extends Feature<IcicleFeatureConfig> {
             int nextSize = random.nextInt(size) + 1;
             nextSize = nextSize > minSize ? nextSize : minSize;
 
-            if (!world.isAir(mutable.up()) && !world.isAir(mutable.up(2))) makeOneIcicle(world, mutable, nextSize, innerState, outerState, random);
+            if (!world.isEmptyBlock(mutable.above()) && !world.isEmptyBlock(mutable.above(2))) makeOneIcicle(world, mutable, nextSize, innerState, outerState, random);
         }
         
         return true;
     }
 
-    public static void makeOneIcicle(StructureWorldAccess world, BlockPos origin, int size, BlockState innerState, BlockState outerState, Random random) {
-        BlockPos.Mutable cursor = origin.mutableCopy();
+    public static void makeOneIcicle(WorldGenLevel world, BlockPos origin, int size, BlockState innerState, BlockState outerState, RandomSource random) {
+        BlockPos.MutableBlockPos cursor = origin.mutable();
 
         for (int i = 0; i < -1 + (2 * size / 3); i += 1) {
-            if (world.isAir(cursor)) {
-                world.setBlockState(cursor, innerState, 0);
+            if (world.isEmptyBlock(cursor)) {
+                world.setBlock(cursor, innerState, 0);
             } else {
                 break;
             }
 
-            cursor = cursor.down().mutableCopy();
+            cursor = cursor.below().mutable();
         }
 
         for (int i = 0; i < 1 + (size / 3); i += 1) {
-            if (world.isAir(cursor)) {
-                world.setBlockState(cursor, outerState, 0);
+            if (world.isEmptyBlock(cursor)) {
+                world.setBlock(cursor, outerState, 0);
             } else {
                 break;
             }
 
-            cursor = cursor.down().mutableCopy();
+            cursor = cursor.below().mutable();
         }
 
         if (size > 3) {
             for (Direction d : DIRECTIONS) {
-                if (world.isAir(origin.offset(d)) && !world.isAir(origin.offset(d).up())) makeOneIcicle(world, origin.offset(d), random.nextInt(2 + (size / 3)), innerState, outerState, random);
+                if (world.isEmptyBlock(origin.relative(d)) && !world.isEmptyBlock(origin.relative(d).above())) makeOneIcicle(world, origin.relative(d), random.nextInt(2 + (size / 3)), innerState, outerState, random);
             }
         }
     }

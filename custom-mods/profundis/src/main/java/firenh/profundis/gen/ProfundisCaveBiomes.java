@@ -3,10 +3,10 @@ package firenh.profundis.gen;
 import com.google.common.collect.ImmutableList;
 
 // import firenh.profundis.biomes.ProfundisBiomeKeys;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.world.biome.Biome;
-import net.minecraft.world.biome.source.util.MultiNoiseUtil; 
-import net.minecraft.world.biome.source.util.MultiNoiseUtil.ParameterRange;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.level.biome.Climate; 
+import net.minecraft.world.level.biome.Climate.Parameter;
 
 public class ProfundisCaveBiomes {
     /**
@@ -15,11 +15,11 @@ public class ProfundisCaveBiomes {
 
 
     public static class CaveBiome {
-        public final ParameterRange temperature, humidity, continentalness, erosion, depth, weirdness;
+        public final Climate.Parameter temperature, humidity, continentalness, erosion, depth, weirdness;
         public final float offset;
-        public final RegistryKey<Biome> biome;
+        public final ResourceKey<Biome> biome;
 
-        public CaveBiome(ParameterRange temperature, ParameterRange humidity, ParameterRange continentalness, ParameterRange erosion, ParameterRange depth, ParameterRange weirdness, float offset, RegistryKey<Biome> biome) {
+        public CaveBiome(Climate.Parameter temperature, Climate.Parameter humidity, Climate.Parameter continentalness, Climate.Parameter erosion, Climate.Parameter depth, Climate.Parameter weirdness, float offset, ResourceKey<Biome> biome) {
             this.temperature = temperature;
             this.humidity = humidity;
             this.continentalness = continentalness;
@@ -30,15 +30,15 @@ public class ProfundisCaveBiomes {
             this.biome = biome;
         }
 
-        public static CaveBiome of(ParameterRange temperature, ParameterRange humidity, ParameterRange continentalness, ParameterRange erosion, ParameterRange depth, ParameterRange weirdness, float offset, RegistryKey<Biome> biome) {
+        public static CaveBiome of(Climate.Parameter temperature, Climate.Parameter humidity, Climate.Parameter continentalness, Climate.Parameter erosion, Climate.Parameter depth, Climate.Parameter weirdness, float offset, ResourceKey<Biome> biome) {
             return new CaveBiome(temperature, humidity, continentalness, erosion, depth, weirdness, offset, biome);
         }
     }
 
-    private static final MultiNoiseUtil.ParameterRange DEFAULT_PARAMETER = MultiNoiseUtil.ParameterRange.of(-1.0f, 1.0f);
-    static final ParameterRange ALL_HEIGHT_RANGE = ParameterRange.of(0.2f, 0.9f);
-    static final ParameterRange ALL_HEIGHT_RANGE_DEEPER = ParameterRange.of(-0.2f, 0.9f);
-    static final ParameterRange HIGH_RANGE = ParameterRange.of(0.55f, 0.9f);
+    private static final Climate.Parameter DEFAULT_PARAMETER = Climate.Parameter.span(-1.0f, 1.0f);
+    static final Climate.Parameter ALL_HEIGHT_RANGE = Climate.Parameter.span(0.2f, 0.9f);
+    static final Climate.Parameter ALL_HEIGHT_RANGE_DEEPER = Climate.Parameter.span(-0.2f, 0.9f);
+    static final Climate.Parameter HIGH_RANGE = Climate.Parameter.span(0.55f, 0.9f);
 
     /* Ordering of terms:
      *      temperature,
@@ -53,45 +53,45 @@ public class ProfundisCaveBiomes {
 
     public final static ImmutableList<CaveBiome> DEFAULT_CAVE_BIOMES = ImmutableList.of(
         CaveBiome.of(
-            ParameterRange.of(-1.0f, -0.6f),
+            Climate.Parameter.span(-1.0f, -0.6f),
             DEFAULT_PARAMETER,
             DEFAULT_PARAMETER,
             DEFAULT_PARAMETER,
             ALL_HEIGHT_RANGE,
-            ParameterRange.of(0.8f, 1.0f),
+            Climate.Parameter.span(0.8f, 1.0f),
             0f,
             ProfundisBiomeKeys.FROZEN_CAVES
         ),
 
         CaveBiome.of(
-            ParameterRange.of(-1.0f, -0.6f),
+            Climate.Parameter.span(-1.0f, -0.6f),
             DEFAULT_PARAMETER,
             DEFAULT_PARAMETER,
             DEFAULT_PARAMETER,
             ALL_HEIGHT_RANGE,
-            ParameterRange.of(-1.0f, -0.8f),
+            Climate.Parameter.span(-1.0f, -0.8f),
             0f,
             ProfundisBiomeKeys.FROZEN_CAVES
         ),
 
         CaveBiome.of(
-            ParameterRange.of(-0.15f, 0.2f),
-            ParameterRange.of(0.3375f, 1.0f),
-            ParameterRange.of(0f, 0.35f),
+            Climate.Parameter.span(-0.15f, 0.2f),
+            Climate.Parameter.span(0.3375f, 1.0f),
+            Climate.Parameter.span(0f, 0.35f),
             DEFAULT_PARAMETER,
             ALL_HEIGHT_RANGE,
-            ParameterRange.of(0.7f, 1.0f),
+            Climate.Parameter.span(0.7f, 1.0f),
             0f,
             ProfundisBiomeKeys.MUSHROOM_CAVES
         ),
 
         CaveBiome.of(
-            ParameterRange.of(-0.15f, 0.2f),
-            ParameterRange.of(0.3375f, 1.0f),
-            ParameterRange.of(0f, 0.35f),
+            Climate.Parameter.span(-0.15f, 0.2f),
+            Climate.Parameter.span(0.3375f, 1.0f),
+            Climate.Parameter.span(0f, 0.35f),
             DEFAULT_PARAMETER,
             ALL_HEIGHT_RANGE,
-            ParameterRange.of(-1.0f, -0.7f),
+            Climate.Parameter.span(-1.0f, -0.7f),
             0f,
             ProfundisBiomeKeys.MUSHROOM_CAVES
         ),
@@ -99,10 +99,10 @@ public class ProfundisCaveBiomes {
         CaveBiome.of(
             DEFAULT_PARAMETER,
             DEFAULT_PARAMETER,
-            ParameterRange.of(0.4f, 0.6f),
+            Climate.Parameter.span(0.4f, 0.6f),
             DEFAULT_PARAMETER,
             ALL_HEIGHT_RANGE,
-            ParameterRange.of(0.75f, 1.0f),
+            Climate.Parameter.span(0.75f, 1.0f),
             0f,
             ProfundisBiomeKeys.MOLTEN_CAVES
         ),
@@ -110,10 +110,10 @@ public class ProfundisCaveBiomes {
         CaveBiome.of(
             DEFAULT_PARAMETER,
             DEFAULT_PARAMETER,
-            ParameterRange.of(-0.2f, 0f),
-            ParameterRange.of(-1f, -0.5f),
+            Climate.Parameter.span(-0.2f, 0f),
+            Climate.Parameter.span(-1f, -0.5f),
             ALL_HEIGHT_RANGE,
-            ParameterRange.of(-1.0f, -0.9f),
+            Climate.Parameter.span(-1.0f, -0.9f),
             0.1f,
             ProfundisBiomeKeys.AMETHYST_CAVES
         ), 
@@ -121,53 +121,53 @@ public class ProfundisCaveBiomes {
         CaveBiome.of(
             DEFAULT_PARAMETER,
             DEFAULT_PARAMETER,
-            ParameterRange.of(-0.3f, 0f),
-            ParameterRange.of(0f, 1f),
+            Climate.Parameter.span(-0.3f, 0f),
+            Climate.Parameter.span(0f, 1f),
             ALL_HEIGHT_RANGE,
-            ParameterRange.of(0.8f, 1.0f),
+            Climate.Parameter.span(0.8f, 1.0f),
             0.1f,
             ProfundisBiomeKeys.BLACK_CAVES
         ),
         CaveBiome.of(
             DEFAULT_PARAMETER,
             DEFAULT_PARAMETER,
-            ParameterRange.of(-0.3f, 0f),
-            ParameterRange.of(0f, 1f),
+            Climate.Parameter.span(-0.3f, 0f),
+            Climate.Parameter.span(0f, 1f),
             ALL_HEIGHT_RANGE,
-            ParameterRange.of(-1.0f, -0.8f),
+            Climate.Parameter.span(-1.0f, -0.8f),
             0.1f,
             ProfundisBiomeKeys.WHITE_CAVES
         ),
 
         CaveBiome.of(
-            ParameterRange.of(0.8f, 1.0f),
-            ParameterRange.of(-1.0f, 0),
+            Climate.Parameter.span(0.8f, 1.0f),
+            Climate.Parameter.span(-1.0f, 0),
             DEFAULT_PARAMETER,
             DEFAULT_PARAMETER,
             HIGH_RANGE,
-            ParameterRange.of(-1.0f, -0.5f),
+            Climate.Parameter.span(-1.0f, -0.5f),
             0f,
             ProfundisBiomeKeys.ARID_CAVES
         ),
 
         CaveBiome.of(
-            ParameterRange.of(0.8f, 1.0f),
-            ParameterRange.of(-1.0f, 0),
+            Climate.Parameter.span(0.8f, 1.0f),
+            Climate.Parameter.span(-1.0f, 0),
             DEFAULT_PARAMETER,
             DEFAULT_PARAMETER,
             HIGH_RANGE,
-            ParameterRange.of(0.5f, 1.0f),
+            Climate.Parameter.span(0.5f, 1.0f),
             0f,
             ProfundisBiomeKeys.PAINTED_CAVES
         ),
 
         CaveBiome.of(
             DEFAULT_PARAMETER,
-            ParameterRange.of(0.65f, 1.0f),
+            Climate.Parameter.span(0.65f, 1.0f),
             DEFAULT_PARAMETER,
             DEFAULT_PARAMETER,
             ALL_HEIGHT_RANGE,
-            ParameterRange.of(0.3f, 1.0f),
+            Climate.Parameter.span(0.3f, 1.0f),
             0.1f,
             ProfundisBiomeKeys.FLORAL_LUSH_CAVES
         )
@@ -176,18 +176,18 @@ public class ProfundisCaveBiomes {
 
         // CaveBiome.of(
         //     DEFAULT_PARAMETER,
-        //     ParameterRange.of(0.65f, 1.0f),
+        //     Climate.Parameter.span(0.65f, 1.0f),
         //     DEFAULT_PARAMETER,
         //     DEFAULT_PARAMETER,
         //     ALL_HEIGHT_RANGE,
-        //     ParameterRange.of(-1.0f, 0.5f),
+        //     Climate.Parameter.span(-1.0f, 0.5f),
         //     0.1f,
         //     ProfundisBiomeKeys.SPARSE_LUSH_CAVES
         // )
 
         // CaveBiome.of(
         //     DEFAULT_PARAMETER,
-        //     ParameterRange.of(1.0f, 2.0f),
+        //     Climate.Parameter.span(1.0f, 2.0f),
         //     DEFAULT_PARAMETER,
         //     DEFAULT_PARAMETER,
         //     ALL_HEIGHT_RANGE,

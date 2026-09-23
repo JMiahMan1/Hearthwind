@@ -4,22 +4,13 @@
         "features": [
             {
                 "chance": 0.2,
-                "feature": {
-                    "feature": "minecraft:flower_flower_forest",
-                    "placement": []
-                }
+                "feature": "minecraft:flower_flower_forest"
             },
             {
                 "chance": 0.4,
-                "feature": {
-                    "feature": "minecraft:patch_tall_grass",
-                    "placement": []
-                }
+                "feature": "minecraft:patch_tall_grass"
             }
         ],
-        "default": {
-            "feature": "minecraft:patch_grass",
-            "placement": []
-        }
+        "default": "minecraft:patch_grass_plain"
     }
 }

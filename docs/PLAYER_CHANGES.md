@@ -158,12 +158,18 @@ Eight optional professions (Miner, Farmer, Fisher, Warrior, Smither, Brewer, Bui
 - **Sailable Ships & Ocean Voyages (Small Ships)**:
   - Multi-tier craftable watercraft: **Cog**, **Brigg**, **Galley**, and **Drakkar**.
   - Functional shipboard cannons, mountable swivel guns, dyeable canvas sails, and onboard storage holds.
+- **Underground Biomes & Structures (2026-09-22)**:
+  - **Profundis**: 11 cave biomes (Frozen, Mushroom, Molten, Amethyst, Black, Arid, Floral Lush, White, Painted, Dirt, Sparse Lush) with custom features (amethyst veins, cave pillars, shelf fungi, icicles, painted caves).
+  - **UndergroundWorlds**: overworld underground regions replacing spider-caves/underground-jungle.
+  - **Dungeons+**: dungeon destinations; **Moogs Nether/End Structures** via StructureLib.
+  - **Lukis Grand Capitals**: upgraded village capitals datapack (pack_format 107).
 
 ### 26.2 Port Status
 - Verified 2026-09-11: `./gradlew build` green; server gametests **257/257 passed** (container); client gametests **PASS** (container, 14 screenshots).
 - `letsdo-*` family builds green in-tree (candlelight/meadow API errors resolved since the last audit).
   - Wave-1 contrib ports (2026-09-12): Athena done (0 compile errors, all 39 classes + CTM rendering complete, `settings.gradle` wired, ready for deploy). Chipped done (0 compile errors, full build green, boot-smoke verified: server boots to `Done`, RCON responds).
   - Local Aged-dep ports (2026-09-22): lavender, logbegone, pockets, couplings, entitycollisionfpsfix, memoryleakfix, async-locator, passable-foliage — build green, container gametests **296/296**, vendored, deployed to all three Prism instances (`update_prism.sh` + `verify_prism`). Commit `ba4677096`.
+  - Structures wave (2026-09-22): **profundis** yarn→mojmap port boot-green (218 mods, Done); adopted **undergroundworlds / dungeons+ / MoogsNether+End+StructureLib / ForgeConfigAPIPort**; **lukis-grand-capitals** datapack loaded; mrpack overrides + Prism Full/Minimal/Dev-Client synced.
   - Remaining for complete Aged parity: grouped table in `docs/NOT_IMPLEMENTED.md`.
 - Mechanical Age (Create wind/water wheels, smithing 18 / builder 3 preview): not started - Create is not in the pack yet, so there is nothing to gate.
 

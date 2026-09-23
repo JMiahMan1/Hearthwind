@@ -42,12 +42,14 @@ Resolver `missing` minus already-solved local ports/vendored jars/in-house rebui
 
 | Wave | Mod | Upstream max | Notes |
 |---|---|---|---|
-| 2 | `lukis-grand-capitals` | 1.21.11 | datapack loader may suffice |
-| 2 | `spider-caves` | 1.20.4 | small fabric port |
-| 2 | `profundis` | 1.21.4 | cave biomes; competes with Terralith/Tectonic pick-ONE |
-| 2 | `dungeon-now-loading` | 1.20.1 | heavy NBT |
-| 2 | `dungeons-plus` | 26.1.2 upstream on Modrinth but missing for target path | prefer adopt; else fabric rewrite LAST |
-| — | re-locate: `desert-dungeon`, `u-desert`, `underground-jungle`, `betterendcitiesvanilla`, `mns`, `mes` | — | slug 404s |
+| ✅ | `lukis-grand-capitals` | 1.21.11 | **SHIPPED** — datapack under `conversion/datapacks/`, pack_format 107 |
+| ✅ | `spider-caves` | 1.20.4 | **SUPERSEDED** by adopted `undergroundworlds` 3.2.1 |
+| ✅ | `profundis` | 1.21.4 | **SHIPPED** — full yarn→mojmap port `custom-mods/profundis`, boot-green 218 mods |
+| ✅ | `dungeons-plus` | 26.1.2 | **ADOPTED** fabric jar `dungeons+-1.12.0.jar` vendored |
+| ✅ | `underground-jungle` | 1.20.1 | **SUPERSEDED** by adopted `undergroundworlds` 3.2.1 |
+| ✅ | `mns` / `mes` | 26.2 fabric | **ADOPTED** MoogsNether + MoogsEnd + StructureLib vendored |
+| 2 | `dungeon-now-loading` | 1.20.1 | heavy NBT — decompile 1.20.1 fabric jar OR defer |
+| — | re-locate: `desert-dungeon`, `u-desert`, `betterendcitiesvanilla` | — | slug 404s; candidates: jonshu-desert-dungeon-addon, desert-dungeon-dungeonz-addon, better-end-cities-base |
 
 ### Wave 2 — mobs & adventure
 
@@ -77,7 +79,7 @@ Resolver `missing` minus already-solved local ports/vendored jars/in-house rebui
 
 ### Not counted as open (already delivered)
 
-- **Local ports / vendored**: lavender, logbegone, pockets, couplings, entitycollisionfpsfix, memoryleakfix, async-locator, passable-foliage, athena, chipped, exposure, dungeonz, smallships, villagesandpillages, YUNG×6, gardens-of-the-dead, natures-spirit, tlc, medieval-buildings, true-ending, birds-boids, kiwi, arrp.
+- **Local ports / vendored**: profundis, lukis-grand-capitals, undergroundworlds, dungeons+, MoogsNether/End/StructureLib, ForgeConfigAPIPort, lavender, logbegone, pockets, couplings, entitycollisionfpsfix, memoryleakfix, async-locator, passable-foliage, athena, chipped, exposure, dungeonz, smallships, villagesandpillages, YUNG×6, gardens-of-the-dead, natures-spirit, tlc, medieval-buildings, true-ending, birds-boids, kiwi, arrp.
 - **In-house rebuilds**: endrem eyes (`hearthwind-world` `endrem/`), herdspanic (`HerdPanic`), villager-transportation (listed as world scope; verify feature depth before calling parity complete), plus the full rebuild groups in `mods-manifest.json`.
 
 ---
@@ -91,5 +93,5 @@ Resolver `missing` minus already-solved local ports/vendored jars/in-house rebui
 ## Pack Health
 
 - **Gametests**: **296 / 296 (container, green)** as of commit `ba4677096`.
-- **Dev Server Status**: **Done** on 26.2, RCON verified.
-- **Prism**: Full / Minimal / Dev-Client refreshed with all finished ports (verify_prism OK).
+- **Dev Server Status**: **Done** on 26.2, RCON verified; structures boot-green (profundis + adopted structure suite, 218 mods).
+- **Prism**: Full / Minimal / Dev-Client refreshed with all finished ports including profundis + structure adopts (verify_prism OK).

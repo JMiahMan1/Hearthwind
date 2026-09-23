@@ -1,23 +1,12 @@
 {
-  "carvers": {
-    "air": [
-      "minecraft:cave",
-      "minecraft:cave_extra_underground",
-      "minecraft:canyon"
-    ]
-  },
+  "carvers": [
+    "minecraft:cave",
+    "minecraft:cave_extra_underground",
+    "minecraft:canyon"
+  ],
   "downfall": 0.5,
   "effects": {
-    "fog_color": 12638463,
-    "music": {
-      "max_delay": 24000,
-      "min_delay": 12000,
-      "replace_current_music": false,
-      "sound": "minecraft:music.overworld.frozen_peaks"
-    },
-    "sky_color": 8364543,
-    "water_color": 3750089,
-    "water_fog_color": 329011
+    "water_color": 3750089
   },
   "features": [
     [],
@@ -165,5 +154,16 @@
     "water_ambient": [],
     "water_creature": []
   },
-  "temperature": -1.0
+  "temperature": -1.0,
+  "attributes": {
+    "minecraft:visual/fog_color": 12638463,
+    "minecraft:visual/sky_color": 8364543,
+    "minecraft:visual/water_fog_color": 329011,
+    "minecraft:audio/background_music": {
+      "max_delay": 24000,
+      "min_delay": 12000,
+      "replace_current_music": false,
+      "sound": "minecraft:music.overworld.frozen_peaks"
+    }
+  }
 }

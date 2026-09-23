@@ -146,6 +146,8 @@
                 }
             },
             "placement": []
-        }
+        },
+        "level_test_distance": 0,
+        "max_level_deviation": 0
     }
 }

@@ -6,12 +6,12 @@ import java.util.Optional;
 import com.mojang.serialization.Codec;
 
 import firenh.profundis.features.features.config.LargeOreFeatureConfig;
-import net.minecraft.block.BlockState;
-import net.minecraft.structure.rule.RuleTest;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.random.Random;
-import net.minecraft.world.StructureWorldAccess;
-import net.minecraft.world.gen.feature.OreFeatureConfig;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.levelgen.structure.templatesystem.RuleTest;
+import net.minecraft.core.BlockPos;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.level.WorldGenLevel;
+import net.minecraft.world.level.levelgen.feature.configurations.OreConfiguration;
 
 public class GradientLargeOreFeature extends LargeOreFeature {
 
@@ -19,8 +19,8 @@ public class GradientLargeOreFeature extends LargeOreFeature {
         super(configCodec);
     }
 
-    protected Optional<BlockState> getBlockState(StructureWorldAccess world, BlockPos pos, BlockState currentState, Random random, List<OreFeatureConfig.Target> targets) {
-        for (OreFeatureConfig.Target t : targets) {
+    protected Optional<BlockState> getBlockState(WorldGenLevel world, BlockPos pos, BlockState currentState, RandomSource random, List<OreConfiguration.TargetBlockState> targets) {
+        for (OreConfiguration.TargetBlockState t : targets) {
             RuleTest rule = t.target;
             
             if (rule.test(currentState, random)) {

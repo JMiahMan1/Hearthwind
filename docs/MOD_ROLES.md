@@ -125,7 +125,7 @@ See the full grouped table in **`docs/NOT_IMPLEMENTED.md`**. Highlights:
 
 | Cluster | Mods | Impact while absent |
 |---|---|---|
-| Structures wave | lukis-grand-capitals, spider-caves, profundis, dungeon-now-loading, dungeons-plus | fewer dungeon destinations beyond YUNG/DungeonZ |
+| Structures wave | dungeon-now-loading, desert-dungeon/u-desert re-locate | fewer dungeon destinations beyond YUNG/DungeonZ + UndergroundWorlds/Dungeons+/Moogs/Profundis |
 | Mobs / adventure | adventurez, fleshz, creeper-overhaul, enderman-overhaul | fewer ambient/boss variants (astrocraft **held**) |
 | Accessory slots | trinkets + inmis + backslot cluster | vanilla bundles only; port as ONE best |
 | Gear / smith | medievalweapons, amarite, smitherz/libz, travelerz | weapon identity lives in tiered affixes |
@@ -148,12 +148,13 @@ Grouped:
   enderman-overhaul, boids + birds-boids-addon, adventurez, fleshz,
   astrocraft): worldgen-churn heavy; ports would fight our biome picks.
   Effect: fewer ambient species - acceptable, tonal loss only.
-- **Structure mods superseded** (dungeon-now-loading, dungeons-plus,
-  desert-dungeon, dungeonz, u-desert, underground-jungle, spider-caves,
-  true-ending, vanilla-end-city-overhaul, profundis,
-  lukis-grand-capitals, villages-and-pillages, mns,
-  moogs-endless-structures): overlap - we keep ONE structure suite per
-  niche (Yungs/DnT/formations/hopo). De-kludge: count per need goes down.
+- **Structure mods superseded / adopted** (spider-caves +
+  underground-jungle → UndergroundWorlds; dungeons-plus / mns / mes /
+  profundis / lukis adopted or ported 2026-09-22; desert-dungeon,
+  dungeonz, u-desert, true-ending, vanilla-end-city-overhaul,
+  villages-and-pillages, moogs-endless): overlap - we keep ONE
+  structure suite per niche (Yungs/DnT/UndergroundWorlds/Moogs/Profundis).
+  De-kludge: count per need goes down.
 - **Let's Do family (all 12)**: food/crop ambience (bakery, brewery,
   vinery, candlelight, meadow, farm-charm, herbal-brews + do-api,
   moonlight). Duplicates diet/farming identity we own;

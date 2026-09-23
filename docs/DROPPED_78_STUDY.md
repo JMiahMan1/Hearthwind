@@ -111,14 +111,14 @@ with "COMPLETE look and feel and feature parity."
 | 1a | athena | 39 | **DONE** | No (26.1.2) | Full port, parity 100% |
 | 1b | chipped | 51+38k | **DONE** | No (1.21.1) | Full port, compiles, boots |
 | 1c | dungeonz | 89 | **WIRED** | No (1.21.1) | In-tree port, Prism deployed; feature asserts remaining |
-| 2 | lukis-grand-capitals | moderate | Not started | No (1.21.11) | Data-only may suffice |
-| 2 | spider-caves | small | Not started | No (1.20.4) | Fabric port |
-| 2 | profundis | moderate | Not started | No (1.21.4) | Cave biome port |
+| 2 | lukis-grand-capitals | moderate | **Shipped** (datapack) | No (1.21.11) | Data pack pack_format 107 |
+| 2 | spider-caves | small | **Superseded** by undergroundworlds | No (1.20.4) | Adopted UW 3.2.1 |
+| 2 | profundis | moderate | **Shipped** (yarn→mojmap) | No (1.21.4) | custom-mods/profundis boot-green |
 | 2 | Dungeon Now Loading | moderate | Not started | No (1.20.1) | Heavy NBT |
 | 2 | dungeons+ | unknown | Not started | No (1.20.4) | Forge→fabric rewrite LAST |
 
-**Remaining fabric ports needing work (structures)**: 5 (lukis, spider-caves, profundis, DnL, dungeons+)
-**Forge/neoforge ports (hardest, restart last)**: 1 (dungeons+)
+**Remaining fabric ports needing work (structures)**: 1 (DnL) + re-locate desert-dungeon/u-desert/better-end-cities
+**Forge/neoforge ports (hardest, restart last)**: 0 (dungeons+ adopted as fabric jar)
 **Full remaining parity set (all waves)**: `docs/NOT_IMPLEMENTED.md`
 
 ### Next waves (unchanged):
@@ -193,11 +193,11 @@ Nothing in this document ends in "dropped permanently".
 | Mod | Max | Return action |
 |---|---|---|
 | Dungeon Now Loading | 1.20.1 | fork-port; heavy NBT structure set — assets reusable |
-| dungeons+ | 1.20.4 | fork-port |
+| dungeons+ | 1.20.4 | **Adopted** fabric jar dungeons+-1.12.0 |
 | dungeonz | 1.21.1 | fork-port |
 | spirder-caves | 1.20.4 | fork-port (small) |
-| profundis | 1.21.4 | cave worldgen; competes with Tectonic/Terralith pick-ONE — port as alternative profile |
-| lukis-grand-capitals | 1.21.9 | closest to portability; fork-port |
+| profundis | 1.21.4 | **Shipped** — custom-mods/profundis yarn→mojmap, boot-green 26.2 |
+| lukis-grand-capitals | 1.21.9 | **Shipped** — datapack conversion/datapacks/lukis-grand-capitals |
 | villagesandpillages | 1.21.4 | fork-port |
 | betterendcitiesvanilla | — | re-locate (slug changed); then fork-port |
 | u_desert / desert-dungeon / underground-jungle / mns / mes | — | re-locate (renames); then fork-port each |

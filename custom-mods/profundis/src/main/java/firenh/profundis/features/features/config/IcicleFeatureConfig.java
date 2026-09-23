@@ -3,17 +3,18 @@ package firenh.profundis.features.features.config;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.util.math.intprovider.IntProvider;
-import net.minecraft.world.gen.feature.FeatureConfig;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.util.valueproviders.IntProvider;
+import net.minecraft.world.level.levelgen.feature.configurations.FeatureConfiguration;
+import net.minecraft.util.valueproviders.IntProviders;
 
 public record IcicleFeatureConfig(IntProvider size, IntProvider amount, IntProvider spread, BlockState innerState,
-BlockState outerState) implements FeatureConfig 
+BlockState outerState) implements FeatureConfiguration 
 {
     public static final Codec<IcicleFeatureConfig> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            IntProvider.VALUE_CODEC.fieldOf("size").forGetter(IcicleFeatureConfig::size),
-            IntProvider.VALUE_CODEC.fieldOf("amount").forGetter(IcicleFeatureConfig::amount),
-            IntProvider.VALUE_CODEC.fieldOf("spread").forGetter(IcicleFeatureConfig::spread),
+            IntProviders.CODEC.fieldOf("size").forGetter(IcicleFeatureConfig::size),
+            IntProviders.CODEC.fieldOf("amount").forGetter(IcicleFeatureConfig::amount),
+            IntProviders.CODEC.fieldOf("spread").forGetter(IcicleFeatureConfig::spread),
             BlockState.CODEC.fieldOf("inner_state").forGetter(IcicleFeatureConfig::innerState),
             BlockState.CODEC.fieldOf("outer_state").forGetter(IcicleFeatureConfig::outerState)
         ).apply(instance, instance.stable(IcicleFeatureConfig::new)));

@@ -8,49 +8,50 @@ import com.mojang.serialization.Codec;
 
 import firenh.profundis.features.features.config.LargeOreFeatureConfig;
 import firenh.profundis.util.ProfundisTags;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.registry.tag.BlockTags;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.noise.DoublePerlinNoiseSampler;
-import net.minecraft.util.math.random.Random;
-import net.minecraft.world.StructureWorldAccess;
-import net.minecraft.world.gen.feature.OreFeatureConfig;
-import net.minecraft.world.gen.stateprovider.NoiseBlockStateProvider;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.item.DyeColor;
+import net.minecraft.tags.BlockTags;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.levelgen.synth.NormalNoise;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.level.WorldGenLevel;
+import net.minecraft.world.level.levelgen.feature.configurations.OreConfiguration;
+import net.minecraft.world.level.levelgen.feature.stateproviders.NoiseProvider;
 
 public class PaintedCavesLargeOreFeature extends LargeOreFeature {
     private static final List<BlockState> TERRACOTTA_BLOCKS = List.of(
-        Blocks.YELLOW_TERRACOTTA.getDefaultState(),
-        Blocks.LIME_TERRACOTTA.getDefaultState(),
-        Blocks.LIGHT_BLUE_TERRACOTTA.getDefaultState(),
-        Blocks.LIGHT_BLUE_TERRACOTTA.getDefaultState(),
-        Blocks.MAGENTA_TERRACOTTA.getDefaultState(),
-        Blocks.PINK_TERRACOTTA.getDefaultState(),
-        Blocks.ORANGE_TERRACOTTA.getDefaultState(),
-        Blocks.YELLOW_TERRACOTTA.getDefaultState(),
-        Blocks.YELLOW_TERRACOTTA.getDefaultState(),
-        Blocks.LIME_TERRACOTTA.getDefaultState(),
-        Blocks.LIME_TERRACOTTA.getDefaultState(),
-        Blocks.LIGHT_BLUE_TERRACOTTA.getDefaultState(),
-        Blocks.MAGENTA_TERRACOTTA.getDefaultState()
+        Blocks.DYED_TERRACOTTA.pick(DyeColor.YELLOW).defaultBlockState(),
+        Blocks.DYED_TERRACOTTA.pick(DyeColor.LIME).defaultBlockState(),
+        Blocks.DYED_TERRACOTTA.pick(DyeColor.LIGHT_BLUE).defaultBlockState(),
+        Blocks.DYED_TERRACOTTA.pick(DyeColor.LIGHT_BLUE).defaultBlockState(),
+        Blocks.DYED_TERRACOTTA.pick(DyeColor.MAGENTA).defaultBlockState(),
+        Blocks.DYED_TERRACOTTA.pick(DyeColor.PINK).defaultBlockState(),
+        Blocks.DYED_TERRACOTTA.pick(DyeColor.ORANGE).defaultBlockState(),
+        Blocks.DYED_TERRACOTTA.pick(DyeColor.YELLOW).defaultBlockState(),
+        Blocks.DYED_TERRACOTTA.pick(DyeColor.YELLOW).defaultBlockState(),
+        Blocks.DYED_TERRACOTTA.pick(DyeColor.LIME).defaultBlockState(),
+        Blocks.DYED_TERRACOTTA.pick(DyeColor.LIME).defaultBlockState(),
+        Blocks.DYED_TERRACOTTA.pick(DyeColor.LIGHT_BLUE).defaultBlockState(),
+        Blocks.DYED_TERRACOTTA.pick(DyeColor.MAGENTA).defaultBlockState()
     );
 
     
     private final float SCALE = 2;
     private final long seed = -224983484687588995L;
-    private final DoublePerlinNoiseSampler.NoiseParameters noiseParameters = new DoublePerlinNoiseSampler.NoiseParameters(-4, 1);
-    private final NoiseBlockStateProvider STATE_PROVIDER = new NoiseBlockStateProvider(seed, noiseParameters, SCALE, TERRACOTTA_BLOCKS);
+    private final NormalNoise.NoiseParameters noiseParameters = new NormalNoise.NoiseParameters(-4, 1);
+    private final NoiseProvider STATE_PROVIDER = new NoiseProvider(seed, noiseParameters, SCALE, TERRACOTTA_BLOCKS);
 
     public PaintedCavesLargeOreFeature(Codec<LargeOreFeatureConfig> configCodec) {
         super(configCodec);
     }
 
     @Override
-    protected Optional<BlockState> getBlockState(StructureWorldAccess world, BlockPos pos, BlockState currentState, Random random, List<OreFeatureConfig.Target> targets) {
+    protected Optional<BlockState> getBlockState(WorldGenLevel world, BlockPos pos, BlockState currentState, RandomSource random, List<OreConfiguration.TargetBlockState> targets) {
         try {
-            if (currentState.isIn(BlockTags.BASE_STONE_OVERWORLD)) {
+            if (currentState.is(BlockTags.BASE_STONE_OVERWORLD)) {
                 return Optional.of(
-                    STATE_PROVIDER.get(random, pos)
+                    STATE_PROVIDER.getState(world, random, pos)
                 );
             }
         } catch (Exception e) {

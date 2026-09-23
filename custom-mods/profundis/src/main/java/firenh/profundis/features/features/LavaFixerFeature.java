@@ -3,26 +3,26 @@ package firenh.profundis.features.features;
 import com.mojang.serialization.Codec;
 
 import firenh.profundis.Profundis;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.world.StructureWorldAccess;
-import net.minecraft.world.gen.feature.DefaultFeatureConfig;
-import net.minecraft.world.gen.feature.Feature;
-import net.minecraft.world.gen.feature.util.FeatureContext;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.level.WorldGenLevel;
+import net.minecraft.world.level.levelgen.feature.configurations.NoneFeatureConfiguration;
+import net.minecraft.world.level.levelgen.feature.Feature;
+import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
 
-public class LavaFixerFeature extends Feature<DefaultFeatureConfig> {
-    public LavaFixerFeature(Codec<DefaultFeatureConfig> configCodec) {
+public class LavaFixerFeature extends Feature<NoneFeatureConfiguration> {
+    public LavaFixerFeature(Codec<NoneFeatureConfiguration> configCodec) {
         super(configCodec);
     }
 
     private Direction[] directionsToCheck = {Direction.DOWN, Direction.NORTH, Direction.SOUTH, Direction.EAST, Direction.WEST};
 
     @Override
-    public boolean generate(FeatureContext<DefaultFeatureConfig> context) {
-        BlockPos origin = context.getOrigin();
-        StructureWorldAccess world = context.getWorld();
+    public boolean place(FeaturePlaceContext<NoneFeatureConfiguration> context) {
+        BlockPos origin = context.origin();
+        WorldGenLevel world = context.level();
         final int chunkSnappedX = chunkSnap(origin.getX());
         final int chunkSnappedZ = chunkSnap(origin.getZ());
         
@@ -33,27 +33,27 @@ public class LavaFixerFeature extends Feature<DefaultFeatureConfig> {
         while (cursor.getY() >= 0) {
             // Profundis.LOGGER.info("lava fixer is doing stuff pt 2");
 
-            if (world.getBlockState(cursor).isOf(Blocks.LAVA)) {
+            if (world.getBlockState(cursor).is(Blocks.LAVA)) {
                 boolean fixed = false;
-                BlockState setState = cursor.getY() > 0 ? Blocks.STONE.getDefaultState() : Blocks.DEEPSLATE.getDefaultState();
+                BlockState setState = cursor.getY() > 0 ? Blocks.STONE.defaultBlockState() : Blocks.DEEPSLATE.defaultBlockState();
 
                 for (Direction d : directionsToCheck) {
-                    BlockPos checkingCursor = cursor.offset(d);
-                    if (!world.isAir(checkingCursor) 
-                            && !(world.getBlockState(checkingCursor).isOf(Blocks.LAVA))
-                            && !(world.getBlockState(checkingCursor).isSolidBlock(world, checkingCursor))
-                            && !(world.getBlockState(checkingCursor).isOpaque())
+                    BlockPos checkingCursor = cursor.relative(d);
+                    if (!world.isEmptyBlock(checkingCursor) 
+                            && !(world.getBlockState(checkingCursor).is(Blocks.LAVA))
+                            && !(world.getBlockState(checkingCursor).blocksMotion())
+                            && !(world.getBlockState(checkingCursor).canOcclude())
                         ) {
                         // Profundis.LOGGER.info("fixed lava at " + cursor.getX() + "x, " + cursor.getY() + "y, " + cursor.getZ() + "z");
-                        world.setBlockState(cursor, setState, 0);
+                        world.setBlock(cursor, setState, 0);
                         fixed = true;
                         break;
                     }
                 }
 
-                if (fixed == false && world.isAir(cursor.down())) {
+                if (fixed == false && world.isEmptyBlock(cursor.below())) {
                     Profundis.LOGGER.info("fixed lava at " + cursor.getX() + "x, " + cursor.getY() + "y, " + cursor.getZ() + "z");
-                    world.setBlockState(cursor, setState, 0);
+                    world.setBlock(cursor, setState, 0);
                     fixed = true;
                 }
             }

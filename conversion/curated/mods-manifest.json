@@ -541,20 +541,20 @@
    "action": "keep",
    "cat": "structures"
   },
-  {
-   "file": "Dungeon Now Loading",
-   "slug": "dungeon-now-loading",
-   "action": "keep",
-   "reason": "Stuck 1.20.1; overlap with kept structure set",
-   "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
-  },
-  {
-   "file": "dungeons+-1.8.4b",
-   "slug": "dungeons-plus",
-   "action": "keep",
-   "reason": "Overlap; verify status before reconsidering",
-   "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
-  },
+   {
+    "file": "Dungeon Now Loading",
+    "slug": "dungeon-now-loading",
+    "action": "keep",
+    "reason": "Stuck 1.20.1; open - decompile fabric jar or defer",
+    "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
+   },
+   {
+    "file": "dungeons+-1.8.4b",
+    "slug": "dungeons-plus",
+    "action": "keep",
+    "reason": "Adopted fabric jar dungeons+-1.12.0 vendored",
+    "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
+   },
   {
    "file": "desert-dungeon",
    "slug": "desert-dungeon",
@@ -576,20 +576,20 @@
    "reason": "Niche desert structures",
    "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
   },
-  {
-   "file": "underground-jungle",
-   "slug": "underground-jungle",
-   "action": "keep",
-   "reason": "Stuck 1.20.1; big worldgen risk",
-   "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
-  },
-  {
-   "file": "spirder-caves",
-   "slug": "spider-caves",
-   "action": "keep",
-   "reason": "Unresolved/niche",
-   "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
-  },
+   {
+    "file": "underground-jungle",
+    "slug": "underground-jungle",
+    "action": "keep",
+    "reason": "Superseded by adopted undergroundworlds 3.2.1",
+    "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
+   },
+   {
+    "file": "spirder-caves",
+    "slug": "spider-caves",
+    "action": "keep",
+    "reason": "Superseded by adopted undergroundworlds 3.2.1",
+    "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
+   },
   {
    "file": "tru.e-ending",
    "slug": "true-ending",
@@ -603,20 +603,20 @@
    "reason": "Tiny tweak datapack-style",
    "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
   },
-  {
-   "file": "profundis",
-   "slug": "profundis",
-   "action": "keep",
-   "reason": "Cave biomes stuck; snapshot worldgen churn",
-   "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
-  },
-  {
-   "file": "lukis-grand-capitals",
-   "slug": "lukis-grand-capitals",
-   "action": "keep",
-   "reason": "Structure pack stuck",
-   "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
-  },
+   {
+    "file": "profundis",
+    "slug": "profundis",
+    "action": "keep",
+    "reason": "Shipped: custom-mods/profundis yarn→mojmap port, boot-green 26.2",
+    "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
+   },
+   {
+    "file": "lukis-grand-capitals",
+    "slug": "lukis-grand-capitals",
+    "action": "keep",
+    "reason": "Shipped: datapack conversion/datapacks/lukis-grand-capitals, pack_format 107",
+    "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
+   },
   {
    "file": "villagesandpillages",
    "slug": "villages-and-pillages",

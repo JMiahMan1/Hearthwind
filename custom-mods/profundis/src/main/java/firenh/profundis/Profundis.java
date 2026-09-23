@@ -1,7 +1,7 @@
 package firenh.profundis;
 
 import net.fabricmc.api.ModInitializer;
-import net.minecraft.util.Identifier;
+import net.minecraft.resources.Identifier;
 
 import java.util.Objects;
 
@@ -24,7 +24,7 @@ public class Profundis implements ModInitializer {
 	private static Config config;
 
 	public static Identifier id(String id) {
-		return Identifier.of(MODID, id);
+		return Identifier.fromNamespaceAndPath(MODID, id);
 	}
 
 	@Override
@@ -38,7 +38,7 @@ public class Profundis implements ModInitializer {
 		// ProfundisBiomes.init();
 	}
 
-	public static Config getConfig() {
+	public static Config config() {
 		if (Objects.isNull(config)) {
 			loadConfigFromFile();
 		}

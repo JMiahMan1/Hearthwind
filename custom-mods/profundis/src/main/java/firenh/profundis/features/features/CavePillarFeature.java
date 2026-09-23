@@ -3,16 +3,16 @@ package firenh.profundis.features.features;
 import com.mojang.serialization.Codec;
 
 import firenh.profundis.features.features.config.CavePillarFeatureConfig;
-import net.minecraft.block.BlockState;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.intprovider.IntProvider;
-import net.minecraft.util.math.random.Random;
-import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.world.StructureWorldAccess;
-import net.minecraft.world.gen.feature.Feature;
-import net.minecraft.world.gen.feature.PlacedFeature;
-import net.minecraft.world.gen.feature.util.FeatureContext;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.util.valueproviders.IntProvider;
+import net.minecraft.util.RandomSource;
+import net.minecraft.core.Holder;
+import net.minecraft.world.level.WorldGenLevel;
+import net.minecraft.world.level.levelgen.feature.Feature;
+import net.minecraft.world.level.levelgen.placement.PlacedFeature;
+import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
 
 public class CavePillarFeature extends Feature<CavePillarFeatureConfig> {
     public CavePillarFeature(Codec<CavePillarFeatureConfig> configCodec) {
@@ -22,64 +22,64 @@ public class CavePillarFeature extends Feature<CavePillarFeatureConfig> {
     private static final Direction[] DIRECTIONS = {Direction.NORTH, Direction.SOUTH, Direction.EAST, Direction.WEST};
 
     @Override
-    public boolean generate(FeatureContext<CavePillarFeatureConfig> context) {
-        BlockPos origin = context.getOrigin();
-        StructureWorldAccess world = context.getWorld();
-        Random random = context.getRandom();
-        CavePillarFeatureConfig config = context.getConfig();
+    public boolean place(FeaturePlaceContext<CavePillarFeatureConfig> context) {
+        BlockPos origin = context.origin();
+        WorldGenLevel world = context.level();
+        RandomSource random = context.random();
+        CavePillarFeatureConfig config = context.config();
         
         BlockState innerState = config.innerState();
         BlockState outerState = config.outerState();
         IntProvider lengthOfEnds = config.lengthOfEnds();
-        RegistryEntry<PlacedFeature> bottomFeature = config.bottomFeature();
+        Holder<PlacedFeature> bottomFeature = config.bottomFeature();
 
-        if (!world.isAir(origin) || world.isAir(origin.up())) {
+        if (!world.isEmptyBlock(origin) || world.isEmptyBlock(origin.above())) {
             return false;
         }
 
-        BlockPos.Mutable cursor = origin.mutableCopy();
+        BlockPos.MutableBlockPos cursor = origin.mutable();
 
-        while (world.isAir(cursor)) {
-            world.setBlockState(cursor, innerState, 0);
-            cursor = cursor.down().mutableCopy();
+        while (world.isEmptyBlock(cursor)) {
+            world.setBlock(cursor, innerState, 0);
+            cursor = cursor.below().mutable();
         }
 
         for (Direction d : DIRECTIONS) {
-            addEnds(world, origin.offset(d, 1), cursor.offset(d, 1), lengthOfEnds, random, innerState, outerState);
+            addEnds(world, origin.relative(d), cursor.relative(d), lengthOfEnds, random, innerState, outerState);
         }
 
-        bottomFeature.value().generate(world, context.getGenerator(), random, cursor);
+        bottomFeature.value().place(world, context.chunkGenerator(), random, cursor);
 
         return true;
     }
 
-    private void addEnds(StructureWorldAccess world, BlockPos top, BlockPos bottom, IntProvider length, Random random, BlockState innerState, BlockState outerState) {
-        int lengthTop = length.get(random);
-        BlockPos.Mutable cursor = top.mutableCopy();
+    private void addEnds(WorldGenLevel world, BlockPos top, BlockPos bottom, IntProvider length, RandomSource random, BlockState innerState, BlockState outerState) {
+        int lengthTop = length.sample(random);
+        BlockPos.MutableBlockPos cursor = top.mutable();
 
-        if (world.isAir(cursor.up())) for (int i = 0; i < 4; i += 1) {
-            cursor = cursor.up().mutableCopy();
-            if (world.getBlockState(cursor.up()).isOpaque()) break;
+        if (world.isEmptyBlock(cursor.above())) for (int i = 0; i < 4; i += 1) {
+            cursor = cursor.above().mutable();
+            if (world.getBlockState(cursor.above()).canOcclude()) break;
         }
 
         for (int i = 0; i < lengthTop; i += 1) {
             BlockState place = i + 1 < 2 * lengthTop / 3 ? innerState : outerState;
-            world.setBlockState(cursor, place, 0);
-            cursor = cursor.down().mutableCopy();
+            world.setBlock(cursor, place, 0);
+            cursor = cursor.below().mutable();
         }
 
-        int lengthBottom = length.get(random);
-        cursor = bottom.mutableCopy();
+        int lengthBottom = length.sample(random);
+        cursor = bottom.mutable();
 
-        if (world.isAir(cursor.down())) for (int i = 0; i < 4; i += 1) {
-            cursor = cursor.down().mutableCopy();
-            if (world.getBlockState(cursor.down()).isOpaque()) break;
+        if (world.isEmptyBlock(cursor.below())) for (int i = 0; i < 4; i += 1) {
+            cursor = cursor.below().mutable();
+            if (world.getBlockState(cursor.below()).canOcclude()) break;
         }
 
         for (int i = 0; i < lengthBottom; i += 1) {
             BlockState place = i + 1 < 2 * lengthBottom / 3 ? innerState : outerState;
-            world.setBlockState(cursor, place, 0);
-            cursor = cursor.up().mutableCopy();
+            world.setBlock(cursor, place, 0);
+            cursor = cursor.above().mutable();
         }
     }
 }
