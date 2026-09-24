@@ -1,0 +1,13 @@
+# Hearthwind: kiwi 26.0.20 has no official 26.2 build. Its contributor
+# cosmetic-screen keybind reads Minecraft.screen (removed in 26.2) on the
+# first client tick and hard-crashes with NoSuchFieldError.
+#
+# Kiwi rewrites this file on boot from the live field value - if the jar
+# was ever booted unpatched it rewrites true. patch_vendored.py therefore
+# also forces ContributorsClient.onKeyInput to early-return. Keep this
+# false as defense-in-depth for fresh installs.
+---
+contributorCosmetic: ''
+cosmeticScreenKeybind: false
+globalTooltip: false
+noMicrosoftTelemetry: true

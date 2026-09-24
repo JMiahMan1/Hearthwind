@@ -31,7 +31,8 @@ fi
 rm -f "$ROOT/dev-server/mods/hearthwind-client-"*.jar 2>/dev/null || true
 for moddir in "$ROOT"/custom-mods/hearthwind-* "$ROOT"/custom-mods/letsdo-* \
     "$ROOT"/custom-mods/smallships "$ROOT"/custom-mods/villagesandpillages \
-    "$ROOT"/custom-mods/chipped "$ROOT"/custom-mods/dungeonz "$ROOT"/custom-mods/athena; do
+    "$ROOT"/custom-mods/chipped "$ROOT"/custom-mods/dungeonz "$ROOT"/custom-mods/athena \
+    "$ROOT"/custom-mods/adventurez "$ROOT"/custom-mods/fleshz; do
   [ -d "$moddir" ] || continue
   for f in "$moddir"/build/libs/*.jar; do
     [[ -f "$f" ]] || continue

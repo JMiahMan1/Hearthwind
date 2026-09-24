@@ -115,6 +115,66 @@ PY
     done
   fi
 
+  if [ -d "$ROOT/conversion/build/dist/client/mods" ] && [ -d "$mdir" ]; then
+    python3 - "$ROOT/conversion/build/dist/client/mods" "$mdir" <<'PY'
+import json
+import re
+import shutil
+import sys
+import zipfile
+from pathlib import Path
+
+source = Path(sys.argv[1])
+target = Path(sys.argv[2])
+
+def version_key(value):
+    base, separator, suffix = value.partition("+")
+    numbers = tuple((0, int(part)) if part.isdigit() else (1, part) for part in re.split(r"(\d+)", base))
+    return numbers, (1 if not separator else 0), suffix
+
+selected = {}
+candidates = {}
+
+for jar in sorted(source.glob("*.jar")):
+    if jar.name.endswith(("-sources.jar", "-javadoc.jar")):
+        continue
+    try:
+        with zipfile.ZipFile(jar) as archive:
+            metadata = json.loads(archive.read("fabric.mod.json"))
+    except (KeyError, OSError, ValueError, zipfile.BadZipFile):
+        continue
+    mod_id = metadata.get("id")
+    if not mod_id:
+        continue
+    candidates.setdefault(mod_id, []).append((metadata.get("version", ""), jar))
+
+for mod_id, variants in candidates.items():
+    selected[mod_id] = max(variants, key=lambda item: version_key(item[0]))[1]
+    if len(variants) > 1:
+        names = ", ".join(item[1].name for item in variants)
+        print(f"  SELECT {target.name}/{mod_id}: {names} -> {selected[mod_id].name}")
+
+for jar in sorted(target.glob("*.jar")):
+    try:
+        with zipfile.ZipFile(jar) as archive:
+            metadata = json.loads(archive.read("fabric.mod.json"))
+    except (KeyError, OSError, ValueError, zipfile.BadZipFile):
+        continue
+    mod_id = metadata.get("id")
+    source_jar = selected.get(mod_id)
+    if source_jar is not None and jar.name != source_jar.name:
+        jar.unlink()
+        print(f"  REMOVE {target.name}/{jar.name}")
+
+for mod_id, source_jar in selected.items():
+    destination = target / source_jar.name
+    if destination.exists() and destination.read_bytes() == source_jar.read_bytes():
+        continue
+    shutil.copy2(source_jar, destination)
+    print(f"  PACK {target.name}/{source_jar.name} ({mod_id})")
+PY
+  fi
+
   if [ -d "$ROOT/conversion/overrides/config" ] && [ -d "$idir/minecraft/config" ]; then
     while IFS= read -r -d '' src; do
       rel="${src#"$ROOT/conversion/overrides/config/"}"

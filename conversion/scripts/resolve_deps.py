@@ -99,9 +99,15 @@ def pick_version(versions, mc, loader_pref=("fabric",), allow_older=False):
 
     def rank(v):
         loaders = set(v.get("loaders", []))
+        gvs = v.get("game_versions", [])
+        # Prefer builds exclusive to the target MC (or fewest extra claimed
+        # versions). boids 2.0.0+26.3 claims [26.2, 26.3] but its mixin
+        # plugin AbstractMethodErrors on the 26.2 mixin loader.
         return (
             any(ld in loaders for ld in loader_pref),
             all(not ld.startswith("forge") for ld in loaders),
+            1 if set(gvs) == {mc} else 0,
+            -len(gvs),
             v["date_published"],
         )
 

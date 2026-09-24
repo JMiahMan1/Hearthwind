@@ -20,7 +20,7 @@ MC=$(python3 -c "import json;print(json.load(open('$CONF'))['targets']['minecraf
 LOADER=$(python3 -c "import json;print(json.load(open('$CONF'))['targets']['loader_version'])")
 FABRIC_API=0.158.0+26.2
 SRV="$DIR/../.gametest-server"
-HEAP="${GAMETEST_HEAP:-768m}"
+HEAP="${GAMETEST_HEAP:-1536m}"
 KEEP=0
 FILTER="${GAMETEST_FILTER:-}"
 for arg in "$@"; do
@@ -66,12 +66,37 @@ fi
 
 echo "== installing fresh mod jars =="
 rm -rf "$SRV/mods" && mkdir -p "$SRV/mods"
-# Copy all resolved server dependencies and vendored jars. The materialized
-# pack dist (built by build_pack.py --server-dir) supplies third-party mods
-# such as fabric-api, which are absent from dev-server/ on clean checkouts.
-cp "$DIR/../../dev-server/mods/"*.jar "$SRV/mods/" 2>/dev/null || true
-cp "$DIR/../../conversion/vendored/"*.jar "$SRV/mods/" 2>/dev/null || true
+# Pack dist is authoritative for third-party mods (fabric-api et al.).
+# dev-server/ is optional and often holds STALE different-filename jars with
+# the same fabric.mod.json id (fabric-api 0.159 vs 0.161, strawberrylib r3
+# vs r5) - loading both breaks CCA entity_sync on mock players. Copy order:
+# dist -> vendored (fill gaps) -> custom builds -> then dedupe by mod id.
 cp "$DIR/../../conversion/build/dist/server/mods/"*.jar "$SRV/mods/" 2>/dev/null || true
+cp "$DIR/../../conversion/vendored/"*.jar "$SRV/mods/" 2>/dev/null || true
+# dev-server only contributes jars whose mod id is not already present
+python3 - "$SRV/mods" "$DIR/../../dev-server/mods" <<'PY'
+import json, sys, zipfile
+from pathlib import Path
+dest, dev = Path(sys.argv[1]), Path(sys.argv[2])
+if not dev.is_dir():
+    sys.exit(0)
+have = set()
+for j in dest.glob("*.jar"):
+    try:
+        with zipfile.ZipFile(j) as z:
+            have.add(json.loads(z.read("fabric.mod.json")).get("id"))
+    except Exception:
+        pass
+for j in sorted(dev.glob("*.jar")):
+    try:
+        with zipfile.ZipFile(j) as z:
+            mid = json.loads(z.read("fabric.mod.json")).get("id")
+    except Exception:
+        continue
+    if mid and mid not in have:
+        (dest / j.name).write_bytes(j.read_bytes())
+        have.add(mid)
+PY
 # Ensure fresh custom builds overwrite any stale jars (letsdo jars included:
 # their gametest entrypoints run in the same harness invocation; skip dirs
 # not wired in settings.gradle yet)
@@ -80,10 +105,69 @@ HAVE_LETS_DO=""
 for m in $LETS_DO; do [ -d "$m" ] && HAVE_LETS_DO="$HAVE_LETS_DO $m"; done
 HAVE_LETS_DO_WIRED=""
 for m in $HAVE_LETS_DO; do grep -q "^include '$m'$" settings.gradle && HAVE_LETS_DO_WIRED="$HAVE_LETS_DO_WIRED $m"; done
-find hearthwind-survival hearthwind-skills hearthwind-jobs hearthwind-primitive hearthwind-world hearthwind-client athena chipped dungeonz exposure passable-foliage $HAVE_LETS_DO_WIRED -name "*.jar" \
+find hearthwind-survival hearthwind-skills hearthwind-jobs hearthwind-primitive hearthwind-world hearthwind-client athena chipped dungeonz exposure passable-foliage lavender profundis $HAVE_LETS_DO_WIRED -name "*.jar" \
      -path "*build/libs/*" ! -name "*-sources.jar" -exec cp {} "$SRV/mods/" \;
 # Install gametest harness
 cp "$CACHE/fabric-gametest-api-v1.jar" "$SRV/mods/"
+# Final safety: one jar per fabric.mod.json id (prefer pack MC version in
+# the file version, then higher version). boids shipped both +26.2 and a
+# broken +26.3 mixin-plugin build - lexicographic max would pick 26.3.
+python3 - "$SRV/mods" <<'PY'
+import json, sys, zipfile
+from pathlib import Path
+mods = Path(sys.argv[1])
+mc = "26.2"
+try:
+    conf = json.loads((mods.parent.parent / "conversion" / "build.conf.json").read_text())
+    # path is custom-mods/.gametest-server -> repo is parents[2]
+except Exception:
+    pass
+# resolve build.conf from harness CWD layout
+for cand in (
+    Path("conversion/build.conf.json"),
+    Path("../conversion/build.conf.json"),
+    Path("../../conversion/build.conf.json"),
+):
+    if cand.exists():
+        try:
+            mc = json.loads(cand.read_text())["targets"]["minecraft"]
+        except Exception:
+            pass
+        break
+
+def score(ver: str):
+    # prefer versions that contain the pack MC id, then lexicographic max
+    return (mc in ver, ver)
+
+by_id = {}
+for j in sorted(mods.glob("*.jar")):
+    if j.name == "fabric-gametest-api-v1.jar":
+        continue
+    try:
+        with zipfile.ZipFile(j) as z:
+            fm = json.loads(z.read("fabric.mod.json"))
+            mid = fm.get("id")
+            ver = fm.get("version") or ""
+    except Exception:
+        continue
+    if not mid:
+        continue
+    by_id.setdefault(mid, []).append((score(ver), j))
+removed = 0
+for mid, entries in by_id.items():
+    if len(entries) < 2:
+        continue
+    entries.sort(key=lambda t: t[0])
+    for _, j in entries[:-1]:
+        j.unlink()
+        removed += 1
+if removed:
+    print(f"deduped {removed} stale duplicate mod jars by id")
+# report any remaining multi-version ambiguity for boids-like cases
+for mid, entries in by_id.items():
+    if len(entries) > 1:
+        print(f"WARN multi remaining? {mid}: {[e[1].name for e in entries]}")
+PY
 
 # Ship the migrated tuning corpus with the throwaway world so gametests read
 # the same data the dev server runs (world datapacks override mod resources,
@@ -129,7 +213,7 @@ if [ -n "$FILTER" ]; then
 fi
 set +e
 cd "$SRV"
-timeout "${GAMETEST_TIMEOUT:-420}" java -Xmx"$HEAP" \
+timeout "${GAMETEST_TIMEOUT:-1200}" java -Xmx"$HEAP" \
      -Dfabric-api.gametest=true \
      -Dhearthwind.mergedJar="${MERGED_JAR}" \
      "${FILTER_ARGS[@]:+${FILTER_ARGS[@]}}" \

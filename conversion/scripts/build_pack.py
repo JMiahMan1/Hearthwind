@@ -16,6 +16,7 @@ import argparse
 import hashlib
 import json
 import shutil
+import sys
 import urllib.request
 from pathlib import Path
 
@@ -40,6 +41,19 @@ def main():
     conf = json.load(open(CONF))
     data = json.load(open(BUILD / "resolved.json"))
     mc = conf["targets"]["minecraft"]
+    # Idempotent content patches for vendored jars lacking official 26.2
+    # builds (kiwi cosmeticScreenKeybind -> Minecraft.screen NoSuchFieldError).
+    # Must run BEFORE mrpack packaging and the vendored -> dist copy so every
+    # rebuild ships the patched bytes.
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+    from patch_vendored import patch_all
+
+    patch_counts = patch_all(ROOT / "conversion")
+    if patch_counts.get("patched"):
+        print(
+            f"patch_vendored: {patch_counts['patched']} jar(s) patched, "
+            f"{patch_counts.get('already', 0)} already ok"
+        )
     ready = [r for r in data["resolved"] if r["status"].startswith("ok")]
     ready_server = [r for r in ready if not r.get("client_only")]
     ready_client_only = [r for r in ready if r.get("client_only")]
@@ -187,6 +201,13 @@ def main():
         if resourcepacks.is_dir():
             for p in sorted(resourcepacks.glob("*.zip")):
                 z.write(p, "overrides/resourcepacks/" + p.name)
+        # Ship config overrides (kiwi-client.yaml, combat_roll, ...) on the
+        # client pack too - singleplayer clients need the same crash guards.
+        ov = ROOT / "conversion" / "overrides"
+        if ov.exists():
+            for p in ov.rglob("*"):
+                if p.is_file():
+                    z.write(p, "overrides/" + str(p.relative_to(ov)))
         local_c = non_index_jars(DIST / "client" / "mods", indexed_client)
         for j in local_c:
             z.write(j, "overrides/mods/" + j.name)
@@ -259,7 +280,7 @@ def main():
                     "letsdo-candlelight", "letsdo-brewery", "letsdo-herbalbrews",
                     "letsdo-farm-and-charm", "letsdo-nethervinery",
                     "chipped", "dungeonz", "athena", "exposure",
-                    "passable-foliage", "profundis"):
+                    "passable-foliage", "profundis", "adventurez", "fleshz"):
             custom_jars += [
                 j
                 for j in (ROOT / "custom-mods" / mod / "build" / "libs").glob("*26.2*.jar")

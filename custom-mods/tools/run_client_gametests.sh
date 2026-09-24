@@ -50,19 +50,109 @@ fi
 cp "$CGT_API" "$WORK/mods/"
 # Overlay EVERY locally built module (fresh source wins over CLIENT_MODS,
 # which may hold stale dist jars - stale jars once masked real failures).
-for j in "$ROOT"/hearthwind-*/build/libs/*26.2+0.1.0.jar "$ROOT"/letsdo-*/build/libs/*26.2+0.1.0.jar "$ROOT"/athena/build/libs/*26.2+0.1.0.jar "$ROOT"/chipped/build/libs/*26.2+0.1.0.jar "$ROOT"/smallships/build/libs/smallships-26.2+0.1.0.jar "$ROOT"/villagesandpillages/build/libs/villagesandpillages-26.2+0.1.0.jar; do
+shopt -s nullglob
+for j in "$ROOT"/*/build/libs/*26.2+0.1.0.jar; do
   [ -f "$j" ] || continue
   case "$j" in *sources*) continue ;; esac
   base="$(basename "$j")"; mod="${base%-26.2*}"
   rm -f "$WORK/mods/$mod"-*.jar
   cp "$j" "$WORK/mods/"
 done
+shopt -u nullglob
+# One jar per fabric.mod.json id (prefer pack MC version, then higher).
+# dist once shipped both boids-26.2 and a broken boids-26.3; raw cp kept both.
+python3 - "$WORK/mods" <<'PY'
+import json, sys, zipfile
+from pathlib import Path
+mods = Path(sys.argv[1])
+mc = "26.2"
+for cand in (
+    Path("conversion/build.conf.json"),
+    Path("../conversion/build.conf.json"),
+    Path("../../conversion/build.conf.json"),
+):
+    if cand.exists():
+        try:
+            mc = json.loads(cand.read_text())["targets"]["minecraft"]
+        except Exception:
+            pass
+        break
+
+def score(ver: str):
+    return (mc in ver, ver)
+
+by_id = {}
+for j in sorted(mods.glob("*.jar")):
+    if j.name == "fabric-client-gametest-api-v1.jar" or j.name == "fabric-gametest-api-v1.jar":
+        continue
+    try:
+        with zipfile.ZipFile(j) as z:
+            fm = json.loads(z.read("fabric.mod.json"))
+            mid = fm.get("id")
+            ver = fm.get("version") or ""
+    except Exception:
+        continue
+    if not mid:
+        continue
+    by_id.setdefault(mid, []).append((score(ver), j))
+removed = 0
+for mid, entries in by_id.items():
+    if len(entries) < 2:
+        continue
+    entries.sort(key=lambda t: t[0])
+    for _, j in entries[:-1]:
+        j.unlink()
+        removed += 1
+if removed:
+    print(f"deduped {removed} stale duplicate mod jars by id")
+PY
 echo "mods staged: $(ls "$WORK/mods" | wc -l | tr -d ' ')"
+
+# Apply idempotent vendored-jar content patches (kiwi 26.2 clinit flip) so a
+# host/container run never boots unpatched bytes even if dist was rebuilt
+# without build_pack.py.
+python3 "$REPO/conversion/scripts/patch_vendored.py" "$REPO/conversion" || {
+  echo "ERROR: patch_vendored.py failed" >&2
+  exit 1
+}
+# Re-copy kiwi from vendored in case CLIENT_MODS held a stale unpatched jar.
+if [ -f "$REPO/conversion/vendored/kiwi-26.0.20+fabric.jar" ]; then
+  cp "$REPO/conversion/vendored/kiwi-26.0.20+fabric.jar" "$WORK/mods/"
+fi
 
 cat > "$WORK/options.txt" <<'EOF'
 onboardAccessibility:false
 pauseOnLostFocus:false
 skipMultiplayerWarning:true
+EOF
+
+# kiwi 26.0.20 has no 26.2 build: cosmetic keybind reads Minecraft.screen
+# (removed) on first client tick. Prewrite client config so ConfigHandler.init
+# loads false BEFORE the first END_CLIENT_TICK (overrides are not staged here).
+# Full key set matches Kiwi's rewriter so it cannot regenerate with true.
+mkdir -p "$WORK/config"
+cat > "$WORK/config/kiwi-client.yaml" <<'EOF'
+# Hearthwind CGT: keep kiwi cosmetic screen keybind off on 26.2
+---
+contributorCosmetic: ''
+cosmeticScreenKeybind: false
+globalTooltip: false
+noMicrosoftTelemetry: true
+qol:
+  noForceBackup: false
+  suppressExperimentalSettingsWarning: false
+  titleScreenNoFade: false
+  hideDataComponentsTooltip: false
+  loadingOverlayNoFade: false
+  superClearChat: false
+debug:
+  showTranslatedTagsByDefault: false
+  printDataComponentsWhenCopy: true
+  tagsTooltip: true
+  debugTooltipMsg: true
+  tagsTooltipAppendKeybindHint: false
+  F3CopyInInventory: true
+  tagsPerPage: 6
 EOF
 
 # Pre-agree the EULA for the gametest dedicated server. It runs with the
@@ -83,7 +173,8 @@ PY
 ) || { echo "ERROR: classpath build failed" >&2; exit 1; }
 { read -r LOADER; read -r MIXIN; read -r MIXEX; read -r ASM; read -r MCCP; read -r GAME_JAR; read -r ASSET_IDX; } <<< "$CPINFO"
 
-VMARGS=(-Xmx4G "-Xms2G" "-XX:+UseG1GC" "-XX:MaxGCPauseMillis=50" "-XX:G1HeapRegionSize=8M" "--enable-native-access=ALL-UNNAMED" "--sun-misc-unsafe-memory-access=allow"
+# Colima/CI VMs have ~8 GB total; default to a safer pair and allow override.
+VMARGS=(-Xmx"${CGT_XMX:-3G}" "-Xms${CGT_XMS:-1G}" "-XX:+UseG1GC" "-XX:MaxGCPauseMillis=50" "-XX:G1HeapRegionSize=8M" "--enable-native-access=ALL-UNNAMED" "--sun-misc-unsafe-memory-access=allow"
   "-Dfabric.gameJarPath=$GAME_JAR" "-Dfabric.client.gametest"
   "-Dfabric.client.gametest.screenshotDir=$WORK/screenshots")
 case "$(uname)" in

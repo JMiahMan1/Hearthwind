@@ -9,9 +9,9 @@
 set -euo pipefail
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO="$(cd "$DIR/../.." && pwd)"
-STAGE="${CGT_STAGE_DIR:-/tmp/cgthearthwind-stage}"
+STAGE="${CGT_STAGE_DIR:-$REPO/.tmp/cgthearthwind-stage}"
 
-bash "$DIR/stage_container_tests.sh"
+CGT_STAGE_DIR="$STAGE" bash "$DIR/stage_container_tests.sh"
 docker build -f "$DIR/docker/client-gametest.Dockerfile" -t hearthwind-client-gametest "$DIR/docker"
 
 # Seed a named volume via `docker cp`: Docker Desktop file sharing does not
@@ -31,6 +31,8 @@ docker run --rm \
   -w /work/repo/custom-mods \
   -e CGT_ENV=ci \
   -e CGT_XVFB=1 \
+  -e CGT_XMX="${CGT_XMX:-3G}" \
+  -e CGT_XMS="${CGT_XMS:-1G}" \
   -e GRADLE_USER_HOME=/work/gradle-home \
   -e "CGT_ARGS=$*" \
   hearthwind-client-gametest \

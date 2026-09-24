@@ -17,7 +17,7 @@
 set -euo pipefail
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO="$(cd "$DIR/../.." && pwd)"
-STAGE="${CGT_STAGE_DIR:-/tmp/cgthearthwind-stage}"
+STAGE="${CGT_STAGE_DIR:-$REPO/.tmp/cgthearthwind-stage}"
 R="$STAGE/repo"
 G="$STAGE/gradle-home/caches/modules-2/files-2.1"
 
@@ -27,6 +27,26 @@ mkdir -p "$R" "$G"
 # 1. tooling + build wiring (source of truth: repo)
 rsync -a --delete "$REPO/custom-mods/tools/" "$R/custom-mods/tools/"
 cp "$REPO/custom-mods/settings.gradle" "$R/custom-mods/settings.gradle"
+# module sources (assets + java) so test_assets_and_drops / lint_and_validate
+# actually discover content inside the container (jars alone are not enough)
+for d in "$REPO"/custom-mods/hearthwind-* \
+         "$REPO"/custom-mods/athena \
+         "$REPO"/custom-mods/chipped \
+         "$REPO"/custom-mods/dungeonz \
+         "$REPO"/custom-mods/adventurez \
+         "$REPO"/custom-mods/fleshz \
+         "$REPO"/custom-mods/exposure \
+         "$REPO"/custom-mods/lavender \
+         "$REPO"/custom-mods/passable-foliage \
+         "$REPO"/custom-mods/profundis \
+         "$REPO"/custom-mods/smallships \
+         "$REPO"/custom-mods/villagesandpillages \
+         "$REPO"/custom-mods/letsdo-*; do
+  [ -d "$d/src" ] || continue
+  mod="$(basename "$d")"
+  mkdir -p "$R/custom-mods/$mod"
+  rsync -a --delete "$d/src" "$R/custom-mods/$mod/src"
+done
 # loom merged jar (mixin-shadow tests read client classes from it via
 # -Dhearthwind.mergedJar, resolved by run_gametests.sh under .gradle/)
 mkdir -p "$R/custom-mods/.gradle/loom-cache"
@@ -37,8 +57,12 @@ for d in "$REPO"/custom-mods/hearthwind-*/build/libs \
          "$REPO"/custom-mods/athena/build/libs \
          "$REPO"/custom-mods/chipped/build/libs \
          "$REPO"/custom-mods/dungeonz/build/libs \
+          "$REPO"/custom-mods/adventurez/build/libs \
+          "$REPO"/custom-mods/fleshz/build/libs \
           "$REPO"/custom-mods/exposure/build/libs \
+          "$REPO"/custom-mods/lavender/build/libs \
           "$REPO"/custom-mods/passable-foliage/build/libs \
+          "$REPO"/custom-mods/profundis/build/libs \
          "$REPO"/custom-mods/smallships/build/libs \
          "$REPO"/custom-mods/villagesandpillages/build/libs \
          "$REPO"/custom-mods/letsdo-*/build/libs; do
@@ -57,6 +81,10 @@ done
 # build.conf.json is the version source of truth run_gametests.sh reads.
 mkdir -p "$R/conversion"
 cp "$REPO/conversion/build.conf.json" "$R/conversion/build.conf.json"
+# Vendored-jar content patches (patch_vendored.py) run inside the harness;
+# stage the scripts so the container can invoke them.
+mkdir -p "$R/conversion/scripts"
+rsync -a --delete "$REPO/conversion/scripts/" "$R/conversion/scripts/"
 rsync -a --delete "$REPO/conversion/build/dist/server/mods/" "$R/conversion/build/dist/server/mods/"
 rsync -a --delete "$REPO/conversion/build/dist/client/mods/" "$R/conversion/build/dist/client/mods/"
 rsync -a --delete "$REPO/conversion/datapacks/hearthwind/" "$R/conversion/datapacks/hearthwind/"
@@ -77,16 +105,23 @@ need=(
   "org.ow2.asm/asm-analysis/9*/*/asm-analysis-9*.jar"
   "net.fabricmc.fabric-api/fabric-client-gametest-api-v1/*/*/*.jar"
 )
+# Only stage the pack-pinned fabric-loader (prefer 0.19.5); a stale 0.19.3
+# in the cache would otherwise win client_harness' lexicographic first().
+LOADER_WANT=$(python3 -c "import json;print(json.load(open('$REPO/conversion/build.conf.json'))['targets']['loader_version'])")
 shopt -s nullglob
 for pat in "${need[@]}"; do
   for j in "$CACHE"/$pat; do
     case "$j" in *sources*) continue ;; esac
+    if [[ "$pat" == net.fabricmc/fabric-loader/* ]] && [[ "$(basename "$j")" != *"-${LOADER_WANT}.jar" ]]; then
+      continue
+    fi
     rel="${j#$CACHE/}"
     mkdir -p "$G/$(dirname "$rel")"
     cp "$j" "$G/$rel"
   done
 done
 shopt -u nullglob
+echo "staged fabric-loader: ${LOADER_WANT}"
 
 echo "stage: $(du -sh "$STAGE" | cut -f1) at $STAGE"
 echo "staged jars: $(find "$R" "$G" -name '*.jar' | wc -l | tr -d ' ')"

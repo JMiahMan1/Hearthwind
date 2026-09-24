@@ -108,13 +108,29 @@ def build_classpath():
         os.environ.get("GRADLE_USER_HOME", str(pathlib.Path.home() / ".gradle"))
     ) / "caches/modules-2/files-2.1"
 
-    def first(pat):
+    def first(pat, prefer=None):
         hits = sorted(glob.glob(str(cache / pat)))
         if not hits:
             raise RuntimeError(f"gradle cache miss: {pat}")
+        if prefer:
+            # Prefer the pack-pinned version (build.conf loader_version).
+            # sorted() would pick 0.19.3 over 0.19.5 lexicographically; mods
+            # require >=0.19.5 and fail mod-resolution with the wrong loader.
+            for h in hits:
+                if prefer in pathlib.Path(h).parts or prefer in pathlib.Path(h).name:
+                    return h
         return hits[0]
 
-    loader = first("net.fabricmc/fabric-loader/*/*/fabric-loader-*.jar")
+    want_loader = "0.19.5"
+    try:
+        conf = json.loads((REPO / "conversion" / "build.conf.json").read_text())
+        want_loader = conf["targets"]["loader_version"]
+    except Exception:
+        pass
+    loader = first("net.fabricmc/fabric-loader/*/*/fabric-loader-*.jar", prefer=want_loader)
+    if want_loader not in loader:
+        # hard-fail rather than silently booting a loader the pack rejects
+        raise RuntimeError(f"fabric-loader {want_loader} not in gradle cache (got {loader})")
     mixin = first("net.fabricmc/sponge-mixin/*/*/sponge-mixin-*.jar")
     mixex = first("io.github.llamalad7/mixinextras-fabric/*/*/mixinextras-fabric-*.jar")
     asm = ""
