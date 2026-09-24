@@ -3,6 +3,7 @@ package dev.jmiahman.hearthwind.client.gametest;
 import dev.jmiahman.hearthwind.client.JobsScreen;
 import dev.jmiahman.hearthwind.client.NutrientsScreen;
 import dev.jmiahman.hearthwind.client.PartyScreen;
+import dev.jmiahman.hearthwind.client.SkillInfoScreen;
 import dev.jmiahman.hearthwind.client.SkillsScreen;
 import dev.jmiahman.hearthwind.client.SurvivalInfoScreen;
 import net.fabricmc.fabric.api.client.gametest.v1.FabricClientGameTest;
@@ -56,6 +57,15 @@ public class ScreensTourGameTests implements FabricClientGameTest {
             context.waitFor(minecraft -> minecraft.gui.screen() instanceof SkillsScreen, SLOW_TIMEOUT_TICKS);
             context.waitTicks(10);
             context.takeScreenshot("tour_skills");
+
+            context.setScreen(() -> new SkillInfoScreen("mining"));
+            context.waitFor(minecraft -> minecraft.gui.screen() instanceof SkillInfoScreen, SLOW_TIMEOUT_TICKS);
+            context.waitTicks(10);
+            context.takeScreenshot("tour_skill_info");
+
+            context.setScreen(SkillsScreen::new);
+            context.waitFor(minecraft -> minecraft.gui.screen() instanceof SkillsScreen, SLOW_TIMEOUT_TICKS);
+            context.waitTicks(10);
 
             context.setScreen(JobsScreen::new);
             context.waitFor(minecraft -> minecraft.gui.screen() instanceof JobsScreen, SLOW_TIMEOUT_TICKS);

@@ -272,6 +272,35 @@ public class SkillsScreen extends AgedPanelScreen {
         return false;
     }
 
+    static String skillName(String skill) {
+        String id = normalizeSkill(skill);
+        return id.substring(0, 1).toUpperCase() + id.substring(1);
+    }
+
+    static Item skillIcon(String skill) {
+        String id = normalizeSkill(skill);
+        for (int i = 0; i < SKILL_ORDER.length; i++) {
+            if (SKILL_ORDER[i].equals(id)) {
+                return SKILL_ICONS[i];
+            }
+        }
+        return Items.BOOK;
+    }
+
+    static String skillTip(String skill) {
+        String id = normalizeSkill(skill);
+        for (int i = 0; i < SKILL_ORDER.length; i++) {
+            if (SKILL_ORDER[i].equals(id)) {
+                return SKILL_TIPS[i];
+            }
+        }
+        return "Improves your survival skills";
+    }
+
+    private static String normalizeSkill(String skill) {
+        return skill == null || skill.isBlank() ? "health" : skill.toLowerCase(java.util.Locale.ROOT);
+    }
+
     private static int maxLevel() {
         try {
             return dev.jmiahman.hearthwind.skills.SkillXp.maxLevel();

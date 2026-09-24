@@ -7,9 +7,9 @@
 set -euo pipefail
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO="$(cd "$DIR/../.." && pwd)"
-STAGE="${CGT_STAGE_DIR:-/tmp/cgthearthwind-stage}"
+STAGE="${CGT_STAGE_DIR:-$REPO/.tmp/cgthearthwind-stage}"
 
-bash "$DIR/stage_container_tests.sh"
+CGT_STAGE_DIR="$STAGE" bash "$DIR/stage_container_tests.sh"
 docker build -f "$DIR/docker/server-gametest.Dockerfile" -t hearthwind-server-gametest "$DIR/docker"
 
 docker volume create cgtvol >/dev/null
