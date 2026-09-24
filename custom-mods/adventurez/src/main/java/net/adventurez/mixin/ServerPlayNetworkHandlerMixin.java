@@ -5,6 +5,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import net.adventurez.entity.DragonEntity;
 import net.adventurez.entity.EnderWhaleEntity;
@@ -29,7 +30,7 @@ public class ServerPlayNetworkHandlerMixin {
     }
 
     @Inject(method = "tickPlayer", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;getControllingPassenger()Lnet/minecraft/world/entity/LivingEntity;", shift = At.Shift.AFTER, ordinal = 1))
-    private void tickPlayerMixin(CallbackInfo info) {
+    private void tickPlayerMixin(CallbackInfoReturnable<Boolean> info) {
         if (aboveGroundVehicleTickCount >= 70 && player.getVehicle() != null && (player.getVehicle() instanceof DragonEntity || player.getVehicle() instanceof EnderWhaleEntity)) {
             aboveGroundVehicleTickCount = 0;
         }

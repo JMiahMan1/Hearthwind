@@ -27,7 +27,6 @@
     "DesertWellFeatureMixin",
     "AnvilMenuMixin",
     "accessor.LivingEntityAccessor",
-    "accessor.FallingBlockAccessor",
     "accessor.EntityAccessor",
     "accessor.ChestLidAnimatorAccessor",
     "accessor.ProjectileEntityAccessor"

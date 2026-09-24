@@ -19,6 +19,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.level.Level;
+import net.minecraft.server.level.ServerLevel;
 
 @Mixin(Player.class)
 public abstract class PlayerEntityMixin extends LivingEntity {
@@ -27,8 +28,8 @@ public abstract class PlayerEntityMixin extends LivingEntity {
         super(type, level);
     };
 
-    @Inject(method = "damage", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/damage/DamageSource;isScaledWithDifficulty()Z"), cancellable = true)
-    private void damageMixin(DamageSource source, float amount, CallbackInfoReturnable<Boolean> info) {
+    @Inject(method = "hurtServer", at = @At("HEAD"), cancellable = true)
+    private void hurtServerMixin(ServerLevel level, DamageSource source, float amount, CallbackInfoReturnable<Boolean> info) {
         if (this.getItemBySlot(EquipmentSlot.CHEST).getItem() == ItemInit.GILDED_NETHERITE_CHESTPLATE && GildedNetheriteArmor.fullGolemArmor((Player) (Object) this)) {
             if (source.is(DamageTypeTags.IS_FIRE) && !GildedNetheriteArmor.isStoneGolemArmorActive(this.getItemBySlot(EquipmentSlot.CHEST))) {
                 GildedNetheriteArmor.activateStoneGolemArmor((Player) (Object) this, this.getItemBySlot(EquipmentSlot.CHEST));

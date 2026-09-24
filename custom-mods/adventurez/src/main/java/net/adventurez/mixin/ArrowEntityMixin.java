@@ -26,9 +26,6 @@ public abstract class ArrowEntityMixin extends AbstractArrow {
     @Final
     private static EntityDataAccessor<Integer> ID_EFFECT_COLOR;
 
-    @Shadow
-    private double baseDamage;
-
     public ArrowEntityMixin(EntityType<? extends AbstractArrow> entityType, Level level) {
         super(entityType, level);
     }
@@ -36,7 +33,7 @@ public abstract class ArrowEntityMixin extends AbstractArrow {
     @Inject(method = "Lnet/minecraft/world/entity/projectile/arrow/Arrow;<init>(Lnet/minecraft/world/level/Level;Lnet/minecraft/world/entity/LivingEntity;Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/item/ItemStack;)V", at = @At("TAIL"))
     private void initMixin(Level level, LivingEntity owner, ItemStack stack, @Nullable ItemStack shotFrom, CallbackInfo info) {
         if (stack.is(ItemInit.IVORY_ARROW)) {
-            this.setBaseDamage(this.baseDamage + 4.0D);
+            this.setBaseDamage(6.0D);
         }
     }
 

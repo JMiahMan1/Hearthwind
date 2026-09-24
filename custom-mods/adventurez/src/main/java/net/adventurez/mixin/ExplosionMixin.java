@@ -1,53 +1,38 @@
 package net.adventurez.mixin;
 
-import net.minecraft.world.phys.AABB;
-
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
-import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Mutable;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.At.Shift;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
-import org.spongepowered.asm.mixin.injection.At;
 
 import net.adventurez.entity.BlazeGuardianEntity;
 import net.adventurez.entity.VoidFragmentEntity;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.Explosion;
+import net.minecraft.world.level.ServerExplosion;
 
-@Mixin(Explosion.class)
+@Mixin(ServerExplosion.class)
 public class ExplosionMixin {
     @Shadow
-    @Mutable
     @Final
-    private Entity entity;
+    private Entity source;
 
-    public ExplosionMixin(@Nullable Entity entity) {
-        this.entity = entity;
-    }
-
-    @Inject(method = "collectBlocksAndDamageEntities", at = @At(value = "INVOKE_ASSIGN", target = "Lnet/minecraft/world/Level;getOtherEntities(Lnet/minecraft/entity/Entity;Lnet/minecraft/util/math/AABB;)Ljava/util/List;", shift = Shift.AFTER), locals = LocalCapture.CAPTURE_FAILSOFT)
-    public void collectBlocksAndDamageEntitiesMixin(CallbackInfo info, Set<BlockPos> set, int i, float q, int k, int l, int r, int s, int t, int u, List<Entity> list) {
-        if (this.entity != null) {
-            if (this.entity instanceof BlazeGuardianEntity || this.entity instanceof VoidFragmentEntity) {
-                List<Entity> removeList = new ArrayList<Entity>();
-                for (int o = 0; o < list.size(); ++o) {
-                    Entity entityFromList = (Entity) list.get(o);
-                    if (!(entityFromList instanceof Player)) {
-                        removeList.add(entityFromList);
-                    }
+    @Inject(method = "hurtEntities", at = @At(value = "INVOKE_ASSIGN", target = "Lnet/minecraft/server/level/ServerLevel;getEntities(Lnet/minecraft/world/entity/Entity;Lnet/minecraft/world/phys/AABB;)Ljava/util/List;", shift = At.Shift.AFTER), locals = LocalCapture.CAPTURE_FAILSOFT)
+    private void hurtEntitiesMixin(CallbackInfo info, List<Entity> list) {
+        if (this.source instanceof BlazeGuardianEntity || this.source instanceof VoidFragmentEntity) {
+            List<Entity> removeList = new ArrayList<>();
+            for (Entity entity : list) {
+                if (!(entity instanceof Player)) {
+                    removeList.add(entity);
                 }
-                list.removeAll(removeList);
             }
+            list.removeAll(removeList);
         }
     }
 }

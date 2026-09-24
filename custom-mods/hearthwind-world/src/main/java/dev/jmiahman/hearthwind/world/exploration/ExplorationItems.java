@@ -50,8 +50,9 @@ public final class ExplorationItems {
         registerItem("inmis", "withered_backpack");
         registerItem("inmis", "endless_backpack");
 
-        // 4. AdventureZ
-        registerItem("adventurez", "warthog_shell_piece");
+        if (!net.fabricmc.loader.api.FabricLoader.getInstance().isModLoaded("adventurez")) {
+            registerItem("adventurez", "warthog_shell_piece");
+        }
     }
 
     private static Item registerItem(String namespace, String name) {

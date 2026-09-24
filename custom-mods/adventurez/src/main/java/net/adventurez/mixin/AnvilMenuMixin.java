@@ -10,7 +10,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import net.adventurez.init.ItemInit;
-import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AnvilMenu;
 import net.minecraft.world.inventory.DataSlot;
@@ -28,24 +27,26 @@ public abstract class AnvilMenuMixin {
     @Final
     private DataSlot cost;
 
-    @Shadow
-    @Final
-    protected Container inputSlots;
+    @Unique
+    private ItemStack getInput(int index) {
+        return ((AnvilMenu) (Object) this).getSlot(index).getItem();
+    }
 
-    @Shadow
-    @Final
-    protected ResultContainer resultSlots;
+    @Unique
+    private void setResult(ItemStack stack) {
+        ((AnvilMenu) (Object) this).getSlot(2).container.setItem(0, stack);
+    }
 
     @Inject(method = "createResult", at = @At("HEAD"), cancellable = true)
     private void createResultMixin(CallbackInfo info) {
-        ItemStack itemStack = this.inputSlots.getItem(0);
+        ItemStack itemStack = getInput(0);
         if (itemStack.getItem() == ItemInit.PRIME_EYE && itemStack.getDamageValue() != 0) {
-            ItemStack itemStack2 = this.inputSlots.getItem(1);
+            ItemStack itemStack2 = getInput(1);
             if (itemStack2.getItem() == Items.ENDER_PEARL) {
                 ItemStack itemStack3 = new ItemStack(ItemInit.PRIME_EYE);
                 repairedAmount = itemStack2.getCount() > itemStack.getDamageValue() ? itemStack.getDamageValue() : itemStack2.getCount();
                 itemStack3.setDamageValue(itemStack.getDamageValue() - repairedAmount);
-                this.resultSlots.setItem(0, itemStack3);
+                setResult(itemStack3);
                 info.cancel();
             }
         }
@@ -53,9 +54,9 @@ public abstract class AnvilMenuMixin {
 
     @Inject(method = "mayPickup", at = @At("HEAD"), cancellable = true)
     public void mayPickupMixin(Player player, boolean hasItem, CallbackInfoReturnable<Boolean> info) {
-        ItemStack itemStack = this.inputSlots.getItem(0);
+        ItemStack itemStack = getInput(0);
         if (itemStack.getItem() == ItemInit.PRIME_EYE && itemStack.getDamageValue() != 0) {
-            ItemStack itemStack2 = this.inputSlots.getItem(1);
+            ItemStack itemStack2 = getInput(1);
             if (itemStack2.getItem() == Items.ENDER_PEARL) {
                 info.setReturnValue(true);
             }
@@ -64,12 +65,12 @@ public abstract class AnvilMenuMixin {
 
     @Inject(method = "onTake", at = @At("HEAD"))
     public void onTakeMixin(Player player, ItemStack stack, CallbackInfo info) {
-        ItemStack itemStack = this.inputSlots.getItem(0);
+        ItemStack itemStack = getInput(0);
         if (itemStack.getItem() == ItemInit.PRIME_EYE) {
-            ItemStack itemStack2 = this.inputSlots.getItem(1);
+            ItemStack itemStack2 = getInput(1);
             if (itemStack2.getItem() == Items.ENDER_PEARL) {
                 itemStack2.shrink(repairedAmount - 1);
-                this.resultSlots.setItem(0, itemStack2);
+                setResult(itemStack2);
                 this.cost.set(0);
             }
         }
