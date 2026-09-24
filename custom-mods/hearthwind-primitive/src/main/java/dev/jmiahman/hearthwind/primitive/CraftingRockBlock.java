@@ -110,8 +110,7 @@ public class CraftingRockBlock extends Block implements EntityBlock {
             return InteractionResult.PASS;
         }
 
-        double yFrac = Math.abs(hit.getLocation().y % 1.0);
-        if (!(yFrac > 0.495 && yFrac < 0.505)) {
+        if (hit.getDirection() == Direction.DOWN) {
             return InteractionResult.PASS;
         }
 

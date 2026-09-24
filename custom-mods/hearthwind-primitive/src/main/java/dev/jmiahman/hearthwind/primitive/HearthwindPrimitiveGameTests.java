@@ -367,6 +367,45 @@ public final class HearthwindPrimitiveGameTests {
     }
 
     @GameTest
+    public void craftingRockAcceptsSideAndOffPlaneHits(GameTestHelper helper) {
+        ServerPlayer mockPlayer = helper.makeMockServerPlayerInLevel();
+        mockPlayer.setGameMode(net.minecraft.world.level.GameType.SURVIVAL);
+        net.minecraft.core.BlockPos rel = new net.minecraft.core.BlockPos(2, 1, 1);
+        helper.setBlock(rel, HearthwindPrimitiveBlocks.CRAFTING_ROCK.defaultBlockState());
+        var abs = helper.absolutePos(rel);
+
+        ItemStack sideStick = new ItemStack(net.minecraft.world.item.Items.STICK, 2);
+        mockPlayer.setItemInHand(InteractionHand.MAIN_HAND, sideStick);
+        net.minecraft.world.phys.BlockHitResult sideHit = new net.minecraft.world.phys.BlockHitResult(
+                new net.minecraft.world.phys.Vec3(abs.getX() + 0.5, abs.getY() + 0.25, abs.getZ() + 1.0),
+                net.minecraft.core.Direction.NORTH, abs, false);
+        var sideResult = ((CraftingRockBlock) HearthwindPrimitiveBlocks.CRAFTING_ROCK)
+                .useItemOn(sideStick, helper.getBlockState(rel), helper.getLevel(), abs,
+                        mockPlayer, InteractionHand.MAIN_HAND, sideHit);
+        helper.assertTrue(sideResult == net.minecraft.world.InteractionResult.CONSUME,
+                "side hit must place item, got " + sideResult);
+        var be = helper.getLevel().getBlockEntity(abs);
+        helper.assertTrue(be instanceof CraftingRockBlockEntity, "crafting rock must have a block entity");
+        helper.assertTrue(((CraftingRockBlockEntity) be).getItem(0).is(net.minecraft.world.item.Items.STICK),
+                "side hit must land in slot 0");
+
+        ItemStack angledStick = new ItemStack(net.minecraft.world.item.Items.STICK);
+        mockPlayer.setItemInHand(InteractionHand.MAIN_HAND, angledStick);
+        net.minecraft.world.phys.BlockHitResult angledHit = new net.minecraft.world.phys.BlockHitResult(
+                new net.minecraft.world.phys.Vec3(abs.getX() + 0.85, abs.getY() + 0.52, abs.getZ() + 0.85),
+                net.minecraft.core.Direction.UP, abs, false);
+        net.minecraft.world.phys.BlockHitResult midHit = new net.minecraft.world.phys.BlockHitResult(
+                new net.minecraft.world.phys.Vec3(abs.getX() + 0.5, abs.getY() + 0.52, abs.getZ() + 0.5),
+                net.minecraft.core.Direction.UP, abs, false);
+        var midResult = ((CraftingRockBlock) HearthwindPrimitiveBlocks.CRAFTING_ROCK)
+                .useItemOn(angledStick, helper.getBlockState(rel), helper.getLevel(), abs,
+                        mockPlayer, InteractionHand.MAIN_HAND, midHit);
+        helper.assertTrue(midResult == net.minecraft.world.InteractionResult.CONSUME,
+                "off-plane top hit must place item, got " + midResult);
+        helper.succeed();
+    }
+
+    @GameTest
     public void craftingRockCraftsRecipeViaRockHits(GameTestHelper helper) {
         ServerPlayer mockPlayer = helper.makeMockServerPlayerInLevel();
         net.minecraft.core.BlockPos rel = new net.minecraft.core.BlockPos(2, 1, 1);
@@ -1169,13 +1208,14 @@ public final class HearthwindPrimitiveGameTests {
     }
 
     @GameTest
-    public void foodCookingSurvivesByDefault(GameTestHelper helper) {
-        // Cooking removal is opt-in until stoves are playable - a config reset
-        // must never be able to starve players.
-        helperAssert(!HearthwindPrimitiveConfig.get().removeCookedFoodRecipes,
-                "cooking removal must default to off");
-        helperAssert(hasRecipe(helper, "minecraft:bread"), "bread must still be craftable");
-        helperAssert(hasRecipe(helper, "minecraft:cooked_beef"), "furnace cooking must still work");
+    public void foodCookingRemovedByDefault(GameTestHelper helper) {
+        // Cooking stations are shipped, so cooking removals are enabled by default.
+        helperAssert(HearthwindPrimitiveConfig.get().removeCookedFoodRecipes,
+                "cooking removal must default to on with stations shipped");
+        helperAssert(!hasRecipe(helper, "minecraft:bread"),
+                "bread furnace recipe must be removed by default");
+        helperAssert(!hasRecipe(helper, "minecraft:cooked_beef"),
+                "cooked beef furnace recipe must be removed by default");
         helper.succeed();
     }
 

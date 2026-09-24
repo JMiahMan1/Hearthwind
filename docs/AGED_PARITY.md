@@ -98,7 +98,7 @@ Legend: ✅ parity · 🟡 partial/different tuning · ❌ missing
 | Affixes | Tiered: 199 files, rarities 50/35/15/8/3/0 | **same 199 files + reforge** | ✅ |
 | Mob scaling | RPGDifficulty: distance 300/200, caps hp 4×/dmg 3×/prot 2×/speed 1.8×, special zombies, boss scaling | grace 300, step 200, +1 hp/+0.3 dmg per step, max 60 steps | 🟡 no caps/protection/speed/boss |
 | Primitive | earlystage: rock/flint, crafting rock (2 hits/80 wear), beginner deaths 3, sieve, **steel = 2 iron + 2 coal @5200 t** | same hits/wear/deaths, sieve drops byte-equal, steel = **1 iron + 2 coal** | 🟡 steel recipe ratio differs |
-| Recipe removal | 95 recipes removed (all ore smelting, all cooked food, flint_and_steel, steel blasting) | **73 ore/tech removed** (vanilla ore smelting gone, ore-piece blasting is the route); 21 cooking removals loaded but off until stoves work | 🟡 cooking path intentionally still open |
+| Recipe removal | 95 recipes removed (all ore smelting, all cooked food, flint_and_steel, steel blasting) | **95 active**: 73 ore/tech removals plus 21 cooking removals; Candlelight stoves and cooking stations provide the food path | ✅ |
 | SmitherZ gems, FleshZ tanning, VoidZ boss respawn, AdditionZ (mob aging/phantoms/spawners) | present | absent | ❌ |
 
 ### World
@@ -119,11 +119,11 @@ the feel comes from additions. Everything is measured at GUI scale 3
 | Element | Aged | Hearthwind | Status |
 |---|---|---|---|
 | Thirst | 10 teardrops, `#1AAFE7`/`#0E86CA`, right-aligned in the band **directly above hunger** | droplets above hunger, shift up when air bubbles show | ✅ |
-| Temperature | vertical 7×27 tube **right of hotbar** + 12×12 unit box + trend arrow, `#1D2946` outline | TempHud right of hotbar | 🟡 missing unit box + trend arrow |
-| Season | top-left (2,2), 9×9 icon + "Season, Day N/M" one string, season-tinted (spring `#FFA3BB`) | SeasonHud top-left "Winter, Day 14/21" | 🟡 no icon, no per-season tint |
+| Temperature | vertical 7×27 tube **right of hotbar** + 12×12 unit box + trend arrow, `#1D2946` outline | TempHud right of hotbar with unit box and trend chevron | ✅ |
+| Season | top-left (2,2), 9×9 icon + "Season, Day N/M" one string, season-tinted (spring `#FFA3BB`) | SeasonHud top-left procedural 9×9 badge with per-season tint | ✅ |
 | Panels | vanilla grey, 4 **item-icon** tabs ~20×22 with 14×14 icons, selected brighter+taller | icon tab strip (apple/bottle/campfire/sword/axe), jobs card grid, dark text | ✅ close |
-| Nutrients | 5 rows, **segmented** 140×5 bars, red→amber→yellow→green over near-black track | 5 bars, right-aligned values | 🟡 bars not segmented |
-| Inventory | tabs merged onto the inventory + left button column + player preview | standalone screens (`N`, buttons) | ❌ epic |
+| Nutrients | 5 rows, **segmented** 140×5 bars, red→amber→yellow→green over near-black track | 5 segmented bars with category textures and right-aligned values | ✅ |
+| Inventory | tabs merged onto the inventory + left button column + player preview | four tabs merged onto the real vanilla inventory; skill/nutrient panels remain separate | 🟡 tabs shipped |
 | Fonts | vanilla everywhere (SeasonHUD ships 9×9 bitmap season icons) | vanilla | ✅ |
 
 FancyMenu in Aged owns **only** the title screen + menu backgrounds — the
@@ -208,10 +208,11 @@ sum, so fires indoors matter far more. Chipped-compat entries (~97% of
    `data/earlystage/recipe_removals/aged.json` (packs can add files), and the
    point is the ore-piece economy: ores drop pieces, and ingots come from the
    corpus' slower blasting recipes instead of vanilla 200-tick smelting.
-   `flint_and_steel` is removed too, so fire needs steel. The 21 cooking
-   removals are loaded but **off by default** (`removeCookedFoodRecipes`) —
-   upstream forces cooking onto stoves, and our stoves are not playable yet,
-   so flipping it on today would leave no way to cook food. Our own
+    `flint_and_steel` is removed too, so fire needs steel. The 21 cooking
+    removals are **active by default** (`removeCookedFoodRecipes`) with the
+    shipped Candlelight stoves and cooking stations. Vanilla furnace recipes for
+    bread, cooked beef, and other cooked foods are removed; non-cooking recipes remain.
+    Our own
    `earlystage:steel_ingot_from_blasting` is deliberately excluded from the
    list (upstream deleted a differently-named recipe for the same purpose).
 7. **Skill procs — DONE.** `SkillProcs` (hearthwind-skills) implements the
@@ -225,14 +226,14 @@ sum, so fires indoors matter far more. Chipped-compat entries (~97% of
    `capstonesRequireMaxLevel`. Two deliberate deviations: a crit is a flat
    +20% bonus rather than forcing the vanilla 1.5× crit path, and archery
    procs (bow extra damage / double shot) are deferred.
-8. **HUD polish** — thermometer unit box + trend arrow, season icon + tint,
-   segmented nutrient bars; inventory-anchored tabs (bigger epic).
+8. **HUD polish** — **DONE**: thermometer unit box + trend arrow, procedural
+   season badge + tint, segmented nutrient bars; inventory-anchored tabs shipped.
 9. **Ambience mods** — evaluate 26.2 builds for the sound stack
    (see docs/DROPPED_78_STUDY.md; we never drop, so these stay on the
    watchlist until ported).
-10. **Gate hint sync** — push the resolved gate map to the client on join so
-    `ClientSkillGates` tooltips match the server's corpus instead of the
-    bundled digest (keeps the client presentation-only, server-authoritative).
+10. **Gate hint sync** — **DONE**: the resolved gate map is sent once on join,
+    atomically replaces the client snapshot, and keeps `ClientSkillGates`
+    presentation-only while the server remains authoritative.
 
 Mods that cannot be ported as jars are already mapped to in-house modules in
 `conversion/curated/mods-manifest.json` (`rebuild` entries: dehydration,

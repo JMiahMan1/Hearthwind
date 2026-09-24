@@ -37,10 +37,10 @@ public final class HearthwindPrimitiveConfig {
      */
     public boolean removeOreSmeltingRecipes = true;
     /**
-     * Remove furnace cooking of food so food has to be cooked on a stove.
-     * Off until the stove content is playable.
+     * Remove furnace cooking of food so food has to be cooked on a Candlelight
+     * stove or cooking station.
      */
-    public boolean removeCookedFoodRecipes = false;
+    public boolean         removeCookedFoodRecipes = true;
 
     private static HearthwindPrimitiveConfig instance;
 

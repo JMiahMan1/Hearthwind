@@ -179,6 +179,7 @@ Eight optional professions (Miner, Farmer, Fisher, Warrior, Smither, Brewer, Bui
 
 ### 26.2 Port Status
 - Verified 2026-09-24: full `./gradlew build` green; server gametests **300/300 passed** (container); client gametests **PASS** (container, 33 screenshots); fresh-world Profundis smoke passed forced chunk generation with no broken-chunk errors.
+- Cooking removals now default **on** with the shipped Candlelight stoves and cooking stations: vanilla furnace recipes for bread, cooked beef, and other cooked foods are removed; non-cooking recipes remain available.
 - `letsdo-*` family builds green in-tree (candlelight/meadow API errors resolved since the last audit).
   - Wave-1 contrib ports (2026-09-12): Athena done (0 compile errors, all 39 classes + CTM rendering complete, `settings.gradle` wired, ready for deploy). Chipped done (0 compile errors, full build green, boot-smoke verified: server boots to `Done`, RCON responds).
   - Local Aged-dep ports (2026-09-22): lavender, logbegone, pockets, couplings, entitycollisionfpsfix, memoryleakfix, async-locator, passable-foliage — build green, container gametests **296/296**, vendored, deployed to all three Prism instances (`update_prism.sh` + `verify_prism`). Commit `ba4677096`.
