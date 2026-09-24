@@ -1,0 +1,7 @@
+{
+  "texture": "lavender:textures/gui/red_book.png",
+  "display_completion": true,
+  "display_unread_entry_notifications": true,
+  "intro_entry": "lavender:aged_guide_book/getting_started",
+  "macros": {}
+}

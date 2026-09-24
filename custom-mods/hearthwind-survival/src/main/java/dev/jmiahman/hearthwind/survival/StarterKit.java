@@ -5,8 +5,11 @@ import java.util.List;
 
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.commands.Commands;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.Identifier;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.Filterable;
@@ -71,6 +74,16 @@ public final class StarterKit {
     }
 
     public static ItemStack createGuidebook() {
+        if (FabricLoader.getInstance().isModLoaded("lavender")) {
+            Identifier guideId = Identifier.fromNamespaceAndPath("lavender", "aged_guide_book");
+            if (BuiltInRegistries.ITEM.getOptional(guideId).isPresent()) {
+                return new ItemStack(BuiltInRegistries.ITEM.getValue(guideId));
+            }
+        }
+        return createVanillaGuidebook();
+    }
+
+    private static ItemStack createVanillaGuidebook() {
         ItemStack book = new ItemStack(Items.WRITTEN_BOOK);
         List<Filterable<Component>> pages = new ArrayList<>();
 

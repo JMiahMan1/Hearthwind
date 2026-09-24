@@ -29,13 +29,14 @@ Aged `LevelScreen`: **200×215** textured panel (`skill_background.png`).
 - Click skill icon → **SkillInfoScreen(skillId)** drill-down.
 - K or E closes; LibZ tabs on top; no pause.
 
-Hearthwind `SurvivalInfoScreen(SKILLS)`: 176×166 flat grey panel, 12 cards
-(80×18, vanilla item icons, `Lv.` text, `+` button only). Missing: player
-preview, XP bar/overall level, attributes panel, restriction buttons/screens,
-drill-down, scroll, sprite icons. (Overflow strings/party cap fixed 2026-09-04;
-those were layout bugs, not parity.)
+Hearthwind `SkillsScreen`: 200×215 Aged-style panel with player preview, six
+attribute readouts, segmented XP bar, 12 skill rows, [+] controls, and shared
+LibZ tabs. Clicking a skill opens the client-only `SkillInfoScreen` for its
+icon, level, progress, description, and back navigation. Remaining Aged UI
+parity: the attribute slide-out, scroll/slider, restriction rail, sprite icons,
+and the full per-level bonus/restriction content.
 
-## 2. SkillInfoScreen drill-down (missing)
+## 2. SkillInfoScreen drill-down (partial)
 
 Aged: 200×215 textured (`skill_info_background.png`), title + `Lv.X` header,
 scrollable LineWidgets (10 visible): skill desc lines
@@ -43,13 +44,16 @@ scrollable LineWidgets (10 visible): skill desc lines
 per-level restriction lists (item/block/entity/enchantment icons in rows of
 9). Scroll slider. E → back to LevelScreen, K → LevelScreen.
 
-Hearthwind: no equivalent. Skill data exists server-side (gate corpus,
-perks) but has no UI surface.
+Hearthwind `SkillInfoScreen` is shipped with the Aged panel geometry and
+back navigation, plus skill icon, level, progress bar, and concise description.
+The remaining work is the full scrollable description/bonus/restriction list
+and Aged sprite treatment.
 
 ## 3. SkillRestrictionScreen (missing)
 
 Aged: list screen for crafting/mining/use gate maps, opened from the hub
-rail buttons. Hearthwind: gates enforced + logged, never shown.
+rail buttons. Hearthwind gates are enforced + logged, but the restriction list
+screen is not yet shipped.
 
 ## 4. Nutrition screen geometry
 
@@ -72,9 +76,10 @@ click switches screen. Registered per screen class (`inventoryTabs` for
 inventory-parented screens, `otherTabs` keyed by parent class); gated by
 `inventoryButton` config + `shouldShow`/`canClick` per tab.
 
-Hearthwind `TabStrip`: custom geometry + own registry. Must converge to
-LibZ geometry (24w/25-step/top-anchored) and per-screen registration so
-future screens (restrictions/info) tab correctly.
+Hearthwind `TabStrip`: four always-present tabs (Inventory, Skills, Jobs, Party)
+with LibZ geometry, and the inventory is rendered as the real vanilla panel.
+Clicking a tab switches screens; the bag tab returns to inventory. The strip
+also appears on the new skill detail screen.
 
 ## 6. Jobs
 
@@ -97,9 +102,10 @@ rule; keep when rebuilding).
 ## Implementation phases
 
 - P0: nutrients geometry parity (142 panel, 23 pitch, bar+value layout,
-  effect-zone tooltips, drop own tab strip) + this doc.
-- P1: skills hub rebuild (200×215 textured panel, player preview, XP bar,
-  steppers, attributes slide-out, restriction buttons + screens,
-  SkillInfo drill-down, scroll).
-- P2: LibZ-geometry tabs + jobs multi/textures.
-- P3: main-menu background.
+  effect-zone tooltips, drop own tab strip) + this doc: shipped.
+- P1: skills hub rebuild (200×215 panel, player preview, XP bar, steppers,
+  attributes slide-out, restriction buttons + screens, SkillInfo drill-down,
+  scroll): hub + SkillInfo shipped; restriction rail/scroll/full content remains.
+- P2: LibZ-geometry tabs + jobs multi/textures: tabs shipped; jobs parity is
+  separately tracked.
+- P3: main-menu background: shipped Hearthwind menu, Aged art parity remains.

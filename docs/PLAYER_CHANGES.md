@@ -46,6 +46,8 @@ rebuild. **676 gates are active**: 303 mining, 162 smithing, 148 crafting, 23 br
 - **Mining Gates**: Mud Bricks (1), Sandstone (2), Bricks (3), **Stone and Cobblestone (5)**, Diorite (6), Andesite (8), Granite (10), Terracotta (11), **Iron Ore (13)**, Deepslate (18), **Diamond (21)**, Obsidian (25), Netherite (27). Breaking a gated block shows the skill and level you need.
 - **Earning your first Mining levels**: every pickaxe-mineable block is gated, so the loose **surface rocks and flint** you pick up are the tier-0 mining activity — breaking them is what raises Mining from 0. You also start with 2 skill points to spend as soon as you join.
 - **Surface rock & flint spawning (earlystage parity)**: mounds generate only in forest/hill/mountain/river biomes plus mushroom fields and stony shores, on bare dirt or stone with open sky — not in oceans, deserts, or on grass. Look for bare-dirt patches, not open plains.
+- **Crafting rock interaction**: place usable items (`earlystage:usable_crafting_rock_items`) by right-clicking the 3×3 grid on the rock's short top face — side and angled raycasts on the 8px shape count; only a true bottom-face hit is rejected.
+- **Crafting rock (knapping grid)**: place a usable item (stick, flint, ores, planks, logs, dirt, leaves — full `earlystage:usable_crafting_rock_items` tag) into the 3×3 grid by right-clicking any face of the 8px-tall top shape (side and angled hits count). Two rock hits craft; wear destroys the block.
 - **Use Gates**: Furnaces, Anvils, Smithing Tables (Smithing), Brewing Stands & Cauldrons (Alchemy), Smokers & Beehives (Farming), Grindstones (Strength), Cartography Tables (Agility).
 - **Crafting Gates**: gated results never appear in the crafting output (golden pickaxe needs Mining 8, diamond armor needs Defense 24) - denied crafts show the skill and level you need.
 - **Item & Entity Gates**: Certain items need a skill level to use, and breeding/taming livestock is gated behind Farming and Agility.
@@ -72,7 +74,7 @@ Eight optional professions (Miner, Farmer, Fisher, Warrior, Smither, Brewer, Bui
 ## Flora, Crops, Agriculture & Wildlife (Complete Aged Parity)
 
 - **Wild Crops & Farming (Let's Do Family, `letsdo-*`)**:
-  - **Farm & Charm**: Wild Barley, Wild Corn, Wild Strawberries, Wild Onions, Wild Garlic scattered in Overworld biomes. Harvesting yields seeds and produce for flour, dough, oatmeal, ribs, and soup. Crafting stations (Silo, Roaster, Butter Churn, Plow, Supply Cart).
+  - **Farm & Charm**: 13 wild crops (carrots, potatoes, beetroots, lettuce, onions, tomatoes, corn, strawberries, barley, oat, emmer, nettle, ribwort) scatter across Overworld biomes via biome-tag worldgen. **Density buff**: every patch uses `rarity_filter` 8 (≈4× denser than upstream letsdo) and the spawn tags cover all vanilla forest/taiga/plains-family biomes plus ~20 optional Terralith forest/valley IDs. Features only generate in **newly explored chunks** — already-visited terrain keeps its old density. Harvesting yields seeds and produce for flour, dough, oatmeal, ribs, and soup. Crafting stations (Silo, Roaster, Butter Churn, Plow, Supply Cart).
   - **Vinery**: Grape varieties (Red, White, Taiga, Savanna, Jungle) and seeds for wine making. Fermentation Barrels, Grapevine Pots, Apple Press, and Dark Cherry wood.
   - **Candlelight**: Tomatoes, Lettuce, Broccoli, and seeds. Cooking Pan and Pot for multi-ingredient meals (pasta, lasagna, beef tartare).
   - **Meadow**: High-altitude alpine wildflowers (Edelweiss, Alpine Poppy, Gentian, Delphinium, Fire Lily, Saxifrage, Eriophorum). Cheese making with Wooden Cauldrons, Cheese Forms, and Aging Racks.
@@ -114,11 +116,17 @@ Eight optional professions (Miner, Farmer, Fisher, Warrior, Smither, Brewer, Bui
   - Left-aligned button stack at `x = width / 9` with authentic hover tints (`#EEDAC3`, `#A1B8B5`, `#6AA7BA`, `#BFA8BF`, `#EB9484`).
   - Top-right 20×20 icon buttons (Discord, Modrinth, Language, Accessibility).
 - **Inventory Tab Strip (Aged 3.1.2 parity)**:
-  - The four LibZ tabs (Inventory Bag / Skills / Jobs / Party) sit above every
-    aged panel at the modpack's exact geometry: 25 GUI px pitch, 24 px wide
-    raised-selected / lowered-unselected backgrounds from the bundled LibZ
-    sheet, vanilla-item tab icons, hover tooltips. Clicking a tab switches
-    screens; the bag tab returns to the vanilla inventory.
+  - The four LibZ tabs (Inventory Bag / Skills / Jobs / Party) sit above the
+    real vanilla inventory at the modpack's exact geometry: 25 GUI px pitch,
+    24 px wide raised-selected / lowered-unselected backgrounds, vanilla-item
+    tab icons, and hover tooltips. Clicking a tab switches screens; the bag tab
+    returns to the vanilla inventory.
+- **Survival Guidebook (Aged progression guide parity)**:
+  - Starter `/guide`, `/guidebook`, and first-join grants use the canonical
+    `lavender:aged_guide_book` when Lavender is loaded. It contains Getting
+    Started, Survival, Skills & Jobs, and Ages categories covering hydration,
+    temperature, nutrition, crafting, skills/jobs, downed/revive, and progression.
+  - The vanilla written-book fallback remains available when Lavender is absent.
 - **Skills screen (`K`)**:
   - Rebuilt to the Aged LevelZ layout: 200x215 panel, "&lt;Name&gt; Skills"
     title, live player model preview, six attribute readouts (health, defense,
@@ -126,6 +134,8 @@ Eight optional professions (Miner, Farmer, Fisher, Warrior, Smither, Brewer, Bui
     line, segmented XP bar with "Xp n / next" (Aged 25 + 1.6L curve), a "?"
     help page, and twelve skill rows (two columns of six) with [+] buttons
     that spend one experience level per press.
+  - Clicking a skill opens its client-only detail page with icon, level,
+    progress bar, description, and Back/E navigation.
 - **Jobs screen (`J`)**:
   - Rebuilt to the Aged JobsAddon layout: 200x215 panel, "&lt;Name&gt; Jobs"
     title, "Job Cooldown: MM:SS" and employed summary, then eight job cards
@@ -168,7 +178,7 @@ Eight optional professions (Miner, Farmer, Fisher, Warrior, Smither, Brewer, Bui
   - **Better End Cities**: vanilla end-city piece NBT overhaul.
 
 ### 26.2 Port Status
-- Verified 2026-09-11: `./gradlew build` green; server gametests **257/257 passed** (container); client gametests **PASS** (container, 14 screenshots).
+- Verified 2026-09-24: full `./gradlew build` green; server gametests **300/300 passed** (container); client gametests **PASS** (container, 33 screenshots); fresh-world Profundis smoke passed forced chunk generation with no broken-chunk errors.
 - `letsdo-*` family builds green in-tree (candlelight/meadow API errors resolved since the last audit).
   - Wave-1 contrib ports (2026-09-12): Athena done (0 compile errors, all 39 classes + CTM rendering complete, `settings.gradle` wired, ready for deploy). Chipped done (0 compile errors, full build green, boot-smoke verified: server boots to `Done`, RCON responds).
   - Local Aged-dep ports (2026-09-22): lavender, logbegone, pockets, couplings, entitycollisionfpsfix, memoryleakfix, async-locator, passable-foliage — build green, container gametests **296/296**, vendored, deployed to all three Prism instances (`update_prism.sh` + `verify_prism`). Commit `ba4677096`.

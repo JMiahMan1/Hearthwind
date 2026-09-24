@@ -1,5 +1,6 @@
 package dev.jmiahman.hearthwind.survival;
 
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -10,6 +11,7 @@ import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.Identifier;
 
 /**
  * Headless gametests, run with the fabric-api gametest harness:
@@ -1286,7 +1288,16 @@ public final class HearthwindSurvivalGameTests {
 
         for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
             ItemStack stack = player.getInventory().getItem(i);
-            if (stack.is(Items.WRITTEN_BOOK)) {
+            boolean hasLavenderGuide = false;
+            if (FabricLoader.getInstance().isModLoaded("lavender")) {
+                Identifier guideId = Identifier.fromNamespaceAndPath("lavender", "aged_guide_book");
+                hasLavenderGuide = BuiltInRegistries.ITEM.getOptional(guideId)
+                        .map(item -> stack.is(item))
+                        .orElse(false);
+            }
+            if (hasLavenderGuide) {
+                hasBook = true;
+            } else if (stack.is(Items.WRITTEN_BOOK)) {
                 var content = stack.get(DataComponents.WRITTEN_BOOK_CONTENT);
                 if (content != null && content.title().raw().contains("Hearthwind Survival Guide")
                         && content.pages().size() >= 5) {
