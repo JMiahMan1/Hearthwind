@@ -46,6 +46,11 @@ API_BASE=$(basename "${API_JAR:-fabric-api-}")
 
 echo "loader=$LOADER_VER api=${API_BASE}"
 
+python3 "$ROOT/conversion/scripts/patch_vendored.py" "$ROOT/conversion" || {
+  echo "ERROR: patch_vendored.py failed" >&2
+  exit 1
+}
+
 # --- loader bump + mmc-pack synthesis + fabric-api swap + datapack sync ---
 for inst in $INSTANCES; do
   idir="$INST_ROOT/$inst"
@@ -110,6 +115,18 @@ PY
     done
   fi
 
+  if [ -d "$ROOT/conversion/overrides/config" ] && [ -d "$idir/minecraft/config" ]; then
+    while IFS= read -r -d '' src; do
+      rel="${src#"$ROOT/conversion/overrides/config/"}"
+      dest="$idir/minecraft/config/$rel"
+      mkdir -p "$(dirname "$dest")"
+      if ! cmp -s "$src" "$dest" 2>/dev/null; then
+        cp "$src" "$dest"
+        echo "  OVR $inst config/$rel"
+      fi
+    done < <(find "$ROOT/conversion/overrides/config" -type f -print0)
+  fi
+
   # datapacks -> world/datapacks + every singleplayer save
   if [ -d "$ROOT/conversion/datapacks" ] && [ -d "$idir/minecraft" ]; then
     dest_roots=("$idir/minecraft/world/datapacks")
@@ -140,7 +157,7 @@ done
 replaced=0; skipped=0; added=0
 # Module roots live under custom-mods/
 MODS_ROOT="$ROOT/custom-mods"
-for moddir in "$MODS_ROOT"/hearthwind-* "$MODS_ROOT"/letsdo-* "$MODS_ROOT"/smallships "$MODS_ROOT"/villagesandpillages "$MODS_ROOT"/athena "$MODS_ROOT"/chipped "$MODS_ROOT"/dungeonz "$MODS_ROOT"/exposure "$MODS_ROOT"/passable-foliage "$MODS_ROOT"/logbegone "$MODS_ROOT"/entitycollisionfpsfix "$MODS_ROOT"/pockets "$MODS_ROOT"/couplings "$MODS_ROOT"/memoryleakfix "$MODS_ROOT"/async-locator "$MODS_ROOT"/lavender "$MODS_ROOT"/profundis; do
+for moddir in "$MODS_ROOT"/hearthwind-* "$MODS_ROOT"/letsdo-* "$MODS_ROOT"/smallships "$MODS_ROOT"/villagesandpillages "$MODS_ROOT"/athena "$MODS_ROOT"/chipped "$MODS_ROOT"/dungeonz "$MODS_ROOT"/exposure "$MODS_ROOT"/passable-foliage "$MODS_ROOT"/logbegone "$MODS_ROOT"/entitycollisionfpsfix "$MODS_ROOT"/pockets "$MODS_ROOT"/couplings "$MODS_ROOT"/memoryleakfix "$MODS_ROOT"/async-locator "$MODS_ROOT"/lavender "$MODS_ROOT"/profundis "$MODS_ROOT"/adventurez "$MODS_ROOT"/fleshz; do
   [ -d "$moddir" ] || continue
   # plain jar only: newest non-sources jar in build/libs
   jar=$(ls -t "$moddir"/build/libs/*.jar 2>/dev/null | grep -v -- "-sources\.jar$" | head -1)
