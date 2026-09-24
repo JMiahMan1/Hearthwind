@@ -1,0 +1,46 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "net.adventurez.mixin",
+  "compatibilityLevel": "JAVA_25",
+  "mixins": [
+    "PlayerEntityMixin",
+    "ExperienceDroppingBlockMixin",
+    "PiglinBrainMixin",
+    "ServerWorldMixin",
+    "ExplosionMixin",
+    "SpawnHelperMixin",
+    "DragonEggBlockMixin",
+    "GiveGiftsToHeroTaskMixin",
+    "VillagerEntityMixin",
+    "ServerPlayNetworkHandlerMixin",
+    "EnderDragonFightMixin",
+    "EnderPearlEntityMixin",
+    "MobSpawnerLogicMixin",
+    "SmallFireballEntityMixin",
+    "PiglinEntityMixin",
+    "ArrowEntityMixin",
+    "ElytraItemMixin",
+    "GeodeFeatureMixin",
+    "AmethystClusterBlockMixin",
+    "IronGolemEntityMixin",
+    "DesertWellFeatureMixin",
+    "AnvilMenuMixin",
+    "accessor.LivingEntityAccessor",
+    "accessor.FallingBlockAccessor",
+    "accessor.EntityAccessor",
+    "accessor.ChestLidAnimatorAccessor",
+    "accessor.ProjectileEntityAccessor"
+  ],
+  "client": [
+    "client.ArmorFeatureRendererMixin",
+    "client.InGameOverlayRendererMixin",
+    "client.ClientPlayerInteractionManagerMixin",
+    "client.TexturedRenderLayersMixin",
+    "client.IronGolemEntityRendererMixin",
+    "client.IronGolemCrackFeatureRendererMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

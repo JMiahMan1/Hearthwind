@@ -1,0 +1,44 @@
+{
+  "schemaVersion": 1,
+  "id": "adventurez",
+  "version": "${version}",
+  "name": "AdventureZ",
+  "description": "Adds deadly creatures to Minecraft. Hearthwind 26.2 port.",
+  "authors": [
+    "Globox_Z"
+  ],
+  "contact": {
+    "homepage": "https://www.curseforge.com/minecraft/mc-mods/adventurez",
+    "sources": "https://github.com/Globox1997/AdventureZ"
+  },
+  "license": "GPL-3.0",
+  "icon": "assets/adventurez/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "net.adventurez.AdventureMain"
+    ],
+    "client": [
+      "net.adventurez.AdventureClient"
+    ],
+    "modmenu": [
+      "net.adventurez.config.ModMenuIntegration"
+    ]
+  },
+  "mixins": [
+    "adventurez.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.19.5",
+    "minecraft": "~26.2",
+    "java": ">=25",
+    "fabric-api": "*",
+    "cloth-config2": "*"
+  },
+  "custom": {
+    "mc-publish": {
+      "modrinth": "defK2XM3",
+      "curseforge": 390991
+    }
+  }
+}

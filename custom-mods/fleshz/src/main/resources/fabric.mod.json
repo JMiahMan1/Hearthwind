@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 1,
+  "id": "fleshz",
+  "version": "${version}",
+  "name": "FleshZ",
+  "description": "Changes the game mechanic of how to obtain leather. Hearthwind 26.2 port.",
+  "authors": [
+    "Globox_Z"
+  ],
+  "contact": {
+    "homepage": "https://www.curseforge.com/minecraft/mc-mods/fleshz",
+    "sources": "https://github.com/Globox1997/FleshZ"
+  },
+  "license": "MIT",
+  "icon": "assets/fleshz/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "net.fleshz.FleshMain"
+    ],
+    "client": [
+      "net.fleshz.FleshClient"
+    ],
+    "fabric-gametest": [
+      "net.fleshz.FleshZGameTests"
+    ]
+  },
+  "depends": {
+    "fabricloader": ">=0.19.5",
+    "minecraft": "~26.2",
+    "java": ">=25",
+    "fabric-api": "*"
+  },
+  "custom": {
+    "mc-publish": {
+      "modrinth": "6EdNfDXb",
+      "curseforge": 365273
+    }
+  }
+}

@@ -1,0 +1,26 @@
+{
+    "parent": "minecraft:recipes/root",
+    "rewards": {
+        "recipes": [
+            "adventurez:gilded_netherite_boots",
+            "adventurez:gilded_netherite_chestplate",
+            "adventurez:gilded_netherite_helmet",
+            "adventurez:gilded_netherite_leggings",
+            "adventurez:gilded_upgrade_smithing_template"
+        ]
+    },
+    "criteria": {
+        "got_the_netherite_fragment": {
+            "trigger": "minecraft:inventory_changed",
+            "conditions": {
+                "items": [
+                    {
+                        "items": [
+                            "adventurez:gilded_netherite_fragment"
+                        ]
+                    }
+                ]
+            }
+        }
+    }
+}
