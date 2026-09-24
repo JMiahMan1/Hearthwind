@@ -100,6 +100,11 @@ public class NutrientsScreen extends Screen {
                     graphics.blit(RenderPipelines.GUI_TEXTURED, ICONS, this.x + 27, this.y + 36 + extraY,
                             0f, 211f + extraBarY, fill, 5, 256, 256, 0xFFFFFFFF);
                 }
+                for (int tick = 1; tick < 10; tick++) {
+                    int tickX = this.x + 27 + tick * 14;
+                    graphics.fill(tickX, this.y + 36 + extraY,
+                            tickX + 1, this.y + 41 + extraY, 0x66000000);
+                }
             }
             graphics.text(font,
                     Component.translatable("screen.nutritionz.nutritionValue", level, max),

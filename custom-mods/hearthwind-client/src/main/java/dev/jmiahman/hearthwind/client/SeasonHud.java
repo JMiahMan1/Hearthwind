@@ -7,9 +7,6 @@ import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.resources.Identifier;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 
 /**
  * Exact Aged SeasonHUD widget parity:
@@ -37,13 +34,6 @@ public final class SeasonHud implements HudElement {
         }
 
         int ordinal = ClientSeasonData.seasonOrdinal();
-        Item icon = switch (ordinal) {
-            case 1 -> Items.SUNFLOWER;
-            case 2 -> Items.ORANGE_TULIP;
-            case 3 -> Items.SNOWBALL;
-            default -> Items.PINK_PETALS;
-        };
-
         int color = switch (ordinal) {
             case 1 -> 0xFFFEE92A; // Summer yellow
             case 2 -> 0xFFBC5E27; // Autumn amber
@@ -54,9 +44,27 @@ public final class SeasonHud implements HudElement {
         int x = 2;
         int y = 2;
 
-        // Draw 9x9 season icon + single line formatted string
-        graphics.item(new ItemStack(icon), x, y);
+        drawSeasonBadge(graphics, x, y, ordinal, color);
         String text = ClientSeasonData.displayText();
         graphics.text(mc.font, text, x + 18, y + 4, color, true);
+    }
+
+    private static void drawSeasonBadge(GuiGraphicsExtractor graphics, int x, int y, int ordinal, int color) {
+        int highlight = switch (ordinal) {
+            case 1 -> 0xFFFFFFFF;
+            case 2 -> 0xFFFFD36A;
+            case 3 -> 0xFFFFFFFF;
+            default -> 0xFFFFD1E6;
+        };
+        int shadow = switch (ordinal) {
+            case 1 -> 0xFFB38B00;
+            case 2 -> 0xFF7A2D12;
+            case 3 -> 0xFF6A9BA5;
+            default -> 0xFF9C3F62;
+        };
+        graphics.fill(x, y, x + 9, y + 9, 0xFF1A1A1A);
+        graphics.fill(x + 1, y + 1, x + 8, y + 8, color);
+        graphics.fill(x + 2, y + 2, x + 7, y + 4, highlight);
+        graphics.fill(x + 3, y + 5, x + 6, y + 7, shadow);
     }
 }

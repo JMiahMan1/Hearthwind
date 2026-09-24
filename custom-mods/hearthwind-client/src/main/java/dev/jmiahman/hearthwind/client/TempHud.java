@@ -43,6 +43,12 @@ public final class TempHud implements HudElement {
             Identifier.fromNamespaceAndPath("hearthwind", "hud/icon_snowflake");
     private static final Identifier ICON_SUN =
             Identifier.fromNamespaceAndPath("hearthwind", "hud/icon_sun");
+    private static final Identifier UNIT_BOX =
+            Identifier.fromNamespaceAndPath("hearthwind", "hud/unit_box_f");
+    private static final Identifier ARROW_UP =
+            Identifier.fromNamespaceAndPath("hearthwind", "hud/temp_arrow_up");
+    private static final Identifier ARROW_DOWN =
+            Identifier.fromNamespaceAndPath("hearthwind", "hud/temp_arrow_down");
 
     /**
      * Aged exact: iconX 7, iconY 52, thermometerIconX -95 (i.e. +95 right of
@@ -56,6 +62,7 @@ public final class TempHud implements HudElement {
     private static final int THERMOMETER_Y = 38;
 
     public static final TempHud INSTANCE = new TempHud();
+    private static int lastThermometer = Integer.MIN_VALUE;
 
     private TempHud() {}
 
@@ -155,7 +162,13 @@ public final class TempHud implements HudElement {
         int tubeX = width / 2 - THERMOMETER_X;
         int tubeY = height - THERMOMETER_Y;
         graphics.blitSprite(RenderPipelines.GUI_TEXTURED, THERMOMETER_FRAME, tubeX, tubeY, 16, 32);
+        graphics.blitSprite(RenderPipelines.GUI_TEXTURED, UNIT_BOX, tubeX + 18, tubeY + 10, 12, 12);
         int thermometer = ClientTempData.getThermometer();
+        if (lastThermometer != Integer.MIN_VALUE && thermometer != lastThermometer) {
+            Identifier arrow = thermometer > lastThermometer ? ARROW_UP : ARROW_DOWN;
+            graphics.blitSprite(RenderPipelines.GUI_TEXTURED, arrow, tubeX + 20, tubeY - 1, 7, 7);
+        }
+        lastThermometer = thermometer;
         if (thermometer <= ClientTempData.THERMOMETER_VERY_COLD) {
             graphics.blitSprite(RenderPipelines.GUI_TEXTURED,
                     mercuryId(false, 100), tubeX, tubeY, 16, 32);
