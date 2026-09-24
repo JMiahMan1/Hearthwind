@@ -113,6 +113,16 @@ public class HearthwindClient implements ClientModInitializer {
             LOGGER.warn("Failed to register skills sync receiver", e);
         }
 
+        try {
+            ClientPlayNetworking.registerGlobalReceiver(
+                    dev.jmiahman.hearthwind.skills.SkillGatesSyncPayload.TYPE,
+                    (payload, context) -> context.client().execute(() -> ClientSkillGates.replaceFrom(payload)));
+            LOGGER.info("Hearthwind Client networking: receiver for {}",
+                    dev.jmiahman.hearthwind.skills.SkillGatesSyncPayload.TYPE.id());
+        } catch (Exception e) {
+            LOGGER.warn("Failed to register skill gate sync receiver", e);
+        }
+
         // Skill level-up toast notification from server
         try {
             ClientPlayNetworking.registerGlobalReceiver(SkillUpPayload.TYPE, (payload, context) -> {

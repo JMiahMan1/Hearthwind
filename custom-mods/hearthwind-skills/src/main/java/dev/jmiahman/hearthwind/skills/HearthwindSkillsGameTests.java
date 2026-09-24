@@ -200,6 +200,35 @@ public final class HearthwindSkillsGameTests {
     }
 
     @GameTest
+    public void skillGateSnapshotMatchesResolvedServerGates(GameTestHelper helper) {
+        SkillGates.load(helper.getLevel().getServer().getResourceManager());
+        SkillGatesSyncPayload snapshot = SkillGates.snapshot();
+        int[] counts = SkillGates.debugCategoryCounts();
+        int expected = 0;
+        for (int count : counts) {
+            expected += count;
+        }
+        helper.assertTrue(snapshot.enabled(), "skill gate snapshot must be enabled");
+        helper.assertTrue(snapshot.entries().size() == expected,
+                "snapshot entry count must match all seven resolved maps");
+        var stone = net.minecraft.resources.Identifier.fromNamespaceAndPath("minecraft", "stone");
+        var furnace = net.minecraft.resources.Identifier.fromNamespaceAndPath("minecraft", "furnace");
+        SkillGatesSyncPayload.Entry stoneEntry = snapshot.entries().stream()
+                .filter(entry -> entry.kind() == SkillGatesSyncPayload.Kind.BREAK
+                        && entry.target().equals(stone))
+                .findFirst().orElseThrow();
+        SkillGatesSyncPayload.Entry furnaceEntry = snapshot.entries().stream()
+                .filter(entry -> entry.kind() == SkillGatesSyncPayload.Kind.BLOCK_USE
+                        && entry.target().equals(furnace))
+                .findFirst().orElseThrow();
+        helper.assertTrue(stoneEntry.skill().equals("mining") && stoneEntry.level() == 5,
+                "snapshot stone break gate must be mining 5");
+        helper.assertTrue(furnaceEntry.skill().equals("smithing") && furnaceEntry.level() == 3,
+                "snapshot furnace use gate must be smithing 3");
+        helper.succeed();
+    }
+
+    @GameTest
     public void levelzEntityGatesResolve(GameTestHelper helper) {
         SkillGates.load(helper.getLevel().getServer().getResourceManager());
         var cow = helper.spawn(EntityTypes.COW, 1, 2, 1);

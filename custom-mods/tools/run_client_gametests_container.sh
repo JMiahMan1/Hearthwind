@@ -46,5 +46,10 @@ docker rm -f cgtshots >/dev/null 2>&1 || true
 docker create -v cgtvol:/s --name cgtshots alpine true >/dev/null
 docker cp cgtshots:/s/repo/.tmp/shots/cgt/. "$REPO/.tmp/shots/cgt/" 2>/dev/null || true
 docker rm cgtshots >/dev/null
+mkdir -p "$REPO/.tmp/logs"
+docker rm -f cgtlogs >/dev/null 2>&1 || true
+docker create -v cgtvol:/s --name cgtlogs alpine true >/dev/null
+docker cp cgtlogs:/s/repo/custom-mods/.tmp/logs/cgt-client.log "$REPO/.tmp/logs/cgt-client-container.log" 2>/dev/null || true
+docker rm cgtlogs >/dev/null
 echo "screenshots copied back: $(ls "$REPO"/.tmp/shots/cgt/*.png 2>/dev/null | wc -l | tr -d ' ')"
 exit "$RC"

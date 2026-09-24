@@ -4,6 +4,7 @@ import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,6 +38,13 @@ public class HearthwindSkills implements ModInitializer {
 				}
 				SkillAttributes.applyAll(player);
 				SkillsSync.send(player);
+				try {
+					if (ServerPlayNetworking.canSend(player, SkillGatesSyncPayload.TYPE)) {
+						ServerPlayNetworking.send(player, SkillGates.snapshot());
+					}
+				} catch (Exception exception) {
+					LOGGER.warn("Failed to send skill gate digest to {}", player.getName().getString(), exception);
+				}
 				dev.jmiahman.hearthwind.skills.party.PartySync.syncTo(player);
 		});
 
@@ -73,6 +81,9 @@ public class HearthwindSkills implements ModInitializer {
 		net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry.clientboundPlay().register(
 				SkillGateHintPayload.TYPE,
 				SkillGateHintPayload.CODEC);
+		net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry.clientboundPlay().register(
+				SkillGatesSyncPayload.TYPE,
+				SkillGatesSyncPayload.CODEC);
 		net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry.serverboundPlay().register(
 				dev.jmiahman.hearthwind.survival.PartySyncPayload.TYPE,
 				dev.jmiahman.hearthwind.survival.PartySyncPayload.CODEC);
@@ -89,7 +100,7 @@ public class HearthwindSkills implements ModInitializer {
 								player.setExperienceLevels(player.experienceLevel - 1);
 							}
 							SkillXp.setLevel(player, skill, currentLvl + 1);
-							SkillsSync.send(player);
+				SkillsSync.send(player);
 							player.level().playSound(null, player.blockPosition(),
 									net.minecraft.sounds.SoundEvents.PLAYER_LEVELUP,
 									net.minecraft.sounds.SoundSource.PLAYERS, 0.6f, 1.2f);

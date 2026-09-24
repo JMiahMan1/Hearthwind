@@ -242,8 +242,8 @@ if [ -n "$OUR_MISSING" ]; then
   echo "$OUR_MISSING" | head -20
   RC=1
 fi
-if [ "$SHOTS" -lt 1 ]; then
-  echo "FAIL: no screenshots produced"
+if [ "$SHOTS" -lt 1 ] || [ -z "$(find "$WORK/screenshots" -name '*_pack_server_gate_sync.png' -print -quit)" ]; then
+  echo "FAIL: expected pack_server_gate_sync screenshot missing"
   RC=1
 fi
 if [ "$RC" -eq 0 ]; then

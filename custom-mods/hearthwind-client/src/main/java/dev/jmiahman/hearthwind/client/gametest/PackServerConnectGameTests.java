@@ -1,5 +1,6 @@
 package dev.jmiahman.hearthwind.client.gametest;
 
+import dev.jmiahman.hearthwind.client.ClientSkillGates;
 import net.fabricmc.fabric.api.client.gametest.v1.FabricClientGameTest;
 import net.fabricmc.fabric.api.client.gametest.v1.context.ClientGameTestContext;
 import net.fabricmc.fabric.api.client.gametest.v1.context.TestDedicatedServerContext;
@@ -30,7 +31,21 @@ public class PackServerConnectGameTests implements FabricClientGameTest {
                 throw new AssertionError("connected player count = " + players + " (expected 1)");
             }
 
-            context.takeScreenshot("pack_server_connected");
+            if (!ClientSkillGates.hasServerSnapshot()) {
+                throw new AssertionError("skill gate snapshot was not received after connection");
+            }
+            var stoneGate = ClientSkillGates.getBreakRequirement(
+                    net.minecraft.world.level.block.Blocks.STONE);
+            var furnaceGate = ClientSkillGates.getUseRequirement(
+                    net.minecraft.world.level.block.Blocks.FURNACE);
+            if (stoneGate == null || !stoneGate.skill().equals("mining") || stoneGate.level() != 5) {
+                throw new AssertionError("client stone gate mismatch: " + stoneGate);
+            }
+            if (furnaceGate == null || !furnaceGate.skill().equals("smithing") || furnaceGate.level() != 3) {
+                throw new AssertionError("client furnace gate mismatch: " + furnaceGate);
+            }
+
+            context.takeScreenshot("pack_server_gate_sync");
         }
     }
 }

@@ -444,6 +444,28 @@ public final class SkillGates {
         return all;
     }
 
+    public static synchronized SkillGatesSyncPayload snapshot() {
+        java.util.List<SkillGatesSyncPayload.Entry> entries = new java.util.ArrayList<>();
+        appendSnapshot(entries, SkillGatesSyncPayload.Kind.BREAK, BREAK_GATES);
+        appendSnapshot(entries, SkillGatesSyncPayload.Kind.BLOCK_USE, USE_GATES);
+        appendSnapshot(entries, SkillGatesSyncPayload.Kind.ITEM_USE, ITEM_GATES);
+        appendSnapshot(entries, SkillGatesSyncPayload.Kind.CRAFT, CRAFT_GATES);
+        appendSnapshot(entries, SkillGatesSyncPayload.Kind.SMITHING, SMITHING_GATES);
+        appendSnapshot(entries, SkillGatesSyncPayload.Kind.BREWING, BREWING_GATES);
+        appendSnapshot(entries, SkillGatesSyncPayload.Kind.ENTITY, ENTITY_GATES);
+        entries.sort(java.util.Comparator.comparingInt((SkillGatesSyncPayload.Entry entry) -> entry.kind().ordinal())
+                .thenComparing(entry -> entry.target().toString()));
+        return new SkillGatesSyncPayload(SkillsConfig.get().gates.enabled, entries);
+    }
+
+    private static void appendSnapshot(java.util.List<SkillGatesSyncPayload.Entry> entries,
+            SkillGatesSyncPayload.Kind kind, java.util.Map<Identifier, Gate> gates) {
+        for (java.util.Map.Entry<Identifier, Gate> entry : gates.entrySet()) {
+            entries.add(new SkillGatesSyncPayload.Entry(kind, entry.getKey(),
+                    entry.getValue().skill().id, entry.getValue().level()));
+        }
+    }
+
     static synchronized int[] debugCounts() {
         return new int[]{BREAK_GATES.size(), USE_GATES.size()};
     }
