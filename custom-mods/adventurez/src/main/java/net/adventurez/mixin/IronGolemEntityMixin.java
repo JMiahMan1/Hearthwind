@@ -15,6 +15,7 @@ import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
+import net.minecraft.world.entity.animal.golem.AbstractGolem;
 import net.minecraft.world.entity.animal.golem.IronGolem;
 import net.minecraft.world.entity.monster.Creeper;
 import net.minecraft.world.entity.player.Player;
@@ -31,11 +32,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 @Mixin(IronGolem.class)
-public abstract class IronGolemEntityMixin extends IronGolem implements EntityAccess {
+public abstract class IronGolemEntityMixin extends AbstractGolem implements EntityAccess {
 
     private static final EntityDataAccessor<Boolean> BLACKSTONED = SynchedEntityData.defineId(IronGolem.class, EntityDataSerializers.BOOLEAN);
 
-    public IronGolemEntityMixin(EntityType<? extends IronGolem> entityType, Level level) {
+    public IronGolemEntityMixin(EntityType<? extends AbstractGolem> entityType, Level level) {
         super(entityType, level);
     }
 
