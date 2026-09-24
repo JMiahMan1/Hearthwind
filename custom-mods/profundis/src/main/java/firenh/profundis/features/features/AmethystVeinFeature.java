@@ -63,7 +63,7 @@ public class AmethystVeinFeature extends Feature<AmethystVeinFeatureConfig> {
         ArrayList<BlockPos> targets = new ArrayList<>();
         Iterator<BlockPos> iter = BlockPos.randomInCube(random, range, origin, range).iterator();
 
-        for (int i = 0; i < targetCount * 16 && targets.size() < targetCount; i += 1) {
+        for (int i = 0; i < targetCount * 16 && targets.size() < targetCount && iter.hasNext(); i += 1) {
             BlockPos pos = iter.next();
             if (world.isEmptyBlock(pos) || !adjacentToAir(world, pos)) {
                 continue;

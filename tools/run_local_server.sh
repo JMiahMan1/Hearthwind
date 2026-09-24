@@ -47,10 +47,11 @@ for moddir in "$ROOT"/custom-mods/hearthwind-* "$ROOT"/custom-mods/letsdo-* \
   done
 done
 
-if [ ! -f "$ROOT/dev-server/fabric-server.jar" ]; then
-  echo "== Fetching fabric-server.jar 0.19.5 for 26.2 =="
-  curl -sL -o "$ROOT/dev-server/fabric-server.jar" "https://meta.fabricmc.net/v2/versions/loader/26.2/0.19.5/1.1.0/server/jar"
-fi
+MINECRAFT_VERSION="$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["targets"]["minecraft"])' "$ROOT/conversion/build.conf.json")"
+FABRIC_LOADER_VERSION="$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["targets"]["loader_version"])' "$ROOT/conversion/build.conf.json")"
+FABRIC_URL="https://meta.fabricmc.net/v2/versions/loader/$MINECRAFT_VERSION/$FABRIC_LOADER_VERSION/1.1.0/server/jar"
+echo "== Fetching fabric-server.jar $FABRIC_LOADER_VERSION for $MINECRAFT_VERSION =="
+curl -fsSL --retry 3 "$FABRIC_URL" -o "$ROOT/dev-server/fabric-server.jar"
 
 echo "eula=true" > "$ROOT/dev-server/eula.txt"
 cat > "$ROOT/dev-server/server.properties" <<'PROPS'
