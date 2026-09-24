@@ -1,7 +1,7 @@
 package dev.jmiahman.hearthwind.client.mixin;
 
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
+import net.minecraft.world.entity.player.Inventory;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
@@ -10,11 +10,12 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.gui.screens.inventory.AbstractRecipeBookScreen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.inventory.InventoryMenu;
 import dev.jmiahman.hearthwind.client.NutrientsScreen;
 import dev.jmiahman.hearthwind.client.TabStrip;
 
@@ -24,17 +25,13 @@ import dev.jmiahman.hearthwind.client.TabStrip;
  * inventory slot is hovered (original focusedSlot == null check).
  */
 @Environment(EnvType.CLIENT)
-@Mixin(AbstractContainerScreen.class)
-public abstract class AbstractContainerScreenClickMixin {
+@Mixin(AbstractRecipeBookScreen.class)
+public abstract class AbstractContainerScreenClickMixin extends AbstractContainerScreen<InventoryMenu> {
 
-    @Shadow
-    protected int leftPos;
-
-    @Shadow
-    protected int topPos;
-
-    @Shadow
-    protected Slot hoveredSlot;
+    private AbstractContainerScreenClickMixin(InventoryMenu menu, Inventory inventory,
+            net.minecraft.network.chat.Component title) {
+        super(menu, inventory, title);
+    }
 
     @Inject(method = "mouseClicked", at = @At("HEAD"), cancellable = true)
     private void hearthwind$onTabClick(MouseButtonEvent event, boolean doubled,
@@ -42,10 +39,12 @@ public abstract class AbstractContainerScreenClickMixin {
         if ((Object) this instanceof InventoryScreen && event.button() == 0) {
             TabStrip.Tab tab = TabStrip.clicked(event.x(), event.y(), this.leftPos, this.topPos,
                     TabStrip.Tab.INVENTORY);
-            if (tab != null && tab != TabStrip.Tab.INVENTORY) {
-                Minecraft.getInstance().getSoundManager()
-                        .play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
-                TabStrip.open(tab);
+            if (tab != null) {
+                if (tab != TabStrip.Tab.INVENTORY) {
+                    Minecraft.getInstance().getSoundManager()
+                            .play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
+                    TabStrip.open(tab);
+                }
                 cir.setReturnValue(true);
                 return;
             }

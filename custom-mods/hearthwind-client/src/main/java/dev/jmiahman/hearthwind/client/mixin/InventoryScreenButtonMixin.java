@@ -30,7 +30,7 @@ public abstract class InventoryScreenButtonMixin extends AbstractContainerScreen
         super(menu, inventory, title);
     }
 
-    @Inject(method = "extractBackground", at = @At("TAIL"))
+    @Inject(method = "extractRenderState", at = @At("TAIL"))
     private void hearthwind$drawTabs(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta,
             CallbackInfo ci) {
         TabStrip.draw(graphics, this.leftPos, this.topPos, TabStrip.Tab.INVENTORY, mouseX, mouseY);
