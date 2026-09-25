@@ -248,5 +248,7 @@
   "tooltip.meadow.banner.thankyou_3": "Thank you for playing Meadow!",
   "tooltip.meadow.banner.thankyou_4": "Grants Dig Speed II within 8 blocks",
   "tooltip.meadow.cooking_cauldron.remaining_time": "Remaining Time: %s",
-  "tooltip.meadow.cooking_cauldron.water_level": "Water Level: %d%%"
+  "tooltip.meadow.cooking_cauldron.water_level": "Water Level: %d%%",
+  "item.meadow.alpine_oak_log": "Alpine Oak Log",
+  "item.meadow.wooly_cow_spawn_egg": "Wooly Cow Spawn Egg"
 }

@@ -11,6 +11,8 @@
 
   "death.attack.ship_hit": "%s was hit by a ship.",
   "death.attack.ship_hit.player": "%s was hit by %s with a ship.",
+  "entity.smallships.cannon_ball": "Cannon Ball",
+  "entity.smallships.ground_cannon": "Ground Cannon",
 
   "item.smallships.sail": "Sail",
   "item.smallships.cannon": "Ship Cannon",

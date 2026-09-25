@@ -15,10 +15,14 @@ The companion env vars are printed as shell exports on stdout so the caller can
 import argparse
 import concurrent.futures
 import hashlib
+import http.client
 import json
 import os
 import pathlib
 import sys
+import threading
+import time
+import urllib.error
 import urllib.request
 
 MANIFEST_URL = "https://piston-meta.mojang.com/mc/game/version_manifest_v2.json"
@@ -56,27 +60,41 @@ def fetch(url, dest, expect_sha1=None, size_hint=0):
         return False
     if expect_sha1 is None and dest.exists() and dest.stat().st_size > 0:
         return False
-    req = urllib.request.Request(url, headers={"User-Agent": UA})
     tmp = dest.with_suffix(dest.suffix + ".part")
-    with urllib.request.urlopen(req, timeout=120) as resp, open(tmp, "wb") as out:
-        while True:
-            chunk = resp.read(1 << 20)
-            if not chunk:
-                break
-            out.write(chunk)
-    if expect_sha1:
-        got = sha1_of(tmp)
-        if got != expect_sha1:
+    req = urllib.request.Request(url, headers={"User-Agent": UA})
+    for attempt in range(4):
+        try:
+            with urllib.request.urlopen(req, timeout=120) as resp, open(tmp, "wb") as out:
+                while True:
+                    chunk = resp.read(1 << 20)
+                    if not chunk:
+                        break
+                    out.write(chunk)
+            if expect_sha1:
+                got = sha1_of(tmp)
+                if got != expect_sha1:
+                    tmp.unlink(missing_ok=True)
+                    raise RuntimeError(f"sha1 mismatch for {url}: got {got} want {expect_sha1}")
+            tmp.rename(dest)
+            return True
+        except (urllib.error.URLError, TimeoutError, OSError, http.client.RemoteDisconnected) as exc:
             tmp.unlink(missing_ok=True)
-            raise RuntimeError(f"sha1 mismatch for {url}: got {got} want {expect_sha1}")
-    tmp.rename(dest)
-    return True
+            if attempt == 3:
+                raise
+            delay = 2 ** attempt
+            print(
+                f"download retry {attempt + 1}/3 in {delay}s: {url} ({exc})",
+                file=sys.stderr,
+                flush=True,
+            )
+            time.sleep(delay)
 
 
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--out", required=True)
     ap.add_argument("--mc-version", default="26.2")
+    ap.add_argument("--progress-interval", type=int, default=300)
     args = ap.parse_args()
     out = pathlib.Path(args.out).resolve()
     (out / "versions").mkdir(parents=True, exist_ok=True)
@@ -133,14 +151,35 @@ def main():
         h = obj["hash"]
         jobs.append((f"{base}/{h[:2]}/{h}", out / "assets" / "objects" / h[:2] / h, h, obj.get("size", 0)))
 
-    done = fetched = 0
-    with concurrent.futures.ThreadPoolExecutor(max_workers=16) as pool:
-        futures = {pool.submit(fetch, u, p, s, z): p for u, p, s, z in jobs}
-        for fut in concurrent.futures.as_completed(futures):
-            if fut.result():
-                fetched += 1
-            done += 1
-    print(f"asset objects: {fetched} downloaded this run (of {len(jobs)})", file=sys.stderr)
+    progress = {"done": 0, "fetched": 0}
+    stop_progress = threading.Event()
+    interval = max(1, args.progress_interval)
+
+    def report_progress():
+        while not stop_progress.wait(interval):
+            print(
+                f"asset progress: {progress['done']}/{len(jobs)} objects, "
+                f"{progress['fetched']} downloaded",
+                file=sys.stderr,
+                flush=True,
+            )
+
+    progress_thread = threading.Thread(target=report_progress, daemon=True)
+    progress_thread.start()
+    try:
+        with concurrent.futures.ThreadPoolExecutor(max_workers=16) as pool:
+            futures = {pool.submit(fetch, u, p, s, z): p for u, p, s, z in jobs}
+            for fut in concurrent.futures.as_completed(futures):
+                if fut.result():
+                    progress["fetched"] += 1
+                progress["done"] += 1
+    finally:
+        stop_progress.set()
+        progress_thread.join(timeout=1)
+    print(
+        f"asset objects: {progress['fetched']} downloaded this run (of {len(jobs)})",
+        file=sys.stderr,
+    )
 
     exports = {
         "CGT_VJSON": str(vjson_path),

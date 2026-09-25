@@ -179,5 +179,6 @@
   "sound.brewery.cabinet_open": "Cabinet Opens",
   "sound.brewery.cabinet_close": "Cabinet Closes",
   "gui.brewery.wall_decoration.edit": "Edit Gingerbread Lettering",
-  "gui.brewery.wall_decoration.done" : "Done"
+  "gui.brewery.wall_decoration.done": "Done",
+  "item.brewery.patterned_carpet": "Patterned Carpet"
 }

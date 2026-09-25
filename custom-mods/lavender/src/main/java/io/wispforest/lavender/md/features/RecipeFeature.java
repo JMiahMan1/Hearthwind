@@ -197,7 +197,7 @@ public class RecipeFeature implements MarkdownFeature {
                 if (input >= 0 && input < ingredients.size()) {
                     ingredient.ingredient(ingredients.get(input));
                 } else {
-                    ingredient.ingredient(net.minecraft.world.item.crafting.Ingredient.of());
+                    ingredient.clearItems();
                 }
             }
         }

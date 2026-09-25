@@ -13,10 +13,15 @@ REPO="$(cd "$ROOT/.." && pwd)"
 WORK="$ROOT/.tmp/cgt-game"
 LOG="$ROOT/.tmp/logs/cgt-client.log"
 TIMEOUT=${CGT_TIMEOUT:-1800}
+PROGRESS_INTERVAL=${CGT_PROGRESS_INTERVAL:-300}
+[ "$PROGRESS_INTERVAL" -gt 0 ] || PROGRESS_INTERVAL=300
 KEEP=0
 [ "${1:-}" = "--keep-dir" ] && KEEP=1
 
 mkdir -p "$ROOT/.tmp/logs"
+rm -rf "$ROOT/.tmp/shots/cgt"
+mkdir -p "$ROOT/.tmp/shots/cgt"
+rm -f "$LOG"
 echo "== assembling client gametest game dir: $WORK"
 rm -rf "$WORK"
 mkdir -p "$WORK/mods"
@@ -119,11 +124,19 @@ python3 "$REPO/conversion/scripts/patch_vendored.py" "$REPO/conversion" || {
 if [ -f "$REPO/conversion/vendored/kiwi-26.0.20+fabric.jar" ]; then
   cp "$REPO/conversion/vendored/kiwi-26.0.20+fabric.jar" "$WORK/mods/"
 fi
+# true_ending / natures_spirit 26.2 data-schema patches (time_check clock,
+# entity_type predicate). "$WORK/mods" is patched directly because staging
+# copied dist before this point.
+python3 "$REPO/conversion/scripts/patch_legacy_data.py" "$REPO/conversion" "$WORK/mods" || {
+  echo "ERROR: patch_legacy_data.py failed" >&2
+  exit 1
+}
 
 cat > "$WORK/options.txt" <<'EOF'
 onboardAccessibility:false
 pauseOnLostFocus:false
 skipMultiplayerWarning:true
+narrator:false
 EOF
 
 # kiwi 26.0.20 has no 26.2 build: cosmetic keybind reads Minecraft.screen
@@ -205,9 +218,16 @@ nohup "${LAUNCH[@]}" "${CMD[@]}" > "$LOG" 2>&1 < /dev/null &
 CPID=$!
 
 ELAPSED=0
+NEXT_PROGRESS=$PROGRESS_INTERVAL
 while kill -0 "$CPID" 2>/dev/null && [ "$ELAPSED" -lt "$TIMEOUT" ]; do
   sleep 5
   ELAPSED=$((ELAPSED + 5))
+  if [ "$ELAPSED" -ge "$NEXT_PROGRESS" ]; then
+    LAST=$(tail -1 "$LOG" 2>/dev/null || true)
+    SHOTS_NOW=$(find "$WORK/screenshots" -maxdepth 1 -name '*.png' 2>/dev/null | wc -l | tr -d ' ')
+    printf 'client progress: elapsed=%ss/%ss screenshots=%s last=%s\n' "$ELAPSED" "$TIMEOUT" "$SHOTS_NOW" "$LAST"
+    NEXT_PROGRESS=$((NEXT_PROGRESS + PROGRESS_INTERVAL))
+  fi
 done
 
 if kill -0 "$CPID" 2>/dev/null; then
@@ -228,8 +248,9 @@ grep -c "FabricClientGameTest" "$LOG" 2>/dev/null | sed 's/^/runner mentions: /'
 SHOTS=$(ls "$WORK/screenshots"/*.png 2>/dev/null | wc -l | tr -d ' ')
 echo "screenshots: $SHOTS in $WORK/screenshots"
 ls -l "$WORK/screenshots" 2>/dev/null || true
-if grep -qE "Exception in thread|GameTest.*(failed|FAILED)" "$LOG"; then
-  echo "FAIL: exceptions/failures found in log"
+if grep -qE "Exception in thread|GameTest.*(failed|FAILED)|Minecraft has crashed" "$LOG"; then
+  echo "FAIL: exceptions/failures/crash found in log:"
+  grep -E "Minecraft has crashed|^Caused by:|GameTest.*(failed|FAILED)" "$LOG" | head -6
   RC=1
 fi
 # Missing-texture gate scoped to OUR content only: upstream mods ship their
@@ -242,6 +263,25 @@ if [ -n "$OUR_MISSING" ]; then
   echo "$OUR_MISSING" | head -20
   RC=1
 fi
+# Datapack parse/tag debt gate. The runner tolerates these, so the final7
+# run passed while adventurez/fleshz/true_ending/natures_spirit JSON still
+# failed 26.2 codecs. Any recurrence in our or vendored namespaces is a FAIL.
+PARSE_BAD=$(grep -E "Couldn't parse data file '(minecraft|adventurez|fleshz|true_ending|natures_spirit):" "$LOG" | sort -u)
+if [ -n "$PARSE_BAD" ]; then
+  echo "FAIL: datapack parse errors in our/vendored namespaces:"
+  echo "$PARSE_BAD" | sed "s/.*Couldn't parse data file '//; s/'.*//" | sort | uniq -c | sort -rn | head -20
+  RC=1
+fi
+TAG_BAD=$(grep -E "Couldn't load tag .*missing following references:.*#(aged|earlystage):" "$LOG" | sort -u)
+if [ -n "$TAG_BAD" ]; then
+  echo "FAIL: missing #aged/#earlystage tag references:"
+  echo "$TAG_BAD" | head -10
+  RC=1
+fi
+# PackServerConnectGameTests MUST stay the LAST fabric-client-gametest
+# entrypoint: closing its in-process dedicated server exits the whole JVM
+# (exit 0), so any test registered after it silently never runs. Its
+# screenshot existing therefore proves every earlier test ran.
 if [ "$SHOTS" -lt 1 ] || [ -z "$(find "$WORK/screenshots" -name '*_pack_server_gate_sync.png' -print -quit)" ]; then
   echo "FAIL: expected pack_server_gate_sync screenshot missing"
   RC=1

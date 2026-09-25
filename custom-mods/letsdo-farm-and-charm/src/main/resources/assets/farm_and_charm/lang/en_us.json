@@ -346,5 +346,14 @@
   "tooltip.farm_and_charm.cart.attach_horse": "Right-Click a tamed Horse or Donkey to attach.",
   "tooltip.farm_and_charm.cart.while_pulling": "While pulling:",
   "tooltip.farm_and_charm.sink.info_0": "Right-click to fill with Water.",
-  "tooltip.farm_and_charm.sink.info_1": "When filled, use a Bucket to collect Water."
+  "tooltip.farm_and_charm.sink.info_1": "When filled, use a Bucket to collect Water.",
+  "item.farm_and_charm.baked_lamb_ham": "Baked Lamb Ham",
+  "item.farm_and_charm.farmers_bread": "Farmers Bread",
+  "item.farm_and_charm.farmers_breakfast": "Farmers Breakfast",
+  "item.farm_and_charm.grandmothers_strawberry_cake": "Grandma's Strawberry Cake",
+  "item.farm_and_charm.oat_pancake": "Oat Pancake",
+  "item.farm_and_charm.potato_with_roast_meat": "Potato with Roast Meat",
+  "item.farm_and_charm.roasted_corn": "Roasted Corn",
+  "item.farm_and_charm.stuffed_chicken": "Stuffed Chicken",
+  "item.farm_and_charm.stuffed_rabbit": "Stuffed Rabbit"
 }

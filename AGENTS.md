@@ -20,7 +20,8 @@ commit titles with "Aged"** - use plain conventional subjects
 | `custom-mods/tools/gen_placeholder_assets.py` | Placeholder models/textures/lang/equipment generator |
 | `custom-mods/tools/rcon.py` | Minimal Source-RCON client for headless verification |
 | `docs/CONVERSION.md` | Feasibility study, strategy, verified-state writeups |
-| `docs/PROJECT_DIRECTION.md` | Fork → standalone strategy: phases, asset provenance rules, borrow board |
+| `docs/RELEASE_1.0_PARITY.md` | **1.0.0 governing plan**: Aged 3.1.2 mod-by-mod parity ledger, workstreams, decisions |
+| `docs/PROJECT_DIRECTION.md` | Post-1.0 strategy: fork → standalone: phases, asset provenance rules, borrow board |
 | `docs/INSTALL.md` | Install instructions (players/admins/devs) + packaging flow |
 | `docs/PLAYER_CHANGES.md` | Player-facing list of gameplay differences from vanilla; UPDATE WITH EVERY GAMEPLAY COMMIT |
 | `.github/workflows/build-and-test.yml` | GHA: build + headless gametests on push; optional pack boot-smoke on dispatch |
@@ -114,6 +115,8 @@ cd custom-mods && bash tools/run_client_gametests_docker.sh
 #    Every fabric-client-gametest entrypoint class must call
 #    takeScreenshot at least once (10 classes / 21 calls as of 0.1.1).
 #    waitFor* TIMEOUTS ARE TICKS (20/s) - use minutes, not seconds.
+#    PackServerConnectGameTests MUST be the LAST client entrypoint: closing
+#    its dedicated server exits the JVM (code 0), silently skipping later tests.
 ```
 
 Gotchas learned the hard way:
@@ -192,6 +195,10 @@ python3 ../custom-mods/tools/rcon.py 127.0.0.1 25575 agedtest "summon item ~ ~ ~
 
 ## 26.x API cheat sheet (verified on 26.2)
 
+- Block entities: constants are in `BlockEntityTypes` (plural). A modded block
+  reusing a vanilla block entity (e.g. `new BarrelBlock(...)`) must be added via
+  `((FabricBlockEntityType) BlockEntityTypes.BARREL).addValidBlock(block)`, or
+  placing it crashes ("Invalid block entity minecraft:barrel").
 - Entity constants live in `net.minecraft.world.entity.EntityTypes`
   (plural), not `EntityType`. Loot tables: entity via
   `entityType.getDefaultLootTable()` (`Optional<ResourceKey<LootTable>>`),
@@ -213,6 +220,12 @@ python3 ../custom-mods/tools/rcon.py 127.0.0.1 25575 agedtest "summon item ~ ~ ~
   `textures/entity/equipment/humanoid/<asset>[_leggings].png`.
 - Recipes/tags: flat strings (`"#tag"`, `"item"`); shaped-pattern key
   may NOT contain `' '` (reserved empty-cell symbol).
+- Item names: 26.x builds an item's translation key from the ITEM id
+  (`item.<ns>.<id>`). A BlockItem no longer borrows its block's name
+  unless the properties call `useBlockDescriptionPrefix()`. Ported mods
+  whose lang only has `block.<ns>.<id>_block` show raw dotted keys. Every
+  new item needs an `en_us` entry; `ItemNameGameTests` (client) fails on
+  any raw key.
 - Food is the 1.21.2+ component system: there is NO `Player.eat` /
   `FoodProperties.getNutrition` item method. `ItemStack# FOOD` data
   component lives at `net.minecraft.core.component.DataComponents.FOOD`
@@ -250,67 +263,85 @@ python3 ../custom-mods/tools/rcon.py 127.0.0.1 25575 agedtest "summon item ~ ~ ~
 - cliclick: `kp:` is unreliable for LETTER keys in game - use `t:`
   (`type`). Held left-click mining: `rhold X Y --ms N --button left`.
 
-## Overarching principles (from docs/PROJECT_DIRECTION.md North star)
+## 1.0.0 focus: Aged parity FIRST (read docs/RELEASE_1.0_PARITY.md)
 
-Every task is judged against **realism → earned unlock → harder frontier → one best → slow tech**:
-- Make it as close to reality as possible without being miserable (costs for magic, physical crafting).
-- More resources = more unlocks, but the world gets harder in lockstep (distance + aggregate power scaling, capped 20).
-- All mods must play well together - delete overlap, keep one best (single sieve, single storage, single farm system).
-- Technology arrives in Ages (Stranded → Camp → Copper → Iron/Steel → Mechanical), gated by skills/jobs/advancements, hard-fought not creative.
+Until 1.0.0 ships, every task is judged by ONE rule: **does it make
+Hearthwind on 26.2 look and play like Aged 3.1.2?** Client and server
+are both in scope.
 
-## Next steps (priority order - slow-tech, no kludge)
+- Reference = `.tmp/Aged-3.1.2.mrpack` (212 mods + agedaddition, configs,
+  resource/shader packs, datapack). Match mods by Modrinth project id,
+  never by guessed slug.
+- Hearthwind modules that already replace Aged mods are the allowed
+  exception. Record their deviations; don't expand them.
+- No Aged mod is marked obsolete. Each missing mod gets a per-mod team
+  decision (port / adopt upstream / rebuild), recorded in the plan.
+- Small bug fixes are fine anytime. Mod ports and new systems follow the
+  workstream order in the plan.
+- Do NOT start post-1.0 items (Ages enforcement beyond Aged's gates,
+  Create/Mechanical Age, water motion, Terralith/Tectonic, dedupe audit,
+  26.3 bump). They are parked in plan section 7.
+- Newer mod versions are fine: note where they deviate from Aged's version
+  and fix the deviation on the current version where possible.
+- The guidebook (`assets/hearthwind/lavender/`) must never state something the
+  game does not do. Change book and mechanic together, and run
+  `python3 custom-mods/tools/validate_guidebook.py`. Checklist:
+  `docs/GUIDEBOOK_PARITY.md`.
+- Never claim "parity" or "everything available is deployed" without the
+  Aged-index diff (plan section 9) backing it.
 
-1. **Survival** (`custom-mods/hearthwind-survival`) - v1 SHIPPED
-   (verified boot + RCON on 26.2, 8/8 gametests green):
-   - Diet: five `nutritionz:` item tags (fruits, vegetables,
-     grains, proteins, sugars), nutrients attachment (0..100) with decay,
-     deficiency debuffs (fruit->mining fatigue, vegetables/proteins->
-     weakness, grains->slowness), balanced diet -> refreshed absorption
-     bonus hearts. Eat hook = mixin on `Consumable#onConsume`
-     (`ConsumableConsumeMixin`). NOT yet play-verified with a live client.
-   - Spoilage: `spoiledz:perishable_items` tag rots stack
-     items into rotten flesh on a random check interval; migrated
-     `spoiledz:non_spoiling_items` tag respected as exemption; hot biomes
-     double the chance. Inventory-only in v1 (containers TODO).
-   - Temperature/thirst: all tunables now in
-     `config/hearthwind_survival.json` (auto-created with defaults).
-   - Remaining: client-side HUD bars for hydration/diet, container
-     spoilage, in-game eat-hook verification.
-2. **Skills** (`hearthwind-skills`) - v1 SHIPPED (7/7 gametests green):
-   12 levelz-parity skills (farming/mining/smithing/strength/agility/
-   defense/health/stamina/luck/archery/alchemy/trade), XP attachment
-   under `levelz:` namespace, triangular XP curve (baseXpPerLevel * N
-   per level, max 30), attribute bonuses as transient modifiers keyed
-   `hearthwind_skills:<skill>` (health/strength/agility/defense/mining/luck),
-   XP hooks on block break (crops->farming, pickaxe->mining,
-   shovel->stamina) and kills (melee->strength, bow/crossbow/trident->
-   archery, animals->farming). All tunables in `config/hearthwind_skills.json`.
-   Skill break/use gates from merged `data/levelz` corpus are live (mining 1..27, use gates on 17 stations).
-    - Remaining vs original: crafting denial for gated items (smithing
-      tiers), entity/husbandry gates, client HUD (companion mod).
-3. **Jobs** (`hearthwind-jobs`, jobs-addon parity) - 🟡 partial, 4/4 gametests green:
-    8 jobs (fisher/miner/farmer/warrior/smither/brewer/builder/lumberjack), per-player job attachment `hearthwind_jobs:state`, level math `pointsPerLevel` (default 100), XP hooks on block break / entity kill via `JobState.awardIfMatch`, **`/job join/leave/info` commands** shipped; config `config/hearthwind_jobs.json`.
-    - **Aged parity**: job select via screen is SILENT — no "Joined the X job" / "Left..." / "Unemployed" chat messages in `JobState.join/leave` (Aged `JobsManager.employJob/quitJob` are silent; `addJobXP` only plays sound + packet + criteria). `awardIfMatch` level-up chat kept (not select-path).
-    Remaining: job-restricted recipe gating (reuses gate infra), bonus rewards - must respect **Age 2+** before smither/brewer unlocks.
-  - **DungeonZ** (`custom-mods/dungeonz`) - 🟡 partial, wired + tested: full port compiles, 23 server gametests green (admission, enter/leave, countdown, respawn, leave command, compass calibration), 11 client screenshots; bridges replace levelz/partyaddon/rpgdifficulty stubs. Remaining: jigsaw-generation path, criteria/loot-content asserts, `required_level` tuning per Age.
-4. **Primitive Ages 0→3** (`hearthwind-primitive`) - 🟡 partial: **faithful earlystage rock+flint port shipped** (surface `earlystage:rock` 4 variants / `earlystage:flint` 2 variants × facing, weighted_state_provider worldgen in Aged's biome tag, 1-hit mounds drop rock/flint, shovel right-click cycles variant, stonecutter rocks_from_stone + shaped cobblestone_from_rock, original earlystage MIT models/textures - they render vanilla stone); flint tools, ore pieces, steel ingot/nugget/block + assets shipped. **Removed the invented stone->rock/gravel loot hooks** (Aged keeps vanilla drops). Next: Age 1 Sieve (`earlystage:sieve_drops/aged_drops.json` as the ONE sieve, tanning 4 flesh→leather as datapack recipe, no duplicate Prospector Bench), knapping minigame on `crafting_rock`, beginner-death forgiveness (`beginnerDeathCount: 3`), full `tiered` affix system. Steel stays gated behind `mining 7`+`smithing 14` (Iron Age).
-   - Client: **NutrientsScreen + inventory tab SHIPPED and live-verified** (apple tab top-left anchored to `leftPos/topPos`, N key, back arrow, E close; NutritionZ MIT crops for panel/bars/arrow).
-5. **World Ages 1→5** (`hearthwind-world`) - 🟡 partial: **seasons-lite shipped** (4 seasons over `daysPerSeason` 21, `Season.fromWorldTime()`, temp offsets + crop multipliers per season, `config/hearthwind_world.json`); next wiring crop growth + temperature hook, then **Age-gated Mechanical preview** (Create wind/water wheel after `smithing 18`/`builder 3`, full Create only at Mechanical Age). Water motion per `ideas/rivers-and-waves.md` (river currents, ocean swell, foam, tides -> later visible wave surfaces via optional client companion/shaders; Tectonic vs Terralith pick ONE).
-6. **De-kludge audit** (new): before adding any tech, dedupe overlap - `grep` `mods-manifest.json` for duplicate storage (`Sophisticated Backpacks` vs `Iron Chests` → keep best), duplicate farming (`Let's Do` vs `Farmer's Delight` → keep one), duplicate sieving (keep `earlystage:sieve`, drop Homesteads `Prospector's Bench`). Count per need must go down.
-7. **Datapack noise shrink**: each shipped item set reduces the
-   remaining non-fatal loot/recipe parse warnings; re-census via
-   `grep "Couldn't parse" bootN.log`.
-8. **Watchlist**: periodically rerun `resolve_deps.py --mc <latest>`;
-   YUNG suite/endrem/etc. return automatically as authors publish.
-   Water/worldgen candidates tracked in `ideas/rivers-and-waves.md`
-   (tectonic + terralith both ship 26.2 builds; pick ONE at next bump).
-   Genesis/Genesis Framework studied for design ideas only (advancement
-   -wrapped gating, instruction toasts, ordered age chains) - rebuild
-   in-house, see `ideas/genesis-comparison.md`; neither mod adopted.
-9. **Snapshot CI probe**: nightly resolver run against newest snapshot.
-10. **Real art**: replace generated placeholder textures/models.
-11. **Cleanup discipline**: remove `.tmp-test-server/` and all
-    `.tmp/` scratch at task end.
+### Priority order (details and ledger in docs/RELEASE_1.0_PARITY.md)
+
+- **W0 Truth:** re-key `mods-manifest.json` to Aged project ids, remove
+  stale vendored duplicates (architectury 21.0.7, supermartijn642corelib
+  1.1.24a, modmenu 20.0.1), add a CI Aged-parity diff, carry over Aged's
+  config overrides for mods we already ship.
+- **W1 First impression / HUD:** Overflowing Bars, Time & Wind day
+  length (seasons in ticks), `Lv. N` preview label, tab icons, the
+  medieval `hearthwind_guide_book` rewrite (plan section 5.8), then the Trinkets/BackSlot/Inmis accessory slots and
+  the remaining Level/Restriction screens. Each change ships with a client
+  gametest screenshot next to the Aged reference (plan section 5.7).
+- **W2 Adopt:** the 30 Aged mods that already have official 26.2 Fabric
+  builds (server/both batch, then the client stack: Sodium, Iris,
+  FancyMenu, DH, ...).
+- **W3 Rebuild gaps:** jobs curve/cooldown/multi-job, RPGDifficulty caps,
+  steel ratio, LevelZ craft-gate enforcement, dirty-water duration,
+  seasonal bonemeal.
+- **W4 Port queue:** 65 mods + surveyor WIP, tier A (Fabric 26.1.x
+  upstream) first.
+- **W5 Look and feel:** Aged resource packs and shaders.
+- **W6 Release gate:** CI parity diff green, all gametests green, server
+  boots from the built mrpack, client play test.
+- **Vendored jars must match their builds.** After rebuilding any
+  `custom-mods` port that ships from `conversion/vendored/`, copy the plain
+  jar over the vendored one. A stale lavender jar shipped with no guidebook.
+
+### Post-1.0 direction (parked, from docs/PROJECT_DIRECTION.md)
+
+Realism, earned unlocks, harder frontier, one best, slow tech (Ages
+Stranded to Mechanical). This remains the long-term north star. It does
+not drive 1.0.0 work.
+
+### Module status (shipped; parity gaps are in the plan section 5.3)
+
+- `hearthwind-survival`: thirst, temperature, 5-group diet, spoilage
+  (inventory + containers), downed/revive.
+- `hearthwind-skills`: LevelZ-parity skills, 649 corpus gates, procs,
+  distance mob scaling, parties.
+- `hearthwind-jobs`: 8 jobs with corpus ladders, `/job` commands. Job
+  select is SILENT like Aged (`JobsManager.employJob/quitJob` send no
+  chat); level-up chat in `awardIfMatch` is kept.
+- `hearthwind-primitive`: earlystage rock/flint/sieve, crafting rock,
+  beginner forgiveness, tiered affixes, RecipeRemover list, AgedAddition
+  items + coal_piece fuel.
+- `hearthwind-world`: seasons (21 days, Aged value), per-crop season
+  multipliers, winter breeding block, HerdPanic, End Remastered eyes,
+  fauna.
+- `hearthwind-client`: HUD, Nutrients/Skills/Jobs/Party screens, SeasonHud.
+- `dungeonz`: ported; 23 server gametests. Remaining: jigsaw generation
+  path, criteria/loot asserts.
+- Hygiene: remove `.tmp-test-server/` and `.tmp/` scratch at task end;
+  rerun `resolve_deps.py --mc <latest>` periodically as a watchlist.
 
 ## Scratch-file policy (MANDATORY)
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Atmospheric Title Screen Background Generator for Hearthwind (26.2).
+Atmospheric Title Screen Background Generator for Hearthwind (26.2) - PREVIEW ONLY.
 Creates a rich, widescreen (1920x1080) painterly background matching
 the Hearthwind brand:
 - Deep twilight indigo/navy night sky with glowing stars
@@ -8,6 +8,11 @@ the Hearthwind brand:
 - Layered pine ridgelines with atmospheric sage/teal mist
 - Warm golden valley hearthglow and floating embers
 - Stylized, illuminated 'HEARTHWIND' typography logo
+
+This script is retired from asset generation: the shipped title screen art
+(`assets/hearthwind/textures/gui/title/main_menu_background.png`) is
+hand-curated, and this tool must never overwrite it. Output goes to the
+repo-local scratch dir `.tmp/background/` for previewing new ideas only.
 """
 
 import os
@@ -16,7 +21,8 @@ import random
 from PIL import Image, ImageDraw, ImageFilter, ImageFont
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-ASSETS_DIR = os.path.abspath(os.path.join(SCRIPT_DIR, "../hearthwind-client/src/main/resources/assets/hearthwind/textures/gui/title"))
+REPO_ROOT = os.path.abspath(os.path.join(SCRIPT_DIR, "../.."))
+OUT_DIR = os.path.join(REPO_ROOT, ".tmp/background")
 
 WIDTH = 1920
 HEIGHT = 1080
@@ -172,15 +178,14 @@ def gen_background():
     for off in range(6, 0, -1):
         draw.text((title_x + off, title_y + off), title_text, fill=(8, 10, 18, 180), font=None)
     
-    # Save background to target paths
+    # Save preview only - never into the shipped assets tree
     out_files = [
-        f"{ASSETS_DIR}/main_menu_background_with_aged.png",
-        f"{ASSETS_DIR}/main_menu_background.png"
+        os.path.join(OUT_DIR, "main_menu_background_preview.png")
     ]
     for p in out_files:
         os.makedirs(os.path.dirname(p), exist_ok=True)
         img.save(p, "PNG")
-        print(f"Generated High-Res Background: {p}")
+        print(f"Generated preview background: {p}")
 
 if __name__ == "__main__":
     print("Generating atmospheric Hearthwind title screen background...")

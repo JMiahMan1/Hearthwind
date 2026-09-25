@@ -15,10 +15,21 @@ import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.GameType;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.CampfireBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.Vec3;
 
 /**
  * Headless gametests for primitive progression items.
@@ -38,6 +49,16 @@ public final class HearthwindPrimitiveGameTests {
         helper.assertTrue(HearthwindPrimitiveItems.FLINT_REPAIR_ITEMS != null,
                 "flint repair tag exists");
 
+        helper.succeed();
+    }
+
+    @GameTest
+    public void agedAdditionCoalPieceIsFuel(GameTestHelper helper) {
+        // AgedAddition 1.0.6 ItemInit: FuelRegistry.add(COAL_PIECE, 400)
+        int burn = helper.getLevel().fuelValues()
+                .burnDuration(new ItemStack(HearthwindPrimitiveItems.COAL_PIECE));
+        helper.assertTrue(burn == HearthwindPrimitiveItems.COAL_PIECE_BURN_TICKS,
+                "coal_piece burns 400 ticks, got " + burn);
         helper.succeed();
     }
 
@@ -1514,6 +1535,32 @@ public final class HearthwindPrimitiveGameTests {
                 return zin.readAllBytes();
             }
         }
+    }
+
+    @GameTest
+    public void barkLightsUnlitCampfire(GameTestHelper helper) {
+        BlockPos pos = new BlockPos(1, 1, 1);
+        helper.setBlock(pos, Blocks.CAMPFIRE.defaultBlockState().setValue(CampfireBlock.LIT, false));
+        Player player = helper.makeMockPlayer(GameType.SURVIVAL);
+        ItemStack bark = new ItemStack(HearthwindPrimitiveItems.OAK_BARK);
+        player.setItemInHand(InteractionHand.MAIN_HAND, bark);
+        helper.useBlock(pos, player);
+        helper.assertBlockProperty(pos, CampfireBlock.LIT, true);
+        helper.assertTrue(bark.isEmpty(), "bark must be consumed when lighting a campfire");
+        helper.succeed();
+    }
+
+    @GameTest
+    public void campfirePlacesUnlit(GameTestHelper helper) {
+        Player player = helper.makeMockPlayer(GameType.SURVIVAL);
+        BlockPos abs = helper.absolutePos(new BlockPos(1, 1, 1));
+        BlockPlaceContext context = new BlockPlaceContext(player, InteractionHand.MAIN_HAND,
+                new ItemStack(Items.CAMPFIRE),
+                new BlockHitResult(Vec3.atCenterOf(abs), Direction.UP, abs, false));
+        BlockState placed = Blocks.CAMPFIRE.getStateForPlacement(context);
+        helper.assertTrue(placed != null, "campfire must have a placement state");
+        helper.assertFalse(placed.getValue(CampfireBlock.LIT), "campfire must place unlit so bark can light it");
+        helper.succeed();
     }
 
 }

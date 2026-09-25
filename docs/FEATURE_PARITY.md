@@ -1,5 +1,7 @@
 # Feature parity matrix - Hearthwind (26.2 rebuild) vs original Aged 1.20.1 pack
 
+> **1.0.0 scope (2026-09-24):** `docs/RELEASE_1.0_PARITY.md` governs 1.0.0 and wins wherever this file disagrees. Several ✅ rows here overstate parity (jobs curve/cooldown, RPGDifficulty caps, seasons). The gap list is in the plan's section 5.3.
+
 Living document. Status per system the original pack shipped; goal is
 parity first, deliberate improvement where noted. UPDATE WITH EVERY
 GAMEPLAY COMMIT.
@@ -21,7 +23,7 @@ over (with reason)
 | party-addon | Parties & Shared XP | `PartyManager`, `PartyCommand` | ✅ | `/party create/invite/accept/leave` commands, party shared XP range distribution |
 | earlystage | Primitive start | `data/earlystage` (sieve drops, flint/steel recipes) | ✅ | Surface rock & flint mounds, sieve mechanics, knapping start, 3 beginner deaths forgiveness, steel economy |
 | tiered | Random gear tiers | `data/tiered` 199 files | ✅ | 199 affixes + equipment reforge recipes loaded into `TierRegistry` |
-| fabric-seasons + seasonhud + crop-growth-modifier | Seasons & crops | `hearthwind-world`, `config/hearthwind_world.json` | ✅ | 18-day seasons, top-left SeasonHUD widget (`[Icon] Season, Day N/18`), 15 per-crop growth multipliers, winter snow layering |
+| fabric-seasons + seasonhud + crop-growth-modifier | Seasons & crops | `hearthwind-world`, `config/hearthwind_world.json` | ✅ | 21-day seasons (Aged `seasons.json` 504000 ticks), top-left SeasonHUD widget (`[Icon] Season, Day N/21`), 15 per-crop growth multipliers, winter snow layering |
 | revive | Downed & Revive | `ReviveManager`, `hearthwind-survival` | ✅ | 60s bleedout crawl state, call for help, 3s team revive channel |
 | let's do family | Agriculture suite | `letsdo-*` (external repo) | ✅ | Farm & Charm, Vinery, Candlelight, Meadow, HerbalBrews, Brewery, Nether Vinery crops and stations |
 

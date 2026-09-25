@@ -41,6 +41,9 @@ public abstract class ConsumableConsumeMixin {
         if (entity instanceof ServerPlayer player) {
             HearthwindSurvivalDiet.onEaten(player, stack);
             dev.jmiahman.hearthwind.survival.HydrationCorpus.hydrateOnConsume(player, stack);
+            // Dehydration parity: bad potions (water/awkward/mundane/thick)
+            // can inflict Thirst; the HUD droplets turn green.
+            dev.jmiahman.hearthwind.survival.PurifiedWater.applyPotionThirst(player, stack);
         }
     }
 }

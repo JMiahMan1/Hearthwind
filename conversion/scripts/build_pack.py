@@ -28,6 +28,40 @@ DIST = BUILD / "dist"
 DIST_LEGACY = ROOT / "conversion" / "dist"
 UA = {"User-Agent": "hearthwind/0.1 (github.com/JMiahMan1/Hearthwind)"}
 
+# In-house 26.2 ports of third-party mods, built under custom-mods/<name>
+PORTED_MODULES = (
+    "villagesandpillages", "letsdo-vinery", "letsdo-meadow", "letsdo-bakery",
+    "letsdo-candlelight", "letsdo-brewery", "letsdo-herbalbrews",
+    "letsdo-farm-and-charm", "letsdo-nethervinery",
+    "chipped", "dungeonz", "athena", "exposure",
+    "passable-foliage", "profundis", "adventurez", "fleshz",
+    "smallships",
+)
+
+
+def _plain_jar(j: Path) -> bool:
+    return "sources" not in j.name and "javadoc" not in j.name
+
+
+def local_jars(mc: str):
+    """Jars the Modrinth index cannot provide: vendored adopts plus our
+    custom-mods builds. Read straight from their source dirs so the mrpacks
+    never depend on a previously materialized dist/server/mods.
+
+    Returns (vendored, custom): custom includes hearthwind-client, which
+    callers must keep out of the server side."""
+    vendored = [j for j in sorted((ROOT / "conversion" / "vendored").glob("*.jar")) if _plain_jar(j)]
+    custom = [
+        j for j in sorted((ROOT / "custom-mods").glob(f"hearthwind-*/build/libs/*{mc}*.jar"))
+        if _plain_jar(j)
+    ]
+    for mod in PORTED_MODULES:
+        custom += [
+            j for j in sorted((ROOT / "custom-mods" / mod / "build" / "libs").glob(f"*{mc}*.jar"))
+            if _plain_jar(j)
+        ]
+    return vendored, custom
+
 
 def main():
     ap = argparse.ArgumentParser()
@@ -54,6 +88,17 @@ def main():
             f"patch_vendored: {patch_counts['patched']} jar(s) patched, "
             f"{patch_counts.get('already', 0)} already ok"
         )
+    # true_ending / natures_spirit data JSON predates the 26.2 codecs
+    # (time_check clock, entity_type sub-predicate). Patch before packaging
+    # so dist + mrpack ship schema-valid data.
+    from patch_legacy_data import patch_all as patch_legacy_all
+
+    legacy_counts = patch_legacy_all(ROOT / "conversion")
+    if legacy_counts.get("patched"):
+        print(
+            f"patch_legacy_data: {legacy_counts['patched']} jar(s) patched, "
+            f"{legacy_counts.get('already', 0)} already ok"
+        )
     ready = [r for r in data["resolved"] if r["status"].startswith("ok")]
     ready_server = [r for r in ready if not r.get("client_only")]
     ready_client_only = [r for r in ready if r.get("client_only")]
@@ -78,12 +123,19 @@ def main():
         f"fabric-api {fabric_api_version}"
     )
 
-    def non_index_jars(mods_dir: Path, index_names: set):
+    vendored_jars, custom_jars = local_jars(mc)
+    server_custom_jars = [j for j in custom_jars if "hearthwind-client" not in j.name]
+    if not custom_jars:
+        print("WARNING: no custom-mods jars found - run `cd custom-mods && ./gradlew build` first")
+
+    def non_index_jars(jars, index_names: set):
         """Locally-built jars (custom mods + vendored) that the Modrinth
         index cannot provide - these must ship as mrpack overrides/mods."""
-        if not mods_dir.exists():
-            return []
-        return [j for j in sorted(mods_dir.glob("*.jar")) if j.name not in index_names]
+        seen = {}
+        for j in jars:
+            if j.name not in index_names:
+                seen.setdefault(j.name, j)
+        return [seen[n] for n in sorted(seen)]
 
     def index_file(r, client_env):
         f = r["picked"]["file"]
@@ -167,7 +219,7 @@ def main():
             for p in ov.rglob("*"):
                 if p.is_file():
                     z.write(p, "overrides/" + str(p.relative_to(ov)))
-        local = non_index_jars(DIST / "server" / "mods", indexed_server)
+        local = non_index_jars(vendored_jars + server_custom_jars, indexed_server)
         for j in local:
             z.write(j, "overrides/mods/" + j.name)
     # legacy alias
@@ -176,7 +228,7 @@ def main():
     for p in [mrpack, mrpack_legacy, idx_path]:
         shutil.copy(p, DIST_LEGACY / p.name)
     print(
-        f"Wrote {mrpack.name} ({mrpack.stat().st_size // 1024} KiB, {len(server_files)} mods + {len(non_index_jars(DIST / 'server' / 'mods', indexed_server))} override jars)"
+        f"Wrote {mrpack.name} ({mrpack.stat().st_size // 1024} KiB, {len(server_files)} mods + {len(local)} override jars)"
     )
 
     # ---- Client companion pack (optional HUD) ----
@@ -208,12 +260,12 @@ def main():
             for p in ov.rglob("*"):
                 if p.is_file():
                     z.write(p, "overrides/" + str(p.relative_to(ov)))
-        local_c = non_index_jars(DIST / "client" / "mods", indexed_client)
+        local_c = non_index_jars(vendored_jars + custom_jars, indexed_client)
         for j in local_c:
             z.write(j, "overrides/mods/" + j.name)
     shutil.copy(client_mrpack, DIST_LEGACY / client_mrpack.name)
     print(
-        f"Wrote {client_mrpack.name} ({client_mrpack.stat().st_size // 1024} KiB, {len(non_index_jars(DIST / 'client' / 'mods', indexed_client))} override jars, {len(list(resourcepacks.glob('*.zip'))) if resourcepacks.is_dir() else 0} resourcepacks) - client companion (client-required)"
+        f"Wrote {client_mrpack.name} ({client_mrpack.stat().st_size // 1024} KiB, {len(local_c)} override jars, {len(list(resourcepacks.glob('*.zip'))) if resourcepacks.is_dir() else 0} resourcepacks) - client companion (client-required)"
     )
 
     if args.server_dir:
@@ -261,31 +313,10 @@ def main():
         for p in (sdir / "mods").glob("*.jar"):
             shutil.copy(p, cdir / "mods" / p.name)
         # Vendored jars (e.g. locally patched YUNG 26.2 builds) go to both dirs
-        for j in sorted((ROOT / "conversion" / "vendored").glob("*.jar")):
-            if "sources" in j.name or "javadoc" in j.name:
-                continue
+        for j in vendored_jars:
             shutil.copy(j, sdir / "mods" / j.name)
             shutil.copy(j, cdir / "mods" / j.name)
-        # Also copy our custom jars into the plain dirs for offline installs
-        custom_jars = list((ROOT / "custom-mods").rglob("hearthwind-*/build/libs/*26.2*.jar"))
-        custom_jars = [j for j in custom_jars if "sources" not in j.name]
-        # smallships 26.2 port (in-house) ships to server + client like the hearthwind mods
-        custom_jars += [
-            j
-            for j in (ROOT / "custom-mods" / "smallships" / "build" / "libs").glob("smallships-26.2*.jar")
-            if "sources" not in j.name and "javadoc" not in j.name
-        ]
-        # In-house 26.2 ports of third-party mods (letsdo-* ports, villagesandpillages)
-        for mod in ("villagesandpillages", "letsdo-vinery", "letsdo-meadow", "letsdo-bakery",
-                    "letsdo-candlelight", "letsdo-brewery", "letsdo-herbalbrews",
-                    "letsdo-farm-and-charm", "letsdo-nethervinery",
-                    "chipped", "dungeonz", "athena", "exposure",
-                    "passable-foliage", "profundis", "adventurez", "fleshz"):
-            custom_jars += [
-                j
-                for j in (ROOT / "custom-mods" / mod / "build" / "libs").glob("*26.2*.jar")
-                if "sources" not in j.name and "javadoc" not in j.name
-            ]
+        # Custom jars (hearthwind-* + in-house ports) from local_jars()
         for j in custom_jars:
             is_client = "hearthwind-client" in str(j)
             target_dir = cdir / "mods" if is_client else sdir / "mods"
@@ -311,13 +342,9 @@ def main():
                 shutil.copy(p, cdir / "resourcepacks" / p.name)
         # Prune stale resolution leftovers: keep only jars the index covers
         # plus vendored/custom jars actually staged above
-        vendored_names = {
-            j.name
-            for j in (ROOT / "conversion" / "vendored").glob("*.jar")
-            if "sources" not in j.name and "javadoc" not in j.name
-        }
+        vendored_names = {j.name for j in vendored_jars}
         custom_names = {j.name for j in custom_jars}
-        server_custom_names = {j.name for j in custom_jars if "hearthwind-client" not in j.name}
+        server_custom_names = {j.name for j in server_custom_jars}
         for d, allowed in (
             (sdir / "mods", indexed_server | vendored_names | server_custom_names),
             (cdir / "mods", indexed_client | vendored_names | custom_names),

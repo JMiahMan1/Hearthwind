@@ -1,0 +1,35 @@
+<owo-ui xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/wisp-forest/owo-lib/1.20.3/owo-ui.xsd">
+    <templates>
+        <!-- Illuminated drop capital: the initial tile sits beside the opening
+             words, like a manuscript initial. Usage in an entry:
+             <|drop-cap@hearthwind:guide|letter=w,text=elcome\, traveller...|> -->
+        <template name="drop-cap">
+            <flow-layout direction="horizontal">
+                <children>
+                    <texture texture="hearthwind:textures/gui/guide/initial/{{letter}}.png"
+                             texture-width="22" texture-height="22" region-width="22" region-height="22">
+                        <blend>true</blend>
+                        <margins>
+                            <right>3</right>
+                        </margins>
+                    </texture>
+                    <label>
+                        <text>{{text}}</text>
+                        <color>#FF3B2A1E</color>
+                        <sizing>
+                            <horizontal method="fill">100</horizontal>
+                        </sizing>
+                    </label>
+                </children>
+                <vertical-alignment>top</vertical-alignment>
+                <sizing>
+                    <horizontal method="fill">100</horizontal>
+                </sizing>
+                <margins>
+                    <bottom>4</bottom>
+                </margins>
+            </flow-layout>
+        </template>
+    </templates>
+</owo-ui>

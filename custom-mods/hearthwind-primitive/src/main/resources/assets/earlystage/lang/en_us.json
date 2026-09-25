@@ -34,5 +34,11 @@
   "item.earlystage.steel_helmet": "Steel Helmet",
   "item.earlystage.steel_chestplate": "Steel Chestplate",
   "item.earlystage.steel_leggings": "Steel Leggings",
-  "item.earlystage.steel_boots": "Steel Boots"
+  "item.earlystage.steel_boots": "Steel Boots",
+  "item.earlystage.steel_horse_armor": "Steel Horse Armor",
+  "item.earlystage.crafting_rock": "Crafting Rock",
+  "item.earlystage.sieve": "Sieve",
+  "item.earlystage.redstone_sieve": "Redstone Sieve",
+  "item.earlystage.rock": "Rock",
+  "item.earlystage.flint": "Flint"
 }

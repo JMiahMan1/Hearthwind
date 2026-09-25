@@ -11,6 +11,33 @@
     {
       "id": "terralith:orchid_swamp",
       "required": false
-    }
+    },
+    {
+      "id": "terralith:birch_taiga",
+      "required": false
+    },
+    {
+      "id": "terralith:lavender_forest",
+      "required": false
+    },
+    {
+      "id": "terralith:sakura_grove",
+      "required": false
+    },
+    {
+      "id": "terralith:cloud_forest",
+      "required": false
+    },
+    {
+      "id": "terralith:blooming_valley",
+      "required": false
+    },
+    {
+      "id": "terralith:moonlight_grove",
+      "required": false
+    },
+    "minecraft:flower_forest",
+    "minecraft:cherry_grove",
+    "minecraft:dark_forest"
   ]
 }

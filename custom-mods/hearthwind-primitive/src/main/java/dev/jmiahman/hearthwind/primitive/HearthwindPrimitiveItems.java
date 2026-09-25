@@ -10,6 +10,7 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.TagKey;
+import net.minecraft.world.item.AxeItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ShearsItem;
 import net.minecraft.world.item.ToolMaterial;
@@ -63,8 +64,7 @@ public final class HearthwindPrimitiveItems {
     public static final Item FLINT_PICKAXE = new Item(new Item.Properties()
             .pickaxe(FLINT, 1.0f, -2.8f)
             .setId(key("earlystage", "flint_pickaxe")));
-    public static final Item FLINT_AXE = new Item(new Item.Properties()
-            .axe(FLINT, 5.5f, -3.0f)
+    public static final Item FLINT_AXE = new AxeItem(FLINT, 5.5f, -3.0f, new Item.Properties()
             .setId(key("earlystage", "flint_axe")));
     public static final Item FLINT_SHOVEL = new Item(new Item.Properties()
             .shovel(FLINT, 1.5f, -3.0f)
@@ -120,8 +120,7 @@ public final class HearthwindPrimitiveItems {
     public static final Item STEEL_PICKAXE = new Item(new Item.Properties()
             .pickaxe(STEEL, 1.0f, -2.8f)
             .setId(key("earlystage", "steel_pickaxe")));
-    public static final Item STEEL_AXE = new Item(new Item.Properties()
-            .axe(STEEL, 5.5f, -3.0f)
+    public static final Item STEEL_AXE = new AxeItem(STEEL, 5.5f, -3.0f, new Item.Properties()
             .setId(key("earlystage", "steel_axe")));
     public static final Item STEEL_SHOVEL = new Item(new Item.Properties()
             .shovel(STEEL, 1.5f, -3.0f)
@@ -296,8 +295,25 @@ public final class HearthwindPrimitiveItems {
         REGISTERED.put(key(namespace, path), item);
     }
 
+    /** AgedAddition 1.0.6 ItemInit: its 11 items, in order, sit in INGREDIENTS. */
+    private static final Item[] AGEDADDITION_INGREDIENTS = {
+            COPPER_NUGGET, RAW_COPPER_NUGGET, RAW_GOLD_NUGGET, RAW_IRON_NUGGET,
+            COAL_PIECE, LAPIS_LAZULI_PIECE, EMERALD_PIECE, DIAMOND_PIECE,
+            NETHERITE_SCRAP_PIECE, NETHER_STAR_PIECE, QUARTZ_PIECE,
+    };
+
+    /** AgedAddition: FuelRegistry.add(COAL_PIECE, 400) - a quarter of coal, 2 smelts. */
+    public static final int COAL_PIECE_BURN_TICKS = 400;
+
     public static void init() {
         registerBarkFuels();
+        net.fabricmc.fabric.api.creativetab.v1.CreativeModeTabEvents
+                .modifyOutputEvent(net.minecraft.world.item.CreativeModeTabs.INGREDIENTS)
+                .register(output -> {
+                    for (Item item : AGEDADDITION_INGREDIENTS) {
+                        output.accept(item);
+                    }
+                });
         HearthwindPrimitive.LOGGER.info("aged-primitive: {} items registered "
                 + "(primitive progression + agedaddition pieces)", REGISTERED.size());
     }
@@ -317,6 +333,7 @@ public final class HearthwindPrimitiveItems {
             builder.add(CRIMSON_BARK, 200);
             builder.add(MANGROVE_BARK, 200);
             builder.add(BAMBOO_BARK, 100);
+            builder.add(COAL_PIECE, COAL_PIECE_BURN_TICKS);
         });
     }
 

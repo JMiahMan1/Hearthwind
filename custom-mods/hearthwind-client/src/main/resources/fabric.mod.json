@@ -19,9 +19,11 @@
     "dev.jmiahman.hearthwind.client.gametest.ScreensTourGameTests",
     "dev.jmiahman.hearthwind.client.gametest.DietGameTests",
     "dev.jmiahman.hearthwind.client.gametest.MiningGameTests",
-    "dev.jmiahman.hearthwind.client.gametest.PackServerConnectGameTests",
     "dev.jmiahman.hearthwind.client.gametest.BiomeTempGameTests",
-    "dev.jmiahman.hearthwind.client.gametest.ShowcaseTourGameTests"
+    "dev.jmiahman.hearthwind.client.gametest.ShowcaseTourGameTests",
+    "dev.jmiahman.hearthwind.client.gametest.ItemNameGameTests",
+    "dev.jmiahman.hearthwind.client.gametest.GuideBookGameTests",
+    "dev.jmiahman.hearthwind.client.gametest.PackServerConnectGameTests"
   ]
   },
   "depends": {

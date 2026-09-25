@@ -53,6 +53,13 @@ public final class SkillToast implements HudElement {
         if (mc.player == null || !ClientSkillData.isActive()) {
             return;
         }
+        // A HUD banner renders behind screens, so with any GUI open only its top
+        // sliver peeks above the panel (looks like stray triangles over the
+        // guidebook). Skip rendering while a screen is open; the banner timer
+        // still expires normally.
+        if (mc.gui.screen() != null) {
+            return;
+        }
 
         String skillId = ClientSkillData.skillId();
         String skillName = formatSkillName(skillId);

@@ -26,6 +26,7 @@ public class BlockInit {
 
     public static final Map<Block, List<Block>> RACKS = new HashMap<>();
 
+    public static final Block WOOD_RACK = register("wood_rack", Blocks.OAK_PLANKS, Blocks.OAK_SLAB);
     public static final Block OAK_WOOD_RACK = register("oak_wood_rack", Blocks.OAK_PLANKS, Blocks.OAK_SLAB);
     public static final Block SPRUCE_WOOD_RACK = register("spruce_wood_rack", Blocks.SPRUCE_PLANKS, Blocks.SPRUCE_SLAB);
     public static final Block BIRCH_WOOD_RACK = register("birch_wood_rack", Blocks.BIRCH_PLANKS, Blocks.BIRCH_SLAB);
@@ -39,8 +40,9 @@ public class BlockInit {
     public static final Block CHERRY_WOOD_RACK = register("cherry_wood_rack", Blocks.CHERRY_PLANKS, Blocks.CHERRY_SLAB);
 
     public static final BlockEntityType<WoodRackEntity> WOOD_RACK_ENTITY = new BlockEntityType<>(WoodRackEntity::new,
-            Set.of(OAK_WOOD_RACK, SPRUCE_WOOD_RACK, BIRCH_WOOD_RACK, JUNGLE_WOOD_RACK, ACACIA_WOOD_RACK, DARK_OAK_WOOD_RACK,
-                    CRIMSON_WOOD_RACK, WARPED_WOOD_RACK, MANGROVE_WOOD_RACK, BAMBOO_WOOD_RACK, CHERRY_WOOD_RACK));
+            Set.of(WOOD_RACK, OAK_WOOD_RACK, SPRUCE_WOOD_RACK, BIRCH_WOOD_RACK, JUNGLE_WOOD_RACK, ACACIA_WOOD_RACK,
+                    DARK_OAK_WOOD_RACK, CRIMSON_WOOD_RACK, WARPED_WOOD_RACK, MANGROVE_WOOD_RACK, BAMBOO_WOOD_RACK,
+                    CHERRY_WOOD_RACK));
 
     private static Block register(String path, Block plankVariant, Block recipeIngredient) {
         Identifier id = FleshMain.identifierOf(path);

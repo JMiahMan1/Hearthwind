@@ -26,7 +26,7 @@ import net.minecraft.world.item.Items;
  * existing {@code /job join|leave} command path.
  */
 @Environment(EnvType.CLIENT)
-public class JobsScreen extends AgedPanelScreen {
+public class JobsScreen extends HearthwindPanelScreen {
 
     private static final Identifier BACKGROUND = Identifier.fromNamespaceAndPath(
             "hearthwind", "textures/gui/jobs/job_background.png");

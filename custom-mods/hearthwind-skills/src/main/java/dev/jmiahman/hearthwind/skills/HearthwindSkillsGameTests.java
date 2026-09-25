@@ -469,23 +469,27 @@ public final class HearthwindSkillsGameTests {
         helper.succeed();
     }
 
+    /** Aged parity: orb XP pools at the leader and splits evenly (PartyAddon 1.0.4). */
     @GameTest
-    public void partySharedXpAwardsNearbyMembers(GameTestHelper helper) {
+    public void partyOrbXpPoolsAtLeaderAndSplitsEvenly(GameTestHelper helper) {
         dev.jmiahman.hearthwind.skills.party.PartyManager.reset();
         var leader = helper.makeMockServerPlayerInLevel();
         var member = helper.makeMockServerPlayerInLevel();
-
         var party = dev.jmiahman.hearthwind.skills.party.PartyManager.createParty(leader, "Guild");
         dev.jmiahman.hearthwind.skills.party.PartyManager.invitePlayer(leader, member);
         dev.jmiahman.hearthwind.skills.party.PartyManager.acceptInvite(member);
 
-        double initialMemberMiningXp = SkillXp.xp(member, Skill.MINING);
-        dev.jmiahman.hearthwind.skills.party.PartyManager.shareXp(leader, Skill.MINING, 20);
-
-        double newMemberMiningXp = SkillXp.xp(member, Skill.MINING);
-        helper.assertTrue(newMemberMiningXp > initialMemberMiningXp, "Nearby party member must receive shared XP");
+        int leaderBefore = leader.totalExperience;
+        int memberBefore = member.totalExperience;
+        boolean pooled = dev.jmiahman.hearthwind.skills.party.PartyManager.poolOrbXp(member, 11);
+        helper.assertTrue(pooled, "a party member's orb XP must go to the leader's pool");
+        helper.assertTrue(leader.totalExperience - leaderBefore == 5, "leader gets 11/2 = 5, got " + (leader.totalExperience - leaderBefore));
+        helper.assertTrue(member.totalExperience - memberBefore == 5, "member gets 11/2 = 5, got " + (member.totalExperience - memberBefore));
+        helper.assertTrue(party.getCollectedXp() == 1, "the odd point stays in the pool, got " + party.getCollectedXp());
 
         dev.jmiahman.hearthwind.skills.party.PartyManager.disbandParty(leader);
+        helper.assertTrue(!dev.jmiahman.hearthwind.skills.party.PartyManager.poolOrbXp(member, 5),
+                "without a party, orb XP is not pooled");
         helper.succeed();
     }
 

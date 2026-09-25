@@ -87,7 +87,8 @@ public class DarkCherryHangingSignRenderer extends DarkCherrySignRenderer<net.sa
         if (blockState.getBlock() instanceof SignBlock signBlock) {
             state.yRotation = -signBlock.getYRotationDegrees(blockState);
         }
-        boolean attached = !ceiling && blockState.getValue(BlockStateProperties.ATTACHED);
+        boolean attached = !ceiling && (!blockState.hasProperty(BlockStateProperties.ATTACHED)
+                || blockState.getValue(BlockStateProperties.ATTACHED));
         state.attached = attached;
         this.plank.visible = !ceiling;
         this.vChains.visible = !ceiling && attached;

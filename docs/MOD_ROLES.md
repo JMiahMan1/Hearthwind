@@ -1,5 +1,7 @@
 # Mod roles & 26.2 compatibility
 
+> **1.0.0 scope (2026-09-24):** `docs/RELEASE_1.0_PARITY.md` governs 1.0.0 and wins wherever this file disagrees. Counts here come from the hand-slugged manifest (151 entries), not Aged's 212-jar index. Use the plan's ledger for status.
+
 Every mod Aged 3.1.2 shipped (212 files -> 151 curated entries in
 `conversion/curated/mods-manifest.json`), what it does for gameplay, our
 disposition for the 26.x server rebuild, and its current 26.2 resolution

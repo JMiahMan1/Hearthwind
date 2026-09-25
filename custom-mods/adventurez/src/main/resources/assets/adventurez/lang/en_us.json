@@ -138,6 +138,9 @@
   "block.adventurez.piglin_flag.tooltip2": "§7Fully Charged:",
   "block.adventurez.piglin_flag.tooltip3": "§7Calms attacking Piglins when Player gets close",
   "block.adventurez.shadow_chest": "Shadow Chest",
+  "item.adventurez.chiseled_polished_blackstone_holder": "Chiseled Polished Blackstone Holder",
+  "item.adventurez.piglin_flag": "Piglin Flag",
+  "item.adventurez.shadow_chest": "Shadow Chest",
 
   "adventurez.container.shadowchest": "Shadow Chest",
 

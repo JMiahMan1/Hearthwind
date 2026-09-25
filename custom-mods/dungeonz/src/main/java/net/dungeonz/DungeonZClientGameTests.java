@@ -17,6 +17,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import net.dungeonz.block.DungeonGateBlock;
+import net.dungeonz.dungeon.Dungeon;
 import net.dungeonz.block.entity.DungeonGateEntity;
 import net.dungeonz.block.entity.DungeonPortalEntity;
 import net.dungeonz.block.entity.DungeonSpawnerEntity;
@@ -240,11 +241,16 @@ public final class DungeonZClientGameTests implements FabricClientGameTest {
                     server.getPlayerList().getPlayers().get(0), "dark_dungeon"));
             context.waitForScreen(DungeonCompassScreen.class);
             context.waitTicks(5);
+            var loaded = world.getServer().computeOnServer(server -> DungeonzMain.DUNGEONS.stream()
+                    .map(Dungeon::getDungeonTypeId).toList());
+            require(loaded.containsAll(List.of("dark_dungeon", "temple_dungeon")),
+                    "two shipped dungeons must load: " + loaded);
             context.runOnClient(mc -> {
                 var screen = mc.gui.screen();
                 var buttons = widgets(screen, Button.class);
                 require(buttons.size() == 8, "compass must retain seven rows and calibrate button");
-                require(buttons.stream().filter(button -> button.visible).count() == 3, "two shipped dungeons must populate compass");
+                require(buttons.stream().filter(button -> button.visible).count() == loaded.size() + 1,
+                        "one visible row per loaded dungeon plus calibrate, loaded=" + loaded);
                 require(!buttons.get(7).active, "calibrate must start disabled");
                 require(buttons.subList(0, 7).stream().filter(button -> button.visible && !button.active).count() == 1,
                         "current dungeon row must be disabled");

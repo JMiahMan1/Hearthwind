@@ -49,6 +49,16 @@ public final class HearthwindSurvivalConfig {
         public double impureThirstChance = 0.15;
         /** Duration of the thirst effect in ticks. */
         public int thirstDuration = 200;
+        /**
+         * Chance the thirst effect follows a bad potion drink (Aged
+         * override {@code potion_bad_thirst_chance = 0.15}).
+         */
+        public double potionBadThirstChance = 0.15;
+        /**
+         * Duration of the thirst effect from a bad potion in ticks (the
+         * reference class default 300; Aged does not override it).
+         */
+        public int potionBadThirstDuration = 300;
     }
 
     public static class Thirst {
@@ -88,6 +98,11 @@ public final class HearthwindSurvivalConfig {
         public boolean useHydrationCorpus = true;
         /** Multiplier applied to catalogued hydration tiers (1 = catalogue value). */
         public double hydrationCorpusScale = 1.0;
+        /**
+         * Reference {@code potion_thirst_quench} fallback: hydration granted
+         * by a potion that is not in the hydration corpus.
+         */
+        public double potionThirstQuench = 2.0;
     }
 
     /**

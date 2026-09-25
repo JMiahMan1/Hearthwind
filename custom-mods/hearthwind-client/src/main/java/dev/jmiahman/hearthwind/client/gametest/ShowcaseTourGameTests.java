@@ -83,7 +83,8 @@ public class ShowcaseTourGameTests implements FabricClientGameTest {
             }
             world.getServer().runCommand("time set 6000");
             world.getServer().runCommand("weather clear");
-            world.getServer().runCommand("gamerule doDaylightCycle false");
+            // 26.x renamed gamerules to snake_case (doDaylightCycle -> advance_time)
+            world.getServer().runCommand("gamerule advance_time false");
 
             // Place one of every block in our namespaces, banded per module.
             Map<String, List<String>> bands = world.getServer().computeOnServer(server -> {

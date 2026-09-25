@@ -24,6 +24,56 @@ import net.minecraft.resources.Identifier;
  * default fabric-gametest-api-v1:empty template is used).
  */
 public final class HearthwindSurvivalGameTests {
+
+    /**
+     * Placing any block must not crash. 26.x validates a block entity against
+     * its type's allowed blocks, so a modded block reusing another block's
+     * entity type (nethervinery barrels/lattices reusing vanilla or vinery
+     * types) threw "Invalid block entity" and crashed the game on placement.
+     * Builds the block entity of every registered block in one pass and
+     * reports every offender at once.
+     */
+    /**
+     * Aged's guidebook documents every nutrient deficiency as the mirror of its
+     * bonus (-attack speed, -max health, ...). NutritionZ's shipped data used
+     * positive values in the negative lists, so a deficiency granted a buff.
+     * Deficiency attributes must now be penalties and bonuses gains.
+     */
+    @net.fabricmc.fabric.api.gametest.v1.GameTest
+    public void nutrientDeficiencyIsAPenalty(net.minecraft.gametest.framework.GameTestHelper helper) {
+        for (int i = 0; i < HearthwindSurvivalDiet.NUTRIENT_COUNT; i++) {
+            NutritionEffects.EffectSet low = NutritionEffects.negative(i);
+            NutritionEffects.EffectSet high = NutritionEffects.positive(i);
+            helper.assertTrue(low != null && high != null, "nutrition effects loaded for nutrient " + i);
+            helper.assertTrue(!low.attributes().isEmpty(), "nutrient " + i + " has deficiency attributes");
+            for (NutritionEffects.AttributeEffect e : low.attributes()) {
+                helper.assertTrue(e.modifier().amount() < 0,
+                        "deficiency of nutrient " + i + " must lower " + e.attribute() + ", got " + e.modifier().amount());
+            }
+            for (NutritionEffects.AttributeEffect e : high.attributes()) {
+                helper.assertTrue(e.modifier().amount() > 0,
+                        "abundance of nutrient " + i + " must raise " + e.attribute() + ", got " + e.modifier().amount());
+            }
+        }
+        helper.succeed();
+    }
+
+    @net.fabricmc.fabric.api.gametest.v1.GameTest
+    public void everyBlockEntityAcceptsItsBlock(net.minecraft.gametest.framework.GameTestHelper helper) {
+        java.util.List<String> bad = new java.util.ArrayList<>();
+        for (net.minecraft.world.level.block.Block block : BuiltInRegistries.BLOCK) {
+            if (!(block instanceof net.minecraft.world.level.block.EntityBlock entityBlock)) {
+                continue;
+            }
+            try {
+                entityBlock.newBlockEntity(net.minecraft.core.BlockPos.ZERO, block.defaultBlockState());
+            } catch (RuntimeException e) {
+                bad.add(BuiltInRegistries.BLOCK.getKey(block) + ": " + e.getMessage());
+            }
+        }
+        helper.assertTrue(bad.isEmpty(), bad.size() + " blocks crash when placed:\n  " + String.join("\n  ", bad));
+        helper.succeed();
+    }
     /** Public ctor: fabric-loader instantiates gametest entrypoints reflectively. */
     public HearthwindSurvivalGameTests() {}
 
@@ -153,6 +203,111 @@ public final class HearthwindSurvivalGameTests {
         }
         helper.assertTrue(HearthwindSurvivalThirst.hydration(player) > 10.0, "purified sip must hydrate");
         helper.assertTrue(!player.hasEffect(ThirstMobEffect.HOLDER), "purified sip must never inflict thirst");
+        helper.succeed();
+    }
+
+    @GameTest
+    public void purifiedPotionRegisters(GameTestHelper helper) {
+        helper.assertTrue(net.minecraft.core.registries.BuiltInRegistries.POTION.containsKey(
+                net.minecraft.resources.Identifier.parse("dehydration:purified_water")),
+                "dehydration:purified_water potion must be registered");
+        helper.assertTrue(PurifiedWater.PURIFIED_POTION != null, "purified potion holder must be set");
+        ItemStack purified = CampfirePurification.purifiedBottle();
+        var contents = purified.get(DataComponents.POTION_CONTENTS);
+        helper.assertTrue(contents != null && contents.is(PurifiedWater.PURIFIED_POTION),
+                "purified bottle must carry the purified potion");
+        ItemStack water = net.minecraft.world.item.alchemy.PotionContents.createItemStack(
+                Items.POTION, net.minecraft.world.item.alchemy.Potions.WATER);
+        helper.assertTrue(CampfirePurification.isWaterPotion(water), "water bottle must be recognised");
+        helper.assertTrue(!CampfirePurification.isWaterPotion(purified),
+                "purified bottle must not be treated as raw water");
+        helper.succeed();
+    }
+
+    @GameTest
+    public void waterBottleBoilsOnCampfire(GameTestHelper helper) {
+        net.minecraft.core.BlockPos rel = new net.minecraft.core.BlockPos(1, 2, 1);
+        helper.setBlock(rel, net.minecraft.world.level.block.Blocks.CAMPFIRE.defaultBlockState()
+                .setValue(net.minecraft.world.level.block.CampfireBlock.LIT, true));
+        net.minecraft.core.BlockPos pos = helper.absolutePos(rel);
+        net.minecraft.server.level.ServerLevel level = helper.getLevel();
+        var blockEntity = level.getBlockEntity(pos);
+        helper.assertTrue(blockEntity instanceof net.minecraft.world.level.block.entity.CampfireBlockEntity,
+                "campfire must have a block entity");
+        var campfire = (net.minecraft.world.level.block.entity.CampfireBlockEntity) blockEntity;
+        // makeMockServerPlayerInLevel is CREATIVE (infinite materials), which
+        // makes ItemStack.consume a no-op; a plain SURVIVAL mock consumes.
+        net.minecraft.world.entity.player.Player player =
+                helper.makeMockPlayer(net.minecraft.world.level.GameType.SURVIVAL);
+        ItemStack bottle = net.minecraft.world.item.alchemy.PotionContents.createItemStack(
+                Items.POTION, net.minecraft.world.item.alchemy.Potions.WATER);
+        helper.assertTrue(CampfirePurification.placeWaterBottle(level, player, campfire, bottle),
+                "water bottle must be placeable on a campfire (Dehydration parity)");
+        helper.assertTrue(bottle.isEmpty(), "placing the bottle consumes it");
+        helper.assertTrue(CampfirePurification.isWaterPotion(campfire.getItems().get(0)),
+                "campfire slot must hold the water bottle");
+        // Fast-forward to the last boil tick, then run the conversion.
+        ((dev.jmiahman.hearthwind.survival.mixin.CampfireBlockEntityAccessor) campfire)
+                .hearthwind$cookingProgress()[0] = CampfirePurification.BOIL_TIME - 1;
+        CampfirePurification.tickPurification(level, pos, campfire.getBlockState(), campfire);
+        helper.assertTrue(campfire.getItems().get(0).isEmpty(), "finished bottle must leave the fire");
+        var drops = level.getEntitiesOfClass(net.minecraft.world.entity.item.ItemEntity.class,
+                new net.minecraft.world.phys.AABB(pos).inflate(2.0));
+        boolean purified = drops.stream().anyMatch(item -> {
+            var contents = item.getItem().get(DataComponents.POTION_CONTENTS);
+            return contents != null && contents.is(PurifiedWater.PURIFIED_POTION);
+        });
+        helper.assertTrue(purified, "boiling must drop a purified water bottle");
+        helper.succeed();
+    }
+
+    @GameTest
+    public void waterBottleDrinkHydrates(GameTestHelper helper) {
+        ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        HearthwindSurvivalThirst.setHydration(player, 10.0);
+        double chance = HearthwindSurvivalConfig.get().flask.potionBadThirstChance;
+        HearthwindSurvivalConfig.get().flask.potionBadThirstChance = 1.0;
+        try {
+            ItemStack water = net.minecraft.world.item.alchemy.PotionContents.createItemStack(
+                    Items.POTION, net.minecraft.world.item.alchemy.Potions.WATER);
+            var consumable = water.get(DataComponents.CONSUMABLE);
+            helper.assertTrue(consumable != null, "water bottle must be drinkable");
+            consumable.onConsume(helper.getLevel(), player, water);
+            helper.assertTrue(HearthwindSurvivalThirst.hydration(player) > 10.0,
+                    "drinking a water bottle must restore hydration, got "
+                            + HearthwindSurvivalThirst.hydration(player));
+            helper.assertTrue(player.hasEffect(ThirstMobEffect.HOLDER),
+                    "raw water bottle must be able to inflict Thirst (green droplets)");
+            player.removeEffect(ThirstMobEffect.HOLDER);
+            HearthwindSurvivalThirst.setHydration(player, 10.0);
+            ItemStack purified = CampfirePurification.purifiedBottle();
+            purified.get(DataComponents.CONSUMABLE).onConsume(helper.getLevel(), player, purified);
+            helper.assertTrue(HearthwindSurvivalThirst.hydration(player) > 10.0,
+                    "purified bottle must restore hydration");
+            helper.assertTrue(!player.hasEffect(ThirstMobEffect.HOLDER),
+                    "purified bottle must never inflict Thirst");
+        } finally {
+            HearthwindSurvivalConfig.get().flask.potionBadThirstChance = chance;
+        }
+        helper.succeed();
+    }
+
+    @GameTest
+    public void waterBottleUseOnCampfire(GameTestHelper helper) {
+        net.minecraft.core.BlockPos rel = new net.minecraft.core.BlockPos(1, 2, 1);
+        helper.setBlock(rel, net.minecraft.world.level.block.Blocks.CAMPFIRE.defaultBlockState()
+                .setValue(net.minecraft.world.level.block.CampfireBlock.LIT, true));
+        ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND,
+                net.minecraft.world.item.alchemy.PotionContents.createItemStack(
+                        Items.POTION, net.minecraft.world.item.alchemy.Potions.WATER));
+        helper.useBlock(rel, player);
+        var blockEntity = helper.getLevel().getBlockEntity(helper.absolutePos(rel));
+        helper.assertTrue(blockEntity instanceof net.minecraft.world.level.block.entity.CampfireBlockEntity,
+                "campfire must have a block entity");
+        var campfire = (net.minecraft.world.level.block.entity.CampfireBlockEntity) blockEntity;
+        helper.assertTrue(CampfirePurification.isWaterPotion(campfire.getItems().get(0)),
+                "using a water bottle on a campfire must place it (no recipe gate)");
         helper.succeed();
     }
 
@@ -1290,8 +1445,7 @@ public final class HearthwindSurvivalGameTests {
             ItemStack stack = player.getInventory().getItem(i);
             boolean hasLavenderGuide = false;
             if (FabricLoader.getInstance().isModLoaded("lavender")) {
-                Identifier guideId = Identifier.fromNamespaceAndPath("lavender", "aged_guide_book");
-                hasLavenderGuide = BuiltInRegistries.ITEM.getOptional(guideId)
+                hasLavenderGuide = BuiltInRegistries.ITEM.getOptional(GuideBook.ID)
                         .map(item -> stack.is(item))
                         .orElse(false);
             }

@@ -1,5 +1,7 @@
 # Patch-port study: kept mods without official 26.2 builds
 
+> **1.0.0 scope (2026-09-24):** `docs/RELEASE_1.0_PARITY.md` governs 1.0.0 and wins wherever this file disagrees. The port queue and tiers now live in the plan's section 5.2.
+
 Status snapshot 2026-08-29 via `resolve_deps.py` + Modrinth API
 (raw data: `.tmp/modrinth_status.json`); local-port status refreshed
 2026-09-22. Mods classified `keep` in

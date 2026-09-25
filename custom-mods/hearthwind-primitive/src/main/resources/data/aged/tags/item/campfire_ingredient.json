@@ -1,0 +1,9 @@
+{
+ "values": [
+  "#minecraft:coals",
+  {
+   "id": "#earlystage:bark_items",
+   "required": false
+  }
+ ]
+}

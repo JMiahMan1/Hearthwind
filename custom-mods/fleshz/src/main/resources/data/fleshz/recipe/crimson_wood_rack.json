@@ -1,16 +1,14 @@
 {
-  "type": "minecraft:crafting_shaped",
-  "category": "misc",
-  "key": {
-    "#": {
-      "item": "minecraft:crimson_slab"
+    "type": "minecraft:crafting_shaped",
+    "category": "misc",
+    "key": {
+        "#": "minecraft:crimson_slab"
+    },
+    "pattern": [
+        "###"
+    ],
+    "result": {
+        "count": 1,
+        "id": "fleshz:crimson_wood_rack"
     }
-  },
-  "pattern": [
-    "###"
-  ],
-  "result": {
-    "count": 1,
-    "id": "fleshz:crimson_wood_rack"
-  }
 }

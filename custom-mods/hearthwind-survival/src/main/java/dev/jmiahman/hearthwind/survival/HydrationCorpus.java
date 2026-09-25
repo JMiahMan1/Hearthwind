@@ -152,7 +152,14 @@ public final class HydrationCorpus {
         }
         int tier = quench(stack);
         if (tier <= 0) {
-            return 0.0;
+            // Reference PotionItemMixin: an uncatalogued potion still quenches
+            // by potion_thirst_quench (default 2).
+            if (stack.is(net.minecraft.world.item.Items.POTION)) {
+                tier = (int) Math.round(cfg.thirst.potionThirstQuench);
+            }
+            if (tier <= 0) {
+                return 0.0;
+            }
         }
         double before = HearthwindSurvivalThirst.hydration(player);
         double after = Math.min(HearthwindSurvivalThirst.MAX_HYDRATION,

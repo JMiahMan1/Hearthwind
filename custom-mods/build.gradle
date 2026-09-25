@@ -46,6 +46,10 @@ subprojects {
 			// JobDefs level tables from the gametest thread
 			implementation project(':hearthwind-skills')
 			implementation project(':hearthwind-jobs')
+			// guidebook client gametest opens the real Lavender book screen
+			compileOnly project(':lavender')
+			compileOnly files("${rootDir}/../conversion/vendored/compile-libs/owo-lib-0.13.1+26.2.jar")
+			compileOnly files("${rootDir}/../conversion/vendored/compile-libs/endec-0.1.12.jar")
 		}
 	}
 	if (project.name == 'hearthwind-world') {
@@ -81,6 +85,9 @@ subprojects {
 	if (project.name == 'hearthwind-survival') {
 		dependencies {
 			implementation project(':hearthwind-world')
+			// Hearthwind guidebook item (LavenderBookItem); guarded by
+			// isModLoaded("lavender") at runtime, so compile-only.
+			compileOnly project(':lavender')
 		}
 	}
 	if (project.name.startsWith('letsdo-') && project.name != 'letsdo-farm-and-charm') {
@@ -290,6 +297,8 @@ subprojects {
 				modCompileClasspath "net.fabricmc.fabric.api:fabric-gametest-api-v1:4.0.21+4a7fa0819e"
 				// leaves-stick loot hook uses the v3 loot API
 				modCompileClasspath "net.fabricmc.fabric.api:fabric-loot-api-v3:3.0.17+06488ac19e"
+				// agedaddition pieces go into the INGREDIENTS creative tab
+				modCompileClasspath "net.fabricmc.fabric.api:fabric-creative-tab-api-v1:5.0.14+d871b99e9e"
 			}
 		}
 		if (name == 'smallships') {

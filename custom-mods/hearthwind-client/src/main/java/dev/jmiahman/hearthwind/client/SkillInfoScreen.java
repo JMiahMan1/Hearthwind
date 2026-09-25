@@ -10,7 +10,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 
 @Environment(EnvType.CLIENT)
-public class SkillInfoScreen extends AgedPanelScreen {
+public class SkillInfoScreen extends HearthwindPanelScreen {
     private final String skillId;
     private final Component title;
 

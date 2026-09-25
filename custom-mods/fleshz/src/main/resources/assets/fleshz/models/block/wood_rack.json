@@ -1,0 +1,6 @@
+{
+  "parent": "fleshz:block/rack",
+  "textures": {
+    "texture": "fleshz:block/wood_rack"
+  }
+}

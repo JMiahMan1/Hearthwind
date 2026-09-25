@@ -1,18 +1,10 @@
 {
     "type": "minecraft:crafting_shapeless",
     "ingredients": [
-        {
-            "item": "fleshz:hide"
-        },
-        {
-            "item": "minecraft:sugar"
-        },
-        {
-            "item": "minecraft:sugar"
-        },
-        {
-            "item": "minecraft:sugar"
-        }
+        "fleshz:hide",
+        "fleshz:hide",
+        "#aged:hide_ingredients",
+        "#aged:hide_ingredients"
     ],
     "result": {
         "id": "fleshz:prepared_hide",

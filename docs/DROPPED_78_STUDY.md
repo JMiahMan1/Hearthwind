@@ -1,5 +1,7 @@
 # Dropped-78 study: return path for every cut mod
 
+> **1.0.0 scope (2026-09-24):** `docs/RELEASE_1.0_PARITY.md` governs 1.0.0 and wins wherever this file disagrees. The 2026-09-12 claim that everything with a 26.2 build is deployed was wrong: 30 Aged mods with official 26.2 Fabric builds are not in the pack (plan section 5.1).
+
 Status snapshot 2026-08-29 (Modrinth API, raw: `.tmp/modrinth_status.json`).
 **Policy (user directive, 2026-08-29): NO mod is dropped — ever.** Every mod
 below has a concrete path back into the pack:

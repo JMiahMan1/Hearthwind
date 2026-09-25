@@ -243,8 +243,14 @@
   "effect.candlelight.refreshed": "Refreshed",
   "effect.candlelight.well_served": "Well Served",
   "gui.candlelight.wall_decoration.edit": "Edit Heart Lettering",
-  "gui.candlelight.wall_decoration.done" : "Done",
+  "gui.candlelight.wall_decoration.done": "Done",
   "sound.candlelight.cabinet_close": "Cabinet closes",
   "effect.candlelight.refreshed.description": "Your next harvests do not consume durability and may yield extra drops.",
-  "effect.candlelight.well_served.description": "You will not become truly hungry while this effect is active."
+  "effect.candlelight.well_served.description": "You will not become truly hungry while this effect is active.",
+  "item.candlelight.beef_wellington": "Beef Wellington",
+  "item.candlelight.bowl": "Bowl",
+  "item.candlelight.fresh_garden_salad": "Fresh Garden Salad",
+  "item.candlelight.lasagne": "Lasagne",
+  "item.candlelight.pork_ribs": "Pork Ribs",
+  "item.candlelight.tomato_mozzarella_salad": "Tomato Mozzarella Salad"
 }

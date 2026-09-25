@@ -203,33 +203,45 @@ public final class PartyManager {
         PartySync.syncParty(party, server);
     }
 
-    public static void shareXp(ServerPlayer source, Skill skill, int points) {
-        if (source == null || skill == null || points <= 0) return;
-        Party party = getPartyByPlayer(source.getUUID());
-        if (party == null || party.getMembers().size() <= 1) return;
+    /**
+     * Aged parity (PartyAddon 1.0.4, ExperienceOrbEntityMixin +
+     * ServerPlayerEntityMixin.addLeaderVanillaExperience): XP orbs picked up
+     * by a party member go into the leader's pool when the leader is in the
+     * same level. Once the pool holds at least one point per member it is
+     * split evenly: every member in the leader's level receives
+     * {@code pool / members}, and {@code share * members} leaves the pool
+     * (so the share of a member in another level is lost, as in Aged).
+     *
+     * <p>Review note: PartyAddon's party screen advertises +5% XP per member
+     * and +50% for a full group, but its code never applies either bonus.
+     * Hearthwind matches the applied behaviour (no bonus); see
+     * docs/RELEASE_1.0_PARITY.md "Aged bugs: for review".
+     *
+     * @return true if the XP was taken into the pool (the caller must not
+     *         also give it to the picker)
+     */
+    public static boolean poolOrbXp(ServerPlayer picker, int amount) {
+        if (picker == null || amount <= 0) return false;
+        Party party = getPartyByPlayer(picker.getUUID());
+        if (party == null || party.getMembers().size() <= 1) return false;
+        MinecraftServer server = picker.level().getServer();
+        if (server == null) return false;
+        ServerPlayer leader = findMember(party.getLeader(), picker, server);
+        if (leader == null || leader.level() != picker.level()) return false;
 
-        MinecraftServer server = source.level().getServer();
-        if (server == null) return;
-
-        int dimensionMembers = 0;
-        for (UUID memberId : party.getMembers()) {
-            ServerPlayer member = findMember(memberId, source, server);
-            if (member != null && member.level() == source.level()) {
-                dimensionMembers++;
+        party.setCollectedXp(party.getCollectedXp() + amount);
+        int size = party.getMembers().size();
+        if (party.getCollectedXp() >= size) {
+            int share = party.getCollectedXp() / size;
+            for (UUID memberId : party.getMembers()) {
+                ServerPlayer member = findMember(memberId, picker, server);
+                if (member != null && member.level() == leader.level()) {
+                    member.giveExperiencePoints(share);
+                }
             }
+            party.setCollectedXp(party.getCollectedXp() - share * size);
         }
-
-        // Aged parity: +5% XP bonus per player in the same dimension
-        double bonusMultiplier = 1.0 + 0.05 * Math.max(0, dimensionMembers - 1);
-        int sharedPoints = Math.max(1, (int) Math.round(points * bonusMultiplier));
-
-        for (UUID memberId : party.getMembers()) {
-            if (memberId.equals(source.getUUID())) continue;
-            ServerPlayer member = findMember(memberId, source, server);
-            if (member != null && member.level() == source.level() && member.distanceToSqr(source) <= 32 * 32) {
-                SkillXp.award(member, skill, sharedPoints);
-            }
-        }
+        return true;
     }
 
     private static ServerPlayer findMember(UUID memberId, ServerPlayer source, MinecraftServer server) {

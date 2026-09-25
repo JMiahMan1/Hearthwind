@@ -813,9 +813,9 @@
   {
    "file": "ships",
    "slug": "ships",
-   "action": "keep",
-   "reason": "Big ships; same",
-   "note": "Standalone 26.2 port in custom-mods/smallships"
+   "action": "rebuild",
+   "reason": "Illager ship structures (EMD0123/Ships, Apache-2.0) - a different mod from Small Ships",
+   "note": "Not covered by custom-mods/smallships (that port is Small Ships, project rGWEHQrP). No official 26.2 build; queued for a port."
   },
   {
    "file": "niftycarts",
@@ -1053,23 +1053,23 @@
   {
    "file": "terralith",
    "slug": "terralith",
-   "action": "keep",
+   "action": "drop",
    "cat": "worldgen",
-   "note": "85+ unique Overworld biomes on 26.2"
+   "note": "Not present in the documented Aged pack; keep excluded until parity is confirmed"
   },
   {
    "file": "tectonic",
    "slug": "tectonic",
-   "action": "keep",
+   "action": "drop",
    "cat": "worldgen",
-   "note": "Realistic terrain, mountain ranges, cliffs, ocean trenches, smooth river networks"
+   "note": "Not present in the documented Aged pack; keep excluded until parity is confirmed"
   },
   {
    "file": "lithostitched",
    "slug": "lithostitched",
    "action": "keep",
    "cat": "lib",
-   "note": "Required by Terralith and Tectonic on 26.2"
+   "note": "Required at runtime by the Hearthwind Nature's Spirit 2.3.0+26.2 build; not an Aged 3.1.2 dependency."
   },
   {
    "file": "ambientenvironment",
@@ -1081,16 +1081,16 @@
   {
    "file": "visuality",
    "slug": "visuality",
-   "action": "keep",
+   "action": "drop",
    "cat": "flavor",
-   "note": "Ambient particles (incl. water sparkles); in Aged 3.1.2. Upstream has 26.2 builds."
+   "note": "Not present in the downloaded Aged 3.1.2 mod index; not required by Hearthwind-native modules. Return only with a specific parity or 26.2 compatibility rationale."
   },
   {
    "file": "waterfall-particles",
    "slug": "waterfall-particles",
-   "action": "keep",
+   "action": "drop",
    "cat": "flavor",
-   "note": "Waterfall spray particles; complements water look. Upstream lists 26.2 in game versions."
+   "note": "Not present in the downloaded Aged 3.1.2 mod index; Hearthwind's water-motion module supplies its own effects. Return only with a specific parity or 26.2 compatibility rationale."
   },
   {
    "file": "passable-foliage",

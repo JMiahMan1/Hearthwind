@@ -1,13 +1,15 @@
 {
-    "type": "minecraft:crafting_shaped",
-    "pattern": [
-        "##"
+    "type": "minecraft:crafting_shapeless",
+    "ingredients": [
+        "minecraft:rotten_flesh",
+        "minecraft:rotten_flesh",
+        "minecraft:rotten_flesh",
+        "minecraft:rotten_flesh",
+        "minecraft:bone_meal",
+        "minecraft:bone_meal",
+        "minecraft:bone_meal",
+        "minecraft:bone_meal"
     ],
-    "key": {
-        "#": {
-            "item": "minecraft:rotten_flesh"
-        }
-    },
     "result": {
         "id": "fleshz:rotten_leather",
         "count": 1

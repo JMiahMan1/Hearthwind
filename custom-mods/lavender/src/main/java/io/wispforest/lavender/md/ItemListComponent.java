@@ -86,6 +86,12 @@ public class ItemListComponent extends ItemComponent {
         return this.slotDisplay(ingredient.display());
     }
 
+    public ItemListComponent clearItems() {
+        this.items = null;
+        this.updateForItems();
+        return this;
+    }
+
     public ItemListComponent tag(TagKey<Item> tag) {
         var holders = BuiltInRegistries.ITEM.getTagOrEmpty(tag);
         var built = ImmutableList.<ItemStack>builder();

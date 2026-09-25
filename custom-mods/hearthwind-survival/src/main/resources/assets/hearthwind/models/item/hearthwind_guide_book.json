@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "hearthwind:item/hearthwind_guide_book"
+  }
+}

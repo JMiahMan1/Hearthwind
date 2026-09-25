@@ -384,12 +384,12 @@ public class SiloBlockEntity extends BlockEntity implements IMultiBlockEntityCon
     protected void loadAdditional(net.minecraft.world.level.storage.ValueInput input) {
         super.loadAdditional(input);
         this.controller = GeneralUtil.readBlockPos(input);
-        this.updateConnectivity = !input.read("Update", com.mojang.serialization.Codec.STRING).isPresent() || input.getBooleanOr("Update", false);
-        this.width = input.read("Width", com.mojang.serialization.Codec.STRING).isPresent() ? input.getIntOr("Width", 0) : 1;
-        this.height = input.read("Height", com.mojang.serialization.Codec.STRING).isPresent() ? input.getIntOr("Height", 0) : 1;
+        this.updateConnectivity = input.getBooleanOr("Update", false);
+        this.width = Math.max(1, input.getIntOr("Width", 1));
+        this.height = Math.max(1, input.getIntOr("Height", 1));
         this.items = NonNullList.withSize(MAX_CAPACITY * 2, ItemStack.EMPTY);
         ContainerHelper.loadAllItems(input, this.items);
-        this.times = input.read("Times", com.mojang.serialization.Codec.STRING).isPresent() ? input.getIntArray("Times").orElse(new int[0]) : new int[MAX_CAPACITY];
+        this.times = input.getIntArray("Times").orElse(new int[MAX_CAPACITY]);
     }
 
     @Override

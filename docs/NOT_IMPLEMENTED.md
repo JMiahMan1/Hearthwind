@@ -1,5 +1,7 @@
 # Mods status and roadmap from Aged 3.1.2 to Hearthwind (26.2)
 
+> **1.0.0 scope (2026-09-24):** `docs/RELEASE_1.0_PARITY.md` governs 1.0.0 and wins wherever this file disagrees. Its open set was computed from the manifest, which misses 83 Aged mods by slug. The authoritative 212-mod ledger is in the plan's section 5.
+
 **Policy: NO mod is ever dropped.** Every mod from Aged 3.1.2 is preserved through native rebuilds in `custom-mods/`, standalone 26.2 module ports, or active upstream 26.2 releases.
 
 Snapshot 2026-09-22: resolver `ready=57/138`, `missing=66` — but **28 of those 66 are already solved locally** (vendored jar or `custom-mods` port) and only look "missing" because Modrinth still has no 26.2 file. True open set for complete parity is listed below.

@@ -63,6 +63,7 @@ public class DungeonCompassScreen extends Screen {
                 this.dungeonType = this.dungeonIds.get(this.selectedIndex);
                 this.updateDoneButtonState();
             }));
+            this.dungeons[l].visible = l < this.dungeonIds.size();
             if (!dungeonType.equals("") && this.dungeonIds.size() > l && this.dungeonIds.get(l).equals(dungeonType)) {
                 this.dungeons[l].active = false;
             }

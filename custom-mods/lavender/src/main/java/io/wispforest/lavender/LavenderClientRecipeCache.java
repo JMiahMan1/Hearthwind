@@ -29,6 +29,11 @@ public class LavenderClientRecipeCache {
     public static Optional<RecipeHolder<?>> getOrFetchRecipe(Identifier recipeId) {
         if (RECIPE_CACHE.containsKey(recipeId)) return Optional.of(RECIPE_CACHE.get(recipeId));
 
+        Minecraft minecraft = Minecraft.getInstance();
+        if (minecraft.player == null || minecraft.getConnection() == null) {
+            return Optional.empty();
+        }
+
         if (System.currentTimeMillis() - LAST_FETCHED_TIMESTAMP.getOrDefault(recipeId, 0) < 5_000) {
             return Optional.empty();
         }

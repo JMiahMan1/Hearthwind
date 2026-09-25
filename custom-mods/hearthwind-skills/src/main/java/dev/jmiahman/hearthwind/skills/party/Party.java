@@ -11,6 +11,8 @@ public final class Party {
     private UUID leader;
     private final List<UUID> members = new ArrayList<>();
     private boolean pvpEnabled = false;
+    /** Leader's pool of vanilla XP awaiting an even split (PartyAddon collectedVanillaXP). */
+    private int collectedXp = 0;
 
     public Party(UUID id, String name, UUID leader) {
         this.id = id;
@@ -26,6 +28,8 @@ public final class Party {
     public void setLeader(UUID leader) { this.leader = leader; }
     public List<UUID> getMembers() { return Collections.unmodifiableList(members); }
     public boolean isPvpEnabled() { return pvpEnabled; }
+    public int getCollectedXp() { return collectedXp; }
+    public void setCollectedXp(int collectedXp) { this.collectedXp = collectedXp; }
     public void setPvpEnabled(boolean pvpEnabled) { this.pvpEnabled = pvpEnabled; }
 
     public boolean addMember(UUID member) {

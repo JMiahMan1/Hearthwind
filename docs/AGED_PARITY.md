@@ -1,5 +1,7 @@
 # Aged parity: gameplay + look & feel
 
+> **1.0.0 scope (2026-09-24):** `docs/RELEASE_1.0_PARITY.md` governs 1.0.0 and wins wherever this file disagrees. Mod-level status lives in the plan. This file remains the detailed gameplay/look comparison.
+
 Reference: Aged 3.1.2 (MC 1.20.1, 227 jars) extracted at
 `.tmp/aged-ref/extract/`. Hearthwind = 26.2 rebuild.
 
@@ -87,7 +89,7 @@ Legend: ✅ parity · 🟡 partial/different tuning · ❌ missing
 | Temperature | EnvironmentZ: bands −6/−2/+2/+6, acclimatization ±10/±20, **104 heating blocks, 203 cooling**, biome/day/night/armor/wet/height modifiers | corpus-driven: block/item heat + dimension rows (day/night, armor, soaked, wett, shadow, height, sweat) on top of a continuous biome base | 🟡 parity on sources; two deliberate deviations (below) |
 | Diet | NutritionZ is nearly inert (2 item ids); "diet" = food variety | 5 nutrient groups, decay 0.02/s, deficiency debuffs, balanced bonus hearts | ✅ superset (intentional) |
 | Spoilage | `seasonSpoilage 8`, 69 non-spoiling (alcohol/tea) | interval 200, chance 0.002, hot ×2, **container spoilage**, non-spoiling tag | ✅ superset |
-| Downed/revive | — (no such mod) | 60 s bleedout, 3 s channel, revive at 6 HP | ✅ extra (Hearthwind-only) |
+| Downed/revive | Revive 1.0.7 (`config/revive.json5`) | 60 s bleedout, 3 s channel, revive at 6 HP | 🟡 rebuilt; verify tuning against Aged's revive.json5 |
 
 ### Progression
 
@@ -175,8 +177,11 @@ in-game HUD is not FancyMenu. Our HUD is therefore the right architecture.
    must be TRUE (a **lit** furnace warms you, a cold one does not), line of
    sight is required, at most `max_count` blocks of one type contribute
    (campfire max_count 2), and the value falls off with distance
-   (campfire +3 / +2 / +1). Being enclosed adds `roomHeatFactor` × the heat
-sum, so fires indoors matter far more. Chipped-compat entries (~97% of
+   (campfire +3 / +2 / +1). There is **no** indoor/enclosure bonus: checked
+   against the EnvironmentZ 2.0.8 bytecode (2026-09-24), Aged's only shelter
+   effect is the -1 "shadow" value when the sky is not visible, which we
+   match. (An earlier note here claimed a `roomHeatFactor`; neither Aged nor
+   Hearthwind has one.) Chipped-compat entries (~97% of
     the corpus) are skipped since Chipped is now ported but not yet in the pack.
    Two **deliberate deviations**, recorded here so they are choices and not
    accidents: our body temperature drifts toward a continuous biome target

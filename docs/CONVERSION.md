@@ -19,7 +19,7 @@ path to future releases and snapshots.
 | `hearthwind-skills` | levelz, rpgdifficulty | 12 skills, 3-heart starting progression (+0.5 heart/level), 1,087 content gates, distance mob scaling |
 | `hearthwind-jobs` | jobs-addon (8 jobs) | 8 professions, level curves, `/job` commands, Age tech gating |
 | `hearthwind-primitive` | earlystage, tiered, reciperemover | Surface rock/flint mounds, knapping start, 199 Tiered affixes & reforging |
-| `hearthwind-world` | fabric-seasons, seasonhud, crop_growth_modifier, endrem, herdspanic | 18-day seasons, temp/crop multipliers, winter snow layering, waterfowl & fauna |
+| `hearthwind-world` | fabric-seasons, seasonhud, crop_growth_modifier, endrem, herdspanic | 21-day seasons, temp/crop multipliers, winter snow layering, waterfowl & fauna |
 | `letsdo-*` (external repo) | let's do family (farm_and_charm, vinery, candlelight, meadow, herbalbrews, brewery) | Complete crops, foraging, tea kettles, fermentation, cheese making, cooking stations |
 | `hearthwind-client` | client HUDs, tabs, main menu | 10 droplets + flask, thermometer trio, season widget, 4-tab strip, Aged main menu |
 | `contrib/yungs/` | yungs api + 5 structure overhauls | 26.2 patched builds for Nether Fortresses, End Island, Desert/Jungle Temples, Ocean Monuments |
@@ -36,7 +36,7 @@ path to future releases and snapshots.
 3. **Visual Inventory & HUD Parity**:
    - 10 discrete teardrops + flask icon above hunger.
    - Thermometer tube + 12×12 "F" unit box + trend chevron right of hotbar.
-   - Top-left 9×9 season widget with 18-day calendar.
+   - Top-left 9×9 season widget with 21-day calendar.
    - 4-tab strip (Inventory, Skills, Jobs, Nutrients) on vanilla `#C6C6C6` panels.
 4. **Nether & Overworld Biome Overhauls**:
    - Gardens of the Dead (Soulblight Forest & Whistling Woods) and Nature's Spirit 26.2.

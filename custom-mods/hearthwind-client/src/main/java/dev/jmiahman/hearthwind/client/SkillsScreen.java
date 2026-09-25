@@ -25,7 +25,7 @@ import net.minecraft.world.item.Items;
  * twelve skill rows (two columns, six rows) with [+1] buttons.
  */
 @Environment(EnvType.CLIENT)
-public class SkillsScreen extends AgedPanelScreen {
+public class SkillsScreen extends HearthwindPanelScreen {
 
     /** LevelZ enum order: Health, Strength, Agility, Defense, Stamina, Luck | Archery, Trade, Smithing, Mining, Farming, Alchemy. */
     private static final String[] SKILL_ORDER = {
@@ -239,7 +239,26 @@ public class SkillsScreen extends AgedPanelScreen {
             this.showHelp = false;
             return true;
         }
+        if (openSkillInfo(event)) {
+            return true;
+        }
         return spendSkillPoint(event);
+    }
+
+    /** Aged parity (LevelZ LevelScreen): clicking a skill's icon opens its detail page. */
+    private boolean openSkillInfo(MouseButtonEvent event) {
+        for (int i = 0; i < SKILL_ORDER.length; i++) {
+            int col = i / 6;
+            int row = i % 6;
+            int ix = this.x + 15 + col * 90;
+            int iy = this.y + 94 + row * 20;
+            if (event.x() >= ix && event.x() < ix + 16 && event.y() >= iy && event.y() < iy + 16) {
+                this.click();
+                Minecraft.getInstance().setScreenAndShow(new SkillInfoScreen(SKILL_ORDER[i]));
+                return true;
+            }
+        }
+        return false;
     }
 
     private boolean spendSkillPoint(MouseButtonEvent event) {

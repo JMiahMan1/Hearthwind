@@ -1,0 +1,14 @@
+{
+  "texture": "hearthwind:textures/gui/hearthwind_guide_book.png",
+  "intro_entry": "hearthwind:landing",
+  "display_completion": true,
+  "display_unread_entry_notifications": true,
+  "_manuscript_style": "Shared by every Hearthwind book: rubric = vermilion headings, lapis = blue emphasis, gilt = key items and numbers, faded = marginal asides. Close any of them with {}.",
+  "macros": {
+    "{rubric}": "{#8E2416}",
+    "{lapis}": "{#23407A}",
+    "{gilt}": "{#8A5E14}",
+    "{faded}": "{#6B5A45}",
+    "|divider|": "![](hearthwind:textures/gui/guide/divider.png)"
+  }
+}

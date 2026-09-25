@@ -223,7 +223,7 @@ public class LavenderBookScreen extends BaseUIModelScreen<FlowLayout> implements
             return;
         }
 
-        if (sound != null) this.minecraft.player.playSound(sound, 1f, 1f);
+        if (sound != null && this.minecraft.player != null) this.minecraft.player.playSound(sound, 1f, 1f);
 
         if (selectedPage >= pageSupplier.pageCount()) {
             selectedPage = this.currentNavFrame().selectedPage = (pageSupplier.pageCount() - 1) / 2 * 2;

@@ -38,7 +38,6 @@ public class Lavender implements ModInitializer {
     @Override
     public void onInitialize() {
         Registry.register(BuiltInRegistries.ITEM, id("dynamic_book"), LavenderBookItem.DYNAMIC_BOOK);
-        LavenderBookItem.registerForBook(id("aged_guide_book"), new Item.Properties().stacksTo(1));
         Registry.register(BuiltInRegistries.SOUND_EVENT, ITEM_BOOK_OPEN.location(), ITEM_BOOK_OPEN);
 
         PayloadTypeRegistry.clientboundPlay().register(WorldUUIDPayload.ID, CodecUtils.toPacketCodec(WorldUUIDPayload.ENDEC));

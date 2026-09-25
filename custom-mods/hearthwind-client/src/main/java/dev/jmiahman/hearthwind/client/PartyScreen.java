@@ -21,7 +21,7 @@ import net.minecraft.world.item.Items;
  * (deviation noted in docs/PLAYER_CHANGES.md).
  */
 @Environment(EnvType.CLIENT)
-public class PartyScreen extends AgedPanelScreen {
+public class PartyScreen extends HearthwindPanelScreen {
 
     private static final int CARD_BORDER = 0xFF2F2F2F;
     private static final int CARD_FACE = 0xFF6E6E6E;

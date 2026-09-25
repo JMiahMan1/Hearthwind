@@ -14,9 +14,9 @@ public final class HearthwindWorldGameTests {
 
     @GameTest
     public void seasonLengthDefaultsToAgedParity(GameTestHelper helper) {
-        // Aged (fabric-seasons) runs 18 days per season.
-        helper.assertTrue(HearthwindWorldConfig.get().daysPerSeason == 18,
-                "daysPerSeason must default to 18, got " + HearthwindWorldConfig.get().daysPerSeason);
+        // Aged config/seasons.json: 504000 ticks per season = 21 days.
+        helper.assertTrue(HearthwindWorldConfig.get().daysPerSeason == 21,
+                "daysPerSeason must default to 21, got " + HearthwindWorldConfig.get().daysPerSeason);
         helper.succeed();
     }
 

@@ -72,6 +72,9 @@ public class HearthwindSurvival implements ModInitializer {
 		HearthwindSurvivalTemperature.registerTickLoop();
 		HearthwindSurvivalLoot.init();
 		dev.jmiahman.hearthwind.survival.revive.ReviveManager.register();
+		if (net.fabricmc.loader.api.FabricLoader.getInstance().isModLoaded("lavender")) {
+			GuideBook.register();
+		}
 		StarterKit.register();
 		registerSyncTick();
 		LOGGER.info("Hearthwind Survival initialized: thirst + diet + spoilage + temperature + revive + starter kit systems active");

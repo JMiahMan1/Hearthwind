@@ -104,6 +104,16 @@ public final class NutritionEffects {
                 entryCount(POSITIVE), entryCount(NEGATIVE), ids.size());
     }
 
+    /** Effects applied when nutrient {@code index} is low (read-only, for tests). */
+    public static EffectSet negative(int index) {
+        return NEGATIVE[index];
+    }
+
+    /** Effects applied when nutrient {@code index} is high (read-only, for tests). */
+    public static EffectSet positive(int index) {
+        return POSITIVE[index];
+    }
+
     private static int entryCount(EffectSet[] sets) {
         int count = 0;
         for (EffectSet set : sets) {

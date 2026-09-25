@@ -145,9 +145,16 @@
   "sound.bakery.drawer_open": "Opening Drawer",
   "sound.bakery.cooking_pot_hit": "Clang!",
   "gui.bakery.street_sign.edit": "Edit Street Sign",
-  "gui.bakery.street_sign.done" : "Done",
+  "gui.bakery.street_sign.done": "Done",
   "effect.bakery.vitality": "Vitality",
   "effect.bakery.vitality.description": "Periodically reduces exhaustion, slowing down hunger depletion while the effect is active.",
   "effect.bakery.sugar_rush": "Sugar Rush",
-  "effect.bakery.sugar_rush.description": "Increases movement speed by 2% per stack, up to 10%. At 5 stacks, also increases attack speed by 2% per stack. Stacks up to 10 times."
+  "effect.bakery.sugar_rush.description": "Increases movement speed by 2% per stack, up to 10%. At 5 stacks, also increases attack speed by 2% per stack. Stacks up to 10 times.",
+  "item.bakery.baguette": "Baguette",
+  "item.bakery.braided_bread": "Braided Bread",
+  "item.bakery.bread": "Bakers Bread",
+  "item.bakery.bun": "Bun",
+  "item.bakery.crusty_bread": "Crusty Bread",
+  "item.bakery.waffle": "Waffle",
+  "item.bakery.wandering_baker_spawn_egg": "Wandering Baker Spawn Egg"
 }

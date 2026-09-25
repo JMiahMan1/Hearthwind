@@ -1,5 +1,7 @@
 # Project direction: from Aged fork → standalone pack
 
+> **1.0.0 scope (2026-09-24):** `docs/RELEASE_1.0_PARITY.md` governs 1.0.0 and wins wherever this file disagrees. This file is the **post-1.0** direction. Phases B/C, Ages enforcement beyond Aged's gates, Create/Mechanical Age and the dedupe audit are parked until after 1.0.0.
+
 Agreed direction (2026-08-24). This document governs identity decisions
 so daily work keeps serving the end state instead of deepening fork
 lock-in.

@@ -11,7 +11,7 @@ import net.minecraft.resources.Identifier;
 /**
  * Exact Aged SeasonHUD widget parity:
  * - Position: Top-left at GUI (2, 2)
- * - Format: 9x9 icon + "[Season], Day [N]/18"
+ * - Format: 9x9 icon + "[Season], Day [N]/[daysPerSeason]" (21 by default)
  * - Tint colors: Spring #FFA3BB, Summer #FEE92A, Autumn #BC5E27, Winter #E0FCFC
  */
 public final class SeasonHud implements HudElement {

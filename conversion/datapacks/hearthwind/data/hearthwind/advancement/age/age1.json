@@ -9,7 +9,27 @@
         ]
       }
     },
-    "lit_campfire": {
+    "lit_campfire_bark": {
+      "trigger": "minecraft:item_used_on_block",
+      "conditions": {
+        "location": [
+          {
+            "condition": "minecraft:location_check",
+            "predicate": {
+              "block": {
+                "blocks": "minecraft:campfire",
+                "state": { "lit": "true" }
+              }
+            }
+          },
+          {
+            "condition": "minecraft:match_tool",
+            "predicate": { "items": "#earlystage:bark_items" }
+          }
+        ]
+      }
+    },
+    "lit_campfire_flint": {
       "trigger": "minecraft:item_used_on_block",
       "conditions": {
         "location": [
@@ -30,6 +50,10 @@
       }
     }
   },
+  "requirements": [
+    [ "crafting_rock" ],
+    [ "lit_campfire_bark", "lit_campfire_flint" ]
+  ],
   "display": {
     "title": "Age 1 - Camp",
     "description": "Craft a crafting rock and light a campfire. Make a home of it.",
