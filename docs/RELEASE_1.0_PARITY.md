@@ -63,7 +63,22 @@ Fixed (small bug fixes, 2026-09-24):
    definition (missing-texture book). Both fixed. Other vendored ports
    match their builds. W0 should add a check that vendored jars equal
    their `custom-mods` builds.
-2. **mrpacks shipped without any local jars.** `build_pack.py` read
+2. **Guidebook widget + HUD parity (2026-09-26 live test):** the Lavender
+   recipe widget laid a display's row-major ingredient list into the 3-wide
+   grid using the widget's column count instead of the recipe's trimmed
+   width, so a 2x3 recipe (flint axe) rendered in the wrong cells; the
+   crafting builder now reads the 26.2 `ShapedCraftingRecipeDisplay`
+   (width/height/ingredients) and hides the crafting-table station icon for
+   recipes that fit the 2x2 inventory grid (the crafting rock no longer
+   shows a table). The drop-cap label is fixed-width (104 px flow / 78 px
+   label inside the 112 px page anchor) because owo wraps fill/content
+   labels using the previous inflate pass's width and clipped words
+   mid-line. `conversion/vendored/lavender-26.2+0.1.0.jar` refreshed from
+   the rebuild. The skill level-up toast was removed (Aged announces skill
+   and job gains in chat only) and the temperature HUD trimmed to
+   EnvironmentZ 2.0.8's body icon + thermometer (unit box, trend chevron,
+   ambient glyphs and status words were Hearthwind additions).
+3. **mrpacks shipped without any local jars.** `build_pack.py` read
    `build/dist/server/mods` before `--server-dir` filled it, so on a clean
    run every `.mrpack` had 0 of our ports (no hearthwind-*, letsdo-*,
    YUNG, dungeonz, ...). Now jars are collected from `conversion/vendored`
@@ -340,7 +355,7 @@ gametest captures `.tmp/shots/cgt/0022_tour_inventory.png` and
 | Element | Aged (source mod) | Hearthwind | Status |
 |---|---|---|---|
 | Thirst droplets above hunger | Dehydration | hearthwind-client | ✅ |
-| Thermometer right of hotbar + unit box + trend arrow | EnvironmentZ | hearthwind-client `TempHud` | ✅ |
+| Thermometer right of hotbar (2.0.8 draws no unit box or trend arrow) | EnvironmentZ | hearthwind-client `TempHud` | ✅ |
 | Body-status icon above the hotbar centre | EnvironmentZ | hearthwind-client | ✅ |
 | Season line top-left `Season, Day N/M` | SeasonHUD | `SeasonHud` | 🟡 text depends on day length (see below) |
 | Hunger/saturation preview | AppleSkin | AppleSkin 26.2 | ✅ |
