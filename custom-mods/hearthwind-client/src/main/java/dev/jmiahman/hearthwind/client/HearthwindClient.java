@@ -175,7 +175,8 @@ public class HearthwindClient implements ClientModInitializer {
             TempHud.register();
             JobHud.register();
             SeasonHud.register();
-            SkillToast.register();
+            // Aged has no on-screen level-up banner: skill and job gains are
+            // announced in chat only, so SkillToast stays unregistered.
             GateHintHud.register();
             DownedHud.register();
             BlockTargetHud.register();

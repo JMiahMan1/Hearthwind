@@ -5,6 +5,11 @@
              words, like a manuscript initial. Usage in an entry:
              <|drop-cap@hearthwind:guide|letter=w,text=elcome\, traveller...|> -->
         <template name="drop-cap">
+            <!-- Fixed widths on purpose: the page column is a known 104 px
+                 inside the 112 px page anchor, and owo resolves fill/content
+                 sizing for labels inside a horizontal flow from a stale or
+                 too-small parent width, which clipped the text mid-word at the
+                 page edge. 104 = column, 78 = column minus the 22+3 initial. -->
             <flow-layout direction="horizontal">
                 <children>
                     <texture texture="hearthwind:textures/gui/guide/initial/{{letter}}.png"
@@ -17,14 +22,15 @@
                     <label>
                         <text>{{text}}</text>
                         <color>#FF3B2A1E</color>
+                        <max-width>78</max-width>
                         <sizing>
-                            <horizontal method="fill">100</horizontal>
+                            <horizontal method="fixed">78</horizontal>
                         </sizing>
                     </label>
                 </children>
                 <vertical-alignment>top</vertical-alignment>
                 <sizing>
-                    <horizontal method="fill">100</horizontal>
+                    <horizontal method="fixed">104</horizontal>
                 </sizing>
                 <margins>
                     <bottom>4</bottom>

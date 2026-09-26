@@ -20,6 +20,7 @@ public class GuideBookGameTests implements FabricClientGameTest {
     private static final int MIN_CATEGORIES = 9;
     private static final String[] TOUR = {
             "hearthwind:first_days/crafting_rock",
+            "hearthwind:first_days/flint_tools",
             "hearthwind:water/flasks",
             "hearthwind:heat_and_cold/clothing",
             "hearthwind:crafts/metals",
