@@ -94,14 +94,16 @@ Still open (do these first, section 6, W0):
   `ItemNameGameTests`, registered after it, never ran, and the harness
   still printed PASS. That test is now registered last. Since the harness
   already requires its screenshot, a PASS proves every earlier test ran.
-- **Runaway datapack function.** Every client run logs
-  `Command execution stopped due to limit (executed 65536 commands)` about
-  1600 times, starting the moment a player joins a world, alongside
-  constant "Can't keep up!" lag. Suspects: self-recursive
-  raycast/find-ground functions in the vendored True Ending jar (1.21.5 and
-  1.21.9 overlays, e.g. `boss/shockwave/find_ground`,
-  `respawning/place_end_crystal_raycast`) and `medieval_buildings:main_1s`.
-  Confirm by booting a server with each suspect removed.
+- ~~**Runaway datapack function.**~~ Resolved 2026-09-26: the flood was
+  NOT in the pack. The clean client harness logs `Command execution
+  stopped due to limit` zero times; the source was a stale
+  `waterfall-particle-1.0.jar` (3.7 MB `minecraft:tick` function) that had
+  been dropped from the manifest but lingered in the Prism test instances
+  because `update_prism.sh` never removed mods that left the pack. The
+  deploy tool now reconciles the instance against the built mrpack (add,
+  update AND prune), and the parity gate diffs the built dist with a
+  reverse check (every shipped jar must be an Aged mod, a dependency
+  auto-added by the resolver, or a hearthwind module).
 - **Gaps found by checking Aged's guidebook against our code (2026-09-24,
   verified in code; full checklist in `docs/GUIDEBOOK_PARITY.md`):**
   - ~~The diet low-nutrient effect lists reuse the *positive* attribute

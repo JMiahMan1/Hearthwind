@@ -2,7 +2,7 @@
   "pack": {
     "name": "Hearthwind",
     "slug": "hearthwind",
-    "version": "0.1.3",
+    "version": "0.1.4",
     "summary": "Hearthwind - a medieval-realism survival pack for modern Minecraft (26.x era); grown from the Aged fork",
     "license": "MIT",
     "upstream": "https://github.com/xR4YM0ND/Aged",

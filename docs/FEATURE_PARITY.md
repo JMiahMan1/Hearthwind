@@ -40,7 +40,7 @@ over (with reason)
 | Mod | Module | Status |
 |---|---|---|
 | lavender (+ owo-lib) | `lavender` | ✅ guidebook API; Prism + vendored |
-| logbegone / pockets / couplings / entitycollisionfpsfix / memoryleakfix / async-locator / passable-foliage | same-named modules | ✅ Prism + vendored |
+| logbegone / pockets / couplings / memoryleakfix / async-locator / passable-foliage | same-named modules | ✅ Prism + vendored (entitycollisionfpsfix dropped 0.1.4: not an Aged mod, no dependents) |
 | athena / chipped / exposure / dungeonz / smallships / villagesandpillages | same-named modules | ✅ wired in `settings.gradle` |
 | profundis | `profundis` | ✅ yarn→mojmap cave biomes, boot-green 26.2 |
 
