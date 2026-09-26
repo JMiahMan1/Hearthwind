@@ -187,7 +187,7 @@
                                 <positioning type="absolute">83,19</positioning>
                             </item>
 
-                            <item>
+                            <item id="workstation">
                                 <stack>minecraft:crafting_table</stack>
                                 <set-tooltip-from-stack>true</set-tooltip-from-stack>
                                 <positioning type="absolute">85,41</positioning>

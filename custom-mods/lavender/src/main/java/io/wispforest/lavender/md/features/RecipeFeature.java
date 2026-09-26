@@ -38,8 +38,38 @@ public class RecipeFeature implements MarkdownFeature {
         public @NotNull UIComponent buildRecipePreview(BookCompiler.ComponentSource componentSource, net.minecraft.util.context.ContextMap slotContext, RecipeHolder<CraftingRecipe> recipeEntry) {
             var recipeComponent = componentSource.builtinTemplate(ParentUIComponent.class, "crafting-recipe");
             var value = recipeEntry.value();
+            var grid = recipeComponent.childById(ParentUIComponent.class, "input-grid");
 
-            this.populateIngredientsGrid(recipeEntry, recipeComponent.childById(ParentUIComponent.class, "input-grid"), 3, 3);
+            // 26.2 exposes the authoritative grid through the recipe display:
+            // width/height are the pattern's trimmed dimensions and the
+            // ingredients are row-major over that width (Empty for blank
+            // cells). Reading placementInfo() instead wrapped the row-major
+            // slot list at the COLUMN count of the entry, which dropped a
+            // trimmed 2-wide pattern (e.g. the flint axe, 2x3) into the wrong
+            // cells of the 3-wide widget grid.
+            var shaped = value.display().stream()
+                    .filter(net.minecraft.world.item.crafting.display.ShapedCraftingRecipeDisplay.class::isInstance)
+                    .map(net.minecraft.world.item.crafting.display.ShapedCraftingRecipeDisplay.class::cast)
+                    .findFirst().orElse(null);
+            if (shaped != null) {
+                this.populateDisplayGrid(grid, shaped.width(), shaped.height(), shaped.ingredients());
+                recipeComponent.childById(ItemComponent.class, "output").stack(shaped.result().resolveForFirstStack(slotContext));
+                this.applyStation(recipeComponent, shaped.craftingStation(), slotContext, shaped.width() <= 2 && shaped.height() <= 2);
+                return recipeComponent;
+            }
+
+            var shapeless = value.display().stream()
+                    .filter(net.minecraft.world.item.crafting.display.ShapelessCraftingRecipeDisplay.class::isInstance)
+                    .map(net.minecraft.world.item.crafting.display.ShapelessCraftingRecipeDisplay.class::cast)
+                    .findFirst().orElse(null);
+            if (shapeless != null) {
+                this.populateDisplayGrid(grid, shapeless.ingredients().size(), 1, shapeless.ingredients());
+                recipeComponent.childById(ItemComponent.class, "output").stack(shapeless.result().resolveForFirstStack(slotContext));
+                this.applyStation(recipeComponent, shapeless.craftingStation(), slotContext, shapeless.ingredients().size() <= 4);
+                return recipeComponent;
+            }
+
+            this.populateIngredientsGrid(recipeEntry, grid, 3, 3);
             recipeComponent.childById(ItemComponent.class, "output").stack(value.display().stream().findFirst().map(d -> d.result()).map(r -> r.resolveForFirstStack(slotContext)).orElse(ItemStack.EMPTY));
 
             return recipeComponent;
@@ -200,6 +230,42 @@ public class RecipeFeature implements MarkdownFeature {
                     ingredient.clearItems();
                 }
             }
+        }
+
+        /**
+         * Lays a recipe display's row-major ingredient list into the widget's
+         * 3-wide grid using the RECIPE's own width, so trimmed patterns (2x2,
+         * 2x3, 1x3 picked columns) do not shift their rows.
+         */
+        default void populateDisplayGrid(ParentUIComponent componentContainer, int recipeWidth, int recipeHeight, List<net.minecraft.world.item.crafting.display.SlotDisplay> ingredients) {
+            int gridWidth = 3;
+            int max = Math.min(componentContainer.children().size(), gridWidth * 3);
+            for (int index = 0; index < max; index++) {
+                if (!(componentContainer.children().get(index) instanceof ItemListComponent cell)) continue;
+                int row = index / gridWidth;
+                int column = index % gridWidth;
+                if (row >= recipeHeight || column >= recipeWidth) {
+                    cell.clearItems();
+                    continue;
+                }
+                int input = row * recipeWidth + column;
+                if (input >= 0 && input < ingredients.size()) {
+                    cell.slotDisplay(ingredients.get(input));
+                } else {
+                    cell.clearItems();
+                }
+            }
+        }
+
+        /**
+         * A recipe that fits the 2x2 inventory grid needs no workstation icon:
+         * showing the crafting table for e.g. the crafting rock told readers the
+         * wrong thing. Larger grids keep the display's station item.
+         */
+        default void applyStation(ParentUIComponent componentContainer, net.minecraft.world.item.crafting.display.SlotDisplay station, net.minecraft.util.context.ContextMap slotContext, boolean inventoryCraftable) {
+            var component = componentContainer.childById(ItemComponent.class, "workstation");
+            if (component == null) return;
+            component.stack(inventoryCraftable ? ItemStack.EMPTY : station.resolveForFirstStack(slotContext));
         }
     }
 }
