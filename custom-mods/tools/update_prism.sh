@@ -2,7 +2,10 @@
 # Refresh Prism Launcher test instances with freshly built mod jars,
 # the pinned Fabric loader / fabric-api, and world datapacks.
 #
-# Usage: bash tools/update_prism.sh [--deploy-new <InstanceName>]
+# Usage: bash tools/update_prism.sh [--deploy-new <InstanceName>] [--force]
+#
+# Refuses to run while a Minecraft client is live (jar hot-swap corrupts
+# lazily loaded classes); pass --force to override.
 #
 # Default: for every module in this workspace that has a built PLAIN jar
 # (build/libs/<mod>-*.jar, never *-sources.jar), replace the same-mod jar
@@ -35,6 +38,19 @@ if [ "${1:-}" = "--deploy-new" ]; then
 fi
 
 [ -d "$INST_ROOT" ] || { echo "no Prism installs at $INST_ROOT"; exit 1; }
+
+# Never swap jars under a running game: Fabric loads classes lazily, so the
+# first class touched after the file is replaced dies with
+# "ZipFile invalid LOC header (bad signature)" (seen as a crash on opening
+# the inventory screen). Close the game first; --force overrides.
+FORCE=""
+for arg in "$@"; do [ "$arg" = "--force" ] && FORCE=1; done
+if [ -z "$FORCE" ] && { pgrep -f "net\.minecraft\.client\.main\.Main" >/dev/null 2>&1 \
+    || pgrep -f "net\.fabricmc\.devlaunchinjector\.Main" >/dev/null 2>&1; }; then
+  echo "ERROR: Minecraft is running - refusing to replace mod jars under a live game." >&2
+  echo "       Close the game and rerun (use --force to override)." >&2
+  exit 1
+fi
 
 LOADER_VER=$(python3 -c "import json; print(json.load(open('$ROOT/conversion/build.conf.json'))['targets']['loader_version'])")
 [ -n "$LOADER_VER" ] || { echo "ERROR: empty loader_version from build.conf.json"; exit 1; }

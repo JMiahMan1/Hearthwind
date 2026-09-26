@@ -33,6 +33,8 @@ docker run --rm \
   -e CGT_XVFB=1 \
   -e CGT_XMX="${CGT_XMX:-3G}" \
   -e CGT_XMS="${CGT_XMS:-1G}" \
+  -e CGT_MODID_FILTER="${CGT_MODID_FILTER:-}" \
+  -e CGT_EXCLUDE_MODS="${CGT_EXCLUDE_MODS:-}" \
   -e GRADLE_USER_HOME=/work/gradle-home \
   -e "CGT_ARGS=$*" \
   hearthwind-client-gametest \

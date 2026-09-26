@@ -47,57 +47,67 @@
   {
    "file": "fabric-api",
    "slug": "fabric-api",
+   "project_id": "P7dR8mSH",
    "action": "keep",
    "note": "Loader foundation"
   },
   {
    "file": "cloth-config",
    "slug": "cloth-config",
+   "project_id": "9s6osm5g",
    "action": "keep"
   },
   {
    "file": "architectury",
    "slug": "architectury-api",
+   "project_id": "lhGA9TYQ",
    "action": "keep",
     "note": "Pinned exact pick for MC 26.2. build.conf.json loader is 0.19.5 (architectury 21.1.9+ needs loader>=0.19.5 / api>=0.160.0). resolve_deps.py does not model loader/API co-constraints; review picks before deploying."
   },
   {
    "file": "forgeconfigapiport",
    "slug": "forge-config-api-port",
+   "project_id": "ohNO6lps",
    "action": "keep",
    "note": "Config API used by several kept mods"
   },
   {
    "file": "owo-lib",
    "slug": "owo-lib",
+   "project_id": "ccKDOlHs",
    "action": "keep"
   },
   {
    "file": "fzzy_config",
    "slug": "fzzy-config",
+   "project_id": "hYykXjDp",
    "action": "keep"
   },
   {
    "file": "lithium",
    "slug": "lithium",
+   "project_id": "gvQqBUqZ",
    "action": "keep",
    "cat": "perf"
   },
   {
    "file": "ferritecore",
    "slug": "ferrite-core",
+   "project_id": "uXXizFIs",
    "action": "keep",
    "cat": "perf"
   },
   {
    "file": "letmedespawn",
    "slug": "lmd",
+   "project_id": "vE2FN5qn",
    "action": "keep",
    "cat": "perf"
   },
   {
    "file": "log-begone",
    "slug": "log-begone",
+   "project_id": "9ON3zv6e",
    "action": "keep",
    "cat": "perf",
    "note": "Ported to 26.2 in custom-mods/logbegone; vendored as logbegone-26.2+0.1.0.jar"
@@ -112,77 +122,91 @@
   {
    "file": "appleskin",
    "slug": "appleskin",
+   "project_id": "EsAfCjCV",
    "action": "keep"
   },
   {
    "file": "emi",
    "slug": "emi",
+   "project_id": "fRiHVvU7",
    "action": "client-optional",
    "note": "Recipe viewer is client-side"
   },
   {
    "file": "emi_loot",
    "slug": "emi-loot",
+   "project_id": "qbbO7Jns",
    "action": "client-optional"
   },
   {
    "file": "emi_ores",
    "slug": "emi-ores",
+   "project_id": "sG4TqDb8",
    "action": "client-optional"
   },
   {
    "file": "emi_enchanting",
    "slug": "emi-enchanting",
+   "project_id": "wbWoo11W",
    "action": "client-optional"
   },
   {
    "file": "emiffect",
    "slug": "emiffect",
+   "project_id": "705gWllI",
    "action": "client-optional"
   },
   {
    "file": "emitrades",
    "slug": "emitrades",
+   "project_id": "j2HhbEE7",
    "action": "client-optional"
   },
   {
    "file": "modmenu",
    "slug": "modmenu",
+   "project_id": "mOgUt4GM",
    "action": "client-optional"
   },
   {
    "file": "emf",
    "slug": "entity-model-features",
+   "project_id": "4I1XuqiY",
    "action": "client-optional",
    "note": "CEM model engine required by Fresh Animations resourcepack"
   },
   {
    "file": "etf",
    "slug": "entitytexturefeatures",
+   "project_id": "BVzZfTc1",
    "action": "client-optional",
    "note": "Texture features required by Fresh Animations resourcepack"
   },
   {
    "file": "bettercombat",
    "slug": "better-combat",
+   "project_id": "5sy6g3kz",
    "action": "keep",
    "cat": "combat"
   },
   {
    "file": "combatroll",
    "slug": "combat-roll",
+   "project_id": "wGKYL7st",
    "action": "keep",
    "cat": "combat"
   },
   {
    "file": "immersive_armors",
    "slug": "immersive-armors",
+   "project_id": "eE2Db4YU",
    "action": "keep",
    "cat": "combat"
   },
   {
    "file": "medievalweapons",
    "slug": "medievalweapons",
+   "project_id": "C37HUu02",
    "action": "keep",
    "reason": "Stuck pre-1.21.2; core moves into aged-primitive weapon tiers later",
    "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
@@ -190,19 +214,22 @@
   {
    "file": "amarite",
    "slug": "amarite",
+   "project_id": "ftofxBty",
    "action": "keep",
    "reason": "Stuck 1.20.1; niche single sword",
    "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
   },
   {
    "file": "tiered",
-   "slug": "tiered",
+   "slug": "tieredz",
+   "project_id": "z6sMEexp",
    "action": "rebuild",
    "group": "aged-primitive"
   },
   {
    "file": "inmis",
    "slug": "inmis",
+   "project_id": "I0UYcPa0",
    "action": "keep",
    "reason": "Backpack slots stuck; use vanilla bundle rework in 26.x",
    "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
@@ -210,6 +237,7 @@
   {
    "file": "inmisaddon",
    "slug": "inmisaddon",
+   "project_id": "c4aa1Mqq",
    "action": "keep",
    "reason": "Depends on Inmis",
    "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
@@ -217,6 +245,7 @@
   {
    "file": "backslot",
    "slug": "backslot",
+   "project_id": "1H9ZkJwF",
    "action": "keep",
    "reason": "Stuck; cosmetic slot",
    "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
@@ -224,6 +253,7 @@
   {
    "file": "backslotaddon",
    "slug": "backslotaddon",
+   "project_id": "s2w3oC2W",
    "action": "keep",
    "reason": "Depends on backslot",
    "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
@@ -231,6 +261,7 @@
   {
    "file": "trinkets",
    "slug": "trinkets",
+   "project_id": "5aaWibi9",
    "action": "keep",
    "reason": "Accessory API stalled at 1.21.1 ecosystem; no kept mod requires it after trims",
    "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
@@ -238,13 +269,15 @@
   {
    "file": "revive",
    "slug": "revive",
+   "project_id": "MGRhpQYp",
    "action": "rebuild",
    "reason": "Stuck; revisit if co-op demand emerges",
    "note": "Rebuilt natively in hearthwind-survival downed/revive mechanics"
   },
   {
    "file": "rpgdifficulty",
-   "slug": "rpg-difficulty",
+   "slug": "rpgdifficulty",
+   "project_id": "G5AvCOPI",
    "action": "rebuild",
    "group": "aged-skills",
    "reason": "Simple distance-scaling rule, trivially rebuilt server-side"
@@ -252,12 +285,14 @@
   {
    "file": "herdspanic",
    "slug": "herdspanic",
+   "project_id": "U64ZYLjC",
    "action": "keep",
    "cat": "world-flavor"
   },
   {
    "file": "earlystage",
    "slug": "earlystage",
+   "project_id": "lw05gEDu",
    "action": "rebuild",
    "group": "aged-primitive",
    "reason": "CORE identity: knapping start"
@@ -265,6 +300,7 @@
   {
    "file": "dehydration",
    "slug": "dehydration",
+   "project_id": "qWDh3G0p",
    "action": "rebuild",
    "group": "aged-survival",
    "reason": "CORE identity: thirst"
@@ -272,6 +308,7 @@
   {
    "file": "environmentz",
    "slug": "environmentz",
+   "project_id": "TggYmc6t",
    "action": "rebuild",
    "group": "aged-survival",
    "reason": "CORE identity: temperature"
@@ -279,6 +316,7 @@
   {
    "file": "nutritionz",
    "slug": "nutritionz",
+   "project_id": "9IASI8W8",
    "action": "rebuild",
    "group": "aged-survival",
    "reason": "CORE identity: diet"
@@ -286,6 +324,7 @@
   {
    "file": "spoiledz",
    "slug": "spoiledz",
+   "project_id": "WBzldFmc",
    "action": "rebuild",
    "group": "aged-survival",
    "reason": "CORE identity: spoilage"
@@ -293,20 +332,23 @@
   {
    "file": "levelz",
    "slug": "levelz",
+   "project_id": "EFtixeiF",
    "action": "rebuild",
    "group": "aged-skills",
    "reason": "CORE identity: skills/attributes"
   },
   {
    "file": "jobsaddon",
-   "slug": "jobs-addon",
+   "slug": "jobsaddon",
+   "project_id": "whv2X0ei",
    "action": "rebuild",
    "group": "aged-skills",
    "reason": "Phase 2 of aged-skills"
   },
   {
    "file": "partyaddon",
-   "slug": "party-addon",
+   "slug": "partyaddon",
+   "project_id": "oRqU5wIm",
    "action": "rebuild",
    "group": "aged-skills",
    "reason": "Phase 2 of aged-skills"
@@ -314,6 +356,7 @@
   {
    "file": "smitherz",
    "slug": "smitherz",
+   "project_id": "po8iVUhc",
    "action": "keep",
    "reason": "Nice-to-have; fold upgrade concept into aged-primitive",
    "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
@@ -321,6 +364,7 @@
   {
    "file": "travelerz",
    "slug": "travelerz",
+   "project_id": "eagoVRnY",
    "action": "keep",
    "reason": "Map pins; vanilla 26.x locator bar covers most",
    "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
@@ -328,6 +372,7 @@
   {
    "file": "libz",
    "slug": "libz",
+   "project_id": "yUBXc3AH",
    "action": "keep",
    "reason": "Library for z-series mods being replaced",
    "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
@@ -335,18 +380,21 @@
   {
    "file": "fabric-seasons",
    "slug": "fabric-seasons",
+   "project_id": "KJe6y9Eu",
    "action": "rebuild",
    "group": "aged-world"
   },
   {
    "file": "seasonhud",
    "slug": "seasonhud-fabric",
+   "project_id": "iDiIfZLX",
    "action": "rebuild",
    "group": "aged-world"
   },
   {
    "file": "time-and-wind",
-   "slug": "time-and-wind",
+   "slug": "time-wind",
+   "project_id": "e7pPr7RQ",
    "action": "keep",
    "reason": "Day-length tuning; not mission-critical",
    "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
@@ -354,12 +402,14 @@
   {
    "file": "crop_growth_modifier",
    "slug": "crop-growth-modifier",
+   "project_id": "IQKhvsfJ",
    "action": "rebuild",
    "group": "aged-world"
   },
   {
    "file": "terrablender",
    "slug": "terrablender",
+   "project_id": "kkmrDlKT",
    "action": "keep",
    "cat": "worldgen-lib",
    "note": "Only if a kept worldgen mod needs it; drop otherwise"
@@ -367,6 +417,7 @@
   {
    "file": "naturespirit",
    "slug": "natures-spirit",
+   "project_id": "WBvnqHfV",
    "action": "keep",
    "cat": "worldgen",
    "note": "60+ biomes, 18 wood sets, chalk/travertine stones, built from 26.1.2 multiloader branch for 26.2"
@@ -374,6 +425,7 @@
   {
    "file": "gardens-of-the-dead",
    "slug": "gardens-of-the-dead",
+   "project_id": "lg1TPRFm",
    "action": "keep",
    "cat": "worldgen",
    "note": "Nether biomes Soulblight Forest and Whistling Woods, built from contrib for 26.2"
@@ -381,6 +433,7 @@
   {
    "file": "naturalist",
    "slug": "naturalist",
+   "project_id": "F8BQNPWX",
    "action": "rebuild",
    "reason": "Ambience animals",
    "note": "Rebuilt natively in hearthwind-world (fauna, waterfowl, ducks, bears, aquatic life, ice spawning)"
@@ -388,6 +441,7 @@
   {
    "file": "creeperoverhaul",
    "slug": "creeper-overhaul",
+   "project_id": "MI1LWe93",
    "action": "keep",
    "reason": "Cosmetic variants",
    "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
@@ -395,6 +449,7 @@
   {
    "file": "endermanoverhaul",
    "slug": "enderman-overhaul",
+   "project_id": "Lq6ojcWv",
    "action": "keep",
    "reason": "Cosmetic variants",
    "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
@@ -402,18 +457,21 @@
   {
    "file": "Boids",
    "slug": "boids",
+   "project_id": "2OckSy74",
    "action": "keep",
    "reason": "Bird flock engine; ambience"
   },
   {
    "file": "birdsboids",
    "slug": "birds-boids-addon",
+   "project_id": "CvX6rOtB",
    "action": "keep",
    "reason": "Addon for Boids"
   },
   {
    "file": "adventurez",
    "slug": "adventurez",
+   "project_id": "defK2XM3",
    "action": "keep",
    "reason": "Boss/mob pack stuck; off core loop",
    "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
@@ -421,6 +479,7 @@
   {
    "file": "astrocraft",
    "slug": "astrocraft",
+   "project_id": "DCWEXia7",
    "action": "keep",
    "reason": "Aliens; tonally off-mission",
    "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
@@ -428,6 +487,7 @@
   {
    "file": "fleshz",
    "slug": "fleshz",
+   "project_id": "6EdNfDXb",
    "action": "keep",
    "reason": "Mob pack stuck",
    "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
@@ -435,96 +495,112 @@
   {
    "file": "YungsApi",
    "slug": "yungs-api",
+   "project_id": "Ua7DFN59",
    "action": "keep",
    "cat": "structures"
   },
   {
    "file": "YungsBetterDesertTemples",
    "slug": "yungs-better-desert-temples",
+   "project_id": "XNlO7sBv",
    "action": "keep",
    "cat": "structures"
   },
   {
    "file": "YungsBetterEndIsland",
    "slug": "yungs-better-end-island",
+   "project_id": "2BwBOmBQ",
    "action": "keep",
    "cat": "structures"
   },
   {
    "file": "YungsBetterJungleTemples",
    "slug": "yungs-better-jungle-temples",
+   "project_id": "z9Ve58Ih",
    "action": "keep",
    "cat": "structures"
   },
   {
    "file": "YungsBetterNetherFortresses",
    "slug": "yungs-better-nether-fortresses",
+   "project_id": "Z2mXHnxP",
    "action": "keep",
    "cat": "structures"
   },
   {
    "file": "YungsBetterOceanMonuments",
    "slug": "yungs-better-ocean-monuments",
+   "project_id": "3dT9sgt4",
    "action": "keep",
    "cat": "structures"
   },
   {
    "file": "HopoBetterMineshaft",
    "slug": "hopo-better-mineshaft",
+   "project_id": "9IxCUYAP",
    "action": "keep",
    "cat": "structures"
   },
   {
    "file": "HopoBetterUnderwaterRuins",
    "slug": "hopo-better-underwater-ruins",
+   "project_id": "BuWCQzqf",
    "action": "keep",
    "cat": "structures"
   },
   {
    "file": "formations",
    "slug": "formations",
+   "project_id": "tPe4xnPd",
    "action": "keep",
    "cat": "structures"
   },
   {
    "file": "formationsoverworld",
    "slug": "formations-overworld",
+   "project_id": "KX1XC0Oo",
    "action": "keep",
    "cat": "structures"
   },
   {
    "file": "formationsnether",
    "slug": "formations-nether",
+   "project_id": "cGvQGRls",
    "action": "keep",
    "cat": "structures"
   },
   {
    "file": "dungeons-and-taverns",
    "slug": "dungeons-and-taverns",
+   "project_id": "tpehi7ww",
    "action": "keep",
    "cat": "structures"
   },
   {
    "file": "dungeons-and-taverns-ancient-city-overhaul",
    "slug": "dungeons-and-taverns-ancient-city-overhaul",
+   "project_id": "DNuNq5bb",
    "action": "keep",
    "cat": "structures"
   },
   {
    "file": "dungeons-and-taverns-pillager-outpost-rework",
    "slug": "dungeons-and-taverns-pillager-outpost-overhaul",
+   "project_id": "QIt10I7z",
    "action": "keep",
    "cat": "structures"
   },
   {
    "file": "dungeons-and-taverns-stronghold-rework",
    "slug": "dungeons-and-taverns-stronghold-overhaul",
+   "project_id": "rYocd2LE",
    "action": "keep",
    "cat": "structures"
   },
   {
    "file": "sparsestructures",
    "slug": "sparsestructures",
+   "project_id": "qwvI41y9",
    "action": "keep",
    "cat": "structures",
    "note": "Thins vanilla spam; matches Aged pacing"
@@ -532,25 +608,29 @@
   {
    "file": "tlc",
    "slug": "the-lost-castle",
+   "project_id": "FGlHZl7X",
    "action": "keep",
    "cat": "structures"
   },
   {
    "file": "medieval_buildings",
    "slug": "medieval-buildings",
+   "project_id": "sc9lpPiU",
    "action": "keep",
    "cat": "structures"
   },
    {
     "file": "Dungeon Now Loading",
     "slug": "dungeon-now-loading",
+    "project_id": "vZoqTqwv",
     "action": "keep",
     "reason": "DEFER - 177-class yarn port, empty source; content covered by UW/Dungeons+/Moogs/Profundis",
     "note": "Kept from Aged - not dropped; revisit only if structure niche opens"
    },
    {
     "file": "dungeons+-1.8.4b",
-    "slug": "dungeons-plus",
+    "slug": "decubed-dungeons",
+    "project_id": "nHORcEHd",
     "action": "keep",
     "reason": "Adopted fabric jar dungeons+-1.12.0 vendored",
     "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
@@ -558,6 +638,7 @@
   {
    "file": "desert-dungeon",
    "slug": "desert-dungeon-dungeonz-addon",
+   "project_id": "zun2vT3k",
    "action": "keep",
    "reason": "Adopted desert-dungeon-1.0.1+26.2.jar (DungeonZ data addon, MIT)",
    "note": "Re-located from desert-dungeon slug; vendored 2026-09-22"
@@ -565,6 +646,7 @@
   {
    "file": "dungeonz",
    "slug": "dungeonz",
+   "project_id": "11jwniuC",
    "action": "keep",
    "reason": "Small niche dungeon",
    "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
@@ -572,13 +654,15 @@
   {
    "file": "u_desert",
    "slug": "unnamed-desert",
+   "project_id": "ThFWvdF1",
    "action": "keep",
    "reason": "Adopted unnamed-desert-2.0.3+26.2.jar (u_desert re-located; ARR - redistribute carefully)",
    "note": "Overlays stripped for 26.2; root worldgen data kept"
   },
    {
     "file": "underground-jungle",
-    "slug": "underground-jungle",
+    "slug": "underground-worlds",
+    "project_id": "g9fDJQZe",
     "action": "keep",
     "reason": "Superseded by adopted undergroundworlds 3.2.1",
     "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
@@ -586,6 +670,7 @@
    {
     "file": "spirder-caves",
     "slug": "spider-caves",
+    "project_id": "dGtrU8l3",
     "action": "keep",
     "reason": "Superseded by adopted undergroundworlds 3.2.1",
     "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
@@ -593,12 +678,14 @@
   {
    "file": "tru.e-ending",
    "slug": "true-ending",
+   "project_id": "MCnBYP0b",
    "action": "keep",
    "reason": "End overhaul niche"
   },
   {
    "file": "betterendcitiesvanilla",
    "slug": "better-end-cities-base",
+   "project_id": "FEChYs43",
    "action": "keep",
    "reason": "Adopted betterendcities-vanilla-1.21.3+26.2.jar (end city NBT overrides, MIT)",
    "note": "Re-located from vanilla-end-city-overhaul; vendored 2026-09-22"
@@ -606,6 +693,7 @@
    {
     "file": "profundis",
     "slug": "profundis",
+    "project_id": "aucz7XCt",
     "action": "keep",
     "reason": "Shipped: custom-mods/profundis yarn→mojmap port, boot-green 26.2",
     "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
@@ -613,6 +701,7 @@
    {
     "file": "lukis-grand-capitals",
     "slug": "lukis-grand-capitals",
+    "project_id": "8Lw09aLb",
     "action": "keep",
     "reason": "Shipped: datapack conversion/datapacks/lukis-grand-capitals, pack_format 107",
     "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
@@ -620,20 +709,23 @@
   {
    "file": "villagesandpillages",
    "slug": "villages-and-pillages",
+   "project_id": "klXONLDA",
    "action": "keep",
    "cat": "structures",
    "note": "Hostile pillages and varied villager settlements on 26.2"
   },
   {
    "file": "mns",
-   "slug": "mns",
+   "slug": "mns-moogs-nether-structures",
+   "project_id": "nGUXvjTa",
    "action": "keep",
    "reason": "Large structure pack overlap",
    "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
   },
   {
    "file": "mes",
-   "slug": "moogs-endless-structures",
+   "slug": "mes-moogs-end-structures",
+   "project_id": "r4PuRGfV",
    "action": "keep",
    "reason": "Overlap",
    "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
@@ -641,6 +733,7 @@
   {
    "file": "endrem",
    "slug": "endrem",
+   "project_id": "ZJTGwAND",
    "action": "rebuild",
    "cat": "progression",
    "note": "Eyes quest gives early-game direction; rebuild/port for 26.2 (upstream max 26.1.2)"
@@ -648,6 +741,7 @@
   {
    "file": "lootr",
    "slug": "lootr",
+   "project_id": "EltpO5cN",
    "action": "keep",
    "cat": "structures",
    "note": "Per-player loot; server staple"
@@ -655,6 +749,7 @@
   {
    "file": "paxi",
    "slug": "paxi",
+   "project_id": "CU0PAyzb",
    "action": "rebuild",
    "reason": "Ship aged datapack natively in world/datapacks instead",
    "note": "Rebuilt natively as 26.x deterministic world datapack in conversion/datapacks/hearthwind"
@@ -662,6 +757,7 @@
   {
    "file": "letsdo-API",
    "slug": "do-api",
+   "project_id": "4XJZeZbM",
    "action": "rebuild",
    "reason": "Whole LetsDo family stuck (~1.21.1); food ambience not core loop; revisit when updated",
    "note": "Rebuilt natively in letsdo-* ports (external repo ../Hearthwind-flora) module with zero-bloat 26.2 items, blocks, crops, and recipes"
@@ -669,6 +765,7 @@
   {
    "file": "letsdo-bakery",
    "slug": "lets-do-bakery",
+   "project_id": "oNB5jhlA",
    "action": "rebuild",
    "reason": "LetsDo family",
    "note": "Rebuilt natively in letsdo-* ports (external repo ../Hearthwind-flora) module with zero-bloat 26.2 items, blocks, crops, and recipes"
@@ -676,6 +773,7 @@
   {
    "file": "letsdo-brewery",
    "slug": "lets-do-brewery",
+   "project_id": "b7NV2plI",
    "action": "rebuild",
    "reason": "LetsDo family",
    "note": "Rebuilt natively in letsdo-* ports (external repo ../Hearthwind-flora) module with zero-bloat 26.2 items, blocks, crops, and recipes"
@@ -683,6 +781,7 @@
   {
    "file": "letsdo-candlelight",
    "slug": "lets-do-candlelight",
+   "project_id": "qwbArkQk",
    "action": "rebuild",
    "reason": "LetsDo family",
    "note": "Rebuilt natively in letsdo-* ports (external repo ../Hearthwind-flora) module with zero-bloat 26.2 items, blocks, crops, and recipes"
@@ -690,6 +789,7 @@
   {
    "file": "letsdo-farm_and_charm",
    "slug": "lets-do-farm-charm",
+   "project_id": "HJetCzWo",
    "action": "rebuild",
    "reason": "LetsDo family",
    "note": "Rebuilt natively in letsdo-* ports (external repo ../Hearthwind-flora) module with zero-bloat 26.2 items, blocks, crops, and recipes"
@@ -697,6 +797,7 @@
   {
    "file": "letsdo-meadow",
    "slug": "lets-do-meadow",
+   "project_id": "ra7o6Sl7",
    "action": "rebuild",
    "reason": "LetsDo family",
    "note": "Rebuilt natively in letsdo-* ports (external repo ../Hearthwind-flora) module with zero-bloat 26.2 items, blocks, crops, and recipes"
@@ -704,6 +805,7 @@
   {
    "file": "letsdo-vinery",
    "slug": "lets-do-vinery",
+   "project_id": "1DWmBJVA",
    "action": "rebuild",
    "reason": "LetsDo family",
    "note": "Rebuilt natively in letsdo-* ports (external repo ../Hearthwind-flora) module with zero-bloat 26.2 items, blocks, crops, and recipes"
@@ -711,27 +813,31 @@
   {
    "file": "letsdo-nethervinery",
    "slug": "create-nether-vinery",
+   "project_id": "4TTDxtOx",
    "action": "rebuild",
    "reason": "LetsDo family",
    "note": "Rebuilt natively in letsdo-* ports (external repo ../Hearthwind-flora) module with zero-bloat 26.2 items, blocks, crops, and recipes"
   },
   {
    "file": "letsdo-herbalbrews",
-   "slug": "herbal-brews",
+   "slug": "lets-do-herbalbrews",
+   "project_id": "Eh11TaTm",
    "action": "rebuild",
    "reason": "LetsDo family",
    "note": "Rebuilt natively in letsdo-* ports (external repo ../Hearthwind-flora) module with zero-bloat 26.2 items, blocks, crops, and recipes"
   },
   {
    "file": "emi-letsdo-compat",
-   "slug": "emi-letsdo-compat",
+   "slug": "lets-do-emi-compat",
+   "project_id": "k6hi4lMv",
    "action": "keep",
    "reason": "Depends on LetsDo",
    "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
   },
   {
    "file": "sushi_bar",
-   "slug": "sushi-bar",
+   "slug": "bento-box",
+   "project_id": "tr2Mv6ke",
    "action": "keep",
    "reason": "Food ambience niche",
    "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
@@ -739,6 +845,7 @@
   {
    "file": "another_furniture",
    "slug": "another-furniture",
+   "project_id": "ulloLmqG",
    "action": "keep",
    "reason": "Decor; stuck 1.21.1",
    "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
@@ -746,13 +853,15 @@
   {
    "file": "chipped",
    "slug": "chipped",
+   "project_id": "BAscRYKm",
    "action": "keep",
    "reason": "Decor variants; heavy recipe bloat",
    "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
   },
   {
    "file": "bbb",
-   "slug": "barrels-bins-and-boxes",
+   "slug": "building-but-better",
+   "project_id": "OSDpLd82",
    "action": "keep",
    "reason": "Decor storage",
    "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
@@ -760,6 +869,7 @@
   {
    "file": "chalk",
    "slug": "chalk",
+   "project_id": "OrtjXTCH",
    "action": "keep",
    "cat": "qol-flavor",
    "note": "Verify readiness; caving utility"
@@ -767,12 +877,14 @@
   {
    "file": "chalk-colorful-addon",
    "slug": "chalk-colorful-addon",
+   "project_id": "VPJS28NH",
    "action": "keep",
    "reason": "Addon; keep base only if ready"
   },
   {
    "file": "connectiblechains",
-   "slug": "connectible-chains",
+   "slug": "connectiblechains",
+   "project_id": "ykSfIgTw",
    "action": "keep",
    "reason": "Cosmetic physics",
    "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
@@ -780,12 +892,14 @@
   {
    "file": "jumpoverfences",
    "slug": "jump-over-fences",
+   "project_id": "4HeIHvIP",
    "action": "keep",
    "cat": "qol"
   },
   {
    "file": "crawl",
    "slug": "crawl",
+   "project_id": "H1JOVjhn",
    "action": "keep",
    "cat": "qol",
    "note": "Verify readiness"
@@ -793,6 +907,7 @@
   {
    "file": "villager-transportation",
    "slug": "villager-transportation",
+   "project_id": "vLUPqRLH",
    "action": "keep",
    "reason": "QOL nicety stuck",
    "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
@@ -800,12 +915,14 @@
   {
    "file": "superbsteeds",
    "slug": "superb-steeds",
+   "project_id": "UIZkbR3j",
    "action": "keep",
    "cat": "qol-flavor"
   },
   {
    "file": "smallships",
    "slug": "small-ships",
+   "project_id": "rGWEHQrP",
    "action": "keep",
    "cat": "transport",
    "note": "Sailable cogs, galleys, brigs, dhows, and drakkars for authentic sea navigation"
@@ -813,6 +930,7 @@
   {
    "file": "ships",
    "slug": "ships",
+   "project_id": "M185nxi6",
    "action": "rebuild",
    "reason": "Illager ship structures (EMD0123/Ships, Apache-2.0) - a different mod from Small Ships",
    "note": "Not covered by custom-mods/smallships (that port is Small Ships, project rGWEHQrP). No official 26.2 build; queued for a port."
@@ -820,6 +938,7 @@
   {
    "file": "niftycarts",
    "slug": "niftycarts",
+   "project_id": "CXd6g9xp",
    "action": "keep",
    "reason": "Carts niche; config existed but non-core",
    "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
@@ -827,20 +946,23 @@
   {
    "file": "immersive_aircraft",
    "slug": "immersive-aircraft",
+   "project_id": "x3HZvrj6",
    "action": "keep",
    "reason": "Planes vs medieval realism",
    "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
   },
   {
    "file": "villagerfix",
-   "slug": "villager-fix",
+   "slug": "villagertradefix",
+   "project_id": "K2YWwbQ8",
    "action": "keep",
    "reason": "Unresolved; vanilla trading fine",
    "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
   },
   {
    "file": "smarterfarmers",
-   "slug": "smarter-farmers",
+   "slug": "smarter-farmers-farmers-replant",
+   "project_id": "Bh6ZOMvp",
    "action": "keep",
    "reason": "Farmer AI nicety; tied to farm&charm ecosystem",
    "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
@@ -848,6 +970,7 @@
   {
    "file": "exposure",
    "slug": "exposure",
+   "project_id": "hB899VmG",
    "action": "keep",
    "cat": "flavor",
    "note": "Standalone 26.2 port in custom-mods/exposure (HanLax93 26.2 branch, Fabric-only, de-architectured)"
@@ -855,6 +978,7 @@
   {
    "file": "antique-atlas",
    "slug": "antique-atlas-4",
+   "project_id": "Y5Ve4Ui4",
    "action": "keep",
    "cat": "qol",
    "note": "Exploration identity; verify readiness"
@@ -862,6 +986,7 @@
   {
    "file": "surveyor",
    "slug": "surveyor",
+   "project_id": "4KjqhPc9",
    "action": "keep",
    "reason": "Atlas framework lib; only if antique atlas needs it",
    "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
@@ -869,6 +994,7 @@
   {
    "file": "lavender",
    "slug": "lavender",
+   "project_id": "D5h9NKNI",
    "action": "keep",
    "reason": "Guidebook lib for cut mods",
    "note": "Ported to 26.2 in custom-mods/lavender (lavender-md inlined); vendored as lavender-26.2+0.1.0.jar"
@@ -876,12 +1002,14 @@
   {
    "file": "scholar",
    "slug": "scholar",
+   "project_id": "fX4dIQCo",
    "action": "keep",
    "reason": "Books nicety"
   },
   {
    "file": "Pockets",
    "slug": "pockets",
+   "project_id": "hAjvvnUD",
    "action": "keep",
    "reason": "Micro-storage niche",
    "note": "Ported to 26.2 in custom-mods/pockets; vendored as pockets-26.2+0.1.0.jar"
@@ -889,19 +1017,22 @@
   {
    "file": "ExtendedDrawers",
    "slug": "extended-drawers",
+   "project_id": "AhtxbnpG",
    "action": "keep",
    "reason": "Storage tech; off-mission medieval"
   },
   {
    "file": "extendeddrawersaddon",
-   "slug": "extended-drawers-add-on",
+   "slug": "extendeddrawersaddon",
+   "project_id": "daHYok8P",
    "action": "keep",
    "reason": "Depends on ExtendedDrawers",
    "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
   },
   {
    "file": "reciperemover",
-   "slug": "recipe-remover",
+   "slug": "reciperemover",
+   "project_id": "ydTNvAMp",
    "action": "rebuild",
    "group": "aged-primitive",
    "reason": "=datapack"
@@ -909,6 +1040,7 @@
   {
    "file": "autotag",
    "slug": "autotag",
+   "project_id": "8FdYDHF5",
    "action": "rebuild",
    "group": "aged-primitive",
    "reason": "=datapack tags"
@@ -916,6 +1048,7 @@
   {
    "file": "couplings",
    "slug": "couplings",
+   "project_id": "80ulerjA",
    "action": "keep",
    "reason": "Double doors; vanilla parity coming",
    "note": "Ported to 26.2 in custom-mods/couplings; vendored as couplings-26.2+0.1.0.jar"
@@ -923,6 +1056,7 @@
   {
    "file": "async-locator",
    "slug": "async-locator",
+   "project_id": "rkN8aqci",
    "action": "keep",
    "reason": "Vanilla /locate fast on modern MC",
    "note": "Ported to 26.2 in custom-mods/async-locator; vendored as async-locator-26.2+0.1.0.jar"
@@ -930,6 +1064,7 @@
   {
    "file": "memoryleakfix",
    "slug": "memoryleakfix",
+   "project_id": "NRjRiSSD",
    "action": "keep",
    "reason": "Obsolete on modern JVM/MC",
    "note": "Slimmed 26.2 port in custom-mods/memoryleakfix (biome temp ThreadLocal + client crosshair target only); vendored as memoryleakfix-26.2+0.1.0.jar"
@@ -937,6 +1072,7 @@
   {
    "file": "modernfix",
    "slug": "modernfix",
+   "project_id": "nmDcB62a",
    "action": "keep",
    "cat": "perf",
    "note": "Verify actual latest support; drop if unmaintained"
@@ -944,20 +1080,23 @@
   {
    "file": "noisium",
    "slug": "noisium",
+   "project_id": "KuNKN7d2",
    "action": "keep",
    "cat": "perf",
    "note": "1.21.6; watch for 26.x build"
   },
   {
    "file": "DEUF_Refabricated",
-   "slug": "entity-collision-fps-fix",
+   "slug": "deuf-refabricated",
+   "project_id": "US6QuKdU",
    "action": "keep",
    "reason": "Client perf fix era; modern MC improved",
-   "note": "Ported to 26.2 in custom-mods/entitycollisionfpsfix; vendored as entitycollisionfpsfix-26.2+0.1.0.jar"
+   "note": "DEUF Refabricated (US6QuKdU) is a different mod from the vendored custom-mods/entitycollisionfpsfix port (CorgiTaco No-Client-Side-Entity-Collision-Checks); queued for a W4 port"
   },
   {
    "file": "geckolib",
    "slug": "geckolib",
+   "project_id": "8BmcQJ2H",
    "action": "keep",
    "cat": "lib",
    "note": "Needed by kept animated mods"
@@ -965,6 +1104,7 @@
   {
    "file": "Kiwi",
    "slug": "kiwi",
+   "project_id": "ufdDoWPd",
    "action": "keep",
    "cat": "lib",
    "note": "Verify needed after trims"
@@ -972,6 +1112,7 @@
   {
    "file": "moonlight",
    "slug": "moonlight",
+   "project_id": "twkfQtEc",
    "action": "keep",
    "reason": "Lib for Let's Do family",
    "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
@@ -979,6 +1120,7 @@
   {
    "file": "resourcefullib",
    "slug": "resourceful-lib",
+   "project_id": "G1hIVOrD",
    "action": "keep",
    "cat": "lib",
    "note": "Needed by kept mods (e.g., exposure)"
@@ -986,12 +1128,14 @@
   {
    "file": "resourcefulconfig",
    "slug": "resourceful-config",
+   "project_id": "M1953qlQ",
    "action": "keep",
    "cat": "lib"
   },
   {
    "file": "athena",
    "slug": "athena-ctm",
+   "project_id": "b1ZV3DIJ",
    "action": "keep",
    "reason": "CTM lib for chipped/connected textures; client decor",
    "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
@@ -999,6 +1143,7 @@
   {
    "file": "arrp",
    "slug": "arrp",
+   "project_id": "USLVyT7V",
    "action": "keep",
    "reason": "Runtime resource pack gen lib for cut mods",
    "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
@@ -1006,20 +1151,23 @@
   {
    "file": "MRU",
    "slug": "mru",
+   "project_id": "SNVQ2c0g",
    "action": "keep",
    "reason": "Lib for cut structure mods",
    "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
   },
-  {
-   "file": "OctoLib",
-   "slug": "octolib",
-   "action": "keep",
-   "reason": "Lib for cut mods",
-   "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
-  },
+   {
+    "file": "shatterbyte_lib",
+    "slug": "shatterbyte-lib",
+    "project_id": "RH2KUdKJ",
+    "action": "keep",
+    "reason": "Lib for cut mods",
+    "note": "Adopted upstream 26.2 (W2)"
+   },
   {
    "file": "tcdcommons",
    "slug": "tcdcommons",
+   "project_id": "Eldc1g37",
    "action": "keep",
    "cat": "lib",
    "note": "Verify needed"
@@ -1027,6 +1175,7 @@
   {
    "file": "balm",
    "slug": "balm",
+   "project_id": "MBAkmtvl",
    "action": "keep",
    "cat": "lib",
    "note": "Needed by some YUNG-adjacent/QOL"
@@ -1034,6 +1183,7 @@
   {
    "file": "supermartijn642configlib",
    "slug": "supermartijn642s-config-lib",
+   "project_id": "LN9BxssP",
    "action": "keep",
    "reason": "For cut mods"
   },
@@ -1046,6 +1196,7 @@
   {
    "file": "Grass_Overhaul",
    "slug": "grass-overhaul",
+   "project_id": "Eeb4VkF6",
    "action": "keep",
    "reason": "Flora ambience stuck 1.21.1",
    "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
@@ -1074,6 +1225,7 @@
   {
    "file": "ambientenvironment",
    "slug": "ambient-environment",
+   "project_id": "DyTvM1dv",
    "action": "keep",
    "cat": "flavor",
    "note": "Biome water fog/ambience; in Aged 3.1.2, missing from pack caused water-look drift. Upstream has 26.2 builds."
@@ -1095,11 +1247,239 @@
   {
    "file": "passable-foliage",
    "slug": "passable-foliage",
+   "project_id": "uaLW6JVR",
    "action": "keep",
    "cat": "flavor",
    "note": "Walk-through leaves (Aged parity: PassableFoliage 8.2.1). Upstream max 26.1.2; needs 26.1->26.2 nudge fork (tiny collision-mixin mod)."
-  }
- ],
+  },
+  {
+   "file": "almanac",
+   "slug": "almanac",
+   "project_id": "Gi02250Z",
+   "action": "keep",
+   "cat": "lib",
+   "note": "Aged 3.1.2 shipped Almanac; resolved upstream 26.2 build 1.26.7.3. Already pulled as an auto-dep via letmedespawn; explicit entry added for the Aged pid ledger (W0)."
+  },
+  {
+   "file": "fabric-language-kotlin",
+   "slug": "fabric-language-kotlin",
+   "project_id": "Ha28R6CL",
+   "action": "keep",
+   "cat": "lib",
+   "note": "Aged 3.1.2 shipped Fabric Language Kotlin; resolved upstream 26.2 build 1.14.0+kotlin.2.4.20. Already pulled as an auto-dep via fzzy_config; explicit entry added for the Aged pid ledger (W0)."
+  },
+   {
+    "file": "player-animation-lib",
+    "slug": "player-animation-library",
+    "project_id": "gedNE4y2",
+    "action": "keep",
+    "reason": "Aged ships playerAnimator (gedNE4y2); the 26.2 substitute is player-animation-library (ha1mEyJS)",
+    "note": "Substitution recorded in .tmp/k3_parity_audit.md section 5; pull arrives via the bettercombat auto-dep. Verify API compatibility before 1.0.0."
+   },
+   {
+    "file": "neruina",
+    "slug": "neruina",
+    "project_id": "1s5x833P",
+    "action": "keep",
+    "note": "Adopted upstream 26.2 (W2)"
+   },
+   {
+    "file": "moreculling",
+    "slug": "moreculling",
+    "project_id": "51shyZVL",
+    "action": "client-optional",
+    "note": "Adopted upstream 26.2 (W2)"
+   },
+   {
+    "file": "immediatelyfast",
+    "slug": "immediatelyfast",
+    "project_id": "5ZwdcRci",
+    "action": "client-optional",
+    "note": "Adopted upstream 26.2 (W2)"
+   },
+   {
+    "file": "advancements_fullscreen",
+    "slug": "advancements-fullscreen",
+    "project_id": "7BgsROit",
+    "action": "client-optional",
+    "note": "Adopted upstream 26.2 (W2)"
+   },
+   {
+    "file": "sodium",
+    "slug": "sodium",
+    "project_id": "AANobbMI",
+    "action": "client-optional",
+    "note": "Adopted upstream 26.2 (W2)"
+   },
+   {
+    "file": "melody",
+    "slug": "melody",
+    "project_id": "CVT4pFB2",
+    "action": "client-optional",
+    "note": "Adopted upstream 26.2 (W2)"
+   },
+   {
+    "file": "advancements_search",
+    "slug": "advancements-search",
+    "project_id": "Ccho67RI",
+    "action": "client-optional",
+    "note": "Adopted upstream 26.2 (W2)"
+   },
+   {
+    "file": "stoneworks",
+    "slug": "stoneworks",
+    "project_id": "FzyTKtVF",
+    "action": "keep",
+    "note": "Adopted upstream 26.2 (W2)"
+   },
+   {
+    "file": "first_person_model",
+    "slug": "first-person-model",
+    "project_id": "H5XMjpHi",
+    "action": "client-optional",
+    "note": "Adopted upstream 26.2 (W2)"
+   },
+   {
+    "file": "konkrete",
+    "slug": "konkrete",
+    "project_id": "J81TRJWm",
+    "action": "keep",
+    "note": "Adopted upstream 26.2 (W2)"
+   },
+   {
+    "file": "blur_plus",
+    "slug": "blur-plus",
+    "project_id": "NK39zBp2",
+    "action": "client-optional",
+    "note": "Adopted upstream 26.2 (W2)"
+   },
+   {
+    "file": "entityculling",
+    "slug": "entityculling",
+    "project_id": "NNAgCjsB",
+    "action": "client-optional",
+    "note": "Adopted upstream 26.2 (W2)"
+   },
+   {
+    "file": "puzzles_lib",
+    "slug": "puzzles-lib",
+    "project_id": "QAGBst4M",
+    "action": "keep",
+    "note": "Adopted upstream 26.2 (W2)"
+   },
+   {
+    "file": "rsls",
+    "slug": "rsls",
+    "project_id": "SKW62Pht",
+    "action": "client-optional",
+    "note": "Adopted upstream 26.2 (W2)"
+   },
+   {
+    "file": "default_options",
+    "slug": "default-options",
+    "project_id": "WEg59z5b",
+    "action": "client-optional",
+    "note": "Adopted upstream 26.2 (W2)"
+   },
+   {
+    "file": "fancymenu",
+    "slug": "fancymenu",
+    "project_id": "Wq5SjeWM",
+    "action": "client-optional",
+    "note": "Adopted upstream 26.2 (W2)"
+   },
+   {
+    "file": "overflowing_bars",
+    "slug": "overflowing-bars",
+    "project_id": "XD7XOrAF",
+    "action": "client-optional",
+    "note": "Adopted upstream 26.2 (W2)"
+   },
+   {
+    "file": "iris",
+    "slug": "iris",
+    "project_id": "YL57xq9U",
+    "action": "client-optional",
+    "note": "Adopted upstream 26.2 (W2)"
+   },
+   {
+    "file": "sound",
+    "slug": "sound",
+    "project_id": "ZouiUX7t",
+    "action": "client-optional",
+    "note": "Adopted upstream 26.2 (W2)"
+   },
+   {
+    "file": "badoptimizations",
+    "slug": "badoptimizations",
+    "project_id": "g96Z4WVZ",
+    "action": "client-optional",
+    "note": "Adopted upstream 26.2 (W2)"
+   },
+   {
+    "file": "cameraoverhaul",
+    "slug": "cameraoverhaul",
+    "project_id": "m0oRwcZx",
+    "action": "client-optional",
+    "note": "Adopted upstream 26.2 (W2)"
+   },
+   {
+    "file": "sound_physics_remastered",
+    "slug": "sound-physics-remastered",
+    "project_id": "qyVF9oeo",
+    "action": "client-optional",
+    "note": "Adopted upstream 26.2 (W2)"
+   },
+   {
+    "file": "presence_footsteps",
+    "slug": "presence-footsteps",
+    "project_id": "rcTfTZr3",
+    "action": "client-optional",
+    "note": "Adopted upstream 26.2 (W2)"
+   },
+   {
+    "file": "smooth_scrolling_refurbished",
+    "slug": "smooth-scrolling-refurbished",
+    "project_id": "trr0scVt",
+    "action": "client-optional",
+    "note": "Adopted upstream 26.2 (W2)"
+   },
+   {
+    "file": "distanthorizons",
+    "slug": "distanthorizons",
+    "project_id": "uCdwusMi",
+    "action": "client-optional",
+    "note": "Adopted upstream 26.2 (W2)"
+   },
+   {
+    "file": "smooth_swapping",
+    "slug": "smooth-swapping",
+    "project_id": "ydZic5r4",
+    "action": "client-optional",
+    "note": "Adopted upstream 26.2 (W2)"
+   },
+   {
+    "file": "better_archeology",
+    "slug": "better-archeology",
+    "project_id": "zCh7omyG",
+    "action": "keep",
+    "note": "Adopted upstream 26.2 (W2)"
+   },
+   {
+    "file": "3dskinlayers",
+    "slug": "3dskinlayers",
+    "project_id": "zV5r3pPn",
+    "action": "client-optional",
+    "note": "Adopted upstream 26.2 (W2)"
+   },
+   {
+    "file": "spawn_animations",
+    "slug": "spawn-animations",
+    "project_id": "zrzYrlm0",
+    "action": "keep",
+    "note": "Adopted upstream 26.2 (W2)"
+   }
+  ],
  "client_optional_extra_note": "All 28 client-only visual/perf mods from 3.1.2 (sodium, iris, indium, DistantHorizons, EMF/ETF, firstperson, skinlayers, presence-footsteps, sound-physics, fancymenu stack, etc.) ship as an OPTIONAL companion download, not in the server index.",
  "_policy": "NO MOD IS EVER DROPPED (user directive 2026-08-29). 'drop' here means 'not in this pack build yet'. Every dropped mod has a defined return path (adopt / watchlist / fork-port / rebuild / superseded) in docs/DROPPED_78_STUDY.md; kept mods missing builds have build plans in docs/PATCH_PORT_STUDY.md."
 }

@@ -27,6 +27,12 @@ jobs:
         working-directory: custom-mods
         run: ./gradlew build --no-daemon --max-workers=2
 
+      # Every model reachable from our blockstates/item definitions must
+      # resolve its textures and parents (catches removed vanilla parents
+      # such as minecraft:item/template_spawn_egg).
+      - name: Validate model assets
+        run: python3 custom-mods/tools/validate_models.py
+
       # Materialize the pack dist so the gametest server gets the same
       # third-party mod set (fabric-api et al.) that local runs use.
       # dev-server/ is git-ignored and absent on clean checkouts.
@@ -34,6 +40,11 @@ jobs:
         run: |
           python3 conversion/scripts/resolve_deps.py --allow-missing
           python3 conversion/scripts/build_pack.py --server-dir
+
+      # W0.3: every Aged 3.1.2 mod must be keyed in the manifest or listed
+      # in the explicit missing allowlist; fails on unaccounted ids/drops.
+      - name: Aged parity diff
+        run: python3 conversion/scripts/aged_parity_diff.py
 
       - name: Headless gametests
         working-directory: custom-mods

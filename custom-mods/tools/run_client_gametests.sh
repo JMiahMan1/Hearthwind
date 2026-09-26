@@ -113,6 +113,15 @@ if removed:
 PY
 echo "mods staged: $(ls "$WORK/mods" | wc -l | tr -d ' ')"
 
+# Optional exclusion for isolating a misbehaving client mod from the harness
+# (e.g. CGT_EXCLUDE_MODS=fancymenu). Matched by jar filename prefix.
+if [ -n "${CGT_EXCLUDE_MODS:-}" ]; then
+  for name in ${CGT_EXCLUDE_MODS//,/ }; do
+    find "$WORK/mods" -maxdepth 1 -name "${name}*.jar" -delete
+    echo "excluded mod jars matching ${name}*.jar"
+  done
+fi
+
 # Apply idempotent vendored-jar content patches (kiwi 26.2 clinit flip) so a
 # host/container run never boots unpatched bytes even if dist was rebuilt
 # without build_pack.py.
@@ -194,6 +203,13 @@ case "$(uname)" in
   Darwin) VMARGS+=("-XstartOnFirstThread") ;;
 esac
 
+# Optional comma-separated mod-id filter, e.g.
+# CGT_MODID_FILTER=hearthwind_client,dungeonz to skip the chipped entrypoint
+# while isolating a failure. Maps to the API's own modid filter.
+if [ -n "${CGT_MODID_FILTER:-}" ]; then
+  VMARGS+=("-Dfabric.client.gametest.modid=$CGT_MODID_FILTER")
+fi
+
 CMD=(java "${VMARGS[@]}" -cp "$LOADER:$MIXIN:$MIXEX:$ASM$MCCP"
   net.fabricmc.loader.impl.launch.knot.KnotClient
   --username TestPlayer --version 26.2 --gameDir "$WORK"
@@ -266,7 +282,7 @@ fi
 # Datapack parse/tag debt gate. The runner tolerates these, so the final7
 # run passed while adventurez/fleshz/true_ending/natures_spirit JSON still
 # failed 26.2 codecs. Any recurrence in our or vendored namespaces is a FAIL.
-PARSE_BAD=$(grep -E "Couldn't parse data file '(minecraft|adventurez|fleshz|true_ending|natures_spirit):" "$LOG" | sort -u)
+PARSE_BAD=$(grep -E "Couldn't parse data file '($OUR_NS|minecraft|adventurez|fleshz|true_ending|natures_spirit):" "$LOG" | sort -u)
 if [ -n "$PARSE_BAD" ]; then
   echo "FAIL: datapack parse errors in our/vendored namespaces:"
   echo "$PARSE_BAD" | sed "s/.*Couldn't parse data file '//; s/'.*//" | sort | uniq -c | sort -rn | head -20

@@ -262,6 +262,20 @@ python3 ../custom-mods/tools/rcon.py 127.0.0.1 25575 agedtest "summon item ~ ~ ~
   `(nohup java ... > log 2>&1 < /dev/null &)` from the server dir.
 - cliclick: `kp:` is unreliable for LETTER keys in game - use `t:`
   (`type`). Held left-click mining: `rhold X Y --ms N --button left`.
+- Client gametests with DistantHorizons loaded deadlock between
+  entrypoints: after the first test world closes, DH's
+  `Closing all [N] databases...` never returns and the harness times out.
+  Run the client suite with `CGT_EXCLUDE_MODS=DistantHorizons` (isolation
+  switch in `run_client_gametests.sh`); DH is not our code and the pack
+  still ships it. Third-party chipped tests run first (3 workbench
+  screenshots) - a run that stops after `0002_chipped_*` means the next
+  entrypoint never started.
+- 26.2 renamed ids silently drop data files: a recipe referencing the
+  removed `minecraft:chain` item only logs `Couldn't parse data file`
+  and vanishes (no crafting entry). The client harness parse gate covers
+  our namespaces and `dehydrationRecipesLoad` asserts every
+  dehydration recipe still resolves; model `block/chain` is likewise
+  `block/iron_chain` now.
 
 ## 1.0.0 focus: Aged parity FIRST (read docs/RELEASE_1.0_PARITY.md)
 
