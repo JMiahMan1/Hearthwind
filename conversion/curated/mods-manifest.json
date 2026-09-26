@@ -113,13 +113,6 @@
    "note": "Ported to 26.2 in custom-mods/logbegone; vendored as logbegone-26.2+0.1.0.jar"
   },
   {
-   "file": "c2me",
-   "slug": "c2me-fabric",
-   "action": "add",
-   "cat": "perf",
-   "note": "Modern multithreaded worldgen; standard for servers"
-  },
-  {
    "file": "appleskin",
    "slug": "appleskin",
    "project_id": "EsAfCjCV",
@@ -271,6 +264,7 @@
    "slug": "revive",
    "project_id": "MGRhpQYp",
    "action": "rebuild",
+   "realized_by": "hearthwind-survival",
    "reason": "Stuck; revisit if co-op demand emerges",
    "note": "Rebuilt natively in hearthwind-survival downed/revive mechanics"
   },
@@ -286,7 +280,8 @@
    "file": "herdspanic",
    "slug": "herdspanic",
    "project_id": "U64ZYLjC",
-   "action": "keep",
+   "action": "rebuild",
+   "realized_by": "hearthwind-world",
    "cat": "world-flavor"
   },
   {
@@ -435,6 +430,7 @@
    "slug": "naturalist",
    "project_id": "F8BQNPWX",
    "action": "rebuild",
+   "realized_by": "hearthwind-world",
    "reason": "Ambience animals",
    "note": "Rebuilt natively in hearthwind-world (fauna, waterfowl, ducks, bears, aquatic life, ice spawning)"
   },
@@ -699,11 +695,12 @@
     "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
    },
    {
-    "file": "lukis-grand-capitals",
-    "slug": "lukis-grand-capitals",
-    "project_id": "8Lw09aLb",
-    "action": "keep",
-    "reason": "Shipped: datapack conversion/datapacks/lukis-grand-capitals, pack_format 107",
+   "file": "lukis-grand-capitals",
+   "slug": "lukis-grand-capitals",
+   "project_id": "8Lw09aLb",
+   "action": "keep",
+   "realized_by": "datapack:lukis-grand-capitals",
+   "reason": "Shipped: datapack conversion/datapacks/lukis-grand-capitals, pack_format 107",
     "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
    },
   {
@@ -720,7 +717,9 @@
    "project_id": "nGUXvjTa",
    "action": "keep",
    "reason": "Large structure pack overlap",
-   "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
+   "jar_tokens": ["MoogsNetherStructures"],
+   "local_override": "MoogsNetherStructures-universal-1.21-3.1.1.jar",
+   "note": "Kept from Aged; ships the vendored 3.1.1 build (resolved pick 3.1.0 is skipped by build_pack)"
   },
   {
    "file": "mes",
@@ -728,13 +727,16 @@
    "project_id": "r4PuRGfV",
    "action": "keep",
    "reason": "Overlap",
-   "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
+   "jar_tokens": ["MoogsEndStructures"],
+   "local_override": "MoogsEndStructures-universal-1.21-2.1.1.jar",
+   "note": "Kept from Aged; ships the vendored 2.1.1 build (resolved pick 2.1.0 is skipped by build_pack)"
   },
   {
    "file": "endrem",
    "slug": "endrem",
    "project_id": "ZJTGwAND",
    "action": "rebuild",
+   "realized_by": "hearthwind-world",
    "cat": "progression",
    "note": "Eyes quest gives early-game direction; rebuild/port for 26.2 (upstream max 26.1.2)"
   },
@@ -751,6 +753,7 @@
    "slug": "paxi",
    "project_id": "CU0PAyzb",
    "action": "rebuild",
+   "realized_by": "datapack:hearthwind",
    "reason": "Ship aged datapack natively in world/datapacks instead",
    "note": "Rebuilt natively as 26.x deterministic world datapack in conversion/datapacks/hearthwind"
   },
@@ -759,6 +762,7 @@
    "slug": "do-api",
    "project_id": "4XJZeZbM",
    "action": "rebuild",
+   "realized_by": "module-prefix:letsdo-",
    "reason": "Whole LetsDo family stuck (~1.21.1); food ambience not core loop; revisit when updated",
    "note": "Rebuilt natively in letsdo-* ports (external repo ../Hearthwind-flora) module with zero-bloat 26.2 items, blocks, crops, and recipes"
   },
@@ -1190,8 +1194,9 @@
   {
    "file": "supermartijn642scorelib",
    "slug": "supermartijn642s-core-lib",
-   "action": "keep",
-   "reason": "For cut mods"
+   "action": "dependency",
+   "dependency_of": "stoneworks",
+   "reason": "Runtime library required by the Adopted 26.2 SuperMartijn642 mods (stoneworks family); not an Aged 3.1.2 mod itself"
   },
   {
    "file": "Grass_Overhaul",
@@ -1218,7 +1223,8 @@
   {
    "file": "lithostitched",
    "slug": "lithostitched",
-   "action": "keep",
+   "action": "dependency",
+   "dependency_of": "natures-spirit",
    "cat": "lib",
    "note": "Required at runtime by the Hearthwind Nature's Spirit 2.3.0+26.2 build; not an Aged 3.1.2 dependency."
   },

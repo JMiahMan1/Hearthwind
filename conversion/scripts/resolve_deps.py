@@ -153,7 +153,7 @@ def main():
     )
 
     man = json.load(open(MANIFEST))
-    wanted = [m for m in man["mods"] if m["action"] in ("keep", "add", "client-optional")]
+    wanted = [m for m in man["mods"] if m["action"] in ("keep", "add", "client-optional", "dependency")]
     print(f"Resolving {len(wanted)} keep/add/client-optional entries...")
 
     results = []

@@ -100,6 +100,24 @@ def main():
             f"{legacy_counts.get('already', 0)} already ok"
         )
     ready = [r for r in data["resolved"] if r["status"].startswith("ok")]
+    # Manifest entries may pin a locally built jar instead of the Modrinth
+    # pick (e.g. vendored Moogs 3.1.1 vs resolved 3.1.0). Without this the
+    # pack shipped BOTH versions and the loader saw duplicate mod ids.
+    manifest = json.load(open(ROOT / "conversion" / "curated" / "mods-manifest.json"))
+    local_override = {
+        m["project_id"]: m["local_override"]
+        for m in manifest["mods"]
+        if m.get("project_id") and m.get("local_override")
+    }
+    if local_override:
+        kept = []
+        for r in ready:
+            override = local_override.get(r.get("project_id"))
+            if override and (ROOT / "conversion" / "vendored" / override).is_file():
+                print(f"override: {r.get('file')} -> vendored {override} (resolved pick skipped)")
+                continue
+            kept.append(r)
+        ready = kept
     ready_server = [r for r in ready if not r.get("client_only")]
     ready_client_only = [r for r in ready if r.get("client_only")]
     fabric_api_version = None

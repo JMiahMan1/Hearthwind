@@ -106,7 +106,7 @@
     {
       "project_id": "M185nxi6",
       "filename": "ships-3.0.3.jar",
-      "reason": "Unplanned parity debt: Aged structure datapack 'Ships' (EMD0123/Ships, Apache-2.0); not Small Ships (rGWEHQrP) and has no port entry in the plan"
+      "reason": "W4 port queue (plan 5.2): ships - Aged structure datapack (EMD0123/Ships, Apache-2.0), distinct from Small Ships (rGWEHQrP); needs datapack migration or port"
     },
     {
       "project_id": "MI1LWe93",
