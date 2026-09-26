@@ -1,7 +1,7 @@
 # Aged 3.1.2 parity audit
 
 **Audit date:** 2026-09-24  
-**Primary reference:** downloaded Aged 3.1.2 `.mrpack` and its `modrinth.index.json` under `.tmp/aged-3.1.2/` (226 indexed files, including 212 mod jars).
+**Primary reference:** downloaded Aged 3.1.2 `.mrpack` and its `modrinth.index.json` under `.tmp/aged-3.1.2/` (226 indexed files, including 212 mod jars). Aged 3.1.2 is the **latest** Aged release (verified 2026-09-25 against the Modrinth project API and the xR4YM0ND/Aged GitHub releases/tags; no 3.x successor exists). Any claim sourced from Aged < 3.x is invalid parity evidence and must be re-derived from this index.
 
 This document is the source-of-truth reconciliation between the original Aged pack and the Hearthwind 26.2 rebuild. The original index contains filenames, not Modrinth project IDs, so filename/slug matching is necessarily followed by manual review for renamed mods and libraries.
 

@@ -211,13 +211,16 @@ fails to compile - the fix is probably already here.
 
 ## HUD rules (26.x)
 
-- CombatRoll 3.0.1 config path is `config/combat_roll/` (underscore) -
-  `hud_config.json` (rollWidget origin+offset x/y) and `client.json5`
-  (keybindingLabelPosition etc.). Aged 1.3.3 used `config/combatroll/`
-  with `field_1342/field_1343` offset keys; writing those into 3.0.1 is
-  silently ignored. With Aged's offset x=124.68 and the key label LEFT,
-  the label box overlaps EnvironmentZ's thermometer at +95; set the
-  label RIGHT (tiny documented deviation) or the widget stays clear.
+- Aged 3.1.2 ships **CombatRoll 1.3.3** (not Aged 1.3.3 - that is the
+  mod's version) with `config/combatroll/hud_config.json` and
+  `field_1342/field_1343` offset keys. Our 26.2 **CombatRoll 3.0.1** moved
+  the path to `config/combat_roll/` (underscore): `hud_config.json`
+  (rollWidget origin+offset x/y) and `client.json5`
+  (keybindingLabelPosition etc.); writing Aged's `config/combatroll/`
+  files into 3.0.1 is silently ignored. With Aged's offset x=124.68 and
+  the key label LEFT, the label box overlaps EnvironmentZ's thermometer
+  at +95; set the label RIGHT (tiny documented deviation) or the widget
+  stays clear.
 - Aged 3.1.2 inventory tab strip (LibZ 1.0.3, MIT) - verified from the
   released jars, NOT the GitHub branches:
   * Inventory tabs, sorted by preferedPos: LevelZ bag (0, always),

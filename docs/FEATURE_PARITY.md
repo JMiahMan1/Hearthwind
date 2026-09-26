@@ -1,4 +1,4 @@
-# Feature parity matrix - Hearthwind (26.2 rebuild) vs original Aged 1.20.1 pack
+# Feature parity matrix - Hearthwind (26.2 rebuild) vs Aged 3.1.2 (MC 1.20.1)
 
 > **1.0.0 scope (2026-09-24):** `docs/RELEASE_1.0_PARITY.md` governs 1.0.0 and wins wherever this file disagrees. Several ✅ rows here overstate parity (jobs curve/cooldown, RPGDifficulty caps, seasons). The gap list is in the plan's section 5.3.
 
