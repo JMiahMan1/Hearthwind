@@ -1,0 +1,4 @@
+# Mods the Prism test instances may keep even though the pack does not ship
+# them. One mod id or jar filename per line; '#' starts a comment.
+# Everything else that is not in conversion/build/dist/client/mods is pruned
+# by update_prism.sh, so dropped pack mods cannot linger and break test runs.

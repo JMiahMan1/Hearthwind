@@ -1,25 +1,28 @@
 #!/usr/bin/env bash
-# Refresh Prism Launcher test instances with freshly built mod jars,
-# the pinned Fabric loader / fabric-api, and world datapacks.
+# Rebuild the Prism Launcher test instances so they match EXACTLY what a user
+# gets by importing the built .mrpack from the GitHub release:
 #
-# Usage: bash tools/update_prism.sh [--deploy-new <InstanceName>] [--force]
+#   conversion/build/dist/HearthwindClient-<ver>-mc<mc>.mrpack
+#     -> modrinth.index.json  (Modrinth jars; copied from build/dist/client/mods,
+#                              which was downloaded from those exact URLs)
+#     -> overrides/mods/*.jar (our in-house / vendored jars)
+#     -> overrides/config, overrides/world/datapacks, overrides/resourcepacks
+#
+# The instance mods folder is reconciled (added, updated AND pruned) against
+# that mrpack, so a mod that leaves the pack leaves the instance too. Without
+# this, dropped mods (Terralith, Tectonic, Visuality, Waterfall Particles,
+# c2me, ...) lingered and broke test worlds. Exceptions go in prism_keep.txt.
+#
+# Usage: bash tools/update_prism.sh [--force]
 #
 # Refuses to run while a Minecraft client is live (jar hot-swap corrupts
 # lazily loaded classes); pass --force to override.
 #
-# Default: for every module in this workspace that has a built PLAIN jar
-# (build/libs/<mod>-*.jar, never *-sources.jar), replace the same-mod jar
-# in each Hearthwind Prism instance that already carries it.
-# --deploy-new <Instance>: additionally copy newly built modules that the
-#   named instance does not have yet (e.g. a port that builds for the
-#   first time). Default target if no instance given: Hearthwind-Dev-Client.
-#
-# Also (every run):
-#   - bump mmc-pack.json Fabric Loader to conversion/build.conf.json loader_version
-#   - replace fabric-api-*.jar with the exact resolved fabric-api file
-#   - sync conversion/datapacks/* into minecraft/world/datapacks and every
-#     saves/*/datapacks (singleplayer worlds pick packs up on next open)
-#   - synthesize mmc-pack.json for instances that lack one
+# Also: bump mmc-pack.json Fabric Loader to build.conf.json loader_version,
+# synthesize mmc-pack.json for instances that lack one, mirror the pack's
+# world/datapacks into existing singleplayer saves (test convenience), and
+# warn when a freshly built module jar is not yet inside the mrpack (forgot
+# to run build_pack.py --server-dir).
 #
 # Instances live at ~/Library/Application Support/PrismLauncher/instances.
 # This script only touches files under <instance>/minecraft/ and mmc-pack.json.
@@ -32,10 +35,6 @@ cd "$ROOT" || exit 1
 
 INST_ROOT="$HOME/Library/Application Support/PrismLauncher/instances"
 INSTANCES="Hearthwind-Full Hearthwind-Minimal Hearthwind-Dev-Client"
-DEPLOY_NEW=""
-if [ "${1:-}" = "--deploy-new" ]; then
-  DEPLOY_NEW="${2:-Hearthwind-Dev-Client}"
-fi
 
 [ -d "$INST_ROOT" ] || { echo "no Prism installs at $INST_ROOT"; exit 1; }
 
@@ -52,22 +51,25 @@ if [ -z "$FORCE" ] && { pgrep -f "net\.minecraft\.client\.main\.Main" >/dev/null
   exit 1
 fi
 
+MRPACK=$(ls -t "$ROOT"/conversion/build/dist/HearthwindClient-*-mc*.mrpack 2>/dev/null | head -1)
+if [ -z "$MRPACK" ]; then
+  echo "ERROR: no HearthwindClient-*.mrpack - run build_pack.py --server-dir first" >&2
+  exit 1
+fi
+DIST_CLIENT="$ROOT/conversion/build/dist/client/mods"
+
 LOADER_VER=$(python3 -c "import json; print(json.load(open('$ROOT/conversion/build.conf.json'))['targets']['loader_version'])")
 [ -n "$LOADER_VER" ] || { echo "ERROR: empty loader_version from build.conf.json"; exit 1; }
-API_JAR=$(ls -1 "$ROOT"/conversion/build/dist/server/mods/fabric-api-*.jar 2>/dev/null | grep -v -- "-sources" | head -1)
-if [ -z "$API_JAR" ]; then
-  echo "WARN: no fabric-api jar under conversion/build/dist/server/mods (run build_pack.py --server-dir)"
-fi
-API_BASE=$(basename "${API_JAR:-fabric-api-}")
 
-echo "loader=$LOADER_VER api=${API_BASE}"
+echo "loader=$LOADER_VER mrpack=$(basename "$MRPACK")"
 
+# Keep the vendored jar sources canonical before the pack gets rebuilt.
 python3 "$ROOT/conversion/scripts/patch_vendored.py" "$ROOT/conversion" || {
   echo "ERROR: patch_vendored.py failed" >&2
   exit 1
 }
 
-# --- loader bump + mmc-pack synthesis + fabric-api swap + datapack sync ---
+# --- per-instance: loader bump + mrpack mod set + overrides ---
 for inst in $INSTANCES; do
   idir="$INST_ROOT/$inst"
   [ -d "$idir" ] || { echo "SKIP $inst (missing)"; continue; }
@@ -101,169 +103,161 @@ if changed:
 PY
   fi
 
-  # fabric-api jar swap
   mdir="$idir/minecraft/mods"
-  if [ -n "$API_JAR" ] && [ -d "$mdir" ]; then
-    old=$(ls "$mdir"/fabric-api-*.jar 2>/dev/null | head -1)
-    if [ -z "$old" ]; then
-      cp "$API_JAR" "$mdir/"
-      echo "  ADD $inst fabric-api: $API_BASE"
-    elif ! cmp -s "$API_JAR" "$old"; then
-      rm -f "$mdir"/fabric-api-*.jar
-      cp "$API_JAR" "$mdir/"
-      echo "  UPDATE $inst fabric-api: $(basename "$old") -> $API_BASE"
-    fi
-  fi
-
-  # Vendored structure/adoption jars (undergroundworlds, dungeons+, Moogs, ...)
-  # Only top-level mods (must have fabric.mod.json); nested JiJ libs like
-  # kaleido-config stay inside their host jar and must not land in mods/.
-  if [ -d "$mdir" ] && [ -d "$ROOT/conversion/vendored" ]; then
-    for vj in "$ROOT"/conversion/vendored/*.jar; do
-      [ -f "$vj" ] || continue
-      case "$vj" in *-sources.jar|*-javadoc.jar) continue ;; esac
-      unzip -l "$vj" 2>/dev/null | grep -q 'fabric.mod.json' || continue
-      vb=$(basename "$vj")
-      if [ ! -f "$mdir/$vb" ] || ! cmp -s "$vj" "$mdir/$vb"; then
-        cp "$vj" "$mdir/"
-        echo "  VEND $inst $vb"
-      fi
-    done
-  fi
-
-  if [ -d "$ROOT/conversion/build/dist/client/mods" ] && [ -d "$mdir" ]; then
-    python3 - "$ROOT/conversion/build/dist/client/mods" "$mdir" <<'PY'
+  if [ -d "$mdir" ] && [ -d "$DIST_CLIENT" ]; then
+    python3 - "$MRPACK" "$DIST_CLIENT" "$mdir" "$DIR/prism_keep.txt" "$inst" <<'PY'
 import json
-import re
 import shutil
 import sys
 import zipfile
 from pathlib import Path
 
-source = Path(sys.argv[1])
-target = Path(sys.argv[2])
+mrpack, dist, target, keep_path, inst = sys.argv[1:6]
+dist = Path(dist)
+target = Path(target)
 
-def version_key(value):
-    base, separator, suffix = value.partition("+")
-    numbers = tuple((0, int(part)) if part.isdigit() else (1, part) for part in re.split(r"(\d+)", base))
-    return numbers, (1 if not separator else 0), suffix
+keep = set()
+kp = Path(keep_path)
+if kp.is_file():
+    for line in kp.read_text().splitlines():
+        line = line.split("#", 1)[0].strip()
+        if line:
+            keep.add(line)
 
-selected = {}
-candidates = {}
 
-for jar in sorted(source.glob("*.jar")):
-    if jar.name.endswith(("-sources.jar", "-javadoc.jar")):
-        continue
+def read_meta_id(jar):
     try:
         with zipfile.ZipFile(jar) as archive:
-            metadata = json.loads(archive.read("fabric.mod.json"))
+            raw = archive.read("fabric.mod.json").decode("utf-8", "replace")
+        try:
+            return json.loads(raw).get("id")
+        except ValueError:
+            return json.loads(raw, strict=False).get("id")
     except (KeyError, OSError, ValueError, zipfile.BadZipFile):
-        continue
-    mod_id = metadata.get("id")
-    if not mod_id:
-        continue
-    candidates.setdefault(mod_id, []).append((metadata.get("version", ""), jar))
+        return None
 
-for mod_id, variants in candidates.items():
-    selected[mod_id] = max(variants, key=lambda item: version_key(item[0]))[1]
-    if len(variants) > 1:
-        names = ", ".join(item[1].name for item in variants)
-        print(f"  SELECT {target.name}/{mod_id}: {names} -> {selected[mod_id].name}")
 
+# Expected instance mods = mrpack index jars + mrpack override jars.
+expected = set()
+with zipfile.ZipFile(mrpack) as z:
+    index = json.loads(z.read("modrinth.index.json"))
+    for f in index.get("files", []):
+        path = f.get("path", "")
+        if path.startswith("mods/") and path.endswith(".jar"):
+            expected.add(Path(path).name)
+    for name in z.namelist():
+        if name.startswith("overrides/mods/") and name.endswith(".jar"):
+            expected.add(Path(name).name)
+
+available = {p.name for p in dist.glob("*.jar")}
+missing = sorted(expected - available)
+if missing:
+    print(f"ERROR {inst}: mrpack jars missing from {dist}: {', '.join(missing)}")
+    sys.exit(2)
+
+pruned = kept = 0
 for jar in sorted(target.glob("*.jar")):
-    try:
-        with zipfile.ZipFile(jar) as archive:
-            metadata = json.loads(archive.read("fabric.mod.json"))
-    except (KeyError, OSError, ValueError, zipfile.BadZipFile):
+    if jar.name in expected:
         continue
-    mod_id = metadata.get("id")
-    source_jar = selected.get(mod_id)
-    if source_jar is not None and jar.name != source_jar.name:
-        jar.unlink()
-        print(f"  REMOVE {target.name}/{jar.name}")
+    if jar.name in keep or read_meta_id(jar) in keep:
+        kept += 1
+        continue
+    jar.unlink()
+    pruned += 1
+    print(f"  PRUNE {inst}/{jar.name}")
 
-for mod_id, source_jar in selected.items():
-    destination = target / source_jar.name
-    if destination.exists() and destination.read_bytes() == source_jar.read_bytes():
+added = updated = 0
+for name in sorted(expected):
+    src = dist / name
+    dst = target / name
+    if dst.exists() and dst.read_bytes() == src.read_bytes():
         continue
-    shutil.copy2(source_jar, destination)
-    print(f"  PACK {target.name}/{source_jar.name} ({mod_id})")
+    existed = dst.exists()
+    shutil.copy2(src, dst)
+    if existed:
+        updated += 1
+    else:
+        added += 1
+        print(f"  ADD {inst}/{name}")
+
+print(f"  {inst}: mods {len(expected)} expected, {added} added, {updated} updated, {pruned} pruned, {kept} kept")
+PY
+    [ $? -eq 0 ] || { echo "ERROR: mod sync failed for $inst" >&2; exit 1; }
+  fi
+
+  # Extract overrides exactly like Prism does on import (config, datapacks,
+  # resourcepacks, defaultconfigs, ...). overrides/mods is handled above.
+  if [ -d "$idir/minecraft" ]; then
+    python3 - "$MRPACK" "$idir/minecraft" "$inst" <<'PY'
+import sys
+import zipfile
+from pathlib import Path
+
+mrpack, mc_dir, inst = sys.argv[1:4]
+mc = Path(mc_dir)
+changed = 0
+with zipfile.ZipFile(mrpack) as z:
+    for name in z.namelist():
+        if not name.startswith("overrides/") or name.endswith("/"):
+            continue
+        rel = name[len("overrides/"):]
+        if rel.startswith("mods/"):
+            continue
+        dest = mc / rel
+        data = z.read(name)
+        if dest.exists() and dest.read_bytes() == data:
+            continue
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        dest.write_bytes(data)
+        changed += 1
+print(f"  {inst}: overrides {changed} file(s) synced from the mrpack")
 PY
   fi
 
-  if [ -d "$ROOT/conversion/overrides/config" ] && [ -d "$idir/minecraft/config" ]; then
-    while IFS= read -r -d '' src; do
-      rel="${src#"$ROOT/conversion/overrides/config/"}"
-      dest="$idir/minecraft/config/$rel"
-      mkdir -p "$(dirname "$dest")"
-      if ! cmp -s "$src" "$dest" 2>/dev/null; then
-        cp "$src" "$dest"
-        echo "  OVR $inst config/$rel"
-      fi
-    done < <(find "$ROOT/conversion/overrides/config" -type f -print0)
-  fi
-
-  # datapacks -> world/datapacks + every singleplayer save
-  if [ -d "$ROOT/conversion/datapacks" ] && [ -d "$idir/minecraft" ]; then
-    dest_roots=("$idir/minecraft/world/datapacks")
-    if [ -d "$idir/minecraft/saves" ]; then
-      for save in "$idir/minecraft/saves"/*/; do
-        [ -d "$save" ] || continue
-        dest_roots+=("${save}datapacks")
-      done
-    fi
-    for dest_root in "${dest_roots[@]}"; do
-      mkdir -p "$dest_root" 2>/dev/null || continue
-      for dp in "$ROOT"/conversion/datapacks/*/; do
-        [ -f "${dp}pack.mcmeta" ] || continue
+  # Test convenience: existing singleplayer saves read saves/<level>/datapacks,
+  # not world/datapacks, so mirror the pack datapacks into each save.
+  if [ -d "$idir/minecraft/world/datapacks" ] && [ -d "$idir/minecraft/saves" ]; then
+    for save in "$idir/minecraft/saves"/*/; do
+      [ -d "$save" ] || continue
+      for dp in "$idir/minecraft/world/datapacks"/*/; do
+        [ -f "$dp/pack.mcmeta" ] || continue
         name=$(basename "$dp")
-        dest="$dest_root/$name"
-        if [ -d "$dest" ]; then
-          rm -rf "$dest"
-          cp -R "$dp" "$dest"
-        else
-          cp -R "$dp" "$dest"
-          echo "  ADD datapack $inst/${dest#"$idir/minecraft/"}: $name"
-        fi
+        dest="$save/datapacks/$name"
+        mkdir -p "$save/datapacks"
+        rm -rf "$dest"
+        cp -R "$dp" "$dest"
       done
     done
   fi
 done
 
-replaced=0; skipped=0; added=0
-# Module roots live under custom-mods/
-MODS_ROOT="$ROOT/custom-mods"
-for moddir in "$MODS_ROOT"/hearthwind-* "$MODS_ROOT"/letsdo-* "$MODS_ROOT"/smallships "$MODS_ROOT"/villagesandpillages "$MODS_ROOT"/athena "$MODS_ROOT"/chipped "$MODS_ROOT"/dungeonz "$MODS_ROOT"/exposure "$MODS_ROOT"/passable-foliage "$MODS_ROOT"/logbegone "$MODS_ROOT"/entitycollisionfpsfix "$MODS_ROOT"/pockets "$MODS_ROOT"/couplings "$MODS_ROOT"/memoryleakfix "$MODS_ROOT"/async-locator "$MODS_ROOT"/lavender "$MODS_ROOT"/profundis "$MODS_ROOT"/adventurez "$MODS_ROOT"/fleshz; do
-  [ -d "$moddir" ] || continue
-  # plain jar only: newest non-sources jar in build/libs
-  jar=$(ls -t "$moddir"/build/libs/*.jar 2>/dev/null | grep -v -- "-sources\.jar$" | head -1)
-  if [ -z "$jar" ]; then
-    echo "SKIP $(basename "$moddir") (not built)"
-    skipped=$((skipped + 1))
-    continue
-  fi
-  mod=$(basename "$moddir")
-  for inst in $INSTANCES; do
-    mdir="$INST_ROOT/$inst/minecraft/mods"
-    [ -d "$mdir" ] || { echo "SKIP $inst (no mods dir)"; continue; }
-    old=$(ls "$mdir/$mod"-*.jar 2>/dev/null | head -1)
-    if [ -n "$old" ]; then
-      if cmp -s "$jar" "$old"; then
-        echo "SAME $inst/$mod ($(basename "$old"))"
-      else
-        rm -f "$mdir/$mod"-*.jar
-        cp "$jar" "$mdir/"
-        echo "UPDATE $inst/$mod: $(basename "$old") -> $(basename "$jar")"
-        replaced=$((replaced + 1))
-      fi
-    elif [ "$inst" = "$DEPLOY_NEW" ]; then
-      cp "$jar" "$mdir/"
-      echo "ADD $inst/$mod: $(basename "$jar")"
-      added=$((added + 1))
-    fi
-  done
-done
-echo "prism: $replaced updated, $added added, $skipped unbuilt"
+# Warn about freshly built module jars that are not inside the mrpack yet:
+# the instance now mirrors the pack, so a jar missing here is a forgotten
+# build_pack.py --server-dir (the "live-tested code != released code" trap).
+python3 - "$MRPACK" "$ROOT" <<'PY'
+import sys
+import zipfile
+from pathlib import Path
+
+mrpack = sys.argv[1]
+root = Path(sys.argv[2])
+with zipfile.ZipFile(mrpack) as z:
+    packed = {
+        Path(n).name
+        for n in z.namelist()
+        if n.startswith("overrides/mods/") and n.endswith(".jar")
+    }
+stale = []
+for jar in sorted((root / "custom-mods").glob("*/build/libs/*.jar")):
+    if jar.name.endswith(("-sources.jar", "-javadoc.jar")):
+        continue
+    if jar.name not in packed:
+        stale.append(jar.name)
+if stale:
+    print("STALE-BUILD (not in the mrpack - run build_pack.py --server-dir):")
+    for name in stale:
+        print(f"  {name}")
+PY
 
 # Self-test every managed instance: entrypoints, mixins, and dependency
 # presence are verified statically so a bad deploy fails here, not at launch.

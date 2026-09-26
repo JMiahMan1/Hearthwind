@@ -63,9 +63,13 @@ How far CI can go:
    jar into a test server (NEVER the `-sources` jar - its unexpanded
    fabric.mod.json poisons logs with `${version}` warnings).
    After every milestone build, refresh the Prism physical-test installs:
-   `cd custom-mods && bash tools/update_prism.sh` (updates Hearthwind-Full,
-   Hearthwind-Minimal, Hearthwind-Dev-Client in place; `--deploy-new <inst>`
-   to ship a newly built module).
+   `cd custom-mods && bash tools/update_prism.sh` (rebuilds
+   Hearthwind-Full, Hearthwind-Minimal, Hearthwind-Dev-Client from the
+   built `HearthwindClient-*.mrpack`: index jars, `overrides/mods`, and
+   `overrides/` config/datapacks, pruning anything that left the pack;
+   exceptions live in `tools/prism_keep.txt`). Instances must always
+   match what a user gets by importing the release mrpack - never hand
+   copy jars into them.
 3. **Every change ships verified**: boot test + RCON checks. No "should
    work" claims.
 
