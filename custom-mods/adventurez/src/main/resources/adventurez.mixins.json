@@ -3,6 +3,7 @@
   "minVersion": "0.8",
   "package": "net.adventurez.mixin",
   "compatibilityLevel": "JAVA_25",
+  "priority": 1500,
   "mixins": [
     "PlayerEntityMixin",
     "ExperienceDroppingBlockMixin",

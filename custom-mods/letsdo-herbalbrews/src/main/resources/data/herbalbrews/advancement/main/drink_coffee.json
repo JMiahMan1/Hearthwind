@@ -3,9 +3,11 @@
   "criteria": {
     "coffee": {
       "conditions": {
-        "items": [
-          "herbalbrews:coffee"
-        ]
+        "item": {
+          "items": [
+            "herbalbrews:coffee"
+          ]
+        }
       },
       "trigger": "minecraft:consume_item"
     }

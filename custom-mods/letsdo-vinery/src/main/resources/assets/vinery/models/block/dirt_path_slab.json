@@ -5,7 +5,9 @@
 		"4": "block/dirt_path_top",
 		"5": "block/dirt",
 		"particle": "block/dirt_path_side",
-		"side": "block/dirt_path_side"
+		"side": "block/dirt_path_side",
+		"bottom": "block/dirt",
+		"top": "block/dirt_path_top"
 	},
 	"elements": [
 		{
