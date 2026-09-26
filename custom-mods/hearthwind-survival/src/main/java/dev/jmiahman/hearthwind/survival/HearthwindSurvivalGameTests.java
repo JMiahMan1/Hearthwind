@@ -334,17 +334,20 @@ public final class HearthwindSurvivalGameTests {
             return contents != null && contents.is(PurifiedWater.PURIFIED_POTION);
         });
         helper.assertTrue(purified, "boiling must drop a purified water bottle");
-        // Block.popResource places the item at pos.getY() + 0.5 with a small
-        // random jitter (never below +0.125); the old Containers.dropItemStack
-        // call sat at exactly pos.getY() inside the block and was invisible.
-        boolean poppedAbove = drops.stream()
+        // Block.popResourceFromFace spawns the item on the fire's EDGE
+        // (0.625 from the centre) with an outward hop; the old
+        // Containers.dropItemStack/Block.popResource calls sat at the block
+        // centre and looked like the bottle never left the fire.
+        boolean poppedOff = drops.stream()
                 .filter(item -> {
                     var contents = item.getItem().get(DataComponents.POTION_CONTENTS);
                     return contents != null && contents.is(PurifiedWater.PURIFIED_POTION);
                 })
-                .anyMatch(item -> item.getY() > pos.getY() + 0.1);
-        helper.assertTrue(poppedAbove,
-                "the purified bottle must pop off above the campfire base, not sit inside it");
+                .anyMatch(item -> item.getY() > pos.getY() + 0.1
+                        && (Math.abs(item.getX() - (pos.getX() + 0.5)) > 0.5
+                                || Math.abs(item.getZ() - (pos.getZ() + 0.5)) > 0.5));
+        helper.assertTrue(poppedOff,
+                "the purified bottle must pop off the campfire's edge, not sit inside it");
         helper.succeed();
     }
 

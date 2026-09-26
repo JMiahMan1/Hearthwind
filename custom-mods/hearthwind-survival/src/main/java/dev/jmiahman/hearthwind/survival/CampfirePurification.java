@@ -6,14 +6,13 @@ import net.minecraft.core.NonNullList;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.alchemy.Potions;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.CampfireBlock;
 import net.minecraft.world.level.block.entity.CampfireBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -96,18 +95,15 @@ public final class CampfirePurification {
             // Vanilla increments progress later in this same tick, so treat
             // "one tick short" as done to beat its fallback drop.
             if (progress[slot] + 1 >= time[slot]) {
-                // Eject the finished bottle with a real upward impulse.
-                // Block.popResource spawns it dead-centre at the campfire's
-                // base with zero velocity, so it sits half-buried in the fire
-                // (looking like it never finished) and despawns after five
-                // minutes - players reported "the bottle disappeared".
-                RandomSource random = level.getRandom();
-                ItemEntity popped = new ItemEntity(level,
-                        pos.getX() + 0.5, pos.getY() + 0.85, pos.getZ() + 0.5,
-                        purifiedBottle());
-                popped.setDeltaMovement(Mth.nextDouble(random, -0.12, 0.12), 0.32,
-                        Mth.nextDouble(random, -0.12, 0.12));
-                level.addFreshEntity(popped);
+                // Eject the finished bottle off the fire's edge with the same
+                // face-pop vanilla uses for dispensers. Block.popResource
+                // spawns it dead-centre at the campfire's base with zero
+                // velocity, so it sat half-buried in the fire (looking like
+                // it never finished) and despawned after five minutes -
+                // players reported "the bottle disappeared".
+                Direction direction = Direction.from2DDataValue(
+                        Math.floorMod(slot + state.getValue(CampfireBlock.FACING).get2DDataValue(), 4));
+                Block.popResourceFromFace(level, pos, direction, purifiedBottle());
                 items.set(slot, ItemStack.EMPTY);
                 level.sendBlockUpdated(pos, state, state, 3);
                 level.gameEvent(GameEvent.BLOCK_CHANGE, pos, GameEvent.Context.of(state));
