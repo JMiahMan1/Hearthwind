@@ -49,10 +49,12 @@ public class PackServerConnectGameTests implements FabricClientGameTest {
         }
         // The harness asserts the client ends on the title screen with no
         // server connected; closing the dedicated server is asynchronous and
-        // a slow CI runner loses that race otherwise.
-        context.waitFor(minecraft -> minecraft.getConnection() == null
-                        && minecraft.gui.screen() instanceof net.minecraft.client.gui.screens.TitleScreen,
-                SLOW_TIMEOUT_TICKS);
-        context.waitTicks(10);
+        // a slow CI runner loses that race otherwise. The client lands on the
+        // disconnect screen for a remote server (it does not auto-return like
+        // a singleplayer world), so go back to the title screen the same way
+        // the screen's button does.
+        context.waitFor(minecraft -> minecraft.getConnection() == null, SLOW_TIMEOUT_TICKS);
+        context.setScreen(net.minecraft.client.gui.screens.TitleScreen::new);
+        context.waitForScreen(net.minecraft.client.gui.screens.TitleScreen.class);
     }
 }
