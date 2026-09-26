@@ -10,8 +10,11 @@ import net.fabricmc.fabric.api.client.rendering.v1.BlockColorRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.BlockTintsFactory;
 
 
+import net.minecraft.client.model.geom.ModelLayers;
 import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.renderer.BiomeColors;
+import net.minecraft.client.renderer.entity.DonkeyRenderer;
+import net.minecraft.client.resources.model.EquipmentClientInfo;
 import net.minecraft.world.level.GrassColor;
 import net.satisfy.vinery.client.gui.ApplePressGui;
 import net.satisfy.vinery.client.gui.FermentationBarrelGui;
@@ -27,8 +30,8 @@ import net.satisfy.vinery.client.render.block.LatticeRenderer;
 import net.satisfy.vinery.client.render.block.storage.*;
 import net.satisfy.vinery.client.render.entity.ChairRenderer;
 import net.satisfy.vinery.client.render.entity.DarkCherryBoatRenderer;
-import net.satisfy.vinery.client.render.entity.MuleRenderer;
 import net.satisfy.vinery.client.render.entity.WanderingWinemakerRenderer;
+import net.satisfy.vinery.core.entity.TraderMuleEntity;
 import net.satisfy.vinery.core.registry.EntityTypeRegistry;
 import net.satisfy.vinery.core.registry.ScreenhandlerTypeRegistry;
 import net.satisfy.vinery.core.registry.StorageTypeRegistry;
@@ -109,7 +112,15 @@ public class VineryClient {
 
     public static void registerEntityRenderers() {
         EntityRendererRegistry.register(EntityTypeRegistry.CHAIR, ChairRenderer::new);
-        EntityRendererRegistry.register(EntityTypeRegistry.MULE, MuleRenderer::new);
+        // 26.2: vanilla mule rendering (MULE/MULE_BABY model layers, chests,
+        // saddle layer, 64x64 textures). The 1.20-era 128x128
+        // vinery:wandering_mule.png does not fit the new horse UV layout.
+        EntityRendererRegistry.register(EntityTypeRegistry.MULE, context -> new DonkeyRenderer<TraderMuleEntity>(
+                context,
+                EquipmentClientInfo.LayerType.MULE_SADDLE,
+                ModelLayers.MULE_SADDLE,
+                DonkeyRenderer.Type.MULE,
+                DonkeyRenderer.Type.MULE_BABY));
         EntityRendererRegistry.register(EntityTypeRegistry.WANDERING_WINEMAKER, WanderingWinemakerRenderer::new);
         EntityRendererRegistry.register(EntityTypeRegistry.DARK_CHERRY_BOAT, context -> (net.minecraft.client.renderer.entity.EntityRenderer<net.satisfy.vinery.core.entity.DarkCherryBoatEntity, ?>) (net.minecraft.client.renderer.entity.EntityRenderer<?, ?>) new DarkCherryBoatRenderer(context, false));
         EntityRendererRegistry.register(EntityTypeRegistry.DARK_CHERRY_CHEST_BOAT, context -> (net.minecraft.client.renderer.entity.EntityRenderer<net.satisfy.vinery.core.entity.DarkCherryChestBoatEntity, ?>) (net.minecraft.client.renderer.entity.EntityRenderer<?, ?>) new DarkCherryBoatRenderer(context, true));
