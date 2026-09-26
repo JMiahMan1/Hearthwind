@@ -197,7 +197,8 @@ jobs:
   # and import them without digging through workflow artifacts.
   release:
     if: startsWith(github.ref, 'refs/tags/v')
-    needs: [package]
+    # Never publish from a red run: all test jobs must pass first.
+    needs: [package, build-gametest, client-gametest, boot-smoke]
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
@@ -254,6 +255,9 @@ jobs:
           CGT_ENV: ci
           CGT_XVFB: '1'
           CGT_TIMEOUT: '1200'
+          # DH's teardown deadlocks the runner between entrypoints
+          # ("Closing all [4] databases..."); see AGENTS.md gotchas.
+          CGT_EXCLUDE_MODS: DistantHorizons
         run: bash tools/run_client_gametests.sh --keep-dir
       - name: Upload client gametest artifacts
         if: always()
