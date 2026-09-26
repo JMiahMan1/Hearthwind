@@ -59,7 +59,11 @@ public class DungeonCompassScreen extends Screen {
         int k = y + 16 + 2;
         for (int l = 0; l < 7; ++l) {
             this.dungeons[l] = this.addRenderableWidget(new WidgetButtonPage(x + 5, k, l, button -> {
-                this.selectedIndex = ((WidgetButtonPage) button).getIndex() + this.indexStartOffset;
+                int index = ((WidgetButtonPage) button).getIndex() + this.indexStartOffset;
+                if (index < 0 || index >= this.dungeonIds.size()) {
+                    return;
+                }
+                this.selectedIndex = index;
                 this.dungeonType = this.dungeonIds.get(this.selectedIndex);
                 this.updateDoneButtonState();
             }));
@@ -111,10 +115,10 @@ public class DungeonCompassScreen extends Screen {
             }
 
             for (WidgetButtonPage widgetButtonPage : this.dungeons) {
-                if (widgetButtonPage.isHovered()) {
+                widgetButtonPage.visible = widgetButtonPage.index < this.dungeonIds.size();
+                if (widgetButtonPage.visible && widgetButtonPage.isHovered()) {
                     widgetButtonPage.renderTooltip(graphics, mouseX, mouseY);
                 }
-                widgetButtonPage.visible = widgetButtonPage.index < this.dungeonIds.size();
             }
         }
         if (this.doneButton.isHovered() && !this.doneButton.active && !StringUtils.isEmpty(this.dungeonType) && minecraft.player != null
@@ -224,11 +228,16 @@ public class DungeonCompassScreen extends Screen {
         }
 
         public void renderTooltip(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
-            if (this.isHovered) {
-                Component text = Component.translatable("dungeon." + DungeonCompassScreen.this.dungeonIds.get(this.index + DungeonCompassScreen.this.indexStartOffset));
-                if (minecraft.font.width(text) > 78) {
-                    graphics.setTooltipForNextFrame(text, mouseX, mouseY);
-                }
+            if (!this.isHovered || !this.visible) {
+                return;
+            }
+            int index = this.index + DungeonCompassScreen.this.indexStartOffset;
+            if (index < 0 || index >= DungeonCompassScreen.this.dungeonIds.size()) {
+                return;
+            }
+            Component text = Component.translatable("dungeon." + DungeonCompassScreen.this.dungeonIds.get(index));
+            if (minecraft.font.width(text) > 78) {
+                graphics.setTooltipForNextFrame(text, mouseX, mouseY);
             }
         }
     }

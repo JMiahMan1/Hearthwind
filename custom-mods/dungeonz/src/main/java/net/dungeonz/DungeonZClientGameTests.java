@@ -259,6 +259,22 @@ public final class DungeonZClientGameTests implements FabricClientGameTest {
                 require(buttons.get(7).active == (count == 3), "calibration must require three amethyst shards: " + count);
                 require(other.getWidth() == 89 && other.getHeight() == 20, "compass row geometry changed");
             });
+            // Regression: a pointer over an empty (hidden) row must not be
+            // indexed as a dungeon id while the tooltip renders.
+            context.runOnClient(mc -> {
+                var screen = mc.gui.screen();
+                var buttons = widgets(screen, Button.class);
+                for (int i = 0; i < 7; i++) {
+                    Button row = buttons.get(i);
+                    if (!row.visible) {
+                        screen.mouseMoved(row.getX() + row.getWidth() / 2.0, row.getY() + row.getHeight() / 2.0);
+                        break;
+                    }
+                }
+            });
+            context.waitTicks(3);
+            context.runOnClient(mc -> require(mc.gui.screen() instanceof DungeonCompassScreen,
+                    "compass must survive a pointer over an empty row"));
             if (count == 3) {
                 snapshot(context, "dungeonz_compass");
             }
