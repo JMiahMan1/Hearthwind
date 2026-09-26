@@ -33,7 +33,7 @@ include 'passable-foliage'
 include 'exposure'
 	include 'dungeonz'
 include 'logbegone'
-include 'entitycollisionfpsfix'
+// (entitycollisionfpsfix dropped: not an Aged mod and not a dependency)
 include 'pockets'
 include 'couplings'
 include 'memoryleakfix'
