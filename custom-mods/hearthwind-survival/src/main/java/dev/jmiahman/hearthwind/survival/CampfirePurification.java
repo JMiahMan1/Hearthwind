@@ -1,15 +1,19 @@
 package dev.jmiahman.hearthwind.survival;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.Containers;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.alchemy.Potions;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.CampfireBlock;
 import net.minecraft.world.level.block.entity.CampfireBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
@@ -85,18 +89,44 @@ public final class CampfirePurification {
         int[] time = accessor.hearthwind$cookingTime();
         boolean changed = false;
         for (int slot = 0; slot < items.size(); slot++) {
+            if (!isWaterPotion(items.get(slot))) {
+                continue;
+            }
             // Vanilla increments progress later in this same tick, so treat
             // "one tick short" as done to beat its fallback drop.
-            if (isWaterPotion(items.get(slot)) && progress[slot] + 1 >= time[slot]) {
-                Containers.dropItemStack(level, pos.getX(), pos.getY(), pos.getZ(), purifiedBottle());
+            if (progress[slot] + 1 >= time[slot]) {
+                // Block.popResource pops the finished bottle up off the fire
+                // (like the reference mod) instead of dropping it dead-centre
+                // inside the campfire where it cannot be seen.
+                Block.popResource(level, pos, purifiedBottle());
                 items.set(slot, ItemStack.EMPTY);
                 level.sendBlockUpdated(pos, state, state, 3);
                 level.gameEvent(GameEvent.BLOCK_CHANGE, pos, GameEvent.Context.of(state));
                 changed = true;
+            } else {
+                spawnSteam(level, pos, state, slot);
             }
         }
         if (changed) {
             campfire.setChanged();
         }
+    }
+
+    /**
+     * White steam over a boiling bottle instead of the dark item smoke
+     * vanilla emits ({@code particleTick} suppresses that smoke for water
+     * slots). Mirrors vanilla's per-slot position and chance.
+     */
+    private static void spawnSteam(ServerLevel level, BlockPos pos, BlockState state, int slot) {
+        RandomSource random = level.getRandom();
+        if (random.nextFloat() >= 0.2F) {
+            return;
+        }
+        Direction direction = Direction.from2DDataValue(
+                Math.floorMod(slot + state.getValue(CampfireBlock.FACING).get2DDataValue(), 4));
+        double x = pos.getX() + 0.5 - direction.getStepX() * 0.3125 + direction.getClockWise().getStepX() * 0.3125;
+        double y = pos.getY() + 0.5;
+        double z = pos.getZ() + 0.5 - direction.getStepZ() * 0.3125 + direction.getClockWise().getStepZ() * 0.3125;
+        level.sendParticles(ParticleTypes.WHITE_SMOKE, x, y, z, 2, 0.05, 0.01, 0.05, 0.0);
     }
 }

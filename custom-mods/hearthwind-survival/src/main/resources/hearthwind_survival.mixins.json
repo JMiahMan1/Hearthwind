@@ -8,7 +8,9 @@
 		"CampfireBlockEntityMixin",
 		"CampfireBlockMixin",
 		"ConsumableConsumeMixin",
-		"FoodDataTickMixin"
+		"FoodDataTickMixin",
+		"PlayerExhaustionMixin",
+		"PlayerSleepMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

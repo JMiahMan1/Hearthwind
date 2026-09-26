@@ -1,11 +1,16 @@
 package dev.jmiahman.hearthwind.survival;
 
+import io.netty.channel.embedded.EmbeddedChannel;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.gametest.framework.GameTestHelper;
+import net.minecraft.network.Connection;
 import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.protocol.PacketFlow;
 import net.fabricmc.fabric.api.gametest.v1.GameTest;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.network.CommonListenerCookie;
+import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.item.ItemStack;
@@ -80,7 +85,7 @@ public final class HearthwindSurvivalGameTests {
     @GameTest
     public void configLoadsSaneDefaults(GameTestHelper helper) {
         HearthwindSurvivalConfig cfg = HearthwindSurvivalConfig.get();
-        helper.assertTrue(cfg.thirst.baseDrainPerSecond > 0, "thirst drain must be positive");
+        helper.assertTrue(cfg.thirst.hydratingFactor > 0, "hydrating factor must be positive");
         helper.assertTrue(cfg.diet.negativeNutrition < cfg.diet.positiveNutrition,
                 "negative threshold must be below positive threshold");
         helper.assertTrue(cfg.spoilage.chancePerCheck >= 0, "spoil chance must not be negative");
@@ -90,20 +95,57 @@ public final class HearthwindSurvivalGameTests {
     @GameTest
     public void bareHandQuenchDefaultsToAgedValue(GameTestHelper helper) {
         // Dehydration parity: water_source_quench = 1 on the 0..20 scale.
-        helper.assertTrue(HearthwindSurvivalConfig.get().bareHand.sipQuench == 1.0,
-                "sip quench must default to 1.0, got " + HearthwindSurvivalConfig.get().bareHand.sipQuench);
-        helper.assertTrue(HearthwindSurvivalConfig.get().bareHand.sipThirstChance == 0.5,
+        helper.assertTrue(HearthwindSurvivalConfig.get().bareHand.waterSourceQuench == 1,
+                "sip quench must default to 1, got " + HearthwindSurvivalConfig.get().bareHand.waterSourceQuench);
+        helper.assertTrue(HearthwindSurvivalConfig.get().bareHand.waterSipThirstChance == 0.5,
                 "sip thirst chance must default to the Aged override 0.5");
-        helper.assertTrue(HearthwindSurvivalConfig.get().bareHand.sipThirstDuration == 300,
+        helper.assertTrue(HearthwindSurvivalConfig.get().bareHand.waterSipThirstDuration == 300,
                 "sip thirst duration must default to 300");
         helper.succeed();
     }
 
+    /**
+     * A non-creative ServerPlayer in the test level (exhaustion hooks apply).
+     * Mock players spawn at the world spawn and can end up suffocating or
+     * falling outside the test structure, which fabricated damage in the
+     * thirst-timing test; park them in a safe spot by default.
+     */
+    private ServerPlayer survivalServerPlayer(GameTestHelper helper) {
+        // makeMockServerPlayerInLevel() overrides gameMode() to always return
+        // CREATIVE, so isCreative() stays true even after setGameMode and all
+        // survival gates (sips, bowl filling, fluid storage) refuse to act.
+        // makeMockServerPlayer(SURVIVAL) returns a real ServerPlayer instance
+        // with a SURVIVAL gameMode() override and is not placed in the level,
+        // so it also takes no environmental damage between assertions.
+        // Vanilla's in-level mock additionally wires an EmbeddedChannel-backed
+        // Connection; without it any sendSystemMessage()/sendOverlayMessage()
+        // NPEs on player.connection. Attach the same listener here (without
+        // placeNewPlayer, so the player is still never ticked).
+        ServerPlayer player = (ServerPlayer) helper.makeMockServerPlayer(net.minecraft.world.level.GameType.SURVIVAL);
+        player.setNoGravity(true);
+        player.setHealth(20.0f);
+        Connection connection = new Connection(PacketFlow.SERVERBOUND);
+        new EmbeddedChannel(connection);
+        player.connection = new ServerGamePacketListenerImpl(
+                helper.getLevel().getServer(), connection, player,
+                CommonListenerCookie.createInitial(player.getGameProfile(), false));
+        // ServerPlayer.isInvulnerableTo() short-circuits on
+        // !connection.hasClientLoaded(); the listener constructor starts a
+        // 60-tick client-load timer that only drains in ServerPlayer.tick().
+        // Drain it here or the never-ticked mock is immune to all damage.
+        for (int i = 0; i < 60; i++) {
+            player.connection.tickClientLoadTimeout();
+        }
+        return player;
+    }
+
     private ServerPlayer aimAtWater(GameTestHelper helper, net.minecraft.core.BlockPos water) {
-        ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        ServerPlayer player = survivalServerPlayer(helper);
         player.setShiftKeyDown(true);
         player.getInventory().clearContent();
         player.setPos(water.getX() + 0.5, water.getY() + 0.5, water.getZ() + 0.5);
+        player.setXRot(90.0f);
+        player.setYRot(0.0f);
         return player;
     }
 
@@ -125,15 +167,18 @@ public final class HearthwindSurvivalGameTests {
         helper.setBlock(1, 2, 1, net.minecraft.world.level.block.Blocks.WATER);
         ServerPlayer player = aimAtWater(helper, water);
         HearthwindSurvivalThirst.setHydration(player, 10.0);
+        helper.assertTrue(!player.isCreative(), "test player must not be creative");
+        helper.assertTrue(BareHandDrinkHandler.findWater(player, helper.getLevel()) != null,
+                "player must be able to see the water source");
         double before = HearthwindSurvivalThirst.hydration(player);
-        double chance = HearthwindSurvivalConfig.get().bareHand.sipThirstChance;
-        HearthwindSurvivalConfig.get().bareHand.sipThirstChance = 0.0;
+        double chance = HearthwindSurvivalConfig.get().bareHand.waterSipThirstChance;
+        HearthwindSurvivalConfig.get().bareHand.waterSipThirstChance = 0.0;
         try {
             for (int i = 0; i < 30; i++) {
                 BareHandDrinkHandler.trySip(player, helper.getLevel());
             }
         } finally {
-            HearthwindSurvivalConfig.get().bareHand.sipThirstChance = chance;
+            HearthwindSurvivalConfig.get().bareHand.waterSipThirstChance = chance;
         }
         helper.assertTrue(HearthwindSurvivalThirst.hydration(player) == before + 1.0,
                 "~21 sustained sips must complete one +1 quench drink");
@@ -192,14 +237,14 @@ public final class HearthwindSurvivalGameTests {
         helper.setBlock(1, 2, 1, PurifiedWater.BLOCK.defaultBlockState());
         ServerPlayer player = aimAtWater(helper, water);
         HearthwindSurvivalThirst.setHydration(player, 10.0);
-        double chance = HearthwindSurvivalConfig.get().bareHand.sipThirstChance;
-        HearthwindSurvivalConfig.get().bareHand.sipThirstChance = 1.0;
+        double chance = HearthwindSurvivalConfig.get().bareHand.waterSipThirstChance;
+        HearthwindSurvivalConfig.get().bareHand.waterSipThirstChance = 1.0;
         try {
             for (int i = 0; i < 30; i++) {
                 BareHandDrinkHandler.trySip(player, helper.getLevel());
             }
         } finally {
-            HearthwindSurvivalConfig.get().bareHand.sipThirstChance = chance;
+            HearthwindSurvivalConfig.get().bareHand.waterSipThirstChance = chance;
         }
         helper.assertTrue(HearthwindSurvivalThirst.hydration(player) > 10.0, "purified sip must hydrate");
         helper.assertTrue(!player.hasEffect(ThirstMobEffect.HOLDER), "purified sip must never inflict thirst");
@@ -221,6 +266,37 @@ public final class HearthwindSurvivalGameTests {
         helper.assertTrue(CampfirePurification.isWaterPotion(water), "water bottle must be recognised");
         helper.assertTrue(!CampfirePurification.isWaterPotion(purified),
                 "purified bottle must not be treated as raw water");
+        helper.succeed();
+    }
+
+    /**
+     * A recipe that references a removed 26.x id (e.g. the old
+     * {@code minecraft:chain} item, renamed to {@code minecraft:iron_chain})
+     * only logs "Couldn't parse data file" and disappears, so no crafting or
+     * JEI entry appears. Assert every dehydration recipe still loads.
+     */
+    @GameTest
+    public void dehydrationRecipesLoad(GameTestHelper helper) {
+        String[] ids = {
+                "dehydration:campfire_cauldron",
+                "dehydration:copper_cauldron",
+                "dehydration:purified_water_bucket",
+                "dehydration:pour_water_bowl",
+                "dehydration:pour_purified_water_bowl",
+                "dehydration:leather_flask",
+                "dehydration:iron_leather_flask",
+                "dehydration:golden_leather_flask",
+                "dehydration:diamond_leather_flask",
+                "dehydration:netherite_leather_flask",
+        };
+        for (String id : ids) {
+            boolean present = helper.getLevel().recipeAccess()
+                    .byKey(net.minecraft.resources.ResourceKey.create(
+                            net.minecraft.core.registries.Registries.RECIPE,
+                            net.minecraft.resources.Identifier.parse(id)))
+                    .isPresent();
+            helper.assertTrue(present, "dehydration recipe must load in 26.2: " + id);
+        }
         helper.succeed();
     }
 
@@ -258,6 +334,154 @@ public final class HearthwindSurvivalGameTests {
             return contents != null && contents.is(PurifiedWater.PURIFIED_POTION);
         });
         helper.assertTrue(purified, "boiling must drop a purified water bottle");
+        // Block.popResource places the item at pos.getY() + 0.5 with a small
+        // random jitter (never below +0.125); the old Containers.dropItemStack
+        // call sat at exactly pos.getY() inside the block and was invisible.
+        boolean poppedAbove = drops.stream()
+                .filter(item -> {
+                    var contents = item.getItem().get(DataComponents.POTION_CONTENTS);
+                    return contents != null && contents.is(PurifiedWater.PURIFIED_POTION);
+                })
+                .anyMatch(item -> item.getY() > pos.getY() + 0.1);
+        helper.assertTrue(poppedAbove,
+                "the purified bottle must pop off above the campfire base, not sit inside it");
+        helper.succeed();
+    }
+
+    @GameTest
+    public void waterBottlePurifiesThroughRealCookTick(GameTestHelper helper) {
+        // End-to-end version of the boil: drive the vanilla cookTick the
+        // campfire ticker uses, so the mixin hook itself is exercised (the
+        // other tests call tickPurification directly and would miss a broken
+        // injection).
+        net.minecraft.core.BlockPos rel = new net.minecraft.core.BlockPos(1, 2, 1);
+        helper.setBlock(rel, net.minecraft.world.level.block.Blocks.CAMPFIRE.defaultBlockState()
+                .setValue(net.minecraft.world.level.block.CampfireBlock.LIT, true));
+        net.minecraft.core.BlockPos pos = helper.absolutePos(rel);
+        net.minecraft.server.level.ServerLevel level = helper.getLevel();
+        var campfire = (net.minecraft.world.level.block.entity.CampfireBlockEntity) level.getBlockEntity(pos);
+        net.minecraft.world.entity.player.Player player =
+                helper.makeMockPlayer(net.minecraft.world.level.GameType.SURVIVAL);
+        ItemStack bottle = net.minecraft.world.item.alchemy.PotionContents.createItemStack(
+                Items.POTION, net.minecraft.world.item.alchemy.Potions.WATER);
+        helper.assertTrue(CampfirePurification.placeWaterBottle(level, player, campfire, bottle),
+                "water bottle must be placeable");
+        var quickCheck = net.minecraft.world.item.crafting.RecipeManager.createCheck(
+                net.minecraft.world.item.crafting.RecipeType.CAMPFIRE_COOKING);
+        int ticks = 0;
+        while (!campfire.getItems().get(0).isEmpty()
+                && ticks < CampfirePurification.BOIL_TIME + 5) {
+            net.minecraft.world.level.block.entity.CampfireBlockEntity.cookTick(
+                    level, pos, campfire.getBlockState(), campfire, quickCheck);
+            ticks++;
+        }
+        helper.assertTrue(campfire.getItems().get(0).isEmpty(),
+                "cookTick must boil the bottle away (ran " + ticks + " ticks)");
+        helper.assertTrue(ticks == CampfirePurification.BOIL_TIME,
+                "bottle must pop off on the exact boil tick, took " + ticks);
+        var drops = level.getEntitiesOfClass(net.minecraft.world.entity.item.ItemEntity.class,
+                new net.minecraft.world.phys.AABB(pos).inflate(2.0));
+        boolean purified = drops.stream().anyMatch(item -> {
+            var contents = item.getItem().get(DataComponents.POTION_CONTENTS);
+            return contents != null && contents.is(PurifiedWater.PURIFIED_POTION);
+        });
+        helper.assertTrue(purified, "cookTick must drop a purified bottle, not raw water");
+        helper.succeed();
+    }
+
+    @GameTest
+    public void waterBottleBoilTimeMatchesParity(GameTestHelper helper) {
+        helper.assertTrue(CampfirePurification.BOIL_TIME == 1000,
+                "Dehydration parity: campfire boil time must be 1000 ticks (50s), got "
+                        + CampfirePurification.BOIL_TIME);
+        helper.succeed();
+    }
+
+    @GameTest
+    public void waterBottleDoesNotPurifyEarly(GameTestHelper helper) {
+        net.minecraft.core.BlockPos rel = new net.minecraft.core.BlockPos(1, 2, 1);
+        helper.setBlock(rel, net.minecraft.world.level.block.Blocks.CAMPFIRE.defaultBlockState()
+                .setValue(net.minecraft.world.level.block.CampfireBlock.LIT, true));
+        net.minecraft.core.BlockPos pos = helper.absolutePos(rel);
+        net.minecraft.server.level.ServerLevel level = helper.getLevel();
+        var campfire = (net.minecraft.world.level.block.entity.CampfireBlockEntity) level.getBlockEntity(pos);
+        var accessor =
+                (dev.jmiahman.hearthwind.survival.mixin.CampfireBlockEntityAccessor) campfire;
+        net.minecraft.world.entity.player.Player player =
+                helper.makeMockPlayer(net.minecraft.world.level.GameType.SURVIVAL);
+        ItemStack bottle = net.minecraft.world.item.alchemy.PotionContents.createItemStack(
+                Items.POTION, net.minecraft.world.item.alchemy.Potions.WATER);
+        helper.assertTrue(CampfirePurification.placeWaterBottle(level, player, campfire, bottle),
+                "water bottle must be placeable");
+        accessor.hearthwind$cookingProgress()[0] = CampfirePurification.BOIL_TIME - 2;
+        CampfirePurification.tickPurification(level, pos, campfire.getBlockState(), campfire);
+        helper.assertTrue(CampfirePurification.isWaterPotion(campfire.getItems().get(0)),
+                "water must still be raw two ticks before the boil time");
+        accessor.hearthwind$cookingProgress()[0] = CampfirePurification.BOIL_TIME - 1;
+        CampfirePurification.tickPurification(level, pos, campfire.getBlockState(), campfire);
+        helper.assertTrue(campfire.getItems().get(0).isEmpty(),
+                "water must leave the fire on the final boil tick (never later)");
+        helper.succeed();
+    }
+
+    @GameTest
+    public void waterBottleNeverSticksOnCampfire(GameTestHelper helper) {
+        net.minecraft.core.BlockPos rel = new net.minecraft.core.BlockPos(1, 2, 1);
+        helper.setBlock(rel, net.minecraft.world.level.block.Blocks.CAMPFIRE.defaultBlockState()
+                .setValue(net.minecraft.world.level.block.CampfireBlock.LIT, true));
+        net.minecraft.core.BlockPos pos = helper.absolutePos(rel);
+        net.minecraft.server.level.ServerLevel level = helper.getLevel();
+        var campfire = (net.minecraft.world.level.block.entity.CampfireBlockEntity) level.getBlockEntity(pos);
+        var accessor =
+                (dev.jmiahman.hearthwind.survival.mixin.CampfireBlockEntityAccessor) campfire;
+        net.minecraft.world.entity.player.Player player =
+                helper.makeMockPlayer(net.minecraft.world.level.GameType.SURVIVAL);
+        ItemStack bottle = net.minecraft.world.item.alchemy.PotionContents.createItemStack(
+                Items.POTION, net.minecraft.world.item.alchemy.Potions.WATER);
+        helper.assertTrue(CampfirePurification.placeWaterBottle(level, player, campfire, bottle),
+                "water bottle must be placeable");
+        // Simulate the vanilla cook loop tick by tick, exactly as the block
+        // entity would run it, and require the slot to clear at BOIL_TIME.
+        for (int tick = 0; tick < CampfirePurification.BOIL_TIME + 10
+                && !campfire.getItems().get(0).isEmpty(); tick++) {
+            accessor.hearthwind$cookingProgress()[0] = tick;
+            CampfirePurification.tickPurification(level, pos, campfire.getBlockState(), campfire);
+        }
+        for (int slot = 0; slot < campfire.getItems().size(); slot++) {
+            helper.assertTrue(!CampfirePurification.isWaterPotion(campfire.getItems().get(slot)),
+                    "no raw water bottle may remain stuck in slot " + slot);
+        }
+        helper.succeed();
+    }
+
+    @GameTest
+    public void otherCampfireCookingIsUnaffected(GameTestHelper helper) {
+        net.minecraft.core.BlockPos rel = new net.minecraft.core.BlockPos(1, 2, 1);
+        helper.setBlock(rel, net.minecraft.world.level.block.Blocks.CAMPFIRE.defaultBlockState()
+                .setValue(net.minecraft.world.level.block.CampfireBlock.LIT, true));
+        net.minecraft.core.BlockPos pos = helper.absolutePos(rel);
+        net.minecraft.server.level.ServerLevel level = helper.getLevel();
+        var campfire = (net.minecraft.world.level.block.entity.CampfireBlockEntity) level.getBlockEntity(pos);
+        var accessor =
+                (dev.jmiahman.hearthwind.survival.mixin.CampfireBlockEntityAccessor) campfire;
+        net.minecraft.world.entity.player.Player player =
+                helper.makeMockPlayer(net.minecraft.world.level.GameType.SURVIVAL);
+        ItemStack bottle = net.minecraft.world.item.alchemy.PotionContents.createItemStack(
+                Items.POTION, net.minecraft.world.item.alchemy.Potions.WATER);
+        helper.assertTrue(CampfirePurification.placeWaterBottle(level, player, campfire, bottle),
+                "water bottle must be placeable");
+        accessor.hearthwind$items().set(1, new ItemStack(Items.BEEF));
+        accessor.hearthwind$cookingTime()[1] = 600;
+        accessor.hearthwind$cookingProgress()[1] = 100;
+        CampfirePurification.tickPurification(level, pos, campfire.getBlockState(), campfire);
+        helper.assertTrue(campfire.getItems().get(1).is(Items.BEEF),
+                "ordinary food must keep cooking on the campfire");
+        helper.assertTrue(accessor.hearthwind$cookingProgress()[1] == 100,
+                "ordinary food progress must be untouched by purification");
+        helper.assertTrue(accessor.hearthwind$cookingTime()[1] == 600,
+                "ordinary food cook time must be untouched by purification");
+        helper.assertTrue(CampfirePurification.isWaterPotion(campfire.getItems().get(0)),
+                "the water bottle must still be boiling");
         helper.succeed();
     }
 
@@ -266,7 +490,8 @@ public final class HearthwindSurvivalGameTests {
         ServerPlayer player = helper.makeMockServerPlayerInLevel();
         HearthwindSurvivalThirst.setHydration(player, 10.0);
         double chance = HearthwindSurvivalConfig.get().flask.potionBadThirstChance;
-        HearthwindSurvivalConfig.get().flask.potionBadThirstChance = 1.0;
+        // Upstream roll is nextFloat() >= chance: 0.0 forces the effect.
+        HearthwindSurvivalConfig.get().flask.potionBadThirstChance = 0.0;
         try {
             ItemStack water = net.minecraft.world.item.alchemy.PotionContents.createItemStack(
                     Items.POTION, net.minecraft.world.item.alchemy.Potions.WATER);
@@ -308,6 +533,63 @@ public final class HearthwindSurvivalGameTests {
         var campfire = (net.minecraft.world.level.block.entity.CampfireBlockEntity) blockEntity;
         helper.assertTrue(CampfirePurification.isWaterPotion(campfire.getItems().get(0)),
                 "using a water bottle on a campfire must place it (no recipe gate)");
+        helper.succeed();
+    }
+
+    @GameTest
+    public void waterBottleCanBeReboiledOnSameCampfire(GameTestHelper helper) {
+        // Regression: the bottle must stay reusable. Place, boil, collect,
+        // place again on the SAME campfire and boil a second time - all
+        // through the real block-interaction + cookTick path.
+        net.minecraft.core.BlockPos rel = new net.minecraft.core.BlockPos(1, 2, 1);
+        helper.setBlock(rel, net.minecraft.world.level.block.Blocks.CAMPFIRE.defaultBlockState()
+                .setValue(net.minecraft.world.level.block.CampfireBlock.LIT, true));
+        net.minecraft.core.BlockPos pos = helper.absolutePos(rel);
+        net.minecraft.server.level.ServerLevel level = helper.getLevel();
+        var campfire = (net.minecraft.world.level.block.entity.CampfireBlockEntity) level.getBlockEntity(pos);
+        net.minecraft.world.entity.player.Player player =
+                helper.makeMockPlayer(net.minecraft.world.level.GameType.SURVIVAL);
+        var quickCheck = net.minecraft.world.item.crafting.RecipeManager.createCheck(
+                net.minecraft.world.item.crafting.RecipeType.CAMPFIRE_COOKING);
+        for (int round = 1; round <= 2; round++) {
+            player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND,
+                    net.minecraft.world.item.alchemy.PotionContents.createItemStack(
+                            Items.POTION, net.minecraft.world.item.alchemy.Potions.WATER));
+            helper.useBlock(rel, player);
+            helper.assertTrue(CampfirePurification.isWaterPotion(campfire.getItems().get(0)),
+                    "round " + round + ": water bottle must be placeable on the same campfire");
+            helper.assertTrue(player.getMainHandItem().isEmpty(),
+                    "round " + round + ": placing the bottle consumes it in survival");
+            int ticks = 0;
+            while (!campfire.getItems().get(0).isEmpty()
+                    && ticks < CampfirePurification.BOIL_TIME + 5) {
+                net.minecraft.world.level.block.entity.CampfireBlockEntity.cookTick(
+                        level, pos, campfire.getBlockState(), campfire, quickCheck);
+                ticks++;
+            }
+            helper.assertTrue(ticks == CampfirePurification.BOIL_TIME,
+                    "round " + round + ": boil must take exactly "
+                            + CampfirePurification.BOIL_TIME + " ticks, took " + ticks);
+            long drops = level.getEntitiesOfClass(net.minecraft.world.entity.item.ItemEntity.class,
+                    new net.minecraft.world.phys.AABB(pos).inflate(2.0)).stream().filter(item -> {
+                        var contents = item.getItem().get(DataComponents.POTION_CONTENTS);
+                        return contents != null && contents.is(PurifiedWater.PURIFIED_POTION);
+                    }).count();
+            helper.assertTrue(drops >= round,
+                    "round " + round + ": boiling must drop purified water (found " + drops + ")");
+        }
+        helper.succeed();
+    }
+
+    @GameTest
+    public void purifiedBottleIsAReusableVessel(GameTestHelper helper) {
+        ItemStack purified = CampfirePurification.purifiedBottle();
+        helper.assertTrue(purified.get(DataComponents.USE_REMAINDER) != null,
+                "drinking a purified bottle must give the glass bottle back");
+        ItemStack refilled = net.minecraft.world.item.alchemy.PotionContents.createItemStack(
+                Items.POTION, net.minecraft.world.item.alchemy.Potions.WATER);
+        helper.assertTrue(CampfirePurification.isWaterPotion(refilled),
+                "a refilled glass bottle must be raw water again and reboilable");
         helper.succeed();
     }
 
@@ -530,15 +812,166 @@ public final class HearthwindSurvivalGameTests {
     }
 
     @GameTest
-    public void thirstHydrationDrainsOverTime(GameTestHelper helper) {
-        var pig = helper.spawn(EntityTypes.PIG, 1, 2, 1);
-        HearthwindSurvivalThirst.addHydration(pig, 10.0);
-        double before = HearthwindSurvivalThirst.hydration(pig);
-        // Directly set hydration lower to simulate drain
-        HearthwindSurvivalThirst.addHydration(pig, -5.0);
-        double after = HearthwindSurvivalThirst.hydration(pig);
-        helper.assertTrue(after < before, "hydration must decrease with negative add");
-        helper.assertTrue(after >= 0.0, "hydration must not go below zero");
+    public void thirstOnlyDrainsThroughExhaustion(GameTestHelper helper) {
+        ServerPlayer player = survivalServerPlayer(helper);
+        // No passive drain: 100 manager updates with an empty buffer do nothing.
+        for (int i = 0; i < 100; i++) {
+            HearthwindSurvivalThirst.updatePlayer(player);
+        }
+        helper.assertTrue(HearthwindSurvivalThirst.level(player) == HearthwindSurvivalThirst.MAX_LEVEL,
+                "thirst must not drain passively (level " + HearthwindSurvivalThirst.level(player) + ")");
+        helper.assertTrue(HearthwindSurvivalThirst.dehydration(player) == 0.0f,
+                "no exhaustion means an empty dehydration buffer");
+        // 8 exhaustion / hydrating_factor 2.0 = 4.0 buffer, just short of a level.
+        player.causeFoodExhaustion(8.0f);
+        helper.assertTrue(Math.abs(HearthwindSurvivalThirst.dehydration(player) - 4.0f) < 0.001f,
+                "exhaustion must charge the buffer at exhaustion / 2.0 (got "
+                        + HearthwindSurvivalThirst.dehydration(player) + ")");
+        HearthwindSurvivalThirst.updatePlayer(player);
+        helper.assertTrue(HearthwindSurvivalThirst.level(player) == HearthwindSurvivalThirst.MAX_LEVEL,
+                "a buffer of exactly 4.0 must not cost a level (upstream uses > 4.0)");
+        player.causeFoodExhaustion(0.2f);
+        HearthwindSurvivalThirst.updatePlayer(player);
+        helper.assertTrue(HearthwindSurvivalThirst.level(player) == HearthwindSurvivalThirst.MAX_LEVEL - 1,
+                "crossing 4.0 buffer must cost exactly one level");
+        helper.succeed();
+    }
+
+    @GameTest
+    public void thirstDamageMatchesUpstreamTiming(GameTestHelper helper) {
+        ServerPlayer player = survivalServerPlayer(helper);
+        player.setHealth(20.0f);
+        helper.getLevel().getServer().setDifficulty(net.minecraft.world.Difficulty.NORMAL, true);
+        try {
+            HearthwindSurvivalThirst.setHydration(player, 0.0);
+            for (int i = 0; i < HearthwindSurvivalThirst.DAMAGE_INTERVAL_TICKS - 1; i++) {
+                HearthwindSurvivalThirst.updatePlayer(player);
+            }
+            helper.assertTrue(player.getHealth() == 20.0f,
+                    "no thirst damage before 90 ticks at level 0 (health " + player.getHealth() + ")");
+            HearthwindSurvivalThirst.updatePlayer(player);
+            helper.assertTrue(player.getHealth() == 19.0f,
+                    "upstream deals thirst_damage 1.0 on the 90th tick (health " + player.getHealth() + ")");
+        } finally {
+            helper.getLevel().getServer().setDifficulty(net.minecraft.world.Difficulty.NORMAL, true);
+        }
+        helper.succeed();
+    }
+
+    @GameTest
+    public void peacefulRegeneratesThirst(GameTestHelper helper) {
+        ServerPlayer player = survivalServerPlayer(helper);
+        helper.getLevel().getServer().setDifficulty(net.minecraft.world.Difficulty.PEACEFUL, true);
+        try {
+            HearthwindSurvivalThirst.setHydration(player, 10.0);
+            player.tickCount = 0;
+            HearthwindSurvivalThirst.updatePlayer(player);
+            helper.assertTrue(HearthwindSurvivalThirst.level(player) == 11,
+                    "peaceful + natural regeneration must restore one level every 10 ticks (got "
+                            + HearthwindSurvivalThirst.level(player) + ")");
+            player.tickCount = 1;
+            HearthwindSurvivalThirst.updatePlayer(player);
+            helper.assertTrue(HearthwindSurvivalThirst.level(player) == 11,
+                    "peaceful regeneration must not tick off-cadence");
+        } finally {
+            helper.getLevel().getServer().setDifficulty(net.minecraft.world.Difficulty.NORMAL, true);
+        }
+        helper.succeed();
+    }
+
+    @GameTest
+    public void badPotionListMatchesAged(GameTestHelper helper) {
+        net.minecraft.world.item.alchemy.Potion[] bad = {
+                net.minecraft.world.item.alchemy.Potions.WATER.value(),
+                net.minecraft.world.item.alchemy.Potions.AWKWARD.value(),
+                net.minecraft.world.item.alchemy.Potions.THICK.value(),
+                net.minecraft.world.item.alchemy.Potions.HARMING.value(),
+                net.minecraft.world.item.alchemy.Potions.LONG_POISON.value(),
+                net.minecraft.world.item.alchemy.Potions.LONG_SLOWNESS.value(),
+                net.minecraft.world.item.alchemy.Potions.LONG_WEAKNESS.value(),
+                net.minecraft.world.item.alchemy.Potions.MUNDANE.value(),
+                net.minecraft.world.item.alchemy.Potions.POISON.value(),
+                net.minecraft.world.item.alchemy.Potions.SLOWNESS.value(),
+                net.minecraft.world.item.alchemy.Potions.STRONG_HARMING.value(),
+                net.minecraft.world.item.alchemy.Potions.STRONG_POISON.value(),
+                net.minecraft.world.item.alchemy.Potions.STRONG_SLOWNESS.value(),
+                net.minecraft.world.item.alchemy.Potions.WEAKNESS.value()
+        };
+        for (var potion : bad) {
+            helper.assertTrue(ThirstHelper.isBadPotion(potion),
+                    "upstream bad-potion list must contain every risky potion");
+        }
+        helper.assertTrue(!ThirstHelper.isBadPotion(net.minecraft.world.item.alchemy.Potions.HEALING.value()),
+                "healing must not be a bad potion");
+        helper.assertTrue(!ThirstHelper.isBadPotion(net.minecraft.world.item.alchemy.Potions.FIRE_RESISTANCE.value()),
+                "fire resistance must not be a bad potion");
+        helper.succeed();
+    }
+
+    @GameTest
+    public void milkDrinkQuenchesEightAndRolls(GameTestHelper helper) {
+        ServerPlayer player = survivalServerPlayer(helper);
+        HearthwindSurvivalConfig.Flask cfg = HearthwindSurvivalConfig.get().flask;
+        double chance = cfg.milkThirstChance;
+        try {
+            // chance 1.0 suppresses the >= roll (upstream), leaving pure quench.
+            cfg.milkThirstChance = 1.0;
+            HearthwindSurvivalThirst.setHydration(player, 0.0);
+            ThirstHelper.hydratePlayer(player, new ItemStack(Items.MILK_BUCKET));
+            helper.assertTrue(HearthwindSurvivalThirst.level(player) == 8,
+                    "milk must quench 8 levels (got " + HearthwindSurvivalThirst.level(player) + ")");
+            helper.assertTrue(!player.hasEffect(ThirstMobEffect.HOLDER),
+                    "suppressed milk roll must not apply thirst");
+            // chance 0.0 forces the roll, duration = potion_bad_thirst_duration / 2.
+            cfg.milkThirstChance = 0.0;
+            HearthwindSurvivalThirst.setHydration(player, 0.0);
+            ThirstHelper.hydratePlayer(player, new ItemStack(Items.MILK_BUCKET));
+            var effect = player.getEffect(ThirstMobEffect.HOLDER);
+            helper.assertTrue(effect != null && effect.getDuration() == cfg.potionBadThirstDuration / 2,
+                    "forced milk thirst must last half the bad-potion duration");
+        } finally {
+            cfg.milkThirstChance = chance;
+        }
+        helper.succeed();
+    }
+
+    @GameTest
+    public void flaskOpenWaterQualityMatchesAged(GameTestHelper helper) {
+        helper.assertTrue(LeatherFlaskItem.openWaterQuality(FlaskData.DIRTY, 0, true) == FlaskData.PURIFIED,
+                "river water fills a fresh flask as purified (upstream quality 0)");
+        helper.assertTrue(LeatherFlaskItem.openWaterQuality(FlaskData.DIRTY, 0, false) == FlaskData.DIRTY,
+                "still water fills a fresh flask as dirty");
+        helper.assertTrue(LeatherFlaskItem.openWaterQuality(FlaskData.PURIFIED, 1, false) == FlaskData.IMPURIFIED,
+                "topping up purified water outside a river downgrades to impurified");
+        helper.assertTrue(LeatherFlaskItem.openWaterQuality(FlaskData.DIRTY, 1, false) == FlaskData.DIRTY,
+                "dirty water stays dirty when topped up");
+        helper.assertTrue(LeatherFlaskItem.openWaterQuality(FlaskData.IMPURIFIED, 1, true) == FlaskData.PURIFIED,
+                "river water upgrades a partially filled impure flask");
+        helper.succeed();
+    }
+
+    @GameTest
+    public void flaskCauldronFillIsDirtyAndOneUnit(GameTestHelper helper) {
+        net.minecraft.core.BlockPos rel = new net.minecraft.core.BlockPos(1, 2, 1);
+        helper.setBlock(rel, net.minecraft.world.level.block.Blocks.WATER_CAULDRON.defaultBlockState()
+                .setValue(net.minecraft.world.level.block.LayeredCauldronBlock.LEVEL, 3));
+        net.minecraft.core.BlockPos pos = helper.absolutePos(rel);
+        ServerPlayer player = survivalServerPlayer(helper);
+        ItemStack flask = new ItemStack(FlaskItems.LEATHER_FLASK);
+        player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, flask);
+        var hit = new net.minecraft.world.phys.BlockHitResult(
+                net.minecraft.world.phys.Vec3.atCenterOf(pos), net.minecraft.core.Direction.UP, pos, false);
+        var context = new net.minecraft.world.item.context.UseOnContext(
+                player, net.minecraft.world.InteractionHand.MAIN_HAND, hit);
+        FlaskItems.LEATHER_FLASK.useOn(context);
+        FlaskData data = flask.get(FlaskItems.FLASK_DATA);
+        helper.assertTrue(data != null && data.fillLevel() == 1,
+                "vanilla cauldrons must fill one unit per use");
+        helper.assertTrue(data != null && data.qualityLevel() == FlaskData.DIRTY,
+                "vanilla cauldron water must always be dirty (upstream)");
+        var state = helper.getLevel().getBlockState(pos);
+        helper.assertTrue(state.getValue(net.minecraft.world.level.block.LayeredCauldronBlock.LEVEL) == 2,
+                "each fill must decrement exactly one cauldron level");
         helper.succeed();
     }
 
@@ -655,13 +1088,30 @@ public final class HearthwindSurvivalGameTests {
     }
 
     @GameTest
-    public void thirstEffectIncreasesDrain(GameTestHelper helper) {
-        ServerPlayer player = helper.makeMockServerPlayerInLevel();
+    public void thirstEffectChargesDehydrationBuffer(GameTestHelper helper) {
+        ServerPlayer player = survivalServerPlayer(helper);
         player.addEffect(new net.minecraft.world.effect.MobEffectInstance(
                 ThirstMobEffect.HOLDER, 200, 0));
         HearthwindSurvivalConfig.Thirst cfg = HearthwindSurvivalConfig.get().thirst;
-        helper.assertTrue(cfg.thirstEffectDrainPerSecond > 0,
-                "thirst effect drain must be positive");
+        helper.assertTrue(cfg.thirstEffectFactor > 0,
+                "thirst effect factor must be positive");
+        float before = HearthwindSurvivalThirst.dehydration(player);
+        // Upstream applies the effect every tick: factor * (amplifier + 1).
+        var effect = ThirstMobEffect.HOLDER.value();
+        helper.assertTrue(effect.shouldApplyEffectTickThisTick(200, 0),
+                "thirst effect must tick every tick");
+        effect.applyEffectTick(helper.getLevel(), player, 0);
+        helper.assertTrue(Math.abs(HearthwindSurvivalThirst.dehydration(player) - before
+                - (float) cfg.thirstEffectFactor) < 0.001f,
+                "one amplifier-0 tick must charge exactly thirst_effect_factor (got "
+                        + HearthwindSurvivalThirst.dehydration(player) + ")");
+        for (int i = 0; i < 200; i++) {
+            effect.applyEffectTick(helper.getLevel(), player, 0);
+        }
+        player.removeEffect(ThirstMobEffect.HOLDER);
+        HearthwindSurvivalThirst.updatePlayer(player);
+        helper.assertTrue(HearthwindSurvivalThirst.level(player) < HearthwindSurvivalThirst.MAX_LEVEL,
+                "a full thirst effect must cost at least one level");
         helper.succeed();
     }
 
@@ -680,9 +1130,21 @@ public final class HearthwindSurvivalGameTests {
     @GameTest
     public void configDefaultsAllPositive(GameTestHelper helper) {
         HearthwindSurvivalConfig cfg = HearthwindSurvivalConfig.get();
-        helper.assertTrue(cfg.thirst.baseDrainPerSecond > 0, "thirst drain positive");
-        helper.assertTrue(cfg.thirst.regenHydrationFloor >= 0, "regen floor non-negative");
-        helper.assertTrue(cfg.thirst.damageAmount > 0, "thirst damage positive");
+        helper.assertTrue(cfg.thirst.hydratingFactor == 2.0, "Aged override hydrating_factor must be 2.0");
+        helper.assertTrue(cfg.thirst.thirstDamage == 1.0, "thirst damage must default to 1.0");
+        helper.assertTrue(cfg.thirst.thirstEffectFactor == 0.03,
+                "Aged override thirst_effect_factor must be 0.03");
+        helper.assertTrue(cfg.thirst.sleepThirstConsumption == 4, "sleep thirst consumption must be 4");
+        helper.assertTrue(cfg.thirst.sleepHungerConsumption == 2, "sleep hunger consumption must be 2");
+        helper.assertTrue(cfg.flask.quench == 4, "flask_thirst_quench must be 4");
+        helper.assertTrue(cfg.flask.dirtyThirstChance == 0.3, "Aged override flask_dirty_thirst_chance must be 0.3");
+        helper.assertTrue(cfg.flask.thirstDuration == 200, "Aged override flask_dirty_thirst_duration must be 200");
+        helper.assertTrue(cfg.flask.potionBadThirstChance == 0.15, "Aged override potion_bad_thirst_chance must be 0.15");
+        helper.assertTrue(cfg.flask.milkQuench == 8, "milk_thirst_quench must be 8");
+        helper.assertTrue(cfg.flask.milkThirstChance == 0.4, "milk_thirst_chance must be 0.4");
+        helper.assertTrue(cfg.flask.honeyQuench == 1, "honey_quench must be 1");
+        helper.assertTrue(cfg.flask.waterBowlQuench == 3, "water_bowl_quench must be 3");
+        helper.assertTrue(cfg.flask.waterBowlThirstChance == 0.4, "water_bowl_thirst_chance must be 0.4");
         helper.assertTrue(cfg.temperature.temperatureCalculationTime == 10,
                 "Aged override temperatureCalculationTime must be 10");
         helper.assertTrue(cfg.temperature.heatBlockRadius == 3, "heatBlockRadius must default to 3");
@@ -751,8 +1213,8 @@ public final class HearthwindSurvivalGameTests {
         // assets/hearthwind/lang - if the JSONs fail to load, hurt() throws.
         var registry = helper.getLevel().getServer().registryAccess()
                 .lookupOrThrow(net.minecraft.core.registries.Registries.DAMAGE_TYPE);
-        helper.assertTrue(registry.getOptional(HearthwindSurvivalThirst.DEHYDRATION).isPresent(),
-                "hearthwind:dehydration damage type must be registered (died of thirst)");
+        helper.assertTrue(registry.getOptional(HearthwindSurvivalThirst.THIRST).isPresent(),
+                "dehydration:thirst damage type must be registered (died of thirst)");
         helper.assertTrue(registry.getOptional(HearthwindSurvivalTemperature.FREEZING).isPresent(),
                 "environmentz:freezing damage type must be registered (froze to death)");
         var src = helper.getLevel().getServer().overworld().damageSources()
@@ -884,20 +1346,11 @@ public final class HearthwindSurvivalGameTests {
 
     @GameTest
     public void bareHandDrinkingWhileCrouchingAddsHydration(GameTestHelper helper) {
-        var player = helper.makeMockServerPlayerInLevel();
-        player.setGameMode(net.minecraft.world.level.GameType.SURVIVAL);
-        player.getAbilities().instabuild = false;
+        net.minecraft.core.BlockPos waterPos = helper.absolutePos(new net.minecraft.core.BlockPos(1, 1, 1));
+        helper.setBlock(new net.minecraft.core.BlockPos(1, 1, 1), net.minecraft.world.level.block.Blocks.WATER.defaultBlockState());
+        ServerPlayer player = aimAtWater(helper, waterPos);
         player.setPose(net.minecraft.world.entity.Pose.CROUCHING);
-        player.setShiftKeyDown(true);
-
-        player.getInventory().clearContent();
         player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, ItemStack.EMPTY);
-
-        net.minecraft.core.BlockPos waterPos = new net.minecraft.core.BlockPos(1, 1, 1);
-        helper.setBlock(waterPos, net.minecraft.world.level.block.Blocks.WATER.defaultBlockState());
-        player.setPos(helper.absolutePos(waterPos).getX() + 0.5,
-                helper.absolutePos(waterPos).getY() + 0.5,
-                helper.absolutePos(waterPos).getZ() + 0.5);
 
         // Drain thirst partially
         HearthwindSurvivalThirst.setHydration(player, 10.0);
@@ -1420,6 +1873,181 @@ public final class HearthwindSurvivalGameTests {
         helper.assertTrue(winter < 0, "winter offset must cool (got " + winter + ")");
         helper.assertTrue(summer > 0, "summer offset must warm (got " + summer + ")");
         helper.assertTrue(winter < summer, "winter must be colder than summer");
+        helper.succeed();
+    }
+
+    @GameTest
+    public void hydrationContentRegisters(GameTestHelper helper) {
+        String[] items = {
+                "dehydration:water_bowl", "dehydration:purified_water_bowl",
+                "dehydration:campfire_cauldron", "dehydration:copper_cauldron"
+        };
+        for (String id : items) {
+            helper.assertTrue(BuiltInRegistries.ITEM.containsKey(Identifier.parse(id)),
+                    id + " item must exist (hydration corpus/levelz gates reference it)");
+        }
+        String[] blocks = {
+                "dehydration:campfire_cauldron", "dehydration:copper_cauldron",
+                "dehydration:water_copper_cauldron", "dehydration:powder_snow_copper_cauldron",
+                "dehydration:purified_water_copper_cauldron"
+        };
+        for (String id : blocks) {
+            helper.assertTrue(BuiltInRegistries.BLOCK.containsKey(Identifier.parse(id)),
+                    id + " block must exist (Aged builder_placing gates reference it)");
+        }
+        helper.assertTrue(BuiltInRegistries.BLOCK_ENTITY_TYPE.containsKey(
+                Identifier.parse("dehydration:campfire_cauldron_entity")),
+                "campfire cauldron block entity must exist");
+        helper.succeed();
+    }
+
+    @GameTest
+    public void waterBowlDrinkQuenchesThree(GameTestHelper helper) {
+        ServerPlayer player = survivalServerPlayer(helper);
+        ItemStack bowl = new ItemStack(dev.jmiahman.hearthwind.survival.hydration.HydrationItems.WATER_BOWL);
+        HearthwindSurvivalThirst.setHydration(player, 10.0);
+        ThirstHelper.hydratePlayer(player, bowl);
+        helper.assertTrue(HearthwindSurvivalThirst.hydration(player) == 13.0,
+                "ThirstHelper must quench 3 for a water bowl, got "
+                        + HearthwindSurvivalThirst.hydration(player));
+        HearthwindSurvivalThirst.setHydration(player, 10.0);
+        ItemStack result = dev.jmiahman.hearthwind.survival.hydration.HydrationItems.WATER_BOWL
+                .finishUsingItem(bowl, helper.getLevel(), player);
+        helper.assertTrue(HearthwindSurvivalThirst.hydration(player) == 13.0,
+                "water bowl must quench 3 (10 -> 13), got " + HearthwindSurvivalThirst.hydration(player));
+        helper.assertTrue(result.is(Items.BOWL), "drinking a water bowl must leave a plain bowl");
+        helper.succeed();
+    }
+
+    @GameTest
+    public void dirtyWaterBowlRollsThirst(GameTestHelper helper) {
+        HearthwindSurvivalConfig.Flask cfg = HearthwindSurvivalConfig.get().flask;
+        double saved = cfg.waterBowlThirstChance;
+        try {
+            // Upstream comparison is nextFloat() >= chance, so chance 0 always
+            // rolls the thirst effect and chance 1 never does.
+            cfg.waterBowlThirstChance = 0.0;
+            ServerPlayer player = survivalServerPlayer(helper);
+            HearthwindSurvivalThirst.setHydration(player, 10.0);
+            dev.jmiahman.hearthwind.survival.hydration.HydrationItems.WATER_BOWL.finishUsingItem(
+                    new ItemStack(dev.jmiahman.hearthwind.survival.hydration.HydrationItems.WATER_BOWL),
+                    helper.getLevel(), player);
+            var effect = player.getEffect(ThirstMobEffect.HOLDER);
+            helper.assertTrue(effect != null, "dirty water bowl must roll thirst at chance 0.0");
+            helper.assertTrue(effect.getDuration() == cfg.potionBadThirstDuration / 2,
+                    "thirst duration must be half the bad-potion duration, got " + effect.getDuration());
+            helper.assertTrue(effect.getAmplifier() == 0, "thirst amplifier must be 0");
+
+            player.removeEffect(ThirstMobEffect.HOLDER);
+            dev.jmiahman.hearthwind.survival.hydration.HydrationItems.PURIFIED_WATER_BOWL.finishUsingItem(
+                    new ItemStack(dev.jmiahman.hearthwind.survival.hydration.HydrationItems.PURIFIED_WATER_BOWL),
+                    helper.getLevel(), player);
+            helper.assertTrue(!player.hasEffect(ThirstMobEffect.HOLDER),
+                    "purified water bowl must never inflict thirst");
+        } finally {
+            cfg.waterBowlThirstChance = saved;
+        }
+        helper.succeed();
+    }
+
+    @GameTest
+    public void bowlFillsFromStillWaterAndPurifiedTag(GameTestHelper helper) {
+        net.minecraft.core.BlockPos water = helper.absolutePos(new net.minecraft.core.BlockPos(1, 2, 1));
+        helper.setBlock(1, 2, 1, net.minecraft.world.level.block.Blocks.WATER);
+        ServerPlayer player = aimAtWater(helper, water);
+        player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, new ItemStack(Items.BOWL));
+        var result = dev.jmiahman.hearthwind.survival.hydration.HydrationBowlHandler.tryFillBowl(
+                player, helper.getLevel(), net.minecraft.world.InteractionHand.MAIN_HAND);
+        helper.assertTrue(result != net.minecraft.world.InteractionResult.PASS,
+                "sneaking with a bowl at still water must fill it");
+        helper.assertTrue(player.getItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND)
+                .is(dev.jmiahman.hearthwind.survival.hydration.HydrationItems.WATER_BOWL),
+                "still water must yield a water_bowl");
+        helper.assertTrue(helper.getLevel().getBlockState(water).isAir(),
+                "filling the bowl must consume the still source");
+
+        helper.setBlock(1, 2, 1, PurifiedWater.BLOCK.defaultBlockState());
+        player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, new ItemStack(Items.BOWL));
+        result = dev.jmiahman.hearthwind.survival.hydration.HydrationBowlHandler.tryFillBowl(
+                player, helper.getLevel(), net.minecraft.world.InteractionHand.MAIN_HAND);
+        helper.assertTrue(result != net.minecraft.world.InteractionResult.PASS,
+                "sneaking with a bowl at purified water must fill it");
+        helper.assertTrue(player.getItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND)
+                .is(dev.jmiahman.hearthwind.survival.hydration.HydrationItems.PURIFIED_WATER_BOWL),
+                "purified-tag water must yield a purified_water_bowl");
+        helper.assertTrue(helper.getLevel().getBlockState(water).isAir(),
+                "filling the purified bowl must consume the source");
+        helper.succeed();
+    }
+
+    @GameTest
+    public void campfireCauldronBoilsAtAgedSpeed(GameTestHelper helper) {
+        helper.assertTrue(HearthwindSurvivalConfig.get().hydration.waterBoilingTime == 100,
+                "Aged 1.3.6 water_boiling_time must be 100 ticks");
+        net.minecraft.core.BlockPos rel = new net.minecraft.core.BlockPos(1, 2, 1);
+        helper.setBlock(rel, net.minecraft.world.level.block.Blocks.CAMPFIRE.defaultBlockState()
+                .setValue(net.minecraft.world.level.block.CampfireBlock.LIT, true));
+        net.minecraft.core.BlockPos cauldronRel = new net.minecraft.core.BlockPos(1, 3, 1);
+        helper.setBlock(cauldronRel, dev.jmiahman.hearthwind.survival.hydration.HydrationBlocks.CAMPFIRE_CAULDRON
+                .defaultBlockState().setValue(
+                        dev.jmiahman.hearthwind.survival.hydration.CampfireCauldronBlock.LEVEL, 4));
+        net.minecraft.server.level.ServerLevel level = helper.getLevel();
+        net.minecraft.core.BlockPos pos = helper.absolutePos(cauldronRel);
+        var entity = level.getBlockEntity(pos);
+        helper.assertTrue(entity instanceof dev.jmiahman.hearthwind.survival.hydration.CampfireCauldronBlockEntity,
+                "campfire cauldron must have its block entity");
+        var cauldron = (dev.jmiahman.hearthwind.survival.hydration.CampfireCauldronBlockEntity) entity;
+        net.minecraft.world.level.block.state.BlockState state = level.getBlockState(pos);
+        for (int i = 0; i < 99; i++) {
+            dev.jmiahman.hearthwind.survival.hydration.CampfireCauldronBlockEntity
+                    .serverTick(level, pos, state, cauldron);
+        }
+        helper.assertTrue(!cauldron.isBoiled,
+                "cauldron must not be purified before 100 ticks of boiling");
+        dev.jmiahman.hearthwind.survival.hydration.CampfireCauldronBlockEntity
+                .serverTick(level, pos, state, cauldron);
+        helper.assertTrue(cauldron.isBoiled,
+                "cauldron must be purified at exactly 100 ticks on a lit campfire");
+        helper.succeed();
+    }
+
+    @GameTest
+    public void copperCauldronBucketRoundTrip(GameTestHelper helper) {
+        net.minecraft.core.BlockPos rel = new net.minecraft.core.BlockPos(1, 2, 1);
+        helper.setBlock(rel, dev.jmiahman.hearthwind.survival.hydration.HydrationBlocks.COPPER_CAULDRON
+                .defaultBlockState());
+        net.minecraft.server.level.ServerLevel level = helper.getLevel();
+        net.minecraft.core.BlockPos pos = helper.absolutePos(rel);
+        ServerPlayer player = survivalServerPlayer(helper);
+        player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, new ItemStack(Items.WATER_BUCKET));
+
+        net.fabricmc.fabric.api.transfer.v1.storage.Storage<
+                net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant> storage =
+                        net.fabricmc.fabric.api.transfer.v1.fluid.FluidStorage.SIDED.find(
+                                level, pos, net.minecraft.core.Direction.UP);
+        helper.assertTrue(storage != null, "copper cauldron must expose a fluid storage");
+        helper.assertTrue(net.fabricmc.fabric.api.transfer.v1.fluid.FluidStorageUtil
+                        .interactWithFluidStorage(storage, player,
+                                net.minecraft.world.InteractionHand.MAIN_HAND),
+                "a water bucket must pour into an empty copper cauldron");
+        helper.assertTrue(player.getItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND)
+                .is(Items.BUCKET), "the water bucket must be replaced by an empty bucket");
+        var filled = level.getBlockState(pos);
+        helper.assertTrue(filled.is(dev.jmiahman.hearthwind.survival.hydration.HydrationBlocks.COPPER_WATER_CAULDRON),
+                "empty copper cauldron + water bucket must become a water copper cauldron");
+        helper.assertTrue(filled.getValue(
+                        dev.jmiahman.hearthwind.survival.hydration.CopperLeveledCauldronBlock.LEVEL) == 3,
+                "a bucket must fill the copper cauldron to level 3");
+
+        helper.assertTrue(net.fabricmc.fabric.api.transfer.v1.fluid.FluidStorageUtil
+                        .interactWithFluidStorage(storage, player,
+                                net.minecraft.world.InteractionHand.MAIN_HAND),
+                "an empty bucket must empty a full copper cauldron");
+        helper.assertTrue(player.getItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND)
+                .is(Items.WATER_BUCKET), "the empty bucket must be filled by the cauldron");
+        helper.assertTrue(level.getBlockState(pos)
+                        .is(dev.jmiahman.hearthwind.survival.hydration.HydrationBlocks.COPPER_CAULDRON),
+                "draining the last level must restore the empty copper cauldron");
         helper.succeed();
     }
 

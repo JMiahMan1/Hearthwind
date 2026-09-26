@@ -181,6 +181,7 @@ public class HearthwindClient implements ClientModInitializer {
             BlockTargetHud.register();
             NutrientsKey.init();
             dev.jmiahman.hearthwind.client.render.FaunaEntityRenderer.registerAll();
+            HydrationBlockTints.register();
 
             net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback.EVENT.register((stack, tooltipContext, tooltipType, lines) -> {
                 net.minecraft.client.Minecraft minecraft = net.minecraft.client.Minecraft.getInstance();

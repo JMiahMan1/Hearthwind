@@ -161,12 +161,9 @@ public final class HydrationCorpus {
                 return 0.0;
             }
         }
-        double before = HearthwindSurvivalThirst.hydration(player);
-        double after = Math.min(HearthwindSurvivalThirst.MAX_HYDRATION,
-                before + tier * cfg.thirst.hydrationCorpusScale);
-        if (after > before) {
-            HearthwindSurvivalThirst.setHydration(player, after);
-        }
+        int before = HearthwindSurvivalThirst.level(player);
+        HearthwindSurvivalThirst.addThirst(player, tier);
+        int after = HearthwindSurvivalThirst.level(player);
         return after - before;
     }
 

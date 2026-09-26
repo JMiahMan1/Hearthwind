@@ -1,5 +1,14 @@
 {
+  "death.attack.thirst": "%1$s died of thirst",
+  "death.attack.thirst.player": "%1$s died of thirst while trying to escape %2$s",
   "death.attack.hearthwind.dehydration": "%1$s died of thirst",
   "death.attack.hearthwind.dehydration.player": "%1$s died of thirst while trying to escape %2$s",
-  "item.hearthwind.hearthwind_guide_book": "Hearthwind Guide Book"
+  "item.hearthwind.hearthwind_guide_book": "Hearthwind Guide Book",
+  "item.dehydration.water_bowl": "Water Bowl",
+  "item.dehydration.purified_water_bowl": "Purified Water Bowl",
+  "block.dehydration.campfire_cauldron": "Campfire Cauldron",
+  "block.dehydration.copper_cauldron": "Copper Cauldron",
+  "block.dehydration.water_copper_cauldron": "Water Copper Cauldron",
+  "block.dehydration.powder_snow_copper_cauldron": "Powder Snow Copper Cauldron",
+  "block.dehydration.purified_water_copper_cauldron": "Purified Water Copper Cauldron"
 }

@@ -31,19 +31,15 @@ public abstract class ConsumableConsumeMixin {
                 cir.setReturnValue(dev.jmiahman.hearthwind.survival.FlaskItems.onFlaskConsumed(player, stack));
                 return;
             }
-        }
-    }
-
-    @Inject(method = "onConsume",
-            at = @At("TAIL"))
-    private void aged_survival$afterConsume(Level level, LivingEntity entity,
-            ItemStack stack, CallbackInfoReturnable<ItemStack> cir) {
-        if (entity instanceof ServerPlayer player) {
+            // Consumable#onConsume calls stack.consume(1, user) before
+            // returning, so a TAIL hook only ever sees an emptied stack:
+            // ItemStack#isEmpty() is true and typeHolder() resolves to AIR,
+            // which made both the diet and hydration lookups no-ops. Read the
+            // stack's data here, before it is consumed.
             HearthwindSurvivalDiet.onEaten(player, stack);
-            dev.jmiahman.hearthwind.survival.HydrationCorpus.hydrateOnConsume(player, stack);
-            // Dehydration parity: bad potions (water/awkward/mundane/thick)
-            // can inflict Thirst; the HUD droplets turn green.
-            dev.jmiahman.hearthwind.survival.PurifiedWater.applyPotionThirst(player, stack);
+            // Dehydration parity: corpus tier first, then the exact
+            // potion/milk/honey fallbacks and their Aged rolls.
+            dev.jmiahman.hearthwind.survival.ThirstHelper.hydratePlayer(player, stack);
         }
     }
 }

@@ -14,6 +14,7 @@ import org.jspecify.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
@@ -37,5 +38,16 @@ public abstract class CampfireBlockEntityMixin {
             RecipeManager.CachedCheck<SingleRecipeInput, CampfireCookingRecipe> recipeCache,
             CallbackInfo ci) {
         CampfirePurification.tickPurification(level, pos, state, entity);
+    }
+
+    /**
+     * Vanilla spawns dark item smoke over every occupied campfire slot; for a
+     * boiling water bottle we want steam, so pretend the slot is empty and let
+     * {@link CampfirePurification} emit white particles instead.
+     */
+    @Redirect(method = "particleTick", at = @At(value = "INVOKE",
+            target = "Lnet/minecraft/world/item/ItemStack;isEmpty()Z"))
+    private static boolean hearthwind$steamInsteadOfSmoke(ItemStack stack) {
+        return stack.isEmpty() || CampfirePurification.isWaterPotion(stack);
     }
 }

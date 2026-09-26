@@ -5,5 +5,12 @@
   "item.dehydration.golden_leather_flask": "Golden Leather Flask",
   "item.dehydration.diamond_leather_flask": "Diamond Leather Flask",
   "item.dehydration.netherite_leather_flask": "Netherite Leather Flask",
+  "item.dehydration.water_bowl": "Water Bowl",
+  "item.dehydration.purified_water_bowl": "Purified Water Bowl",
+  "block.dehydration.campfire_cauldron": "Campfire Cauldron",
+  "block.dehydration.copper_cauldron": "Copper Cauldron",
+  "block.dehydration.water_copper_cauldron": "Water Copper Cauldron",
+  "block.dehydration.powder_snow_copper_cauldron": "Powder Snow Copper Cauldron",
+  "block.dehydration.purified_water_copper_cauldron": "Purified Water Copper Cauldron",
   "item.minecraft.potion.effect.purified_water": "Purified Water Bottle"
 }

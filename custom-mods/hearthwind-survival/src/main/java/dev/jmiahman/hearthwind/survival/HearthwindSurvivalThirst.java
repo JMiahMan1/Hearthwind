@@ -1,6 +1,7 @@
 package dev.jmiahman.hearthwind.survival;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.fabricmc.fabric.api.attachment.v1.AttachmentRegistry;
 import net.fabricmc.fabric.api.attachment.v1.AttachmentType;
@@ -11,139 +12,218 @@ import java.util.concurrent.ConcurrentHashMap;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.minecraft.ChatFormatting;
-import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.Difficulty;
+import net.minecraft.world.level.gamerules.GameRules;
 
+/**
+ * Dehydration 1.3.6 thirst engine parity (Aged 3.1.2 replacement).
+ *
+ * <p>The upstream {@code ThirstManager} keeps an integer thirst level
+ * (0..20, half-droplet scale) plus a float "dehydration" buffer (0..40)
+ * that only fills from vanilla {@code Player.causeFoodExhaustion} divided
+ * by {@code hydrating_factor} (2.0). There is NO passive drain: every 4.0
+ * points of buffer cost one thirst level, and at level 0 a 90-tick timer
+ * deals {@code thirst_damage} with the same difficulty/health gate as
+ * vanilla starvation.
+ *
+ * <p>Peaceful with natural regeneration regenerates 1 level every 10
+ * ticks (and runs the manager update twice per tick, matching the two
+ * upstream injection points). Waking up after a real sleep costs
+ * {@code sleep_thirst_consumption} thirst and
+ * {@code sleep_hunger_consumption} hunger.
+ */
 public final class HearthwindSurvivalThirst {
+    /** Legacy 0..20 display scale, kept as a double for the HUD payload. */
     public static final double MAX_HYDRATION = 20.0;
-    private static final int TICK_INTERVAL = 40;
+    public static final int MAX_LEVEL = 20;
+    public static final float MAX_DEHYDRATION = 40.0F;
+    /** Upstream hard-coded starvation-style tick cadence. */
+    public static final int DAMAGE_INTERVAL_TICKS = 90;
 
-    /** Data-driven damage type (data/hearthwind/damage_type/dehydration.json)
-     *  so thirst deaths read "died of thirst", not vanilla's "killed by magic". */
-    public static final net.minecraft.resources.ResourceKey<net.minecraft.world.damagesource.DamageType> DEHYDRATION =
-            net.minecraft.resources.ResourceKey.create(
+    /** Data-driven damage type (data/dehydration/damage_type/thirst.json). */
+    public static final ResourceKey<net.minecraft.world.damagesource.DamageType> THIRST =
+            ResourceKey.create(
                     net.minecraft.core.registries.Registries.DAMAGE_TYPE,
                     net.minecraft.resources.Identifier.fromNamespaceAndPath(
-                            "hearthwind", "dehydration"));
+                            "dehydration", "thirst"));
 
-    // Per-player damage counter and warning state to avoid cross-player contamination
-    private static final Map<UUID, Integer> damageCounters = new ConcurrentHashMap<>();
-    private static final Map<UUID, Integer> warningLevels = new ConcurrentHashMap<>();
+    /** Immutable copy of the upstream ThirstManager fields. */
+    public record ThirstState(int level, float dehydration, int damageTimer, boolean hasThirst) {
+        public static final ThirstState DEFAULT = new ThirstState(MAX_LEVEL, 0.0F, 0, true);
 
-    // payload type is ThirstSyncPayload.TYPE
+        public ThirstState withLevel(int newLevel) {
+            return new ThirstState(Math.max(0, Math.min(MAX_LEVEL, newLevel)), dehydration, damageTimer, hasThirst);
+        }
 
-    public static final AttachmentType<Double> HYDRATION =
-            AttachmentRegistry.<Double>builder()
-                    .persistent(Codec.DOUBLE)
-                    // do not copyOnDeath - respawn with fresh hydration, otherwise
-                    // thirst death at 0 loops forever (hit sounds on login)
+        public ThirstState withDehydration(float newDehydration) {
+            return new ThirstState(level, Math.max(0.0F, Math.min(MAX_DEHYDRATION, newDehydration)), damageTimer, hasThirst);
+        }
+
+        public ThirstState withDamageTimer(int newTimer) {
+            return new ThirstState(level, dehydration, Math.max(0, newTimer), hasThirst);
+        }
+
+        public ThirstState withHasThirst(boolean value) {
+            return new ThirstState(level, dehydration, damageTimer, value);
+        }
+    }
+
+    public static final Codec<ThirstState> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+            Codec.INT.fieldOf("thirst_level").forGetter(ThirstState::level),
+            Codec.FLOAT.fieldOf("dehydration").forGetter(ThirstState::dehydration),
+            Codec.INT.fieldOf("damage_timer").forGetter(ThirstState::damageTimer),
+            Codec.BOOL.fieldOf("has_thirst").forGetter(ThirstState::hasThirst))
+            .apply(instance, ThirstState::new));
+
+    public static final AttachmentType<ThirstState> THIRST_STATE =
+            AttachmentRegistry.<ThirstState>builder()
+                    .persistent(CODEC)
                     .buildAndRegister(
                             net.minecraft.resources.Identifier.fromNamespaceAndPath(
-                                    "dehydration", "hydration"));
+                                    "dehydration", "thirst_state"));
+
+    // Last level sent per player so the HUD only receives real changes.
+    private static final Map<UUID, Integer> lastSentLevel = new ConcurrentHashMap<>();
 
     private HearthwindSurvivalThirst() {}
 
+    public static ThirstState state(net.minecraft.world.entity.Entity entity) {
+        ThirstState value = entity.getAttached(THIRST_STATE);
+        return value == null ? ThirstState.DEFAULT : value;
+    }
+
+    public static void setState(net.minecraft.world.entity.Entity entity, ThirstState value) {
+        entity.setAttached(THIRST_STATE, value);
+    }
+
+    public static int level(net.minecraft.world.entity.Entity entity) {
+        return state(entity).level();
+    }
+
+    public static float dehydration(net.minecraft.world.entity.Entity entity) {
+        return state(entity).dehydration();
+    }
+
+    /** Legacy 0..20 double view: whole levels plus the buffer's quarter value. */
     public static double hydration(net.minecraft.world.entity.Entity entity) {
-        Double v = entity.getAttached(HYDRATION);
-        return v == null ? MAX_HYDRATION : v;
+        ThirstState s = state(entity);
+        return s.level() + s.dehydration() / 4.0;
     }
 
-    public static void addHydration(net.minecraft.world.entity.Entity entity, double amount) {
-        setHydration(entity, Math.min(MAX_HYDRATION, hydration(entity) + amount));
-    }
-
+    /** Legacy setter: clamps to a whole level and clears the buffer. */
     public static void setHydration(net.minecraft.world.entity.Entity entity, double value) {
-        entity.setAttached(HYDRATION, value);
+        setState(entity, state(entity).withLevel((int) Math.round(value)).withDehydration(0.0F));
+    }
+
+    /** Upstream {@code add(int)}: whole quench points, capped at 20. */
+    public static void addThirst(net.minecraft.world.entity.Entity entity, int amount) {
+        setState(entity, state(entity).withLevel(state(entity).level() + amount));
+    }
+
+    /** Upstream {@code addDehydration(float)}: exhaustion buffer, capped at 40. */
+    public static void addDehydration(net.minecraft.world.entity.Entity entity, float amount) {
+        setState(entity, state(entity).withDehydration(state(entity).dehydration() + amount));
+    }
+
+    /** Legacy double add: whole points in either direction. */
+    public static void addHydration(net.minecraft.world.entity.Entity entity, double amount) {
+        addThirst(entity, (int) Math.round(amount));
+    }
+
+    public static boolean hasThirst(net.minecraft.world.entity.Entity entity) {
+        return state(entity).hasThirst();
+    }
+
+    public static void setHasThirst(net.minecraft.world.entity.Entity entity, boolean value) {
+        setState(entity, state(entity).withHasThirst(value));
     }
 
     public static void registerTickLoop() {
-        // Sync thirst to client for HUD (above hunger bar) - vanilla gets bossbar fallback via action bar
         ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
-            ServerPlayer p = handler.getPlayer();
-            syncToClient(p, hydration(p));
+            ServerPlayer player = handler.getPlayer();
+            syncToClient(player, level(player), true);
         });
         ServerTickEvents.END_SERVER_TICK.register(server -> {
-            if (server.getTickCount() % TICK_INTERVAL != 0) {
-                return;
-            }
             for (ServerPlayer player : server.getPlayerList().getPlayers()) {
-                tick(player);
+                updatePlayer(player);
             }
         });
     }
 
-    private static void syncToClient(ServerPlayer player, double h) {
-        try {
-            ServerPlayNetworking.send(player, new ThirstSyncPayload((float) h));
-        } catch (Exception ignored) {
-            // Client without hearthwind-client will just ignore - fallback is overlay messages
-        }
-    }
-
-    private static void tick(ServerPlayer player) {
-        if (player.getAbilities().invulnerable
-                || player.getAbilities().instabuild) {
+    /**
+     * One upstream tick: manager update from the player tick, plus the
+     * peaceful regeneration pass from tickMovement (second update + regen).
+     */
+    public static void updatePlayer(ServerPlayer player) {
+        ThirstState s = state(player);
+        if (!s.hasThirst()) {
             return;
         }
-        HearthwindSurvivalConfig.Thirst cfg = HearthwindSurvivalConfig.get().thirst;
-        double h = hydration(player);
-        // TICK_INTERVAL is ticks (40 = 2s), config is per-second so divide by 20
-        double seconds = TICK_INTERVAL / 20.0;
-        double drain = cfg.baseDrainPerSecond * seconds;
-        if (player.isSprinting()) {
-            drain *= cfg.sprintMultiplier;
+        s = update(player, s);
+        if (player.level().getDifficulty() == Difficulty.PEACEFUL
+                && Boolean.TRUE.equals(player.level().getGameRules().get(GameRules.NATURAL_HEALTH_REGENERATION))) {
+            s = update(player, s);
+            if (s.level() < MAX_LEVEL && player.tickCount % 10 == 0) {
+                s = s.withLevel(s.level() + 1);
+            }
         }
-        MobEffectInstance thirst = player.getEffect(ThirstMobEffect.HOLDER);
-        if (thirst != null) {
-            drain += cfg.thirstEffectDrainPerSecond * seconds
-                    * (thirst.getAmplifier() + 1);
-        }
-        boolean wasAboveRegenFloor = h > cfg.regenHydrationFloor;
-        h = Math.max(0.0, h - drain);
-        setHydration(player, h);
-        syncToClient(player, h);
+        setState(player, s);
+        syncToClient(player, s.level(), false);
+    }
 
-        long damageIntervalTicks = (long) (cfg.damageIntervalSeconds * 20.0);
-        UUID id = player.getUUID();
-        if (h <= 0.0) {
-            int currentDmgCount = damageCounters.getOrDefault(id, 0) + TICK_INTERVAL;
-            if (currentDmgCount >= damageIntervalTicks) {
-                damageCounters.put(id, 0);
-                player.hurt(player.damageSources().source(DEHYDRATION),
-                        (float) cfg.damageAmount);
-            } else {
-                damageCounters.put(id, currentDmgCount);
+    /** Verbatim upstream {@code ThirstManager.update} math. */
+    private static ThirstState update(ServerPlayer player, ThirstState s) {
+        HearthwindSurvivalConfig cfg = HearthwindSurvivalConfig.get();
+        Difficulty difficulty = player.level().getDifficulty();
+        int level = s.level();
+        float dehydration = s.dehydration();
+        int timer = s.damageTimer();
+
+        if (dehydration > 4.0F) {
+            dehydration -= 4.0F;
+            if (difficulty != Difficulty.PEACEFUL) {
+                level = Math.max(level - 1, 0);
+            }
+        }
+        if (level <= 0) {
+            timer++;
+            if (timer >= DAMAGE_INTERVAL_TICKS) {
+                if (player.getHealth() > 10.0F
+                        || difficulty == Difficulty.HARD
+                        || (player.getHealth() > 1.0F && difficulty == Difficulty.NORMAL)) {
+                    if (player.level() instanceof ServerLevel serverLevel) {
+                        player.hurtServer(serverLevel,
+                                player.damageSources().source(THIRST),
+                                (float) cfg.thirst.thirstDamage);
+                    }
+                }
+                timer = 0;
             }
         } else {
-            damageCounters.remove(id);
+            timer = 0;
         }
-        sendThresholdWarnings(player, h, wasAboveRegenFloor);
+        return new ThirstState(level, dehydration, timer, s.hasThirst());
     }
 
-    private static void sendThresholdWarnings(ServerPlayer player, double h,
-            boolean wasAboveRegenFloor) {
-        int level = h > 12 ? -1 : h > 6 ? 0 : h > 3 ? 1 : 2;
-        if (!wasAboveRegenFloor && level >= 0) {
+    /** Skips the payload unless the rendered level actually changed. */
+    private static void syncToClient(ServerPlayer player, int currentLevel, boolean force) {
+        UUID id = player.getUUID();
+        Integer previous = lastSentLevel.get(id);
+        if (!force && previous != null && previous == currentLevel) {
             return;
         }
-        // Per-player warning state
-        UUID id = player.getUUID();
-        Integer prevLevel = warningLevels.get(id);
-        if (prevLevel == null || level != prevLevel) {
-            warningLevels.put(id, level);
-            switch (level) {
-                case 0 -> warn(player, "You are getting thirsty.", ChatFormatting.YELLOW);
-                case 1 -> warn(player, "You are dehydrated! Find water!", ChatFormatting.GOLD);
-                case 2 -> warn(player, "You are dying of thirst!", ChatFormatting.RED);
-                default -> { }
-            }
+        lastSentLevel.put(id, currentLevel);
+        try {
+            ServerPlayNetworking.send(player, new ThirstSyncPayload((float) currentLevel));
+        } catch (Exception ignored) {
+            // Client without hearthwind-client will just ignore.
         }
     }
 
-    private static void warn(ServerPlayer player, String text, ChatFormatting color) {
-        player.sendOverlayMessage(
-                Component.literal(text).withStyle(color));
+    public static void forget(ServerPlayer player) {
+        lastSentLevel.remove(player.getUUID());
     }
 }

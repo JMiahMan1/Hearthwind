@@ -77,7 +77,7 @@ public final class FlaskItems {
             return stack;
         }
         HearthwindSurvivalConfig.Flask cfg = HearthwindSurvivalConfig.get().flask;
-        HearthwindSurvivalThirst.addHydration(player, cfg.quench);
+        HearthwindSurvivalThirst.addThirst(player, cfg.quench);
         // NutritionZ's DrinkEvent hook: a drink adds its positive nutrients
         // (the Dehydration compat map gives every flask minerals +20).
         HearthwindSurvivalDiet.onDrink(player, stack);
@@ -94,9 +94,10 @@ public final class FlaskItems {
                 chance = 0f;
                 amplifier = 0;
             }
-            if (chance > 0f && player.getRandom().nextFloat() < chance) {
+            if (chance > 0f && player.getRandom().nextFloat() <= chance) {
                 player.addEffect(new net.minecraft.world.effect.MobEffectInstance(
-                        ThirstMobEffect.HOLDER, cfg.thirstDuration, amplifier));
+                        ThirstMobEffect.HOLDER, cfg.thirstDuration, amplifier,
+                        false, false, true));
             }
         }
         int newFill = data.fillLevel() - 1;

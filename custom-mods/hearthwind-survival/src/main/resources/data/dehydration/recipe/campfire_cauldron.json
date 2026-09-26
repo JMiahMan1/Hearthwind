@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " d ",
+    " e ",
+    "dfd"
+  ],
+  "key": {
+    "d": "minecraft:stick",
+    "e": "minecraft:iron_chain",
+    "f": "dehydration:copper_cauldron"
+  },
+  "result": {
+    "id": "dehydration:campfire_cauldron",
+    "count": 1
+  }
+}

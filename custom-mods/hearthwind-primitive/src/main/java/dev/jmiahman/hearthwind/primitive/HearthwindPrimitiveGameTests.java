@@ -71,12 +71,12 @@ public final class HearthwindPrimitiveGameTests {
     }
 
     @GameTest
-    public void dirtyWaterSicknessChanceConfig(GameTestHelper helper) {
+    public void thirstHydratingFactorIsAgedValue(GameTestHelper helper) {
         var config = dev.jmiahman.hearthwind.survival.HearthwindSurvivalConfig.get();
-        helper.assertTrue(config.thirst.dirtyWaterSicknessChance > 0,
-                "dirty water sickness chance should be positive");
-        helper.assertTrue(config.thirst.dirtyWaterSicknessChance <= 1.0,
-                "dirty water sickness chance should not exceed 1.0");
+        helper.assertTrue(config.thirst.hydratingFactor == 2.0,
+                "Aged override hydrating_factor must be 2.0");
+        helper.assertTrue(config.thirst.thirstEffectFactor == 0.03,
+                "Aged override thirst_effect_factor must be 0.03");
         helper.succeed();
     }
 

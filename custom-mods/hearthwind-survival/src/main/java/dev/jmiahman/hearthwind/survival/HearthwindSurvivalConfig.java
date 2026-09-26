@@ -24,76 +24,84 @@ public final class HearthwindSurvivalConfig {
     public final Diet diet = new Diet();
     public final Spoilage spoilage = new Spoilage();
     public final Sobriety sobriety = new Sobriety();
+    public final Hydration hydration = new Hydration();
 
-    /** Bare-hand cupping (sneak + empty hand + hold right-click on water). */
+    /**
+     * Bare-hand cupping (sneak + empty hand + hold right-click on water),
+     * upstream Dehydration {@code water_souce_quench} / {@code water_sip_*}
+     * semantics. Aged override: chance 0.5, duration 300.
+     */
     public static class BareHand {
-        /** Hydration points granted per completed sip (two sips = half droplet). */
-        public double sipQuench = 1.0;
+        /** Thirst level points granted per completed sip (upstream 1). */
+        public int waterSourceQuench = 1;
         /** Chance the sip gives the thirst effect (halved in river biomes). */
-        public double sipThirstChance = 0.5;
+        public double waterSipThirstChance = 0.5;
         /** Duration of the thirst effect in ticks. */
-        public int sipThirstDuration = 300;
-        /** Consuming the still water source after a sip. */
+        public int waterSipThirstDuration = 300;
+        /**
+         * Consume the still water source after a sip (upstream removes the
+         * block whenever {@code allow_non_flowing_water_sip} is false).
+         */
         public boolean consumeStillSource = true;
         /** Allow cupping from non-still (flowing) water. */
         public boolean allowNonFlowingWaterSip = false;
     }
 
-    /** Leather flask drink tunables. */
+    /**
+     * Leather flask tunables, upstream Dehydration {@code flask_*} /
+     * {@code potion_bad_thirst_*} / {@code milk_*} config semantics.
+     * Aged override: dirty chance 0.3, dirty duration 200,
+     * potion bad-thirst chance 0.15.
+     */
     public static class Flask {
-        /** Hydration points per flask sip (scale 0..20). */
-        public double quench = 4.0;
+        /** Thirst level points per flask sip (upstream flask_thirst_quench). */
+        public int quench = 4;
         /** Chance of the thirst effect per dirty-water sip (amplifier 1). */
         public double dirtyThirstChance = 0.3;
         /** Chance of the thirst effect per impure-water sip (amplifier 0). */
         public double impureThirstChance = 0.15;
         /** Duration of the thirst effect in ticks. */
         public int thirstDuration = 200;
-        /**
-         * Chance the thirst effect follows a bad potion drink (Aged
-         * override {@code potion_bad_thirst_chance = 0.15}).
-         */
+        /** Chance the thirst effect follows a bad potion drink. */
         public double potionBadThirstChance = 0.15;
-        /**
-         * Duration of the thirst effect from a bad potion in ticks (the
-         * reference class default 300; Aged does not override it).
-         */
+        /** Duration of the thirst effect from a bad potion in ticks. */
         public int potionBadThirstDuration = 300;
+        /** Thirst level points per milk bucket (upstream milk_thirst_quench). */
+        public int milkQuench = 8;
+        /** Chance the thirst effect follows a milk drink (0.4 upstream). */
+        public double milkThirstChance = 0.4;
+        /** Thirst level points per honey bottle (upstream honey_quench). */
+        public int honeyQuench = 1;
+        /** Thirst level points per water bowl (upstream water_bowl_quench). */
+        public int waterBowlQuench = 3;
+        /** Chance a dirty water bowl gives the thirst effect (0.4 upstream). */
+        public double waterBowlThirstChance = 0.4;
     }
 
+    /**
+     * Upstream Dehydration {@code ThirstManager}/config semantics: the
+     * manager keeps a 0..20 level plus a 0..40 dehydration buffer that
+     * only fills from {@code Player.causeFoodExhaustion(exhaustion)}
+     * divided by {@link #hydratingFactor}. There is no passive drain.
+     */
     public static class Thirst {
-        /** Hydration points lost per second under normal activity. Scale 0..20. 20/0.025=800s (~13 min) to empty, similar to hunger. */
-        public double baseDrainPerSecond = 0.025;
-        /** Multiplier applied while sprinting. */
-        public double sprintMultiplier = 2.0;
-        /** Extra drain per second per amplifier of the dehydration:thirst effect. */
-        public double thirstEffectDrainPerSecond = 0.05;
-        /** Hydration must exceed this for natural health regeneration. */
-        public double regenHydrationFloor = 6.0;
-        /** Seconds between starvation-style damage ticks at zero hydration. */
-        public double damageIntervalSeconds = 4.0;
-        /** Damage per tick at zero hydration (half-hearts). */
-        public double damageAmount = 1.0;
-        /** Drain multiplier in icy biomes. */
-        public double icyDrainMod = 1.5;
-        /** Drain multiplier in cold biomes. */
-        public double coldDrainMod = 1.2;
-        /** Drain multiplier in neutral biomes. */
-        public double neutralDrainMod = 1.0;
-        /** Drain multiplier in warm biomes. */
-        public double warmDrainMod = 1.1;
-        /** Drain multiplier in hot biomes. */
-        public double hotDrainMod = 1.3;
-        /** Chance of dirty water sickness when drinking from open water. */
-        public double dirtyWaterSicknessChance = 0.3;
-        /** Duration of dirty water sickness in ticks. */
-        public int dirtyWaterSicknessDuration = 600;
-        /** Duration of throat irritation in ticks. */
-        public int throatIrritationDuration = 300;
+        /** Upstream {@code hydrating_factor}; Aged override 2.0. */
+        public double hydratingFactor = 2.0;
+        /** Upstream {@code thirst_damage}; 1.0 = half-heart per 90 ticks at level 0. */
+        public double thirstDamage = 1.0;
+        /** Upstream {@code thirst_effect_factor}; Aged override 0.03 per amplifier per tick. */
+        public double thirstEffectFactor = 0.03;
+        /** Upstream {@code sleep_thirst_consumption}. */
+        public int sleepThirstConsumption = 4;
+        /** Upstream {@code sleep_hunger_consumption}. */
+        public int sleepHungerConsumption = 2;
+        /** Upstream {@code harder_nether} (off in Aged). */
+        public boolean harderNether = false;
+        /** Upstream {@code nether_factor} (only when harderNether). */
+        public double netherFactor = 2.0;
         /**
          * Use the migrated hydration corpus (data/dehydration/hydration_items)
-         * so foods and drinks restore hydration by tier instead of relying on
-         * the flask alone.
+         * so foods and drinks restore hydration by tier.
          */
         public boolean useHydrationCorpus = true;
         /** Multiplier applied to catalogued hydration tiers (1 = catalogue value). */
@@ -181,6 +189,23 @@ public final class HearthwindSurvivalConfig {
         public double hotBiomeMultiplier = 2.0;
         /** Item id perishables rot into. */
         public String rotsInto = "minecraft:rotten_flesh";
+    }
+
+    /**
+     * Dehydration hydration blocks (campfire + copper cauldrons), upstream
+     * {@code water_boiling_time} semantics. Aged 1.3.6 ships 0.1/0.15 rain
+     * and snow fill chances for the copper cauldron and 0.2 for the campfire
+     * cauldron.
+     */
+    public static class Hydration {
+        /** Ticks of boiling on a lit campfire before water turns purified (Aged: 100). */
+        public int waterBoilingTime = 100;
+        /** Rain fill chance per precipitation tick for the copper cauldron (Aged: 0.1). */
+        public double copperRainFillChance = 0.1;
+        /** Snow fill chance per precipitation tick for the copper cauldron (Aged: 0.15). */
+        public double copperSnowFillChance = 0.15;
+        /** Rain fill chance per precipitation tick for the campfire cauldron (Aged: 0.2). */
+        public double campfireRainFillChance = 0.2;
     }
 
     /** Family-friendly brewing: alcohol becomes juice / NA medieval drinks. */

@@ -114,35 +114,39 @@ public final class PurifiedWater {
     }
 
     /**
-     * Reference Dehydration {@code PotionItemMixin}: drinking a "bad" potion
-     * (water, awkward, mundane, thick) rolls the configured chance of the
-     * thirst effect. Hydration itself comes from the corpus hook.
+     * Reference Dehydration {@code PotionItemMixin}: a "bad" potion rolls
+     * {@code nextFloat() >= potion_bad_thirst_chance} (Aged 0.15 = 85%
+     * Thirst risk) for the thirst effect. Kept as a thin wrapper so older
+     * callers keep working; the canonical path is
+     * {@link ThirstHelper#hydratePlayer}.
      */
     public static void applyPotionThirst(ServerPlayer player, ItemStack stack) {
         if (!stack.is(Items.POTION)) {
             return;
         }
         PotionContents contents = stack.get(DataComponents.POTION_CONTENTS);
-        if (contents == null || !isBadPotion(contents)) {
+        if (contents == null) {
+            return;
+        }
+        Potion potion = contents.potion().map(Holder::value).orElse(Potions.WATER.value());
+        if (!isBadPotion(potion)) {
             return;
         }
         HearthwindSurvivalConfig.Flask cfg = HearthwindSurvivalConfig.get().flask;
-        if (player.getRandom().nextFloat() < cfg.potionBadThirstChance) {
-            player.addEffect(new MobEffectInstance(ThirstMobEffect.HOLDER, cfg.potionBadThirstDuration, 0));
+        if (player.getRandom().nextFloat() >= cfg.potionBadThirstChance) {
+            player.addEffect(new MobEffectInstance(ThirstMobEffect.HOLDER,
+                    cfg.potionBadThirstDuration, 0, false, false, true));
         }
     }
 
-    /** Potions the reference treats as unsafe drinking water. */
+    /** Potions the reference treats as unsafe drinking water (exact list). */
     public static boolean isBadPotion(PotionContents contents) {
-        if (!contents.customEffects().isEmpty()) {
-            return false;
-        }
-        return contents.potion()
-                .map(holder -> holder.value() == Potions.WATER.value()
-                        || holder.value() == Potions.AWKWARD.value()
-                        || holder.value() == Potions.MUNDANE.value()
-                        || holder.value() == Potions.THICK.value())
-                .orElse(false);
+        return isBadPotion(contents.potion().map(Holder::value)
+                .orElse(Potions.WATER.value()));
+    }
+
+    public static boolean isBadPotion(Potion potion) {
+        return ThirstHelper.isBadPotion(potion);
     }
 
     private static Identifier id(String path) {

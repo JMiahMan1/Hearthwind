@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "dehydration:purified_water_bowl"
+  ],
+  "result": {
+    "id": "minecraft:bowl",
+    "count": 1
+  }
+}

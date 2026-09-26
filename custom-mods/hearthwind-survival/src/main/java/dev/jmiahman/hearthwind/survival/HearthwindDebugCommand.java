@@ -56,7 +56,7 @@ public final class HearthwindDebugCommand {
                                         .executes(ctx -> {
                                             ServerPlayer p = ctx.getSource().getPlayerOrException();
                                             double v = DoubleArgumentType.getDouble(ctx, "value");
-                                            p.setAttached(HearthwindSurvivalThirst.HYDRATION, v);
+                                            HearthwindSurvivalThirst.setHydration(p, v);
                                             ctx.getSource().sendSuccess(() -> net.minecraft.network.chat.Component.literal(
                                                     "Set hydration to " + v), false);
                                             return 1;
@@ -136,10 +136,11 @@ public final class HearthwindDebugCommand {
                                 .executes(ctx -> {
                                     ServerPlayer p = ctx.getSource().getPlayerOrException();
                                     double before = HearthwindSurvivalThirst.hydration(p);
-                                    HearthwindSurvivalThirst.addHydration(p, HearthwindSurvivalConfig.get().bareHand.sipQuench);
-                                    if (p.getRandom().nextFloat() < HearthwindSurvivalConfig.get().bareHand.sipThirstChance) {
+                                    HearthwindSurvivalConfig.BareHand bhCfg = HearthwindSurvivalConfig.get().bareHand;
+                                    HearthwindSurvivalThirst.addThirst(p, Math.max(1, bhCfg.waterSourceQuench));
+                                    if (p.getRandom().nextFloat() <= bhCfg.waterSipThirstChance) {
                                         p.addEffect(new net.minecraft.world.effect.MobEffectInstance(ThirstMobEffect.HOLDER,
-                                                HearthwindSurvivalConfig.get().bareHand.sipThirstDuration, 1));
+                                                bhCfg.waterSipThirstDuration, 1, false, false, true));
                                     }
                                     double after = HearthwindSurvivalThirst.hydration(p);
                                     ctx.getSource().sendSuccess(() -> net.minecraft.network.chat.Component.literal(

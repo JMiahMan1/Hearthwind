@@ -119,9 +119,30 @@ public class PartyScreen extends HearthwindPanelScreen {
         drawButton(graphics, font, this.x + 5, this.y + 68, 90, "Create Party",
                 0xFF388E3C, hover);
 
-        graphics.text(font, "Party up to share XP and", this.x + 109, this.y + 30, INK, false);
-        graphics.text(font, "see your allies' health", this.x + 109, this.y + 42, INK, false);
-        graphics.text(font, "and distance on screen.", this.x + 109, this.y + 54, INK, false);
+        drawWrapped(graphics, font, "Party up to share XP and see your allies' health and distance on screen.",
+                this.x + 109, this.y + 30, 86, INK);
+    }
+
+    /** Wraps text inside the 86px info column so nothing runs off the panel. */
+    private static void drawWrapped(GuiGraphicsExtractor graphics, Font font, String text,
+            int x, int y, int maxWidth, int color) {
+        StringBuilder line = new StringBuilder();
+        int lineY = y;
+        for (String word : text.split(" ")) {
+            String candidate = line.isEmpty() ? word : line + " " + word;
+            if (font.width(candidate) > maxWidth && !line.isEmpty()) {
+                graphics.text(font, line.toString(), x, lineY, color, false);
+                line.setLength(0);
+                line.append(word);
+                lineY += 10;
+            } else {
+                line.setLength(0);
+                line.append(candidate);
+            }
+        }
+        if (!line.isEmpty()) {
+            graphics.text(font, line.toString(), x, lineY, color, false);
+        }
     }
 
     private void drawButton(GuiGraphicsExtractor graphics, Font font, int bx, int by, int bw,

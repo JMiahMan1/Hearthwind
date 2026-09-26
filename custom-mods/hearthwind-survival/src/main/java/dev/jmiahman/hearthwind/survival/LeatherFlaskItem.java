@@ -8,9 +8,9 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.stats.Stats;
+import net.minecraft.tags.BiomeTags;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -29,11 +29,24 @@ import net.minecraft.world.level.material.Fluids;
 import java.util.List;
 
 /**
- * Portable water vessel, five tiers (capacity 2 + tier). Fill by using it on
- * a water source or a cauldron (heated cauldrons boil the water clean);
- * drink with right-click (vanilla hold-to-drink flow); pour back into a
- * cauldron while sneaking. Item ids sit in the dehydration namespace so the
- * migrated datapack gates and job rewards resolve unchanged.
+ * Portable water vessel, five tiers (capacity {@code 2 + tier}), a
+ * behaviour-for-behaviour port of Dehydration 1.3.6 {@code LeatherFlask}
+ * (Aged 3.1.2):
+ *
+ * <ul>
+ *   <li>Open water fills the flask to capacity in one use. River-biome
+ *       water counts as purified (quality 0); other open water is dirty
+ *       (quality 2); topping up a purified/impure flask outside a river
+ *       downgrades it to impurified (quality 1).</li>
+ *   <li>Vanilla cauldrons fill one unit per use and always with dirty
+ *       water; sneaking pours one unit back.</li>
+ *   <li>Sneaking at open water empties the flask while keeping purity.</li>
+ *   <li>Drinking quenches 4 levels; dirty water rolls amplifier-1 thirst,
+ *       impurified amplifier-0 (both at half the dirty chance).</li>
+ * </ul>
+ *
+ * Item ids sit in the dehydration namespace so the migrated datapack gates
+ * and job rewards resolve unchanged.
  */
 public final class LeatherFlaskItem extends Item {
     private final int capacity;
@@ -51,10 +64,38 @@ public final class LeatherFlaskItem extends Item {
         return stack.get(FlaskItems.FLASK_DATA);
     }
 
+    /**
+     * Upstream purity transition for filling from an open water source.
+     *
+     * @param currentQuality the quality carried before the fill
+     * @param currentFill    the fill level before the fill
+     * @param river          whether the source sits in a river biome
+     */
+    public static int openWaterQuality(int currentQuality, int currentFill, boolean river) {
+        int quality = FlaskData.DIRTY;
+        boolean empty = currentFill == 0;
+        boolean dirty = currentQuality == FlaskData.DIRTY;
+        if (!empty && !dirty) {
+            quality = FlaskData.IMPURIFIED;
+        }
+        if (river && (empty || !dirty)) {
+            quality = FlaskData.PURIFIED;
+        }
+        return quality;
+    }
+
     @Override
     public InteractionResult use(Level level, Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
         FlaskData data = data(stack);
+        // Upstream finds open water with a source-only raycast inside use():
+        // fill (or empty while sneaking) before considering a drink.
+        if (player instanceof ServerPlayer sp && level instanceof ServerLevel server) {
+            InteractionResult rayResult = tryWaterInteraction(sp, server, stack);
+            if (rayResult != InteractionResult.PASS) {
+                return rayResult;
+            }
+        }
         if (data != null && data.fillLevel() > 0) {
             Consumable drink = stack.get(DataComponents.CONSUMABLE);
             if (drink != null) {
@@ -62,23 +103,11 @@ public final class LeatherFlaskItem extends Item {
             }
             return InteractionResult.PASS;
         }
-        // Empty flask: vanilla crosshairs cannot target fluid blocks, so
-        // raycast with fluids included (server-side) to find open water.
-        if (player instanceof ServerPlayer sp && level instanceof ServerLevel server) {
-            InteractionResult rayResult = tryFillOrPourFromRay(sp, server, stack);
-            if (rayResult != InteractionResult.PASS) {
-                return rayResult;
-            }
-        }
         return InteractionResult.PASS;
     }
 
-    /**
-     * Shared fluid raycast: filling an empty flask from, or dumping into,
-     * open water. Returns PASS when the ray hits a solid block first or
-     * there is no water interaction to do.
-     */
-    private static InteractionResult tryFillOrPourFromRay(ServerPlayer sp, ServerLevel server, ItemStack stack) {
+    /** Fill from, or (sneaking) empty into, an open water source. */
+    private static InteractionResult tryWaterInteraction(ServerPlayer sp, ServerLevel server, ItemStack stack) {
         HitResult ray = sp.pick(sp.blockInteractionRange(), 0.0f, true);
         if (ray.getType() != HitResult.Type.BLOCK) {
             return InteractionResult.PASS;
@@ -88,14 +117,17 @@ public final class LeatherFlaskItem extends Item {
         if (!fluid.is(Fluids.WATER) || !fluid.isSource()) {
             return InteractionResult.PASS;
         }
-        boolean sneak = sp.isShiftKeyDown();
-        if (sneak && data(stack) != null && data(stack).fillLevel() > 0) {
-            pour(stack, sp, server);
+        int fill = data(stack) == null ? 0 : data(stack).fillLevel();
+        int quality = data(stack) == null ? FlaskData.DIRTY : data(stack).qualityLevel();
+        if (sp.isShiftKeyDown() && fill > 0) {
+            emptyFlask(stack, sp, server);
             return InteractionResult.SUCCESS_SERVER;
         }
-        if (data(stack) == null) {
-            boolean river = server.getBiome(pos).is(net.minecraft.tags.BiomeTags.IS_RIVER);
-            fill(stack, sp, server, river ? FlaskData.DIRTY : FlaskData.IMPURIFIED, false);
+        if (fill < ((LeatherFlaskItem) stack.getItem()).capacity()) {
+            boolean river = server.getBiome(pos).is(BiomeTags.IS_RIVER);
+            setFilled(stack, sp, server,
+                    ((LeatherFlaskItem) stack.getItem()).capacity(),
+                    openWaterQuality(quality, fill, river));
             return InteractionResult.SUCCESS_SERVER;
         }
         return InteractionResult.PASS;
@@ -109,88 +141,74 @@ public final class LeatherFlaskItem extends Item {
         }
         Level level = context.getLevel();
         ItemStack stack = context.getItemInHand();
-        // Vanilla crosshairs cannot target fluid blocks: when looking into
-        // open water the ray actually lands on the ground BELOW the water
-        // and arrives here. Run the fluid-including raycast first so filling
-        // works at any shoreline; solid hits (cauldrons) fall through.
+        // Open water under the crosshair never reaches useOn in vanilla
+        // (the ray lands on the ground below); run the fluid-including
+        // raycast first so filling works at any shoreline. Solid hits
+        // (cauldrons) fall through to the block logic below.
         if (player instanceof ServerPlayer sp && level instanceof ServerLevel server) {
-            InteractionResult rayResult = tryFillOrPourFromRay(sp, server, stack);
+            InteractionResult rayResult = tryWaterInteraction(sp, server, stack);
             if (rayResult != InteractionResult.PASS) {
                 return rayResult;
             }
         }
         BlockPos pos = context.getClickedPos();
         BlockState state = level.getBlockState(pos);
-        boolean sneak = player.isShiftKeyDown();
+        if (!(level instanceof ServerLevel server) || !(player instanceof ServerPlayer sp)) {
+            return state.is(Blocks.WATER_CAULDRON) ? InteractionResult.SUCCESS : InteractionResult.PASS;
+        }
+        int fill = data(stack) == null ? 0 : data(stack).fillLevel();
+        int quality = data(stack) == null ? FlaskData.DIRTY : data(stack).qualityLevel();
 
         if (state.is(Blocks.WATER_CAULDRON)) {
-            if (!(level instanceof ServerLevel server) || !(player instanceof ServerPlayer sp)) {
-                return InteractionResult.SUCCESS;
-            }
             int cauldronLevel = state.getValue(LayeredCauldronBlock.LEVEL);
-            if (sneak && data(stack) != null && data(stack).fillLevel() > 0) {
-                // Pour back into the cauldron
-                pour(stack, sp, server);
-                int newLevel = Math.min(3, cauldronLevel + 1);
-                level.setBlock(pos, state.setValue(LayeredCauldronBlock.LEVEL, newLevel), 3);
+            if (player.isShiftKeyDown() && fill > 0) {
+                // Pour one unit back, refilling the cauldron up to 3.
+                if (cauldronLevel < 3) {
+                    level.setBlock(pos, state.setValue(LayeredCauldronBlock.LEVEL, cauldronLevel + 1), 3);
+                }
+                setFillOrEmpty(stack, sp, server, fill - 1, quality);
                 return InteractionResult.SUCCESS_SERVER;
             }
-            if (cauldronLevel > 0 && data(stack) == null) {
-                boolean heated = BareHandDrinkHandler.isHeatedCauldron(level, pos);
-                fill(stack, sp, server, heated ? FlaskData.PURIFIED : FlaskData.DIRTY, true);
+            if (cauldronLevel > 0 && fill < this.capacity) {
+                // Upstream: vanilla cauldrons always hand over dirty water,
+                // one unit per use.
+                setFilled(stack, sp, server, fill + 1, FlaskData.DIRTY);
                 int newLevel = cauldronLevel - 1;
-                if (newLevel <= 0) {
-                    level.setBlock(pos, Blocks.CAULDRON.defaultBlockState(), 3);
-                } else {
-                    level.setBlock(pos, state.setValue(LayeredCauldronBlock.LEVEL, newLevel), 3);
-                }
+                level.setBlock(pos, newLevel <= 0
+                        ? Blocks.CAULDRON.defaultBlockState()
+                        : state.setValue(LayeredCauldronBlock.LEVEL, newLevel), 3);
                 return InteractionResult.SUCCESS_SERVER;
             }
             return InteractionResult.PASS;
         }
-
-        FluidState fluid = state.getFluidState();
-        boolean waterSource = fluid.is(Fluids.WATER) && fluid.isSource();
-        if (waterSource) {
-            if (!(level instanceof ServerLevel server) || !(player instanceof ServerPlayer sp)) {
-                return InteractionResult.SUCCESS;
-            }
-            if (sneak && data(stack) != null && data(stack).fillLevel() > 0) {
-                // Dump carried water back into the source
-                pour(stack, sp, server);
-                return InteractionResult.SUCCESS_SERVER;
-            }
-            if (data(stack) == null) {
-                boolean river = level.getBiome(pos).is(net.minecraft.tags.BiomeTags.IS_RIVER);
-                fill(stack, sp, server, river ? FlaskData.DIRTY : FlaskData.IMPURIFIED, false);
-                return InteractionResult.SUCCESS_SERVER;
-            }
-        }
         return InteractionResult.PASS;
     }
 
-    private static void fill(ItemStack stack, ServerPlayer sp, ServerLevel level, int quality, boolean cauldron) {
-        int capacity = ((LeatherFlaskItem) stack.getItem()).capacity();
-        stack.set(FlaskItems.FLASK_DATA, new FlaskData(capacity, quality));
+    /** Sets the flask content, plays the upstream fill feedback. */
+    private static void setFilled(ItemStack stack, ServerPlayer sp, ServerLevel level, int fill, int quality) {
+        stack.set(FlaskItems.FLASK_DATA, new FlaskData(fill, quality));
         stack.set(DataComponents.CONSUMABLE, FlaskItems.DRINK);
-        String purity = switch (quality) {
-            case FlaskData.PURIFIED -> "purified";
-            case FlaskData.DIRTY -> "dirty";
-            default -> "impure";
-        };
-        if (cauldron && quality == FlaskData.PURIFIED) {
-            sp.sendOverlayMessage(Component.literal("You scoop steaming boiled water - purified!"));
-        }
         level.playSound(null, sp.blockPosition(), SoundEvents.BOTTLE_FILL, SoundSource.PLAYERS, 1.0f, 1.0f);
         sp.awardStat(Stats.ITEM_USED.get(stack.getItem()));
-        sp.sendOverlayMessage(Component.literal("Filled flask (" + purity + " water)"));
     }
 
-    private static void pour(ItemStack stack, ServerPlayer sp, ServerLevel level) {
+    /** Decrements one unit; empties the flask when the last unit is gone. */
+    private static void setFillOrEmpty(ItemStack stack, ServerPlayer sp, ServerLevel level, int fill, int quality) {
+        if (fill <= 0) {
+            emptyFlask(stack, sp, level);
+            return;
+        }
+        stack.set(FlaskItems.FLASK_DATA, new FlaskData(fill, quality));
+        stack.set(DataComponents.CONSUMABLE, FlaskItems.DRINK);
+        level.playSound(null, sp.blockPosition(), SoundEvents.BOTTLE_EMPTY, SoundSource.PLAYERS, 1.0f, 1.0f);
+    }
+
+    /** Upstream sneak-use: drops the contents but keeps the flask itself. */
+    private static void emptyFlask(ItemStack stack, ServerPlayer sp, ServerLevel level) {
         stack.remove(FlaskItems.FLASK_DATA);
         stack.remove(DataComponents.CONSUMABLE);
         level.playSound(null, sp.blockPosition(), SoundEvents.BOTTLE_EMPTY, SoundSource.PLAYERS, 1.0f, 1.0f);
-        sp.sendOverlayMessage(Component.literal("Poured the flask out"));
+        sp.awardStat(Stats.ITEM_USED.get(stack.getItem()));
     }
 
     @Override
@@ -208,13 +226,9 @@ public final class LeatherFlaskItem extends Item {
         String purity = switch (data.qualityLevel()) {
             case FlaskData.PURIFIED -> "Purified";
             case FlaskData.DIRTY -> "Dirty";
-            default -> "Impure";
+            default -> "Impurified";
         };
-        net.minecraft.ChatFormatting color = switch (data.qualityLevel()) {
-            case FlaskData.PURIFIED -> net.minecraft.ChatFormatting.AQUA;
-            case FlaskData.DIRTY -> net.minecraft.ChatFormatting.GREEN;
-            default -> net.minecraft.ChatFormatting.GRAY;
-        };
-        lines.accept(Component.literal(purity + " water").withStyle(color));
+        lines.accept(Component.literal(purity + " water")
+                .withStyle(net.minecraft.ChatFormatting.GRAY));
     }
 }

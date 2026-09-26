@@ -307,11 +307,11 @@ public final class HearthwindSurvivalTemperature {
         if (environmentCode > 2) {
             if (cfg.exhaustionInsteadDehydration) {
                 if (player.getFoodData().getFoodLevel() > 6) {
-                    player.getFoodData().addExhaustion(cfg.overheatingExhaustion);
+                    player.causeFoodExhaustion(cfg.overheatingExhaustion);
                     calc += dimension.sweat(environmentCode - 3);
                 }
-            } else if (HearthwindSurvivalThirst.hydration(player) > 6.0) {
-                HearthwindSurvivalThirst.addHydration(player, -cfg.overheatingExhaustion);
+            } else {
+                HearthwindSurvivalThirst.addDehydration(player, cfg.overheatingExhaustion);
                 calc += dimension.sweat(environmentCode - 3);
             }
         }
@@ -369,9 +369,9 @@ public final class HearthwindSurvivalTemperature {
             player.hurt(createFreezingSource(player), 1.0F);
         } else if (body >= EnvironmentCorpus.bodyTemperature(6)) {
             if (cfg.exhaustionInsteadDehydration) {
-                player.getFoodData().addExhaustion(cfg.overheatingExhaustion);
+                player.causeFoodExhaustion(cfg.overheatingExhaustion);
             } else {
-                HearthwindSurvivalThirst.addHydration(player, -cfg.overheatingExhaustion);
+                HearthwindSurvivalThirst.addDehydration(player, cfg.overheatingExhaustion);
             }
         }
 

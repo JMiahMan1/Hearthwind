@@ -52,7 +52,8 @@ public final class BareHandDrinkHandler {
     }
 
     public static InteractionResult trySip(Player player, Level level) {
-        if (!player.getMainHandItem().isEmpty() || player.isSpectator() || !player.isShiftKeyDown()) {
+        if (!player.getMainHandItem().isEmpty() || player.isSpectator() || player.isCreative()
+                || !player.isShiftKeyDown()) {
             return InteractionResult.PASS;
         }
 
@@ -61,7 +62,7 @@ public final class BareHandDrinkHandler {
             return InteractionResult.PASS;
         }
 
-        if (HearthwindSurvivalThirst.hydration(player) >= HearthwindSurvivalThirst.MAX_HYDRATION) {
+        if (HearthwindSurvivalThirst.level(player) >= HearthwindSurvivalThirst.MAX_LEVEL) {
             return InteractionResult.PASS;
         }
 
@@ -112,31 +113,29 @@ public final class BareHandDrinkHandler {
             }
         }
 
-        // Proximity fallback: check within 1 block of player (feet, below, around)
-        BlockPos center = BlockPos.containing(player.getX(), player.getY(), player.getZ());
-        for (BlockPos check : BlockPos.betweenClosed(center.offset(-1, -1, -1), center.offset(1, 1, 1))) {
-            if (level.getFluidState(check).is(FluidTags.WATER) || level.getBlockState(check).is(Blocks.WATER)) {
-                return check.immutable();
-            }
-            BlockState state = level.getBlockState(check);
-            if (state.hasProperty(BlockStateProperties.WATERLOGGED) && state.getValue(BlockStateProperties.WATERLOGGED)) {
-                return check.immutable();
-            }
-            if (state.is(Blocks.WATER_CAULDRON) && state.getValue(net.minecraft.world.level.block.LayeredCauldronBlock.LEVEL) > 0) {
-                return check.immutable();
-            }
+        // Fallback for players standing INSIDE a source block: the fluid
+        // raycast can miss when the eye is submerged, and upstream
+        // players can sip while swimming face-down in water.
+        BlockPos own = player.blockPosition();
+        FluidState ownFluid = level.getFluidState(own);
+        if (ownFluid.is(FluidTags.WATER) && ownFluid.isSource()) {
+            return own;
+        }
+        BlockState ownState = level.getBlockState(own);
+        if (ownState.hasProperty(BlockStateProperties.WATERLOGGED) && ownState.getValue(BlockStateProperties.WATERLOGGED)) {
+            return own;
         }
         return null;
     }
 
     private static void completeSip(ServerPlayer sp, ServerLevel level, BlockPos pos, boolean still) {
         HearthwindSurvivalConfig.BareHand cfg = HearthwindSurvivalConfig.get().bareHand;
-        HearthwindSurvivalThirst.addHydration(sp, cfg.sipQuench > 0 ? cfg.sipQuench : 1.0);
+        HearthwindSurvivalThirst.addThirst(sp, Math.max(1, cfg.waterSourceQuench));
         // Drink hook parity: the hand is empty by rule, so this is a no-op
         // for unlisted stacks but keeps the same code path as flask drinks.
         HearthwindSurvivalDiet.onDrink(sp, sp.getMainHandItem());
 
-        float chance = (float) cfg.sipThirstChance;
+        float chance = (float) cfg.waterSipThirstChance;
         if (level.getFluidState(pos).is(PurifiedWater.PURIFIED_TAG)) {
             chance = 0f;
         } else if (level.getBiome(pos).is(net.minecraft.tags.BiomeTags.IS_RIVER)) {
@@ -144,7 +143,8 @@ public final class BareHandDrinkHandler {
         }
         if (chance > 0f && sp.getRandom().nextFloat() <= chance) {
             sp.addEffect(new MobEffectInstance(
-                    ThirstMobEffect.HOLDER, cfg.sipThirstDuration, 1));
+                    ThirstMobEffect.HOLDER, cfg.waterSipThirstDuration, 1,
+                    false, false, true));
         }
 
         if (cfg.consumeStillSource && still) {

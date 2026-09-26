@@ -40,6 +40,7 @@ public class HearthwindSurvival implements ModInitializer {
 		HearthwindSurvivalSpoilage.registerTickLoop();
 		FlaskItems.registerAll(msg -> LOGGER.info(msg));
 		PurifiedWater.registerAll(msg -> LOGGER.info(msg));
+		dev.jmiahman.hearthwind.survival.hydration.Hydration.registerAll(msg -> LOGGER.info(msg));
 		EnvironmentzItems.registerAll(msg -> LOGGER.info(msg));
 		BareHandDrinkHandler.register();
 		CommandRegistrationCallback.EVENT.register((dispatcher, ctx, sel) -> HearthwindDebugCommand.register(dispatcher));
