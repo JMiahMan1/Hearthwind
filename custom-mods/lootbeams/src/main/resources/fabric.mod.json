@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "id": "lootbeams",
+  "version": "26.2+0.1.0",
+  "name": "Lootbeams",
+  "description": "Coloured beams over dropped items, ported for 26.2 from Lootbeams 2.1.1 by SilverAndro (MPL-2.0).",
+  "authors": [
+    "SilverAndro"
+  ],
+  "license": "MPL-2.0",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "dev.silverandro.lootbeams.Lootbeams"
+    ],
+    "client": [
+      "dev.silverandro.lootbeams.LootbeamsClient"
+    ],
+    "fabric-gametest": [
+      "dev.silverandro.lootbeams.LootbeamsGameTests"
+    ]
+  },
+  "depends": {
+    "fabricloader": ">=0.19.5",
+    "minecraft": "~26.2",
+    "java": ">=25",
+    "fabric-api": "*"
+  }
+}

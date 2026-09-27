@@ -41,7 +41,7 @@
   {
    "project_id": "9J82qMn9",
    "filename": "nameplate-1.1.4.jar",
-   "reason": "W4 port queue (plan 5.2): nameplate - not yet ported"
+   "reason": "W4 port queue (plan 5.2): nameplate - Aged ships it disabled (config/nameplate.json sets showLevel=false, which gates the whole renderer; verified in the 1.1.4 bytecode), so there is nothing to match."
   },
   {
    "project_id": "9wv7LuMc",
@@ -72,11 +72,6 @@
    "project_id": "DCWEXia7",
    "filename": "astrocraft-1.4.5+1.20.1.jar",
    "reason": "W4 port queue (plan 5.2): astrocraft - not yet ported"
-  },
-  {
-   "project_id": "DHxukCC2",
-   "filename": "lootbeams-2.1.1+1.20.1.jar",
-   "reason": "W4 port queue (plan 5.2): lootbeams - not yet ported"
   },
   {
    "project_id": "Eeb4VkF6",
@@ -196,7 +191,7 @@
   {
    "project_id": "c4aa1Mqq",
    "filename": "inmisaddon-1.0.4.jar",
-   "reason": "Deferred with the accessory stack: adds Trinkets slots + on-back rendering to Inmis backpacks; revisit after Trinkets is ported (plan 5.2/5.7)."
+   "reason": "W4 port queue (plan 5.2): inmisaddon - deferred with the accessory stack: adds Trinkets slots + on-back rendering to Inmis backpacks; revisit after Trinkets."
   },
   {
    "project_id": "dGtrU8l3",

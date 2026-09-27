@@ -47,15 +47,10 @@ CUSTOM_MODS = ROOT / "custom-mods"
 REPORT_HINTS = ROOT / ".tmp" / "k3_parity_audit.md"
 
 ACTIONS = {"keep", "rebuild", "client-optional", "add", "dependency", "drop"}
-# In-house 26.2 ports of third-party mods (mirror of build_pack.PORTED_MODULES).
-PORTED_MODULES = (
-    "villagesandpillages", "letsdo-vinery", "letsdo-meadow", "letsdo-bakery",
-    "letsdo-candlelight", "letsdo-brewery", "letsdo-herbalbrews",
-    "letsdo-farm-and-charm", "letsdo-nethervinery",
-    "chipped", "dungeonz", "athena", "exposure",
-    "passable-foliage", "profundis", "adventurez", "fleshz",
-    "smallships",
-)
+# In-house 26.2 ports of third-party mods. Imported from build_pack so the
+# two scripts can never drift (a stale copy once made the gate reject a port).
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from build_pack import PORTED_MODULES  # noqa: E402
 # Manifest rebuild groups map to the hearthwind module that replaces them.
 REBUILD_GROUP_MODULES = {
     "aged-survival": "hearthwind-survival",

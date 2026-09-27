@@ -113,10 +113,13 @@ Eight optional professions (Miner, Farmer, Fisher, Warrior, Smither, Brewer, Bui
 
 ## Visual Inventory & UI Look & Feel
 
-- **Main Menu (Aged 3.1.2 Parity)**:
-  - Custom HearthWind panoramic start screen with cabin and autumnal breeze.
-  - Left-aligned button stack at `x = width / 9` with authentic hover tints (`#EEDAC3`, `#A1B8B5`, `#6AA7BA`, `#BFA8BF`, `#EB9484`).
-  - Top-right 20×20 icon buttons (Discord, Modrinth, Language, Accessibility).
+- **Menus (Aged 3.1.2 parity)**: the pack ships Aged's FancyMenu layouts
+  and artwork for the title, sound and universal screens, with only the
+  window title changed to "Hearthwind".
+- **Item drop beams (LootBeams parity)**: dropped items shine a small
+  coloured beam - the colour comes from the item's rarity or a custom
+  name, plain white items stay dark, enchanted drops sparkle, and a beam
+  appears once the drop is twelve ticks old.
 - **Inventory Tab Strip (Aged 3.1.2 parity)**:
   - The four LibZ tabs (Inventory Bag / Skills / Jobs / Party) sit above the
     real vanilla inventory at the modpack's exact geometry: 25 GUI px pitch,

@@ -359,9 +359,9 @@ gametest captures `.tmp/shots/cgt/0022_tour_inventory.png` and
 | Body-status icon above the hotbar centre | EnvironmentZ | hearthwind-client | ✅ |
 | Season line top-left `Season, Day N/M` | SeasonHUD | `SeasonHud` | ✅ day count derives from the live day length (Time & Wind port) |
 | Hunger/saturation preview | AppleSkin | AppleSkin 26.2 | ✅ |
-| Hearts/armor past 10 drawn as coloured overlay rows | **Overflowing Bars** | vanilla stacking rows | ❌ adopt (26.2 build exists). This matters because LevelZ health grows hearts |
-| Mob level/name plates | **Nameplate** | none | ❌ port |
-| Item drop beams | **LootBeams** | none | ❌ port |
+| Hearts/armor past 10 drawn as coloured overlay rows | **Overflowing Bars** | `OverflowingBars-v26.2.0-mc26.2.x-Fabric.jar` | ✅ shipped (W2 adopt). This matters because LevelZ health grows hearts |
+| Mob level/name plates | **Nameplate** | none | ➖ not needed: Aged ships `config/nameplate.json` with `showLevel=false`, which the 1.1.4 bytecode uses as the first gate of the whole renderer - Aged 3.1.2 shows no nameplates |
+| Item drop beams | **LootBeams** | hearthwind `lootbeams` | ✅ ported 0.1.13 (rarity/name colour, white hidden, enchant sparkles, 12-tick age gate) |
 | Long days: 20 min day + 10 min night | **Time & Wind** (`dayDuration 24000`, `nightDuration 12000`) | hearthwind-world `TimeAndWind` | ✅ 2026-09-26 port. Reads Aged's `config/time-and-wind/` files; day runs at 0.5x clock rate, night 1.0x, sleeping races the clock (Aged's config is v1-patched by the upstream mod to 30x, which the port mirrors), rates travel in vanilla time packets so every client sees the correct sky |
 | Particles, camera, first-person body | FBP, Particular, Camera Overhaul, First-person Model, 3D Skin Layers, Spawn Animations, ImmersiveThunder | none | ❌ (5.1 / 5.2) |
 | Comfort status card beside inventory | none | hearthwind-client | ➕ Hearthwind addition: keep or hide? (team decision) |

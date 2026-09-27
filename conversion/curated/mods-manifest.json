@@ -236,6 +236,14 @@
    "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
   },
   {
+   "file": "lootbeams",
+   "slug": "lootbeams",
+   "project_id": "DHxukCC2",
+   "action": "rebuild",
+   "note": "MPL-2.0. Ported as a Hearthwind module from the shipped 2.1.1+1.20.1 jar (Aged ships no config, so upstream defaults apply): dust beam in the item's rarity/name colour, white drops hidden, enchanted items get enchant particles, age and 64-block distance gates.",
+   "realized_by": "lootbeams"
+  },
+  {
    "file": "backslot",
    "slug": "backslot",
    "project_id": "1H9ZkJwF",
