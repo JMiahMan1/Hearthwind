@@ -9,7 +9,9 @@
 		"HearthwindSeasonalBerryMixin",
 		"HearthwindSeasonalCocoaMixin",
 		"HearthwindWinterBreedingMixin",
-		"FeatureSorterCycleDebugMixin"
+		"FeatureSorterCycleDebugMixin",
+		"ServerLevelTimeMixin",
+		"ServerLevelTimeAccessor"
 	],
 	"injectors": {
 		"defaultRequire": 1

@@ -12,7 +12,8 @@ public final class HearthwindWorldConfig {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     private static final String FILE = "hearthwind_world.json";
 
-    public int daysPerSeason = 21;
+    /** Aged's seasons.json length; the day count follows the live day length. */
+    public int seasonLengthTicks = 504000;
     public double winterTempOffset = -3.0;
     public double summerTempOffset = 2.0;
     public double springTempOffset = 0.5;

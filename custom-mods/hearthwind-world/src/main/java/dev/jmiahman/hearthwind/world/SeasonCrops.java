@@ -98,7 +98,10 @@ public final class SeasonCrops {
 
     /** Convenience overload: resolves the season from the level's day. */
     public static double multiplier(Block block, net.minecraft.server.level.ServerLevel level) {
-        return multiplier(block, Season.fromWorldTime(level.getGameTime(), HearthwindWorldConfig.get().daysPerSeason));
+        return multiplier(block, Season.fromWorldTime(level.getGameTime(),
+                HearthwindWorld.daysPerSeason(level),
+                dev.jmiahman.hearthwind.world.time.TimeAndWind.cycleTicks(
+                        level.dimension().identifier().toString())));
     }
 
     /**

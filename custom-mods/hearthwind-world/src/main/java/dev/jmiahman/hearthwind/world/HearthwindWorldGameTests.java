@@ -14,9 +14,16 @@ public final class HearthwindWorldGameTests {
 
     @GameTest
     public void seasonLengthDefaultsToAgedParity(GameTestHelper helper) {
-        // Aged config/seasons.json: 504000 ticks per season = 21 days.
-        helper.assertTrue(HearthwindWorldConfig.get().daysPerSeason == 21,
-                "daysPerSeason must default to 21, got " + HearthwindWorldConfig.get().daysPerSeason);
+        // Aged config/seasons.json: 504000 ticks per season; the displayed
+        // day count follows the live day length (21 vanilla days, 14 with
+        // Time & Wind's 36000-tick cycle).
+        helper.assertTrue(HearthwindWorldConfig.get().seasonLengthTicks == 504000,
+                "seasonLengthTicks must default to 504000, got "
+                        + HearthwindWorldConfig.get().seasonLengthTicks);
+        helper.assertTrue(HearthwindWorld.daysPerSeason(24000L) == 21,
+                "504000 ticks must read 21 vanilla days, got " + HearthwindWorld.daysPerSeason(24000L));
+        helper.assertTrue(HearthwindWorld.daysPerSeason(36000L) == 14,
+                "504000 ticks must read 14 Time & Wind days, got " + HearthwindWorld.daysPerSeason(36000L));
         helper.succeed();
     }
 
@@ -36,10 +43,13 @@ public final class HearthwindWorldGameTests {
     @GameTest
     public void seasonFromWorldTimeUsesGameTime(GameTestHelper helper) {
         int days = 18;
-        helper.assertTrue(Season.fromWorldTime(0, days) == Season.SPRING, "gt 0 -> spring");
+        helper.assertTrue(Season.fromWorldTime(0, days, 24000L) == Season.SPRING, "gt 0 -> spring");
         long summerStart = days * 24000L;
-        helper.assertTrue(Season.fromWorldTime(summerStart, days) == Season.SUMMER,
+        helper.assertTrue(Season.fromWorldTime(summerStart, days, 24000L) == Season.SUMMER,
                 "gt = 18 days -> summer");
+        // Aged's Time & Wind day is 36000 ticks (24000 day + 12000 night).
+        helper.assertTrue(Season.fromWorldTime(days * 36000L, days, 36000L) == Season.SUMMER,
+                "gt = 18 Time & Wind days -> summer");
         helper.succeed();
     }
 
@@ -80,11 +90,62 @@ public final class HearthwindWorldGameTests {
         long gtSummer = days * 24000L;
         long gtAutumn = 2L * days * 24000L;
         long gtWinter = 3L * days * 24000L;
-        helper.assertTrue(Season.fromWorldTime(gtSpring, days) == Season.SPRING, "gt 0 is spring");
-        helper.assertTrue(Season.fromWorldTime(gtSummer, days) == Season.SUMMER, "gt 18 days is summer");
-        helper.assertTrue(Season.fromWorldTime(gtAutumn, days) == Season.AUTUMN, "gt 36 days is autumn");
-        helper.assertTrue(Season.fromWorldTime(gtWinter, days) == Season.WINTER, "gt 54 days is winter");
+        helper.assertTrue(Season.fromWorldTime(gtSpring, days, 24000L) == Season.SPRING, "gt 0 is spring");
+        helper.assertTrue(Season.fromWorldTime(gtSummer, days, 24000L) == Season.SUMMER, "gt 18 days is summer");
+        helper.assertTrue(Season.fromWorldTime(gtAutumn, days, 24000L) == Season.AUTUMN, "gt 36 days is autumn");
+        helper.assertTrue(Season.fromWorldTime(gtWinter, days, 24000L) == Season.WINTER, "gt 54 days is winter");
         helper.succeed();
+    }
+
+    @GameTest
+    public void timeAndWindRatesMatchAgedConfig(GameTestHelper helper) {
+        var agedDay = new dev.jmiahman.hearthwind.world.time.TimeAndWindConfig.TimeData(24000, 12000);
+        helper.assertTrue(dev.jmiahman.hearthwind.world.time.TimeAndWind.phaseRate(1000L, agedDay) == 0.5F,
+                "Aged's 24000-tick day must run the clock at half speed");
+        helper.assertTrue(dev.jmiahman.hearthwind.world.time.TimeAndWind.phaseRate(13000L, agedDay) == 1.0F,
+                "Aged's 12000-tick night must stay vanilla speed");
+        var shortDay = new dev.jmiahman.hearthwind.world.time.TimeAndWindConfig.TimeData(6000, 24000);
+        helper.assertTrue(dev.jmiahman.hearthwind.world.time.TimeAndWind.phaseRate(1000L, shortDay) == 2.0F,
+                "a 6000-tick day must run the clock at double speed");
+        helper.assertTrue(dev.jmiahman.hearthwind.world.time.TimeAndWind.phaseRate(13000L, shortDay) == 0.5F,
+                "a 24000-tick night must run the clock at half speed");
+        helper.assertTrue(dev.jmiahman.hearthwind.world.time.TimeAndWind.rateFor(13000L, agedDay, true, 30) == 30.0F,
+                "sleeping players must race the clock at the configured speed");
+        helper.succeed();
+    }
+
+    @GameTest
+    public void timeAndWindScalesTheOverworldClock(GameTestHelper helper) {
+        var level = helper.getLevel();
+        var clock = level.dimensionType().defaultClock().orElseThrow();
+        var clocks = level.getServer().clockManager();
+        long original = clocks.getTotalTicks(clock);
+        dev.jmiahman.hearthwind.world.time.TimeAndWind.setDimensionDataForTesting("minecraft:overworld", 24000, 12000);
+        try {
+            clocks.setTotalTicks(clock, 1000L);
+            dev.jmiahman.hearthwind.world.time.TimeAndWind.tickLevel(level);
+            helper.assertTrue(rateOf(clocks, clock) == 0.5F,
+                    "day rate must be 0.5 with Aged's 24000-tick day, got " + rateOf(clocks, clock));
+            clocks.setTotalTicks(clock, 13000L);
+            dev.jmiahman.hearthwind.world.time.TimeAndWind.tickLevel(level);
+            helper.assertTrue(rateOf(clocks, clock) == 1.0F,
+                    "night rate must stay vanilla with Aged's 12000-tick night, got " + rateOf(clocks, clock));
+        } finally {
+            dev.jmiahman.hearthwind.world.time.TimeAndWind.resetForTesting();
+            clocks.setTotalTicks(clock, original);
+            dev.jmiahman.hearthwind.world.time.TimeAndWind.tickLevel(level);
+        }
+        helper.succeed();
+    }
+
+    private static float rateOf(net.minecraft.world.clock.ServerClockManager clocks,
+            net.minecraft.core.Holder<net.minecraft.world.clock.WorldClock> clock) {
+        for (var entry : clocks.packState().clocks().entrySet()) {
+            if (entry.getKey().is(net.minecraft.world.clock.WorldClocks.OVERWORLD)) {
+                return entry.getValue().rate();
+            }
+        }
+        return Float.NaN;
     }
 
     @GameTest

@@ -100,10 +100,11 @@ Eight optional professions (Miner, Farmer, Fisher, Warrior, Smither, Brewer, Bui
 ## World, Seasons & Water Dynamics
 
 - **21-Day Seasons (SeasonHUD parity)**:
-  - Season duration set to **21 days** (`daysPerSeason = 21`), matching Aged's `seasons.json` (504000 ticks per season). Existing `config/hearthwind_world.json` files keep their saved value.
+  - Season length set to **504000 ticks** (`seasonLengthTicks`, matching Aged's `seasons.json`); the displayed day count divides it by the live day length - 21 days in a vanilla-length world, 14 days with the shipped Time & Wind day (36000 ticks). Existing `config/hearthwind_world.json` files keep their saved value.
   - Top-left HUD widget at GUI `(2, 2)` displaying a 9×9 procedural seasonal pixel badge + single-line formatted text: `"Season, Day N/21"`.
   - Season text tinting: Spring `#FFA3BB`, Summer `#FFFEE92A`, Autumn `#FFBC5E27`, Winter `#FFE0FCFC`; the badge uses the same palette with pixel highlights and shadows.
   - Per-crop seasonal growth multipliers (37 crop types loaded from `seasons/crop/*.json`: 15 vanilla + tomato/lettuce/strawberry/corn/onion/oats/barley, tea/coffee/rooibos/yerba-mate, all grape bushes, hops — frost-tender crops stall in winter, hardy oats/barley creep, grapes peak in fall).
+- **Long Days, Short Nights (Time & Wind parity)**: a Minecraft day is now 20 real minutes of daylight followed by 10 real minutes of night (`config/time-and-wind/time-data.json`, shipped like Aged's). Sleeping no longer teleports the clock to dawn - the night races forward at 30x while everyone sleeps, then the world wakes up at sunrise (Aged's shipped v1 config is patched to the same 30x by the upstream mod; `enableNightSkipAcceleration` / `accelerationSpeed` stay editable).
 - **River Currents & Ocean Swell**:
   - Gentle downhill river flow and oceanic tidal wave swell.
   - Directional splash, surface bubbles, and bubble pops (`ParticleTypes.SPLASH` / `ParticleTypes.BUBBLE_POP` / `ParticleTypes.BUBBLE`) visibly stream in the direction of the water current.

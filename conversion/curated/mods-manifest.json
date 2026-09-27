@@ -390,9 +390,9 @@
    "file": "time-and-wind",
    "slug": "time-wind",
    "project_id": "e7pPr7RQ",
-   "action": "keep",
-   "reason": "Day-length tuning; not mission-critical",
-   "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
+   "action": "rebuild",
+   "note": "Aged ships 1.20.1 (GPL-3.0). Hearthwind reimplements the behaviour for 26.2: day 24000 / night 12000 world-clock ticks from config/time-and-wind/, clocks scaled via the vanilla world-clock rate so every client sees the custom sky, and sleeping races the night at the configured acceleration instead of vanilla's instant jump.",
+   "realized_by": "hearthwind-world"
   },
   {
    "file": "crop_growth_modifier",

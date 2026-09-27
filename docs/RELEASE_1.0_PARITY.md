@@ -357,23 +357,23 @@ gametest captures `.tmp/shots/cgt/0022_tour_inventory.png` and
 | Thirst droplets above hunger | Dehydration | hearthwind-client | ✅ |
 | Thermometer right of hotbar (2.0.8 draws no unit box or trend arrow) | EnvironmentZ | hearthwind-client `TempHud` | ✅ |
 | Body-status icon above the hotbar centre | EnvironmentZ | hearthwind-client | ✅ |
-| Season line top-left `Season, Day N/M` | SeasonHUD | `SeasonHud` | 🟡 text depends on day length (see below) |
+| Season line top-left `Season, Day N/M` | SeasonHUD | `SeasonHud` | ✅ day count derives from the live day length (Time & Wind port) |
 | Hunger/saturation preview | AppleSkin | AppleSkin 26.2 | ✅ |
 | Hearts/armor past 10 drawn as coloured overlay rows | **Overflowing Bars** | vanilla stacking rows | ❌ adopt (26.2 build exists). This matters because LevelZ health grows hearts |
 | Mob level/name plates | **Nameplate** | none | ❌ port |
 | Item drop beams | **LootBeams** | none | ❌ port |
-| Long days: 20 min day + 10 min night | **Time & Wind** (`dayDuration 24000`, `nightDuration 12000`) | vanilla 20 min cycle | ❌ port. Biggest single feel difference |
+| Long days: 20 min day + 10 min night | **Time & Wind** (`dayDuration 24000`, `nightDuration 12000`) | hearthwind-world `TimeAndWind` | ✅ 2026-09-26 port. Reads Aged's `config/time-and-wind/` files; day runs at 0.5x clock rate, night 1.0x, sleeping races the clock (Aged's config is v1-patched by the upstream mod to 30x, which the port mirrors), rates travel in vanilla time packets so every client sees the correct sky |
 | Particles, camera, first-person body | FBP, Particular, Camera Overhaul, First-person Model, 3D Skin Layers, Spawn Animations, ImmersiveThunder | none | ❌ (5.1 / 5.2) |
 | Comfort status card beside inventory | none | hearthwind-client | ➕ Hearthwind addition: keep or hide? (team decision) |
 
 **Season day count.** Aged runs 504000-tick seasons with Time & Wind's
-36000-tick days, and SeasonHUD computes `springLength / day_length`. The
-shipped Aged configs give 14 days, yet the reference capture shows `/18`
-(likely a different config at capture time). What is certain is the tick
-length: an Aged season is 504000 ticks (about 7 real hours). With vanilla
-24000-tick days, 21 days matches that, so the default is 21. When Time &
-Wind parity lands, store season length **in ticks** (504000) and derive the
-displayed day count from the real day length, as SeasonHUD does.
+36000-tick days; SeasonHUD divides the season length by the live day length,
+which reads 14 days with Aged's shipped config (the reference capture shows
+`/18`, likely a different config at capture time - the tick length is what is
+certain: 504000 ticks, about 7 real hours). Hearthwind stores
+`seasonLengthTicks = 504000` and derives the displayed day count from the
+world clock, so a vanilla 24000-tick world still reads 21 days while the
+shipped Time & Wind data reads 14, exactly like Aged.
 
 **Inventory screen**
 

@@ -34,9 +34,13 @@ public record SeasonSyncPayload(int seasonOrdinal, int dayOfSeason, int daysPerS
         return TYPE;
     }
 
-    /** Pure day math so gametests can cover it without a level. */
-    public static SeasonSyncPayload ofGameTime(long gameTime, int daysPerSeason) {
-        long day = gameTime / 24000L;
+    /**
+     * Pure day math so gametests can cover it without a level.
+     * {@code cycleTicks} is the world-clock length of one Minecraft day
+     * (24000 vanilla, 36000 with Aged's Time &amp; Wind data).
+     */
+    public static SeasonSyncPayload ofGameTime(long gameTime, int daysPerSeason, long cycleTicks) {
+        long day = gameTime / (cycleTicks <= 0 ? 24000L : cycleTicks);
         Season season = Season.fromDay(day, daysPerSeason);
         int dayOfSeason = (int) (Math.floorMod(day, daysPerSeason) + 1L);
         return new SeasonSyncPayload(season.ordinal(), dayOfSeason, daysPerSeason);

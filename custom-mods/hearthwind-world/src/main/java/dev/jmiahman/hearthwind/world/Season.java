@@ -16,8 +16,11 @@ public enum Season {
         };
     }
 
-    public static Season fromWorldTime(long gameTime, int daysPerSeason) {
-        long day = gameTime / 24000L;
+    public static Season fromWorldTime(long gameTime, int daysPerSeason, long cycleTicks) {
+        if (cycleTicks <= 0) {
+            cycleTicks = 24000L;
+        }
+        long day = gameTime / cycleTicks;
         return fromDay(day, daysPerSeason);
     }
 

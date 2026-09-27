@@ -20,9 +20,11 @@ public class HearthwindWorld implements ModInitializer {
 	@Override
 	public void onInitialize() {
 		HearthwindWorldConfig.get();
+		dev.jmiahman.hearthwind.world.time.TimeAndWind.load(
+				net.fabricmc.loader.api.FabricLoader.getInstance().getConfigDir());
 		ServerLifecycleEvents.SERVER_STARTING.register(server -> SeasonCrops.load(server.getResourceManager()));
-		LOGGER.info("Hearthwind World initialized: seasons-lite {} days/season, crop x[sp {} su {} au {} wi {}] temp offsets [sp {} su {} wi {}]",
-				HearthwindWorldConfig.get().daysPerSeason,
+		LOGGER.info("Hearthwind World initialized: seasons-lite {} ticks/season, crop x[sp {} su {} au {} wi {}] temp offsets [sp {} su {} wi {}]",
+				HearthwindWorldConfig.get().seasonLengthTicks,
 				HearthwindWorldConfig.get().springCropMultiplier,
 				HearthwindWorldConfig.get().summerCropMultiplier,
 				HearthwindWorldConfig.get().autumnCropMultiplier,
@@ -47,16 +49,21 @@ public class HearthwindWorld implements ModInitializer {
 		ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
 			SeasonSyncPayload payload = SeasonSyncPayload.ofGameTime(
 					server.overworld().getGameTime(),
-					HearthwindWorldConfig.get().daysPerSeason);
+					daysPerSeason(server.overworld()),
+					seasonCycleTicks(server.overworld()));
 			ServerPlayNetworking.send(handler.getPlayer(), payload);
 		});
 		ServerTickEvents.END_SERVER_TICK.register(server -> {
+			for (net.minecraft.server.level.ServerLevel level : server.getAllLevels()) {
+				dev.jmiahman.hearthwind.world.time.TimeAndWind.tickLevel(level);
+			}
 			if (server.getTickCount() % 100 != 0) {
 				return;
 			}
 			SeasonSyncPayload payload = SeasonSyncPayload.ofGameTime(
 					server.overworld().getGameTime(),
-					HearthwindWorldConfig.get().daysPerSeason);
+					daysPerSeason(server.overworld()),
+					seasonCycleTicks(server.overworld()));
 			if (lastBroadcast != null
 					&& lastBroadcast.seasonOrdinal() == payload.seasonOrdinal()
 					&& lastBroadcast.dayOfSeason() == payload.dayOfSeason()) {
@@ -70,6 +77,29 @@ public class HearthwindWorld implements ModInitializer {
 	}
 
 	public static Season currentSeason(net.minecraft.server.level.ServerLevel world) {
-		return Season.fromWorldTime(world.getGameTime(), HearthwindWorldConfig.get().daysPerSeason);
+		return Season.fromWorldTime(world.getGameTime(), daysPerSeason(world), seasonCycleTicks(world));
+	}
+
+	/** One Minecraft day in world-clock ticks (varies with Time & Wind data). */
+	public static long seasonCycleTicks(net.minecraft.server.level.ServerLevel level) {
+		return dev.jmiahman.hearthwind.world.time.TimeAndWind.cycleTicks(
+				level.dimension().identifier().toString());
+	}
+
+	/**
+	 * Season length divided by the live day length: 21 days at vanilla's
+	 * 24000-tick cycle, 14 days with Aged's Time &amp; Wind data (504000 /
+	 * 36000). SeasonHUD renders this number, exactly like Aged.
+	 */
+	public static int daysPerSeason(long cycleTicks) {
+		return (int) Math.max(1L, HearthwindWorldConfig.get().seasonLengthTicks / Math.max(1L, cycleTicks));
+	}
+
+	public static int daysPerSeason(net.minecraft.server.level.ServerLevel level) {
+		return daysPerSeason(seasonCycleTicks(level));
+	}
+
+	public static int daysPerSeason(String dimensionId) {
+		return daysPerSeason(dev.jmiahman.hearthwind.world.time.TimeAndWind.cycleTicks(dimensionId));
 	}
 }

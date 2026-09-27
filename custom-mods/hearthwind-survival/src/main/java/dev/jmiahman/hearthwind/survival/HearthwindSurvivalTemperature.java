@@ -283,7 +283,10 @@ public final class HearthwindSurvivalTemperature {
             dev.jmiahman.hearthwind.world.Season season =
                     dev.jmiahman.hearthwind.world.Season.fromWorldTime(
                             player.level().getGameTime(),
-                            dev.jmiahman.hearthwind.world.HearthwindWorldConfig.get().daysPerSeason);
+                            dev.jmiahman.hearthwind.world.HearthwindWorld.daysPerSeason(
+                                    player.level().dimension().identifier().toString()),
+                            dev.jmiahman.hearthwind.world.time.TimeAndWind.cycleTicks(
+                                    player.level().dimension().identifier().toString()));
             int seasonOff = (int) Math.round(season.tempOffset(
                     dev.jmiahman.hearthwind.world.HearthwindWorldConfig.get()));
             calc += seasonOff;
