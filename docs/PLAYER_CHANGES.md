@@ -70,7 +70,7 @@ Mastering a skill past the level curve unlocks a passive perk. Chances and bonus
 
 Eight optional professions (Miner, Farmer, Fisher, Warrior, Smither, Brewer, Builder, Lumberjack):
 - Join and manage via `/job join <job>`, `/job leave`, `/job info`.
-- Earn XP by performing trade-specific tasks following the job ladder.
+- Earn XP by performing trade-specific tasks following the job ladder: mining and chopping pay per block, kills pay warrior, crafting-table results and furnace/smoker/blast-furnace outputs pay the farmer/smither ladders, and every caught fish pays fisher - the item decides which job advances.
 - Crafting is gated by **skill** levels always; per-job recipe gating is opt-in (`jobCraftGating`, default off).
 - Respects Age technology gating: **Smither & Brewer unlock at Copper Age (Age 2)** - joining earlier fails, and their level-up bonus items are withheld until Age 2. Full quest/Age design: `docs/QUESTS_AND_AGES.md` (no quest mods by design; guide book + gates instead).
 

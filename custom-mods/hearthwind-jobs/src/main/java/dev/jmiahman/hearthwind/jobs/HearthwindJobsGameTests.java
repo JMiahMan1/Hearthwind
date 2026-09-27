@@ -2,7 +2,10 @@ package dev.jmiahman.hearthwind.jobs;
 
 import net.fabricmc.fabric.api.gametest.v1.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EntityTypes;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.GameType;
 
 public final class HearthwindJobsGameTests {
     public HearthwindJobsGameTests() {}
@@ -36,6 +39,19 @@ public final class HearthwindJobsGameTests {
         // xp -> level math: pointsPerLevel default 100, xpPerAction default 10 -> 10 actions per level
         pig.setAttached(JobState.STATE, new JobState.Data("miner", 250));
         helper.assertTrue(JobState.level(pig) == 2, "250 xp with 100/level = level 2, got " + JobState.level(pig));
+        helper.succeed();
+    }
+
+    @GameTest
+    public void itemAwardsUseTheItemId(GameTestHelper helper) {
+        // The crafting/furnace/fishing hooks all route the produced stack
+        // through JobEvents.awardItem, which pays the item registry id.
+        ServerPlayer player = (ServerPlayer) helper.makeMockServerPlayer(GameType.SURVIVAL);
+        player.setAttached(JobState.STATE, new JobState.Data("farmer", 0.0));
+        JobEvents.awardItem(player, new ItemStack(net.minecraft.world.item.Items.WHEAT));
+        helper.assertTrue(JobState.xp(player, "farmer") > 0.0,
+                "wheat must pay farmer xp, got " + JobState.xp(player, "farmer"));
+        JobEvents.awardItem(player, ItemStack.EMPTY);
         helper.succeed();
     }
 

@@ -30,8 +30,8 @@ items and initials mechanically.
 |---|---|---|---|---|
 | drink | sneak + hold right-click on still water; high dirty chance | same (50%, halved in rivers); uses up the source | ✅ | water/drinking_by_hand |
 | campfire | put water bottles on a lit campfire to purify | same (Dehydration boil: 1000 ticks, purified bottle potion) | ✅ | water/purifying |
-| campfire_cauldron | copper cauldron over a campfire boils water; bottles/flasks/buckets | a vanilla water cauldron over fire purifies **flasks only**; no campfire cauldron block | ❌ | water/purifying (flask part only) |
-| copper_cauldron | collects rain, acts as purified water | **not implemented** | ❌ | (none yet) |
+| campfire_cauldron | copper cauldron over a campfire boils water; bottles/flasks/buckets | ✅ implemented in hearthwind-survival (campfire cauldron boils bowls/bottles, block + BE registered); book entry still to write | 🟡 | (pending) |
+| copper_cauldron | collects rain, acts as purified water | ✅ implemented (copper cauldron family: rain, powdered, purified water, leveled); book entry still to write | 🟡 | (pending) |
 | bamboo_pump | pump fills bottles/flasks | **not implemented** | ❌ | (none yet) |
 | furnace | smelt water bucket to purified bucket | same | ✅ | water/purifying |
 | utilities | glass bottles, 5 flask tiers | same (2/3/4/5/6 sips) | ✅ | water/flasks |
@@ -122,7 +122,7 @@ perils/blackstone_golem, perils/the_eye, perils/ender_dragon.
 ## Fix queue (❌ rows), in order
 
 1. ~~Diet deficiency bug~~ done.
-2. Job XP sources: builder place, fisher catch, smither anvil/smithing/furnace output, farmer craft/smoke food, brewer brew.
+2. Job XP sources: **partially done 0.1.20** - crafting-table results, furnace/smoker/blast-furnace outputs and fishing catches now pay job XP (the item decides which ladder); smither anvil/smithing output, brewer brewing (potion-effect ladder) and builder placing remain deferred (anvil/smithing result slots are anonymous `ItemCombinerMenu` slots; builder has no place event).
 3. ~~Party XP sharing~~ done.
 4. Aged water chain: bottles on a lit campfire now boil and pop off the edge (done); copper (rain) cauldron, campfire cauldron and bamboo pump still to port.
 5. End Remastered eye sources (not a book entry in Aged, but the eyes are unobtainable).

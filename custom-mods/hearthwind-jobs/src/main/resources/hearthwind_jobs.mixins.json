@@ -5,7 +5,10 @@
 	"mixins": [
 		"CraftingGateAccessor",
 		"CraftingGateMixin",
-		"PlayerAdvancementsMixin"
+		"FishingHookJobXpMixin",
+		"FurnaceResultSlotJobXpMixin",
+		"PlayerAdvancementsMixin",
+		"ResultSlotJobXpMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

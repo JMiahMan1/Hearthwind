@@ -7,6 +7,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -41,5 +42,21 @@ public final class JobEvents {
 
     private static void sendJobSync(ServerPlayer sp) {
         JobsSync.send(sp);
+    }
+
+    /**
+     * Item-gain award shared by the crafting, furnace and fishing hooks:
+     * the paid XP comes from the item registry id against the player's
+     * current job ladders (wheat -> farmer, iron_ingot -> smither, ...).
+     */
+    public static void awardItem(ServerPlayer sp, ItemStack stack) {
+        if (sp == null || stack == null || stack.isEmpty()) {
+            return;
+        }
+        String id = BuiltInRegistries.ITEM.getKey(stack.getItem()).toString();
+        JobState.awardIfMatch(sp, id);
+        if (sp.connection != null) {
+            sendJobSync(sp);
+        }
     }
 }
