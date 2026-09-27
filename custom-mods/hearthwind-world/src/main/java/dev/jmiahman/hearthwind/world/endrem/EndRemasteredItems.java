@@ -22,23 +22,26 @@ public final class EndRemasteredItems {
     public static final Map<String, Item> EYES = new LinkedHashMap<>();
 
     public static final String[] EYE_IDS = {
-            "blacksmith_eye",
-            "nether_eye",
-            "desert_eye",
-            "ocean_eye",
-            "old_eye",
-            "rogue_eye",
+            "black_eye",
+            "cold_eye",
+            "corrupted_eye",
+            "cryptic_eye",
             "cursed_eye",
             "evil_eye",
+            "exotic_eye",
             "guardian_eye",
+            "lost_eye",
             "magical_eye",
-            "wither_eye",
-            "witch_eye",
+            "nether_eye",
+            "old_eye",
+            "rogue_eye",
             "undead_eye",
-            "cryptic_eye",
-            "corrupted_eye",
-            "lost_eye"
+            "witch_eye",
+            "wither_eye"
     };
+
+    /** Crafting parts shipped by the mod (undead soul, witch pupil). */
+    public static final String[] PART_IDS = {"undead_soul", "witch_pupil"};
 
     private EndRemasteredItems() {}
 
@@ -58,6 +61,18 @@ public final class EndRemasteredItems {
             EYES.put(id, item);
         }
 
-        logger.accept("End Remastered initialized: registered " + EYES.size() + " ancient eyes under 'endrem:' namespace");
+        for (String id : PART_IDS) {
+            ResourceKey<Item> key = ResourceKey.create(
+                    Registries.ITEM,
+                    Identifier.fromNamespaceAndPath(NAMESPACE, id));
+            Item item = new Item(new Item.Properties()
+                    .setId(key)
+                    .stacksTo(16)
+                    .rarity(Rarity.COMMON));
+            Registry.register(BuiltInRegistries.ITEM, key, item);
+        }
+
+        logger.accept("End Remastered initialized: registered " + EYES.size()
+                + " ancient eyes and " + PART_IDS.length + " parts under 'endrem:' namespace");
     }
 }
