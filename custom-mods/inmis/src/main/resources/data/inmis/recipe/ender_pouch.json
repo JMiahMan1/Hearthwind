@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "###",
+    "#X#",
+    "###"
+  ],
+  "key": {
+    "#": "minecraft:leather",
+    "X": "minecraft:ender_chest"
+  },
+  "result": "inmis:ender_pouch"
+}

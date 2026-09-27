@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "###",
+    "#X#",
+    "###"
+  ],
+  "key": {
+    "#": "minecraft:iron_ingot",
+    "X": "inmis:frayed_backpack"
+  },
+  "result": "inmis:plated_backpack"
+}

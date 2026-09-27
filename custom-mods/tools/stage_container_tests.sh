@@ -37,6 +37,7 @@ for d in "$REPO"/custom-mods/hearthwind-* \
          "$REPO"/custom-mods/fleshz \
          "$REPO"/custom-mods/exposure \
          "$REPO"/custom-mods/lavender \
+         "$REPO"/custom-mods/inmis \
          "$REPO"/custom-mods/passable-foliage \
          "$REPO"/custom-mods/profundis \
          "$REPO"/custom-mods/smallships \
@@ -61,6 +62,7 @@ for d in "$REPO"/custom-mods/hearthwind-*/build/libs \
           "$REPO"/custom-mods/fleshz/build/libs \
           "$REPO"/custom-mods/exposure/build/libs \
           "$REPO"/custom-mods/lavender/build/libs \
+          "$REPO"/custom-mods/inmis/build/libs \
           "$REPO"/custom-mods/passable-foliage/build/libs \
           "$REPO"/custom-mods/profundis/build/libs \
          "$REPO"/custom-mods/smallships/build/libs \

@@ -223,16 +223,16 @@
    "file": "inmis",
    "slug": "inmis",
    "project_id": "I0UYcPa0",
-   "action": "keep",
-   "reason": "Backpack slots stuck; use vanilla bundle rework in 26.x",
-   "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
+   "action": "rebuild",
+   "note": "Port of Draylar's Inmis for 26.2 (MIT): eight backpack tiers, ender pouch, B-key open, chest-slot equipping, upgrade keeps contents. Keyed through the real mod instead of the old placeholder items.",
+   "realized_by": "inmis"
   },
   {
    "file": "inmisaddon",
    "slug": "inmisaddon",
    "project_id": "c4aa1Mqq",
    "action": "keep",
-   "reason": "Depends on Inmis",
+   "reason": "Deferred with the accessory stack: adds Trinkets slots + on-back rendering to Inmis backpacks; revisit after Trinkets",
    "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
   },
   {

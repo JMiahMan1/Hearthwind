@@ -127,6 +127,12 @@ Eight optional professions (Miner, Farmer, Fisher, Warrior, Smither, Brewer, Bui
   - A small white **`Lv. N`** label at the bottom-left of the inventory
     preview shows your overall level, exactly like LevelZ: the average of
     your twelve skill levels, capped at 30.
+- **Backpacks (Inmis parity)**: eight backpack tiers with the pack's own
+  artwork - baby 3×1 up to endless 15×6 - plus the ender pouch. Equip one
+  in the chest slot or carry it, then press `B` to open it. Backpacks
+  never hold other backpacks or shulker boxes, and upgrading one at a
+  crafting table keeps everything inside. The Inmis Addon's Trinkets slot
+  and on-back rendering are not in yet (they need Trinkets).
 - **Menus (Aged 3.1.2 parity)**: Aged's FancyMenu configuration ships
   with the pack (custom title/sound/universal layouts and menu artwork);
   only the window title reads "Hearthwind". The vanilla title screen is

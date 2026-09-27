@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "id": "inmis",
+  "version": "26.2+0.1.0",
+  "name": "Inmis",
+  "description": "I need more inventory space! Backpacks for 26.2, ported from the 1.21 sources by Draylar (MIT).",
+  "authors": [
+    "Draylar"
+  ],
+  "contributors": [
+    "shedaniel",
+    "OmegaJak"
+  ],
+  "license": "MIT",
+  "icon": "assets/inmis/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "draylar.inmis.Inmis"
+    ],
+    "client": [
+      "draylar.inmis.client.InmisClient"
+    ],
+    "fabric-gametest": [
+      "draylar.inmis.InmisGameTests"
+    ]
+  },
+  "mixins": [
+    "inmis.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.19.5",
+    "minecraft": "~26.2",
+    "java": ">=25",
+    "fabric-api": "*"
+  }
+}

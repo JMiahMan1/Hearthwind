@@ -41,14 +41,17 @@ public final class ExplorationItems {
             registerItem("exposure", "album");
         }
 
-        // 3. Inmis Backpacks
-        registerItem("inmis", "baby_backpack");
-        registerItem("inmis", "frayed_backpack");
-        registerItem("inmis", "plated_backpack");
-        registerItem("inmis", "gilded_backpack");
-        registerItem("inmis", "bejeweled_backpack");
-        registerItem("inmis", "withered_backpack");
-        registerItem("inmis", "endless_backpack");
+        // 3. Inmis Backpacks - placeholders only when the real port is absent
+        // (the ported module owns these ids and their assets).
+        if (!net.fabricmc.loader.api.FabricLoader.getInstance().isModLoaded("inmis")) {
+            registerItem("inmis", "baby_backpack");
+            registerItem("inmis", "frayed_backpack");
+            registerItem("inmis", "plated_backpack");
+            registerItem("inmis", "gilded_backpack");
+            registerItem("inmis", "bejeweled_backpack");
+            registerItem("inmis", "withered_backpack");
+            registerItem("inmis", "endless_backpack");
+        }
 
         if (!net.fabricmc.loader.api.FabricLoader.getInstance().isModLoaded("adventurez")) {
             registerItem("adventurez", "warthog_shell_piece");
