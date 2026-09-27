@@ -24,8 +24,8 @@ import net.minecraft.world.item.Items;
  * item icons are drawn at {@code (+4, -17)}. Hover shows the tab title.
  *
  * <p>Tab art from LevelZ / JobsAddon / PartyAddon is GPL and is NOT copied:
- * the four tabs use vanilla item icons (bundle, iron sword, anvil, player
- * head) to reproduce the gallery silhouette legally.
+ * the four tabs use vanilla item icons (bundle, iron sword, iron axe, armor
+ * stand) to reproduce the gallery's bag/sword/axe/figure silhouette legally.
  */
 @Environment(EnvType.CLIENT)
 public final class TabStrip {
@@ -33,8 +33,8 @@ public final class TabStrip {
     public enum Tab {
         INVENTORY("Inventory [E]", Items.BUNDLE),
         SKILLS("Skills [K]", Items.IRON_SWORD),
-        JOBS("Jobs [J]", Items.ANVIL),
-        PARTY("Party [P]", Items.PLAYER_HEAD);
+        JOBS("Jobs [J]", Items.IRON_AXE),
+        PARTY("Party [P]", Items.ARMOR_STAND);
 
         public final String label;
         public final Item icon;

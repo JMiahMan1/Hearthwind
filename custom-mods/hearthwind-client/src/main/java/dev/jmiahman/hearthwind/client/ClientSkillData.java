@@ -37,13 +37,18 @@ public final class ClientSkillData {
     public static Map<String, Integer> knownLevels() { return KNOWN_LEVELS; }
     public static int level() { return level; }
 
-    /** LevelZ "overall level": the sum of every known skill level. */
+    /**
+     * LevelZ "overall level": the average of the twelve skill levels, floored.
+     * {@code PlayerStatsManager.getOverallLevel} caps it at LevelZ's max
+     * level 30, and the server-side {@code HearthwindLevels.overallLevel}
+     * keeps the same 30 cap for dungeon admission.
+     */
     public static int overallLevel() {
         int total = 0;
         for (int value : KNOWN_LEVELS.values()) {
             total += value;
         }
-        return total;
+        return Math.min(30, total / 12);
     }
     public static boolean isActive() {
         Minecraft mc = net.minecraft.client.Minecraft.getInstance();

@@ -44,5 +44,16 @@ public abstract class InventoryScreenButtonMixin extends AbstractContainerScreen
         if (hover) {
             graphics.setTooltipForNextFrame(Component.translatable("screen.nutritionz"), mouseX, mouseY);
         }
+
+        // LevelZ "inventorySkillLevel" parity: Aged's config/levelz.json5 sets
+        // inventorySkillLevel true with posX 0 / posY 62 and LevelZ renders
+        // "Lv. %d" (text.levelz.gui.short_level) at 0.6 scale in white.
+        var pose = graphics.pose();
+        pose.pushMatrix();
+        pose.translate(this.leftPos, this.topPos + 62);
+        pose.scale(0.6f, 0.6f);
+        graphics.text(this.font, "Lv. " + dev.jmiahman.hearthwind.client.ClientSkillData.overallLevel(),
+                0, 0, 0xFFFFFFFF, true);
+        pose.popMatrix();
     }
 }
