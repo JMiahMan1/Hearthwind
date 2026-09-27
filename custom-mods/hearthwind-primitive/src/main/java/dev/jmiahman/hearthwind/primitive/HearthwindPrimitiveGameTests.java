@@ -853,10 +853,10 @@ public final class HearthwindPrimitiveGameTests {
         helper.setBlock(pos, net.minecraft.world.level.block.Blocks.BLAST_FURNACE);
         var be = helper.getBlockEntity(pos,
                 net.minecraft.world.level.block.entity.BlastFurnaceBlockEntity.class);
-        be.setItem(0, new ItemStack(net.minecraft.world.item.Items.IRON_INGOT, 2));
+        be.setItem(0, new ItemStack(net.minecraft.world.item.Items.IRON_INGOT, 3));
         be.setItem(1, new ItemStack(net.minecraft.world.item.Items.COAL, 8));
-        be.setItem(3, new ItemStack(net.minecraft.world.item.Items.COAL, 2));
-        runFurnaceTicks(helper, be, 5300);
+        be.setItem(3, new ItemStack(net.minecraft.world.item.Items.COAL, 1));
+        runFurnaceTicks(helper, be, 700);
         helper.assertTrue(be.getItem(2).is(HearthwindPrimitiveItems.STEEL_INGOT),
                 "steel ingot must be produced, got " + be.getItem(2));
         helper.assertTrue(be.getItem(0).isEmpty(), "iron ingot must be consumed");
@@ -870,12 +870,12 @@ public final class HearthwindPrimitiveGameTests {
         helper.setBlock(pos, net.minecraft.world.level.block.Blocks.BLAST_FURNACE);
         var be = helper.getBlockEntity(pos,
                 net.minecraft.world.level.block.entity.BlastFurnaceBlockEntity.class);
-        be.setItem(0, new ItemStack(net.minecraft.world.item.Items.IRON_INGOT, 2));
+        be.setItem(0, new ItemStack(net.minecraft.world.item.Items.IRON_INGOT, 3));
         be.setItem(1, new ItemStack(net.minecraft.world.item.Items.COAL, 2));
-        runFurnaceTicks(helper, be, 5300);
+        runFurnaceTicks(helper, be, 700);
         helper.assertTrue(be.getItem(2).isEmpty(),
                 "no steel may be produced without the extra-slot coal");
-        helper.assertTrue(be.getItem(0).getCount() == 2, "iron must remain untouched");
+        helper.assertTrue(be.getItem(0).getCount() == 3, "iron must remain untouched");
         helper.succeed();
     }
 

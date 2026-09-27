@@ -141,8 +141,11 @@ Still open (do these first, section 6, W0):
   - ~~Party XP sharing was not wired.~~ Fixed 2026-09-24 to PartyAddon's real
     behaviour (orb XP pools at the leader, split evenly among members in the
     leader's level); see 5.10 for the advertised-but-unapplied bonus.
-  - End Remastered eyes (16 `endrem:*_eye` items) have no recipe or loot
-    source, and throwing one only consumes it (no eye entity to follow).
+  - End Remastered: the 16 `endrem:*_eye` items plus `undead_soul`/`witch_pupil`
+    now match 5.2.4 (ids, CC0 art, lore lang, 0.1.19), but acquisition is still
+    unauthored (upstream drives it from code - `ERTrades`, loot hooks - which we
+    have not ported) and eyes insert into vanilla end portal frames rather than
+    upstream's `ancient_portal_frame` block: tracked deviation.
   - `SkillInfoScreen` (skill drill-down) can't be opened in play.
   - Docs describing a "5 food groups" diet are wrong: the implementation is
     Aged's NutritionZ model (Carbohydrates, Protein, Fat, Vitamins, Minerals,
@@ -296,8 +299,8 @@ writes it in the Decision column of the tracker (section 8).
 | `autotag` | datapack | tags shipped in conversion/datapacks/hearthwind |
 | `crop-growth-modifier` | hearthwind-world `SeasonCrops` | 15 per-crop multipliers live |
 | `dehydration` | hearthwind-survival | ✅ 0.1.18 audit: flask dirty-water 200t, bad-potion roll 15%/300t, hydration corpus and bowl quench all match Aged's dehydration.json5 |
-| `earlystage` | hearthwind-primitive | steel recipe matches Aged (2 iron + 2 coal, extra blast-furnace slot @5200t); knapping on crafting_rock pending |
-| `endrem` | hearthwind-world `EndRemasteredItems` | DECISION: upstream has Fabric 26.1.2 (nudge-port). In-house version: verify eye set + stronghold frame vs 5.2.4 |
+| `earlystage` | hearthwind-primitive | steel blasting matches Aged 1.1.1 (3 iron + 1 coal -> 1 steel @600t, extra blast-furnace slot); knapping on crafting_rock pending |
+| `endrem` | hearthwind-world `EndRemasteredItems` | ✅ items/art/lang parity 0.1.19 (16 upstream eyes + `undead_soul`/`witch_pupil`, CC0 textures and lore); deviation: eyes still insert into vanilla end portal frames instead of upstream's `ancient_portal_frame` block, and code-driven acquisition is not ported |
 | `environmentz` | hearthwind-survival | continuous biome drift vs Aged banded deltas; acclimatization loaded but not applied |
 | `fabric-seasons` | hearthwind-world | ✅ seasonLengthTicks 504000 with the day count derived from the live day length; bonemeal blocked out of season (isSeasonMessingBonemeal) since 0.1.18 |
 | `herdspanic` | hearthwind-world `HerdPanic` | DECISION: upstream HerdPanic now has a Fabric 26.3 build |
@@ -554,10 +557,11 @@ real rendering change: re-check HUD/inventory screenshots).
 
 **W3: Close parity gaps in the Hearthwind rebuilds (section 5.3).**
 Highest gameplay impact first: jobs curve, 3 concurrent jobs and switch
-cooldown; RPGDifficulty caps and boss scaling; steel ratio 2 iron + 2 coal
-@5200t; LevelZ craft/smithing/brewing gate enforcement; dirty-water
-duration 200t; seasonal bonemeal. Every fix lands with a gametest pinned to
-Aged's value.
+cooldown; RPGDifficulty caps and boss scaling; steel ratio (done 0.1.19:
+3 iron + 1 coal @600t); LevelZ craft/smithing/brewing gate enforcement
+(verified already enforced); dirty-water duration 200t (verified at
+parity); seasonal bonemeal (done 0.1.18). Every fix lands with a gametest
+pinned to Aged's value.
 
 **W4: Port queue (section 5.2).** Suggested order: tier A (4), then
 gameplay-content mods in tier B/C (medievalweapons, smitherz, additionz,
@@ -606,7 +610,7 @@ Not cancelled; parked so 1.0.0 stays a stable base:
 |---|---|
 | `naturalist` | Upstream has Fabric 26.2 (2.0.5+26.2). Keep the hearthwind-world fauna rebuild, or ship upstream for parity? |
 | `herdspanic` | Upstream has Fabric 26.3. Keep the in-house `HerdPanic`, or adopt upstream when we bump? |
-| `endrem` | Upstream has Fabric 26.1.2 (nudge port). In-house or port? |
+| `endrem` | Ported in-house by hearthwind-world (0.1.19 item/art/lang parity; the `ancient_portal_frame` block mechanic and code-driven acquisition remain a tracked deviation) |
 | `seasonhud-fabric` | Upstream 26.2 needs fabric-seasons (not ported). Keep `SeasonHud`? |
 | `spider-caves` | CC-BY-NC-ND: cannot redistribute a modified jar. Ask the author, or rebuild the feature? |
 | ARR mods (`amarite`, `hearths`, `creeper-overhaul`, `enderman-overhaul`, `immersive-ui`, `smarter-farmers`, `villager-transportation`) | Ask the authors for permission to ship a port, or rebuild? |
