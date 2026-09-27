@@ -225,6 +225,9 @@ def check_pack(aged_pids, entries, accounted, dependencies):
     ownership = {}  # escaped Aged pid -> set(jar names)
     realized_deps = set()  # dependency entry file names seen in dist
     unattributed = []
+    adopted_by_pid = {
+        entry["project_id"]: entry for entry in entries if entry.get("replaces")
+    }
     side_of = {}
     for side, jars in (("server", server_jars), ("client", client_jars)):
         for name in jars:
@@ -235,8 +238,11 @@ def check_pack(aged_pids, entries, accounted, dependencies):
         if r is not None:
             pid = r.get("project_id")
             action = str(r.get("action", ""))
+            adopted = adopted_by_pid.get(pid)
             if pid in aged_pids:
                 ownership.setdefault(pid, set()).add(name)
+            elif adopted is not None:
+                ownership.setdefault(adopted["replaces"], set()).add(name)
             elif action.endswith("auto-dep"):
                 pass  # resolver-proven transitive dependency
             elif action == "dependency":
@@ -286,7 +292,9 @@ def check_pack(aged_pids, entries, accounted, dependencies):
                     f"{entry.get('file')} ({pid}): local override {override} not in dist"
                 )
             continue
-        r = res_by_pid.get(pid)
+        # An adopted fork resolves under its own pid, not the Aged one.
+        pick_pid = entry.get("project_id") if entry.get("replaces") else pid
+        r = res_by_pid.get(pick_pid)
         client_only = bool(r and r.get("client_only")) or entry.get("action") == "client-optional"
         if r is not None:
             expected = r["picked"]["file"]["filename"]
@@ -359,17 +367,28 @@ def main():
     by_pid = {}
     unkeyed = []
     dependencies = []
+    replaced_pids = {}
     for entry in entries:
         action = entry.get("action")
         pid = entry.get("project_id")
         if action not in ACTIONS:
             rule_failures.append(f"{entry.get('file')}: unknown action {action!r}")
             continue
+        replaces = entry.get("replaces")
+        if replaces is not None:
+            if replaces not in aged_pids:
+                rule_failures.append(
+                    f"{entry.get('file')}: replaces {replaces} is not an Aged pid"
+                )
+            else:
+                replaced_pids[replaces] = entry
         if pid:
             if pid not in aged_pids:
-                rule_failures.append(
-                    f"{entry.get('file')}: project_id {pid} not in the Aged index"
-                )
+                if replaces is None:
+                    rule_failures.append(
+                        f"{entry.get('file')}: project_id {pid} not in the Aged index "
+                        "(an adopted replacement must declare `replaces` with the Aged pid)"
+                    )
             else:
                 by_pid.setdefault(pid, []).append(entry)
         elif action == "dependency":
@@ -408,13 +427,15 @@ def main():
     unaccounted = []
     dropped = []
     accounted = {}
+    adopted = []
     for f in sorted(aged_mods, key=lambda f: f["project_id"]):
         pid = f["project_id"]
         if pid in allowed:
             allowlisted.append(f)
             continue
         matches = by_pid.get(pid)
-        entry = matches[0] if matches else fallback_match(pid, f["filename"])
+        via_replace = pid in replaced_pids
+        entry = matches[0] if matches else (replaced_pids.get(pid) or fallback_match(pid, f["filename"]))
         if entry is None:
             unaccounted.append(f)
             continue
@@ -422,6 +443,8 @@ def main():
             dropped.append((f, entry))
             continue
         accounted[pid] = entry
+        if via_replace:
+            adopted.append(f)
         action = entry.get("action", "unknown")
         by_action[action] = by_action.get(action, 0) + 1
 
@@ -464,6 +487,8 @@ def main():
             print(f"  {action:16} {by_action[action]}")
     for action in sorted(set(by_action) - {"keep", "rebuild", "client-optional"}):
         print(f"  {action:16} {by_action[action]}")
+    if adopted:
+        print(f"  {'adopted':16} {len(adopted)} (maintained fork replaces the Aged build)")
 
     print(f"Known missing (allowlisted): {len(allowlisted)}")
     buckets = {}

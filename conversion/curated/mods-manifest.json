@@ -260,12 +260,12 @@
    "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
   },
   {
-   "file": "trinkets",
-   "slug": "trinkets",
-   "project_id": "5aaWibi9",
+   "file": "trinkets-updated",
+   "slug": "trinkets-updated",
+   "project_id": "XaT8sLP6",
    "action": "keep",
-   "reason": "Accessory API stalled at 1.21.1 ecosystem; no kept mod requires it after trims",
-   "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
+   "reason": "ADOPTED FORK - Trinkets Updated 4.1.1+26.2 (MIT, Patbox) is the maintained 26.2 continuation of Aged's trinkets-3.7.2. It declares provides=[trinkets, trinkets-updated], so mods that depend on the trinkets API accept it, and it bundles its Yumi foundation/core JiJ. Aged ships no trinkets config, so upstream defaults apply.",
+   "replaces": "5aaWibi9"
   },
   {
    "file": "revive",
