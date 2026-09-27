@@ -10,7 +10,7 @@ contract of what the pack does. Grown from the Aged fork; server-side only.
   Players begin their journey with only **3 Hearts (6.0 HP)**. Surviving the early game requires caution and preparation.
 - **Starter Kit & Guidebook**:
   On first world spawn, every player is automatically granted:
-  - **Hearthwind Survival Guide**: The canonical `lavender:aged_guide_book` guidebook when Lavender is installed, covering survival rules, temperature, nutrients, Age 0 rock gathering, skills, jobs, and progression. A vanilla written-book fallback remains available without Lavender. Use `/guide` or `/guidebook` anytime to receive a replacement copy.
+  - **Hearthwind Survival Guide**: The canonical `hearthwind:hearthwind_guide_book` guidebook, covering survival rules, temperature, nutrients, Age 0 rock gathering, skills, jobs, and progression. A vanilla written-book fallback remains available without Lavender. Use `/guide` or `/guidebook` anytime to receive a replacement copy.
   - **Glass Bottle**: For collecting water and managing early hydration.
   - **Campfire**: For immediate shelter heating against freezing conditions and cooking raw perishables. Campfires **place unlit** - strike them yourself.
 - **Health Skill Scaling**:
@@ -21,6 +21,7 @@ contract of what the pack does. Grown from the Aged fork; server-side only.
   - Level 30: 18 Hearts (36.0 HP - end-game powerhouse)
 - **Attribute Modifiers**:
   Transient modifiers keyed `hearthwind_skills:<skill>` for Strength (attack damage), Agility (speed), Defense (armor), Mining (dig speed), and Luck.
+- **Monsters grow with distance and height** (RPGDifficulty parity): hostile mobs spawned far from spawn or far above/below y=62 spawn stronger - each 200 blocks of distance adds 5% health and damage, each 25 blocks of height adds 10%, with health capped at 4x and damage at 3x (config `hearthwind_skills.json` `mobScaling`). The buff is applied once, as a hidden attribute modifier.
 - **Ages advance via advancements**: the `hearthwind:age/age0..5` chain is awarded automatically when its criteria are met (Age 0 starts with rock+flint in inventory; each later Age builds on the previous milestone). Age 5 (Mechanical) also requires **smithing 20 + builder job 3** before the advancement can complete - craft a rail once the gates are open (`PlayerAdvancementTracker`). `/job age` remains a debug override.
 - **Beginner death forgiveness**: your first `beginnerDeathCount` lethal deaths (default 3, `config/hearthwind_primitive.json`) keep your inventory. The counter **resets when you finish eating food** or **sleep in a bed**. After the budget is spent, deaths drop items normally.
 - **Wooden shield (earlystage)**: off-hand wooden shield with vanilla-style `BLOCKS_ATTACKS` (90% reduction, 3 damage threshold, durability cost). Axes (and other disable-blocking attackers) put it on a **100-tick** disable cooldown.
@@ -105,6 +106,7 @@ Eight optional professions (Miner, Farmer, Fisher, Warrior, Smither, Brewer, Bui
   - Top-left HUD widget at GUI `(2, 2)` displaying a 9×9 procedural seasonal pixel badge + single-line formatted text: `"Season, Day N/21"`.
   - Season text tinting: Spring `#FFA3BB`, Summer `#FFFEE92A`, Autumn `#FFBC5E27`, Winter `#FFE0FCFC`; the badge uses the same palette with pixel highlights and shadows.
   - Per-crop seasonal growth multipliers (37 crop types loaded from `seasons/crop/*.json`: 15 vanilla + tomato/lettuce/strawberry/corn/onion/oats/barley, tea/coffee/rooibos/yerba-mate, all grape bushes, hops — frost-tender crops stall in winter, hardy oats/barley creep, grapes peak in fall).
+  - **Bone meal respects the season** (`isSeasonMessingBonemeal`, like Aged): crops whose seasonal multiplier has dropped to zero (wheat in winter) ignore bone meal entirely - nothing grows and the bone meal is not consumed.
 - **Long Days, Short Nights (Time & Wind parity)**: a Minecraft day is now 20 real minutes of daylight followed by 10 real minutes of night (`config/time-and-wind/time-data.json`, shipped like Aged's). Sleeping no longer teleports the clock to dawn - the night races forward at 30x while everyone sleeps, then the world wakes up at sunrise (Aged's shipped v1 config is patched to the same 30x by the upstream mod; `enableNightSkipAcceleration` / `accelerationSpeed` stay editable).
 - **River Currents & Ocean Swell**:
   - Gentle downhill river flow and oceanic tidal wave swell.

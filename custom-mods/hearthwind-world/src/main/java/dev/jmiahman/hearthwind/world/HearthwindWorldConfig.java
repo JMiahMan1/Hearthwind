@@ -25,6 +25,8 @@ public final class HearthwindWorldConfig {
 
     // Calendar rules (seasons config parity)
     public boolean animalsBreedInWinter = false;
+    /** seasons.json {@code isSeasonMessingBonemeal}: no bonemeal out of season. */
+    public boolean messingBonemeal = true;
 
     // HerdPanic parity tunables (herdspanic.json)
     public double herdPanicAlertRadius = 16.0;

@@ -97,6 +97,14 @@ public final class SeasonCrops {
     }
 
     /** Convenience overload: resolves the season from the level's day. */
+    /**
+     * Pure seasonal bonemeal decision shared by the mixin and the gametests:
+     * a crop whose seasonal multiplier is zero ignores bone meal completely.
+     */
+    public static boolean blocksBonemeal(double seasonMultiplier) {
+        return seasonMultiplier <= 0.0;
+    }
+
     public static double multiplier(Block block, net.minecraft.server.level.ServerLevel level) {
         return multiplier(block, Season.fromWorldTime(level.getGameTime(),
                 HearthwindWorld.daysPerSeason(level),

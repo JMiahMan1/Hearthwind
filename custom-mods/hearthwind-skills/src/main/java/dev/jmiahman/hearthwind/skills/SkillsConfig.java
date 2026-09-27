@@ -99,10 +99,18 @@ public final class SkillsConfig {
         public double graceDistance = 300.0;
         /** One scaling step per this many blocks beyond the grace distance - rpgdifficulty: increasingDistance 200. */
         public double stepBlocks = 200.0;
-        /** Extra max health (HP) per step (5% of 20 base = 1.0 HP). */
-        public double healthPerStep = 1.0;
-        /** Extra attack damage per step (5% of 6 base = 0.3 dmg). */
-        public double damagePerStep = 0.3;
+        /** Stat multiplier gained per distance step - rpgdifficulty: distanceFactor 0.05. */
+        public double distanceFactor = 0.05;
+        /** One height step per this many blocks from {@code startingHeight} - rpgdifficulty: heightDistance 25. */
+        public double heightDistance = 25.0;
+        /** Stat multiplier gained per height step - rpgdifficulty: heightFactor 0.1. */
+        public double heightFactor = 0.1;
+        /** Height the height scaling starts from - rpgdifficulty: startingHeight 62. */
+        public double startingHeight = 62.0;
+        /** Health multiplier cap - rpgdifficulty: maxFactorHealth 4.0. */
+        public double maxFactorHealth = 4.0;
+        /** Attack damage multiplier cap - rpgdifficulty: maxFactorDamage 3.0. */
+        public double maxFactorDamage = 3.0;
         /** Hard cap on total steps a mob can receive - rpgdifficulty: maxFactorHealth 4.0 (60 steps). */
         public int maxSteps = 60;
     }

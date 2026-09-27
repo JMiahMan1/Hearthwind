@@ -618,7 +618,11 @@ public final class DungeonZGameTests {
     @GameTest
     public void hearthwindMobHealthMultiplierScalesMaxHealth(GameTestHelper helper) {
         Dungeon dungeon = loadedDungeon(helper, "dark_dungeon");
-        for (boolean boss : List.of(false, true)) {
+        // The game-test world is far below the skills mod's starting height,
+        // so its scaling would pre-buff the zombie before DungeonZ does.
+        HearthwindMobScaling.setScalingEnabled(false);
+        try {
+            for (boolean boss : List.of(false, true)) {
             var zombie = helper.spawn(EntityTypes.ZOMBIE, 1, 2, 1);
             double base = zombie.getAttributeValue(Attributes.MAX_HEALTH);
             float factor = (boss ? dungeon.getDifficultyBossHealthModificatorMap()
@@ -636,6 +640,9 @@ public final class DungeonZGameTests {
             helper.assertTrue(List.copyOf(zombie.getAttribute(Attributes.MAX_HEALTH).getModifiers()).equals(modifiers),
                     "bridge must not add health modifiers");
             zombie.discard();
+            }
+        } finally {
+            HearthwindMobScaling.setScalingEnabled(true);
         }
         helper.succeed();
     }

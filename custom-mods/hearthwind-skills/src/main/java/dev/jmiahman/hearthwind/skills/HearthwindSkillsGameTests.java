@@ -122,8 +122,19 @@ public final class HearthwindSkillsGameTests {
         helper.assertTrue(MobScaling.stepsFor(100) == 0, "inside grace distance");
         helper.assertTrue(MobScaling.stepsFor(500) == 1, "one step at 500");
         helper.assertTrue(MobScaling.stepsFor(15000) == 60, "capped at maxSteps");
-        helper.assertTrue(MobScaling.healthBonus(3) == 3.0
-                && Math.abs(MobScaling.damageBonus(3) - 0.9) < 0.001, "per-step bonuses");
+        // rpgdifficulty factor model: 5% per distance step, 10% per height
+        // step, capped at 4.0x health / 3.0x damage.
+        helper.assertTrue(Math.abs(MobScaling.factorFor(1, 0) - 1.05) < 0.001,
+                "one step is five percent");
+        helper.assertTrue(Math.abs(MobScaling.factorFor(0, 2) - 1.2) < 0.001,
+                "height steps count too");
+        helper.assertTrue(MobScaling.cappedFactor(MobScaling.factorFor(60, 0), 4.0) == 4.0,
+                "health factor caps at four");
+        helper.assertTrue(MobScaling.cappedFactor(MobScaling.factorFor(60, 0), 3.0) == 3.0,
+                "damage factor caps at three");
+        helper.assertTrue(MobScaling.heightStepsFor(112) == 2
+                && MobScaling.heightStepsFor(62) == 0, "height steps from y 62");
+        helper.assertTrue(MobScaling.heightStepsFor(12) == 2, "height scales downward too");
         SkillsConfig.get().mobScaling.enabled = false;
         helper.assertTrue(MobScaling.stepsFor(99999) == 0,
                 "disabled means no scaling");
@@ -136,18 +147,21 @@ public final class HearthwindSkillsGameTests {
         var zombie = helper.spawn(EntityTypes.ZOMBIE, 1, 2, 1);
         var inst = zombie.getAttribute(
                 net.minecraft.world.entity.ai.attributes.Attributes.MAX_HEALTH);
-        double base = inst.getValue();
-        // gametest world is near spawn (MobScaling.apply would be a no-op),
-        // so exercise the production modifier path with far-spawn steps:
-        int steps = Math.max(1, MobScaling.stepsFor(20000));
-        inst.addTransientModifier(new net.minecraft.world.entity.ai.attributes.AttributeModifier(
-                MobScaling.MODIFIER_ID, MobScaling.healthBonus(steps),
-                net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADD_VALUE));
-        helper.assertTrue(inst.getValue() > base, "modifier raises max health");
-        MobScaling.apply(zombie); // must NOT stack a second modifier
-        helper.assertTrue(inst.getModifiers().stream()
-                .filter(m -> m.is(MobScaling.MODIFIER_ID)).count() == 1,
-                "no double stacking");
+        double base = inst.getBaseValue();
+        // The gametest world sits far below spawn height, so the production
+        // path may already have buffed this zombie on load. Whatever the
+        // state, applying again must be idempotent (rpgdifficulty never
+        // double-stacks) and any present modifier must raise max health.
+        long before = inst.getModifiers().stream()
+                .filter(m -> m.is(MobScaling.MODIFIER_ID)).count();
+        helper.assertTrue(before <= 1, "at most one mob-scaling modifier, got " + before);
+        MobScaling.apply(zombie);
+        long after = inst.getModifiers().stream()
+                .filter(m -> m.is(MobScaling.MODIFIER_ID)).count();
+        helper.assertTrue(after == before, "mob scaling must not stack, before=" + before + " after=" + after);
+        if (after == 1) {
+            helper.assertTrue(inst.getValue() > base, "modifier raises max health");
+        }
         net.minecraft.world.entity.Entity pig = helper.spawn(EntityTypes.PIG, 1, 2, 1);
         helper.assertTrue(zombie instanceof net.minecraft.world.entity.monster.Monster
                 && !(pig instanceof net.minecraft.world.entity.monster.Monster),

@@ -9,6 +9,7 @@
 		"HearthwindSeasonalBerryMixin",
 		"HearthwindSeasonalCocoaMixin",
 		"HearthwindWinterBreedingMixin",
+		"BoneMealItemSeasonMixin",
 		"FeatureSorterCycleDebugMixin",
 		"ServerLevelTimeMixin",
 		"ServerLevelTimeAccessor"

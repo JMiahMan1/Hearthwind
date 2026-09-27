@@ -13,6 +13,21 @@ public final class HearthwindWorldGameTests {
     public HearthwindWorldGameTests() {}
 
     @GameTest
+    public void seasonBonemealBlocksOutOfSeasonOnly(GameTestHelper helper) {
+        // seasons.json isSeasonMessingBonemeal: crops whose seasonal
+        // multiplier is zero (wheat in winter) ignore bone meal.
+        helper.assertTrue(HearthwindWorldConfig.get().messingBonemeal,
+                "messingBonemeal must default to true (Aged seasons.json)");
+        helper.assertTrue(dev.jmiahman.hearthwind.world.SeasonCrops.blocksBonemeal(0.0),
+                "out-of-season crops block bonemeal");
+        helper.assertTrue(!dev.jmiahman.hearthwind.world.SeasonCrops.blocksBonemeal(0.5),
+                "slow-season crops still accept bonemeal");
+        helper.assertTrue(!dev.jmiahman.hearthwind.world.SeasonCrops.blocksBonemeal(1.5),
+                "in-season crops accept bonemeal");
+        helper.succeed();
+    }
+
+    @GameTest
     public void seasonLengthDefaultsToAgedParity(GameTestHelper helper) {
         // Aged config/seasons.json: 504000 ticks per season; the displayed
         // day count follows the live day length (21 vanilla days, 14 with

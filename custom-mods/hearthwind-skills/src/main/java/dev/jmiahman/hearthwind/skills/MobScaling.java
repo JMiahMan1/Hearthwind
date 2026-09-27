@@ -31,12 +31,27 @@ public final class MobScaling {
                 (int) ((distanceFromSpawn - cfg.graceDistance) / cfg.stepBlocks));
     }
 
-    public static double healthBonus(int steps) {
-        return steps * SkillsConfig.get().mobScaling.healthPerStep;
+    /**
+     * Height steps over the world's spawn height (rpgdifficulty applies its
+     * factor both above and below startingHeight).
+     */
+    public static int heightStepsFor(double y) {
+        SkillsConfig.MobScaling cfg = SkillsConfig.get().mobScaling;
+        if (!cfg.enabled || cfg.heightDistance <= 0) {
+            return 0;
+        }
+        return (int) (Math.abs(y - cfg.startingHeight) / cfg.heightDistance);
     }
 
-    public static double damageBonus(int steps) {
-        return steps * SkillsConfig.get().mobScaling.damagePerStep;
+    /** rpgdifficulty factor for a mob's distance/height, uncapped. */
+    public static double factorFor(int distanceSteps, int heightSteps) {
+        SkillsConfig.MobScaling cfg = SkillsConfig.get().mobScaling;
+        return 1.0 + distanceSteps * cfg.distanceFactor + heightSteps * cfg.heightFactor;
+    }
+
+    /** rpgdifficulty caps: health 4.0x, damage 3.0x by default. */
+    public static double cappedFactor(double factor, double maxFactor) {
+        return Math.min(factor, maxFactor);
     }
 
     /** Event hook: buff hostile mobs on load based on their distance from spawn. */
@@ -49,19 +64,31 @@ public final class MobScaling {
         // 26.x world spawn lives in LevelData.RespawnData
         var spawn = level.getRespawnData().pos();
         double distance = Math.sqrt(monster.distanceToSqr(spawn.getX(), spawn.getY(), spawn.getZ()));
-        int steps = stepsFor(distance);
-        if (steps <= 0) {
+        int distanceSteps = stepsFor(distance);
+        int heightSteps = heightStepsFor(monster.getY());
+        if (distanceSteps <= 0 && heightSteps <= 0) {
             return;
         }
-        applyBonus(monster, Attributes.MAX_HEALTH, healthBonus(steps));
-        applyBonus(monster, Attributes.ATTACK_DAMAGE, damageBonus(steps));
+        double factor = factorFor(distanceSteps, heightSteps);
+        SkillsConfig.MobScaling cfg = SkillsConfig.get().mobScaling;
+        applyFactor(monster, Attributes.MAX_HEALTH, factor, cfg.maxFactorHealth);
+        applyFactor(monster, Attributes.ATTACK_DAMAGE, factor, cfg.maxFactorDamage);
     }
 
-    private static void applyBonus(LivingEntity entity,
+    /**
+     * Adds {@code base * (min(factor, maxFactor) - 1)} as an additive
+     * modifier, so the stat lands on rpgdifficulty's capped multiplier.
+     */
+    private static void applyFactor(LivingEntity entity,
             net.minecraft.core.Holder<net.minecraft.world.entity.ai.attributes.Attribute> attribute,
-            double amount) {
+            double factor, double maxFactor) {
         AttributeInstance instance = entity.getAttribute(attribute);
-        if (instance == null || amount == 0 || instance.hasModifier(MODIFIER_ID)) {
+        if (instance == null || instance.hasModifier(MODIFIER_ID)) {
+            return;
+        }
+        double capped = cappedFactor(factor, maxFactor);
+        double amount = instance.getBaseValue() * (capped - 1.0);
+        if (amount == 0.0) {
             return;
         }
         instance.addTransientModifier(

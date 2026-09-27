@@ -295,11 +295,11 @@ writes it in the Decision column of the tracker (section 8).
 |---|---|---|
 | `autotag` | datapack | tags shipped in conversion/datapacks/hearthwind |
 | `crop-growth-modifier` | hearthwind-world `SeasonCrops` | 15 per-crop multipliers live |
-| `dehydration` | hearthwind-survival | dirty-water duration 600t vs Aged 200t; 35/130 hydration items resolve; bad-potion thirst roll missing |
+| `dehydration` | hearthwind-survival | ✅ 0.1.18 audit: flask dirty-water 200t, bad-potion roll 15%/300t, hydration corpus and bowl quench all match Aged's dehydration.json5 |
 | `earlystage` | hearthwind-primitive | steel recipe matches Aged (2 iron + 2 coal, extra blast-furnace slot @5200t); knapping on crafting_rock pending |
 | `endrem` | hearthwind-world `EndRemasteredItems` | DECISION: upstream has Fabric 26.1.2 (nudge-port). In-house version: verify eye set + stronghold frame vs 5.2.4 |
 | `environmentz` | hearthwind-survival | continuous biome drift vs Aged banded deltas; acclimatization loaded but not applied |
-| `fabric-seasons` | hearthwind-world | default now 21 days (was 18); bonemeal not season-affected (Aged isSeasonMessingBonemeal=true) |
+| `fabric-seasons` | hearthwind-world | ✅ seasonLengthTicks 504000 with the day count derived from the live day length; bonemeal blocked out of season (isSeasonMessingBonemeal) since 0.1.18 |
 | `herdspanic` | hearthwind-world `HerdPanic` | DECISION: upstream HerdPanic now has a Fabric 26.3 build |
 | `jobsaddon` | hearthwind-jobs | no 150-level exponential curve, no 3 concurrent jobs, no 1-day switch cooldown |
 | `levelz` | hearthwind-skills | 649 gates live; crafting/smithing/brewing gates loaded but not enforced; XP curve differs (Aged 25x1.6^n) |
@@ -309,7 +309,7 @@ writes it in the Decision column of the tracker (section 8).
 | `paxi` | datapack | world datapack instead of paxi loader |
 | `reciperemover` | hearthwind-primitive `RecipeRemovals` | 95 removals active |
 | `revive` | hearthwind-survival `ReviveManager` | verify against revive-1.0.7 config (overrides/config/revive.json5) |
-| `rpgdifficulty` | hearthwind-skills `MobScaling` | no hp/dmg/prot/speed caps, no special zombies, no boss scaling |
+| `rpgdifficulty` | hearthwind-skills `MobScaling` | 🟡 0.1.18: distanceFactor 0.05/200 blocks + heightFactor 0.1/25 blocks with 4x health and 3x damage caps; protection/speed caps, random rolls, special zombies and boss scaling still open |
 | `seasonhud-fabric` | hearthwind-client `SeasonHud` | upstream has a 26.2 build but needs fabric-seasons |
 | `spoiledz` | hearthwind-survival | superset (container spoilage) |
 | `tieredz` | hearthwind-primitive `TierRegistry` | 199 affix files + reforge; verify rarity weights 50/35/15/8/3/0 |
