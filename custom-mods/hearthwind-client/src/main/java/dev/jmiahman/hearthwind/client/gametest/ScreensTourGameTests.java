@@ -82,6 +82,33 @@ public class ScreensTourGameTests implements FabricClientGameTest {
             context.waitTicks(10);
             context.takeScreenshot("tour_backpack_on_back");
 
+            // BackSlot parity: the back and belt slots render their items on
+            // the avatar and in the HUD. Fill both client-side, assert the
+            // layers are registered, and screenshot the inventory (the two
+            // extra slots sit right of the shield slot at Aged's positions).
+            context.runOnClient(minecraft -> {
+                net.backslot.BackSlotSlots.set(minecraft.player, net.backslot.BackSlot.BACK_SLOT,
+                        new ItemStack(net.minecraft.world.item.Items.IRON_SWORD));
+                net.backslot.BackSlotSlots.set(minecraft.player, net.backslot.BackSlot.BELT_SLOT,
+                        new ItemStack(net.minecraft.world.item.Items.LANTERN));
+            });
+            context.waitTicks(5);
+            context.runOnClient(minecraft -> {
+                var renderer = minecraft.getEntityRenderDispatcher().getRenderer(minecraft.player);
+                if (!(renderer instanceof net.backslot.mixin.client.AvatarRendererInvoker invoker)
+                        || invoker.backslot$layers().stream()
+                                .noneMatch(layer -> layer instanceof net.backslot.client.BackItemLayer)
+                        || invoker.backslot$layers().stream()
+                                .noneMatch(layer -> layer instanceof net.backslot.client.BeltItemLayer)) {
+                    throw new AssertionError("the BackSlot layers must be registered on the avatar renderer");
+                }
+                if (minecraft.gui.screen() instanceof InventoryScreen screen) {
+                    screen.mouseMoved(20, minecraft.getWindow().getGuiScaledHeight() / 2.0);
+                }
+            });
+            context.waitTicks(10);
+            context.takeScreenshot("tour_backslot");
+
             context.setScreen(NutrientsScreen::new);
             context.waitFor(minecraft -> minecraft.gui.screen() instanceof NutrientsScreen, SLOW_TIMEOUT_TICKS);
             context.waitTicks(10);

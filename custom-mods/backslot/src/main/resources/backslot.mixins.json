@@ -1,0 +1,16 @@
+{
+  "required": true,
+  "package": "net.backslot.mixin",
+  "compatibilityLevel": "JAVA_25",
+  "mixins": [
+    "InventoryMenuMixin"
+  ],
+  "client": [
+    "client.AvatarRenderStateMixin",
+    "client.AvatarRendererInvoker",
+    "client.AvatarRendererMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

@@ -39,6 +39,7 @@ for d in "$REPO"/custom-mods/hearthwind-* \
          "$REPO"/custom-mods/lavender \
          "$REPO"/custom-mods/inmis \
          "$REPO"/custom-mods/lootbeams \
+         "$REPO"/custom-mods/backslot \
          "$REPO"/custom-mods/passable-foliage \
          "$REPO"/custom-mods/profundis \
          "$REPO"/custom-mods/smallships \
@@ -65,6 +66,7 @@ for d in "$REPO"/custom-mods/hearthwind-*/build/libs \
           "$REPO"/custom-mods/lavender/build/libs \
           "$REPO"/custom-mods/inmis/build/libs \
           "$REPO"/custom-mods/lootbeams/build/libs \
+          "$REPO"/custom-mods/backslot/build/libs \
           "$REPO"/custom-mods/passable-foliage/build/libs \
           "$REPO"/custom-mods/profundis/build/libs \
          "$REPO"/custom-mods/smallships/build/libs \

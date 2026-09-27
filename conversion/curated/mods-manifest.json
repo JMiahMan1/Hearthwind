@@ -62,7 +62,7 @@
    "slug": "architectury-api",
    "project_id": "lhGA9TYQ",
    "action": "keep",
-    "note": "Pinned exact pick for MC 26.2. build.conf.json loader is 0.19.5 (architectury 21.1.9+ needs loader>=0.19.5 / api>=0.160.0). resolve_deps.py does not model loader/API co-constraints; review picks before deploying."
+   "note": "Pinned exact pick for MC 26.2. build.conf.json loader is 0.19.5 (architectury 21.1.9+ needs loader>=0.19.5 / api>=0.160.0). resolve_deps.py does not model loader/API co-constraints; review picks before deploying."
   },
   {
    "file": "forgeconfigapiport",
@@ -247,9 +247,9 @@
    "file": "backslot",
    "slug": "backslot",
    "project_id": "1H9ZkJwF",
-   "action": "keep",
-   "reason": "Stuck; cosmetic slot",
-   "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
+   "action": "rebuild",
+   "note": "Aged 1.2.15 (GPL-3.0). Clean-room 26.2 port: back (41) and belt (42) player slots at Aged's config positions, held-item swap on G / Shift+G, HUD sprites, avatar rendering. Aged ships only backslot.json5 (positions) which is overridden verbatim.",
+   "realized_by": "backslot"
   },
   {
    "file": "backslotaddon",
@@ -623,22 +623,22 @@
    "action": "keep",
    "cat": "structures"
   },
-   {
-    "file": "Dungeon Now Loading",
-    "slug": "dungeon-now-loading",
-    "project_id": "vZoqTqwv",
-    "action": "keep",
-    "reason": "DEFER - 177-class yarn port, empty source; content covered by UW/Dungeons+/Moogs/Profundis",
-    "note": "Kept from Aged - not dropped; revisit only if structure niche opens"
-   },
-   {
-    "file": "dungeons+-1.8.4b",
-    "slug": "decubed-dungeons",
-    "project_id": "nHORcEHd",
-    "action": "keep",
-    "reason": "Adopted fabric jar dungeons+-1.12.0 vendored",
-    "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
-   },
+  {
+   "file": "Dungeon Now Loading",
+   "slug": "dungeon-now-loading",
+   "project_id": "vZoqTqwv",
+   "action": "keep",
+   "reason": "DEFER - 177-class yarn port, empty source; content covered by UW/Dungeons+/Moogs/Profundis",
+   "note": "Kept from Aged - not dropped; revisit only if structure niche opens"
+  },
+  {
+   "file": "dungeons+-1.8.4b",
+   "slug": "decubed-dungeons",
+   "project_id": "nHORcEHd",
+   "action": "keep",
+   "reason": "Adopted fabric jar dungeons+-1.12.0 vendored",
+   "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
+  },
   {
    "file": "desert-dungeon",
    "slug": "desert-dungeon-dungeonz-addon",
@@ -663,22 +663,22 @@
    "reason": "Adopted unnamed-desert-2.0.3+26.2.jar (u_desert re-located; ARR - redistribute carefully)",
    "note": "Overlays stripped for 26.2; root worldgen data kept"
   },
-   {
-    "file": "underground-jungle",
-    "slug": "underground-worlds",
-    "project_id": "g9fDJQZe",
-    "action": "keep",
-    "reason": "Superseded by adopted undergroundworlds 3.2.1",
-    "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
-   },
-   {
-    "file": "spirder-caves",
-    "slug": "spider-caves",
-    "project_id": "dGtrU8l3",
-    "action": "keep",
-    "reason": "Superseded by adopted undergroundworlds 3.2.1",
-    "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
-   },
+  {
+   "file": "underground-jungle",
+   "slug": "underground-worlds",
+   "project_id": "g9fDJQZe",
+   "action": "keep",
+   "reason": "Superseded by adopted undergroundworlds 3.2.1",
+   "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
+  },
+  {
+   "file": "spirder-caves",
+   "slug": "spider-caves",
+   "project_id": "dGtrU8l3",
+   "action": "keep",
+   "reason": "Superseded by adopted undergroundworlds 3.2.1",
+   "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
+  },
   {
    "file": "tru.e-ending",
    "slug": "true-ending",
@@ -694,23 +694,23 @@
    "reason": "Adopted betterendcities-vanilla-1.21.3+26.2.jar (end city NBT overrides, MIT)",
    "note": "Re-located from vanilla-end-city-overhaul; vendored 2026-09-22"
   },
-   {
-    "file": "profundis",
-    "slug": "profundis",
-    "project_id": "aucz7XCt",
-    "action": "keep",
-    "reason": "Shipped: custom-mods/profundis yarn→mojmap port, boot-green 26.2",
-    "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
-   },
-   {
+  {
+   "file": "profundis",
+   "slug": "profundis",
+   "project_id": "aucz7XCt",
+   "action": "keep",
+   "reason": "Shipped: custom-mods/profundis yarn\u2192mojmap port, boot-green 26.2",
+   "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
+  },
+  {
    "file": "lukis-grand-capitals",
    "slug": "lukis-grand-capitals",
    "project_id": "8Lw09aLb",
    "action": "keep",
    "realized_by": "datapack:lukis-grand-capitals",
    "reason": "Shipped: datapack conversion/datapacks/lukis-grand-capitals, pack_format 107",
-    "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
-   },
+   "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
+  },
   {
    "file": "villagesandpillages",
    "slug": "villages-and-pillages",
@@ -725,7 +725,9 @@
    "project_id": "nGUXvjTa",
    "action": "keep",
    "reason": "Large structure pack overlap",
-   "jar_tokens": ["MoogsNetherStructures"],
+   "jar_tokens": [
+    "MoogsNetherStructures"
+   ],
    "local_override": "MoogsNetherStructures-universal-1.21-3.1.1.jar",
    "note": "Kept from Aged; ships the vendored 3.1.1 build (resolved pick 3.1.0 is skipped by build_pack)"
   },
@@ -735,7 +737,9 @@
    "project_id": "r4PuRGfV",
    "action": "keep",
    "reason": "Overlap",
-   "jar_tokens": ["MoogsEndStructures"],
+   "jar_tokens": [
+    "MoogsEndStructures"
+   ],
    "local_override": "MoogsEndStructures-universal-1.21-2.1.1.jar",
    "note": "Kept from Aged; ships the vendored 2.1.1 build (resolved pick 2.1.0 is skipped by build_pack)"
   },
@@ -1168,14 +1172,14 @@
    "reason": "Lib for cut structure mods",
    "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
   },
-   {
-    "file": "shatterbyte_lib",
-    "slug": "shatterbyte-lib",
-    "project_id": "RH2KUdKJ",
-    "action": "keep",
-    "reason": "Lib for cut mods",
-    "note": "Adopted upstream 26.2 (W2)"
-   },
+  {
+   "file": "shatterbyte_lib",
+   "slug": "shatterbyte-lib",
+   "project_id": "RH2KUdKJ",
+   "action": "keep",
+   "reason": "Lib for cut mods",
+   "note": "Adopted upstream 26.2 (W2)"
+  },
   {
    "file": "tcdcommons",
    "slug": "tcdcommons",
@@ -1282,218 +1286,218 @@
    "cat": "lib",
    "note": "Aged 3.1.2 shipped Fabric Language Kotlin; resolved upstream 26.2 build 1.14.0+kotlin.2.4.20. Already pulled as an auto-dep via fzzy_config; explicit entry added for the Aged pid ledger (W0)."
   },
-   {
-    "file": "player-animation-lib",
-    "slug": "player-animation-library",
-    "project_id": "gedNE4y2",
-    "action": "keep",
-    "reason": "Aged ships playerAnimator (gedNE4y2); the 26.2 substitute is player-animation-library (ha1mEyJS)",
-    "note": "Substitution recorded in .tmp/k3_parity_audit.md section 5; pull arrives via the bettercombat auto-dep. Verify API compatibility before 1.0.0."
-   },
-   {
-    "file": "neruina",
-    "slug": "neruina",
-    "project_id": "1s5x833P",
-    "action": "keep",
-    "note": "Adopted upstream 26.2 (W2)"
-   },
-   {
-    "file": "moreculling",
-    "slug": "moreculling",
-    "project_id": "51shyZVL",
-    "action": "client-optional",
-    "note": "Adopted upstream 26.2 (W2)"
-   },
-   {
-    "file": "immediatelyfast",
-    "slug": "immediatelyfast",
-    "project_id": "5ZwdcRci",
-    "action": "client-optional",
-    "note": "Adopted upstream 26.2 (W2)"
-   },
-   {
-    "file": "advancements_fullscreen",
-    "slug": "advancements-fullscreen",
-    "project_id": "7BgsROit",
-    "action": "client-optional",
-    "note": "Adopted upstream 26.2 (W2)"
-   },
-   {
-    "file": "sodium",
-    "slug": "sodium",
-    "project_id": "AANobbMI",
-    "action": "client-optional",
-    "note": "Adopted upstream 26.2 (W2)"
-   },
-   {
-    "file": "melody",
-    "slug": "melody",
-    "project_id": "CVT4pFB2",
-    "action": "client-optional",
-    "note": "Adopted upstream 26.2 (W2)"
-   },
-   {
-    "file": "advancements_search",
-    "slug": "advancements-search",
-    "project_id": "Ccho67RI",
-    "action": "client-optional",
-    "note": "Adopted upstream 26.2 (W2)"
-   },
-   {
-    "file": "stoneworks",
-    "slug": "stoneworks",
-    "project_id": "FzyTKtVF",
-    "action": "keep",
-    "note": "Adopted upstream 26.2 (W2)"
-   },
-   {
-    "file": "first_person_model",
-    "slug": "first-person-model",
-    "project_id": "H5XMjpHi",
-    "action": "client-optional",
-    "note": "Adopted upstream 26.2 (W2)"
-   },
-   {
-    "file": "konkrete",
-    "slug": "konkrete",
-    "project_id": "J81TRJWm",
-    "action": "keep",
-    "note": "Adopted upstream 26.2 (W2)"
-   },
-   {
-    "file": "blur_plus",
-    "slug": "blur-plus",
-    "project_id": "NK39zBp2",
-    "action": "client-optional",
-    "note": "Adopted upstream 26.2 (W2)"
-   },
-   {
-    "file": "entityculling",
-    "slug": "entityculling",
-    "project_id": "NNAgCjsB",
-    "action": "client-optional",
-    "note": "Adopted upstream 26.2 (W2)"
-   },
-   {
-    "file": "puzzles_lib",
-    "slug": "puzzles-lib",
-    "project_id": "QAGBst4M",
-    "action": "keep",
-    "note": "Adopted upstream 26.2 (W2)"
-   },
-   {
-    "file": "rsls",
-    "slug": "rsls",
-    "project_id": "SKW62Pht",
-    "action": "client-optional",
-    "note": "Adopted upstream 26.2 (W2)"
-   },
-   {
-    "file": "default_options",
-    "slug": "default-options",
-    "project_id": "WEg59z5b",
-    "action": "client-optional",
-    "note": "Adopted upstream 26.2 (W2)"
-   },
-   {
-    "file": "fancymenu",
-    "slug": "fancymenu",
-    "project_id": "Wq5SjeWM",
-    "action": "client-optional",
-    "note": "Adopted upstream 26.2 (W2)"
-   },
-   {
-    "file": "overflowing_bars",
-    "slug": "overflowing-bars",
-    "project_id": "XD7XOrAF",
-    "action": "client-optional",
-    "note": "Adopted upstream 26.2 (W2)"
-   },
-   {
-    "file": "iris",
-    "slug": "iris",
-    "project_id": "YL57xq9U",
-    "action": "client-optional",
-    "note": "Adopted upstream 26.2 (W2)"
-   },
-   {
-    "file": "sound",
-    "slug": "sound",
-    "project_id": "ZouiUX7t",
-    "action": "client-optional",
-    "note": "Adopted upstream 26.2 (W2)"
-   },
-   {
-    "file": "badoptimizations",
-    "slug": "badoptimizations",
-    "project_id": "g96Z4WVZ",
-    "action": "client-optional",
-    "note": "Adopted upstream 26.2 (W2)"
-   },
-   {
-    "file": "cameraoverhaul",
-    "slug": "cameraoverhaul",
-    "project_id": "m0oRwcZx",
-    "action": "client-optional",
-    "note": "Adopted upstream 26.2 (W2)"
-   },
-   {
-    "file": "sound_physics_remastered",
-    "slug": "sound-physics-remastered",
-    "project_id": "qyVF9oeo",
-    "action": "client-optional",
-    "note": "Adopted upstream 26.2 (W2)"
-   },
-   {
-    "file": "presence_footsteps",
-    "slug": "presence-footsteps",
-    "project_id": "rcTfTZr3",
-    "action": "client-optional",
-    "note": "Adopted upstream 26.2 (W2)"
-   },
-   {
-    "file": "smooth_scrolling_refurbished",
-    "slug": "smooth-scrolling-refurbished",
-    "project_id": "trr0scVt",
-    "action": "client-optional",
-    "note": "Adopted upstream 26.2 (W2)"
-   },
-   {
-    "file": "distanthorizons",
-    "slug": "distanthorizons",
-    "project_id": "uCdwusMi",
-    "action": "client-optional",
-    "note": "Adopted upstream 26.2 (W2)"
-   },
-   {
-    "file": "smooth_swapping",
-    "slug": "smooth-swapping",
-    "project_id": "ydZic5r4",
-    "action": "client-optional",
-    "note": "Adopted upstream 26.2 (W2)"
-   },
-   {
-    "file": "better_archeology",
-    "slug": "better-archeology",
-    "project_id": "zCh7omyG",
-    "action": "keep",
-    "note": "Adopted upstream 26.2 (W2)"
-   },
-   {
-    "file": "3dskinlayers",
-    "slug": "3dskinlayers",
-    "project_id": "zV5r3pPn",
-    "action": "client-optional",
-    "note": "Adopted upstream 26.2 (W2)"
-   },
-   {
-    "file": "spawn_animations",
-    "slug": "spawn-animations",
-    "project_id": "zrzYrlm0",
-    "action": "keep",
-    "note": "Adopted upstream 26.2 (W2)"
-   }
-  ],
+  {
+   "file": "player-animation-lib",
+   "slug": "player-animation-library",
+   "project_id": "gedNE4y2",
+   "action": "keep",
+   "reason": "Aged ships playerAnimator (gedNE4y2); the 26.2 substitute is player-animation-library (ha1mEyJS)",
+   "note": "Substitution recorded in .tmp/k3_parity_audit.md section 5; pull arrives via the bettercombat auto-dep. Verify API compatibility before 1.0.0."
+  },
+  {
+   "file": "neruina",
+   "slug": "neruina",
+   "project_id": "1s5x833P",
+   "action": "keep",
+   "note": "Adopted upstream 26.2 (W2)"
+  },
+  {
+   "file": "moreculling",
+   "slug": "moreculling",
+   "project_id": "51shyZVL",
+   "action": "client-optional",
+   "note": "Adopted upstream 26.2 (W2)"
+  },
+  {
+   "file": "immediatelyfast",
+   "slug": "immediatelyfast",
+   "project_id": "5ZwdcRci",
+   "action": "client-optional",
+   "note": "Adopted upstream 26.2 (W2)"
+  },
+  {
+   "file": "advancements_fullscreen",
+   "slug": "advancements-fullscreen",
+   "project_id": "7BgsROit",
+   "action": "client-optional",
+   "note": "Adopted upstream 26.2 (W2)"
+  },
+  {
+   "file": "sodium",
+   "slug": "sodium",
+   "project_id": "AANobbMI",
+   "action": "client-optional",
+   "note": "Adopted upstream 26.2 (W2)"
+  },
+  {
+   "file": "melody",
+   "slug": "melody",
+   "project_id": "CVT4pFB2",
+   "action": "client-optional",
+   "note": "Adopted upstream 26.2 (W2)"
+  },
+  {
+   "file": "advancements_search",
+   "slug": "advancements-search",
+   "project_id": "Ccho67RI",
+   "action": "client-optional",
+   "note": "Adopted upstream 26.2 (W2)"
+  },
+  {
+   "file": "stoneworks",
+   "slug": "stoneworks",
+   "project_id": "FzyTKtVF",
+   "action": "keep",
+   "note": "Adopted upstream 26.2 (W2)"
+  },
+  {
+   "file": "first_person_model",
+   "slug": "first-person-model",
+   "project_id": "H5XMjpHi",
+   "action": "client-optional",
+   "note": "Adopted upstream 26.2 (W2)"
+  },
+  {
+   "file": "konkrete",
+   "slug": "konkrete",
+   "project_id": "J81TRJWm",
+   "action": "keep",
+   "note": "Adopted upstream 26.2 (W2)"
+  },
+  {
+   "file": "blur_plus",
+   "slug": "blur-plus",
+   "project_id": "NK39zBp2",
+   "action": "client-optional",
+   "note": "Adopted upstream 26.2 (W2)"
+  },
+  {
+   "file": "entityculling",
+   "slug": "entityculling",
+   "project_id": "NNAgCjsB",
+   "action": "client-optional",
+   "note": "Adopted upstream 26.2 (W2)"
+  },
+  {
+   "file": "puzzles_lib",
+   "slug": "puzzles-lib",
+   "project_id": "QAGBst4M",
+   "action": "keep",
+   "note": "Adopted upstream 26.2 (W2)"
+  },
+  {
+   "file": "rsls",
+   "slug": "rsls",
+   "project_id": "SKW62Pht",
+   "action": "client-optional",
+   "note": "Adopted upstream 26.2 (W2)"
+  },
+  {
+   "file": "default_options",
+   "slug": "default-options",
+   "project_id": "WEg59z5b",
+   "action": "client-optional",
+   "note": "Adopted upstream 26.2 (W2)"
+  },
+  {
+   "file": "fancymenu",
+   "slug": "fancymenu",
+   "project_id": "Wq5SjeWM",
+   "action": "client-optional",
+   "note": "Adopted upstream 26.2 (W2)"
+  },
+  {
+   "file": "overflowing_bars",
+   "slug": "overflowing-bars",
+   "project_id": "XD7XOrAF",
+   "action": "client-optional",
+   "note": "Adopted upstream 26.2 (W2)"
+  },
+  {
+   "file": "iris",
+   "slug": "iris",
+   "project_id": "YL57xq9U",
+   "action": "client-optional",
+   "note": "Adopted upstream 26.2 (W2)"
+  },
+  {
+   "file": "sound",
+   "slug": "sound",
+   "project_id": "ZouiUX7t",
+   "action": "client-optional",
+   "note": "Adopted upstream 26.2 (W2)"
+  },
+  {
+   "file": "badoptimizations",
+   "slug": "badoptimizations",
+   "project_id": "g96Z4WVZ",
+   "action": "client-optional",
+   "note": "Adopted upstream 26.2 (W2)"
+  },
+  {
+   "file": "cameraoverhaul",
+   "slug": "cameraoverhaul",
+   "project_id": "m0oRwcZx",
+   "action": "client-optional",
+   "note": "Adopted upstream 26.2 (W2)"
+  },
+  {
+   "file": "sound_physics_remastered",
+   "slug": "sound-physics-remastered",
+   "project_id": "qyVF9oeo",
+   "action": "client-optional",
+   "note": "Adopted upstream 26.2 (W2)"
+  },
+  {
+   "file": "presence_footsteps",
+   "slug": "presence-footsteps",
+   "project_id": "rcTfTZr3",
+   "action": "client-optional",
+   "note": "Adopted upstream 26.2 (W2)"
+  },
+  {
+   "file": "smooth_scrolling_refurbished",
+   "slug": "smooth-scrolling-refurbished",
+   "project_id": "trr0scVt",
+   "action": "client-optional",
+   "note": "Adopted upstream 26.2 (W2)"
+  },
+  {
+   "file": "distanthorizons",
+   "slug": "distanthorizons",
+   "project_id": "uCdwusMi",
+   "action": "client-optional",
+   "note": "Adopted upstream 26.2 (W2)"
+  },
+  {
+   "file": "smooth_swapping",
+   "slug": "smooth-swapping",
+   "project_id": "ydZic5r4",
+   "action": "client-optional",
+   "note": "Adopted upstream 26.2 (W2)"
+  },
+  {
+   "file": "better_archeology",
+   "slug": "better-archeology",
+   "project_id": "zCh7omyG",
+   "action": "keep",
+   "note": "Adopted upstream 26.2 (W2)"
+  },
+  {
+   "file": "3dskinlayers",
+   "slug": "3dskinlayers",
+   "project_id": "zV5r3pPn",
+   "action": "client-optional",
+   "note": "Adopted upstream 26.2 (W2)"
+  },
+  {
+   "file": "spawn_animations",
+   "slug": "spawn-animations",
+   "project_id": "zrzYrlm0",
+   "action": "keep",
+   "note": "Adopted upstream 26.2 (W2)"
+  }
+ ],
  "client_optional_extra_note": "All 28 client-only visual/perf mods from 3.1.2 (sodium, iris, indium, DistantHorizons, EMF/ETF, firstperson, skinlayers, presence-footsteps, sound-physics, fancymenu stack, etc.) ship as an OPTIONAL companion download, not in the server index.",
  "_policy": "NO MOD IS EVER DROPPED (user directive 2026-08-29). 'drop' here means 'not in this pack build yet'. Every dropped mod has a defined return path (adopt / watchlist / fork-port / rebuild / superseded) in docs/DROPPED_78_STUDY.md; kept mods missing builds have build plans in docs/PATCH_PORT_STUDY.md."
 }

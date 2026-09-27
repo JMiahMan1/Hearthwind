@@ -4,11 +4,6 @@
  "generated_by": ".tmp/k3_parity_audit.md sections 7.2/7.3/7.4 (run 2026-09-25)",
  "missing": [
   {
-   "project_id": "1H9ZkJwF",
-   "filename": "backslot-1.2.15.jar",
-   "reason": "W4 port queue (plan 5.2): backslot - not yet ported"
-  },
-  {
    "project_id": "2RKFTmiB",
    "filename": "tooltipfix-1.1.1-1.20.jar",
    "reason": "W4 port queue (plan 5.2): tooltipfix - not yet ported"
@@ -271,7 +266,7 @@
   {
    "project_id": "s2w3oC2W",
    "filename": "backslotaddon-1.1.1.jar",
-   "reason": "W4 port queue (plan 5.2): backslotaddon - not yet ported"
+   "reason": "W4 port queue (plan 5.2): backslotaddon - deferred: draws the back item as a hanging lantern and tweaks the swap packet; backslot itself is ported (0.1.16), the addon's lantern rendering needs its own avatar-layer pass."
   },
   {
    "project_id": "sG4TqDb8",

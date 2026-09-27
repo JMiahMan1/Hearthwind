@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "id": "backslot",
+  "version": "26.2+0.1.0",
+  "name": "BackSlot",
+  "description": "Clean-room 26.2 port of BackSlot: a back slot and a belt slot in the player inventory, swapped with G / G+Shift, drawn on the player and on the HUD.",
+  "authors": [
+    "Hearthwind"
+  ],
+  "license": "GPL-3.0-only",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "net.backslot.BackSlot"
+    ],
+    "client": [
+      "net.backslot.client.BackSlotClient"
+    ],
+    "fabric-gametest": [
+      "net.backslot.BackSlotGameTests"
+    ]
+  },
+  "mixins": [
+    "backslot.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.19.0",
+    "minecraft": ">=26.2",
+    "fabric-api": "*"
+  }
+}

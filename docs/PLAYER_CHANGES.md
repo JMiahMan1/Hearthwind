@@ -135,6 +135,7 @@ Eight optional professions (Miner, Farmer, Fisher, Warrior, Smither, Brewer, Bui
   data-driven Trinkets groups). Aged's 1.20 Trinkets is replaced by the
   maintained 26.2 fork **Trinkets Updated**, which keeps the same API, id
   and slot layout, so trinket items from the pack accept each other.
+- **Back and belt slots (BackSlot parity)**: the inventory carries a back slot and a belt slot at Aged's positions, right of the shield. Press `G` to swap your held item with the back slot, `Shift+G` for the belt; equipped items render on your character (back and hip) and show next to the hotbar.
 - **Backpacks (Inmis parity)**: eight backpack tiers with the pack's own
   artwork - baby 3×1 up to endless 15×6 - plus the ender pouch. Equip one
   in the chest slot or carry it, then press `B` to open it; an equipped
