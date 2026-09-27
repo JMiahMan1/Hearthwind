@@ -30,8 +30,8 @@ items and initials mechanically.
 |---|---|---|---|---|
 | drink | sneak + hold right-click on still water; high dirty chance | same (50%, halved in rivers); uses up the source | ✅ | water/drinking_by_hand |
 | campfire | put water bottles on a lit campfire to purify | same (Dehydration boil: 1000 ticks, purified bottle potion) | ✅ | water/purifying |
-| campfire_cauldron | copper cauldron over a campfire boils water; bottles/flasks/buckets | ✅ implemented in hearthwind-survival (campfire cauldron boils bowls/bottles, block + BE registered); book entry still to write | 🟡 | (pending) |
-| copper_cauldron | collects rain, acts as purified water | ✅ implemented (copper cauldron family: rain, powdered, purified water, leveled); book entry still to write | 🟡 | (pending) |
+| campfire_cauldron | copper cauldron over a campfire boils water; bottles/flasks/buckets | ✅ implemented in hearthwind-survival (set on a lit campfire, stores water, boils to purified after `water_boiling_time`, comparator output) | ✅ | water/cauldrons |
+| copper_cauldron | collects rain, acts as purified water | ✅ implemented (copper cauldron family: rain 10% -> purified, snow 15% -> powder snow, dripstone fills; leveled water/powdered/purified) | ✅ | water/cauldrons |
 | bamboo_pump | pump fills bottles/flasks | **not implemented** | ❌ | (none yet) |
 | furnace | smelt water bucket to purified bucket | same | ✅ | water/purifying |
 | utilities | glass bottles, 5 flask tiers | same (2/3/4/5/6 sips) | ✅ | water/flasks |
