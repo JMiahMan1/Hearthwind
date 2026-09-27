@@ -158,6 +158,17 @@ public class ScreensTourGameTests implements FabricClientGameTest {
             context.waitTicks(10);
             context.takeScreenshot("tour_skill_info");
 
+            // The unlock list scrolls through every level (Aged's scrollable
+            // info page); jump a few rows down and confirm the screen keeps
+            // rendering with the slider thumb moved.
+            context.runOnClient(minecraft -> {
+                if (minecraft.gui.screen() instanceof SkillInfoScreen screen) {
+                    screen.scrollTo(4);
+                }
+            });
+            context.waitTicks(5);
+            context.takeScreenshot("tour_skill_info_scrolled");
+
             context.setScreen(SkillsScreen::new);
             context.waitFor(minecraft -> minecraft.gui.screen() instanceof SkillsScreen, SLOW_TIMEOUT_TICKS);
             context.waitTicks(10);

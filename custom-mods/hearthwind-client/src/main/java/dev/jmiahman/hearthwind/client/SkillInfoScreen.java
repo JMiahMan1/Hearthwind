@@ -11,8 +11,12 @@ import net.minecraft.world.item.ItemStack;
 
 @Environment(EnvType.CLIENT)
 public class SkillInfoScreen extends HearthwindPanelScreen {
+    /** Unlock rows visible in the scroll viewport. */
+    private static final int VISIBLE_ROWS = 2;
     private final String skillId;
     private final Component title;
+    private int scroll;
+    private int maxScroll;
 
     public SkillInfoScreen(String skillId) {
         super(Component.translatable("screen.hearthwind.skill_info"));
@@ -51,13 +55,41 @@ public class SkillInfoScreen extends HearthwindPanelScreen {
                 : ClientSkillGates.allForSkill(this.skillId)) {
             byLevel.computeIfAbsent(entry.getValue().level(), k -> new java.util.ArrayList<>()).add(entry.getKey());
         }
-        String more = byLevel.size() > 2 ? "+" + (byLevel.size() - 2) + " more levels" : null;
+        this.maxScroll = Math.max(0, byLevel.size() - VISIBLE_ROWS);
+        this.scroll = Math.max(0, Math.min(this.scroll, this.maxScroll));
+        String more = byLevel.size() > VISIBLE_ROWS ? "+" + (byLevel.size() - VISIBLE_ROWS) + " more levels" : null;
         if (more != null) {
             graphics.text(font, more, this.x + 186 - font.width(more), this.y + 154, 0xFF5A5A5A, false);
         }
+        // Aged scrolls the full unlock list; clip the viewport to two rows.
+        graphics.enableScissor(this.x + 8, this.y + 158, this.x + 192, this.y + 190);
         drawUnlocks(graphics, font, mouseX, mouseY, byLevel);
+        graphics.disableScissor();
+        if (this.maxScroll > 0) {
+            int trackTop = this.y + 158;
+            int trackBottom = this.y + 190;
+            graphics.fill(this.x + 190, trackTop, this.x + 193, trackBottom, 0x40000000);
+            int thumbH = Math.max(8, (trackBottom - trackTop) * VISIBLE_ROWS / byLevel.size());
+            int thumbY = trackTop + (trackBottom - trackTop - thumbH) * this.scroll / this.maxScroll;
+            graphics.fill(this.x + 190, thumbY, this.x + 193, thumbY + thumbH, 0xFF8B8B8B);
+        }
 
         drawButton(graphics, font, "Back", this.x + 14, this.y + 194, mouseX, mouseY);
+    }
+
+    @Override
+    public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
+        if (this.maxScroll > 0 && scrollY != 0.0) {
+            this.scroll = Math.max(0, Math.min(this.maxScroll,
+                    this.scroll - (int) Math.signum(scrollY)));
+            return true;
+        }
+        return super.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
+    }
+
+    /** Test hook: jump straight to an unlock row. */
+    public void scrollTo(int row) {
+        this.scroll = Math.max(0, Math.min(row, this.maxScroll));
     }
 
     /** LevelZ-style per-level bonus text, read from the live skills config. */
@@ -69,8 +101,14 @@ public class SkillInfoScreen extends HearthwindPanelScreen {
             case "agility" -> new String[] { "+" + SkillsScreen.formatStat(bonuses.agilitySpeedFractionPerLevel * 100.0) + "% movement speed per level" };
             case "defense" -> new String[] { "+" + SkillsScreen.formatStat(bonuses.defenseArmorPerLevel) + " armor per level" };
             case "mining" -> new String[] { "+" + SkillsScreen.formatStat(bonuses.miningSpeedFractionPerLevel * 100.0) + "% mining speed per level" };
-            case "luck" -> new String[] { "+" + SkillsScreen.formatStat(bonuses.luckPerLevel) + " luck per level" };
-            case "stamina" -> new String[] { "Spend stamina on digs and sprints", "before exhaustion slows you down." };
+            case "luck" -> new String[] { "+" + SkillsScreen.formatStat(bonuses.luckPerLevel) + " luck per level",
+                    "Luck feeds crit chance as it grows." };
+            case "stamina" -> new String[] { "Digging and sprinting train stamina;", "it counts toward your overall level." };
+            case "archery" -> new String[] { "Ranged hits train archery;", "it counts toward your overall level." };
+            case "trade" -> new String[] { "Trading with villagers trains trade;", "higher levels unlock gated trades." };
+            case "smithing" -> new String[] { "Smithing tables train smithing;", "higher levels unlock gear recipes." };
+            case "farming" -> new String[] { "Harvests and breeding train farming;", "at max level breeding can yield twins." };
+            case "alchemy" -> new String[] { "Brewing trains alchemy;", "higher levels unlock stronger brews." };
             default -> new String[] { "Levels unlock recipes, tools,", "stations and equipment." };
         };
     }
@@ -87,18 +125,21 @@ public class SkillInfoScreen extends HearthwindPanelScreen {
         }
 
         String hovered = null;
-        int line = 0;
+        int index = 0;
         for (java.util.Map.Entry<Integer, java.util.List<net.minecraft.resources.Identifier>> group : byLevel.entrySet()) {
-            if (line >= 2) {
-                break;
+            int row = index - this.scroll;
+            index++;
+            if (row < 0 || row >= VISIBLE_ROWS) {
+                continue;
             }
-            int rowY = this.y + 160 + line * 14;
+            int rowY = this.y + 160 + row * 14;
             String label = "Lv " + group.getKey();
             graphics.text(font, label, this.x + 14, rowY + 4, 0xFF7A1F1F, false);
             int iconX = this.x + 40;
             for (int i = 0; i < group.getValue().size() && i < 8; i++) {
                 graphics.item(SkillRestrictionScreen.icon(group.getValue().get(i)), iconX, rowY);
-                if (isOver(40 + i * 14, 160 + line * 14, 14, 14, mouseX, mouseY)) {
+                if (rowY + 14 <= this.y + 190
+                        && isOver(40 + i * 14, 160 + row * 14, 14, 14, mouseX, mouseY)) {
                     hovered = SkillRestrictionScreen.name(group.getValue().get(i));
                 }
                 iconX += 14;
@@ -106,7 +147,6 @@ public class SkillInfoScreen extends HearthwindPanelScreen {
             if (group.getValue().size() > 8) {
                 graphics.text(font, "+" + (group.getValue().size() - 8), iconX + 2, rowY + 4, 0xFF5A5A5A, false);
             }
-            line++;
         }
 
         if (hovered != null) {

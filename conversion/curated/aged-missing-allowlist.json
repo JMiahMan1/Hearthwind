@@ -181,7 +181,7 @@
   {
    "project_id": "c4aa1Mqq",
    "filename": "inmisaddon-1.0.4.jar",
-   "reason": "W4 port queue (plan 5.2): inmisaddon - deferred with the accessory stack: adds Trinkets slots + on-back rendering to Inmis backpacks; revisit after Trinkets."
+   "reason": "W4 port queue (plan 5.2): inmisaddon - evaluation done: replaces Inmis's flat item render with dedicated 3D backpack models; our port already renders backpacks on the back and the model work is tracked as render polish, not function."
   },
   {
    "project_id": "dGtrU8l3",
@@ -266,7 +266,7 @@
   {
    "project_id": "s2w3oC2W",
    "filename": "backslotaddon-1.1.1.jar",
-   "reason": "W4 port queue (plan 5.2): backslotaddon - deferred: draws the back item as a hanging lantern and tweaks the swap packet; backslot itself is ported (0.1.16), the addon's lantern rendering needs its own avatar-layer pass."
+   "reason": "W4 port queue (plan 5.2): backslotaddon - evaluation done: shield-on-back/double-sword/lantern render refinements and light; the port ships the functional back+belt slots and generic rendering, exact addon transforms tracked as render polish."
   },
   {
    "project_id": "sG4TqDb8",
