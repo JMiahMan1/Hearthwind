@@ -32,6 +32,12 @@ public class ScreensTourGameTests implements FabricClientGameTest {
 
     @Override
     public void runTest(ClientGameTestContext context) {
+        // Capture the Aged/FancyMenu title-screen layout before entering a
+        // world - first-impression parity evidence for every run.
+        context.waitForScreen(net.minecraft.client.gui.screens.TitleScreen.class);
+        context.waitTicks(40);
+        context.takeScreenshot("tour_title");
+
         try (TestSingleplayerContext world = context.worldBuilder().create()) {
             world.getConnection().waitForChunksRender(SLOW_TIMEOUT_TICKS);
             context.waitTicks(40);

@@ -379,10 +379,10 @@ displayed day count from the real day length, as SeasonHUD does.
 
 | Element | Aged | Hearthwind | Status |
 |---|---|---|---|
-| LibZ tabs above the panel (bag, sword, axe, figure) | LibZ | `TabStrip` (bag, sword, anvil, head) | 🟡 icon set differs |
+| LibZ tabs above the panel (bag, sword, axe, figure) | LibZ | `TabStrip` (bundle, iron sword, iron axe, armor stand) | 🟡 legal stand-ins for GPL tab art; silhouettes now match the capture |
 | Left accessory column (5 slots) | **Trinkets** + **BackSlot**/addon + **Inmis** | none | ❌ ports. These define Aged's inventory silhouette |
 | Weapon/bow slots beside the player preview | **BackSlot** + BackSlotAddon | offhand only | ❌ port |
-| `Lv. N` label on the player preview | LevelZ | none | ❌ small hearthwind-client addition |
+| `Lv. N` label on the player preview | LevelZ `inventorySkillLevel` (posX 0 / posY 62, 0.6 scale, white) | `InventoryScreenButtonMixin` draws `Lv. <overall>` | ✅ 2026-09-26; overall level = min(30, sum/12) like LevelZ (was a raw sum, so it showed Lv. 360) |
 | Guidebook in the starter hotbar | Lavender `aged_guide_book` | rendered as missing texture; the vendored jar lacked the book entirely | ✅ fixed 2026-09-24 (item definition + refreshed vendored jar); re-verify with client gametests |
 | Starter hotbar: bread x4, apple x4, book, bottle, campfire | Aged capture | book, bottle, campfire | 🟡 verify where Aged's food comes from before changing `StarterKit` |
 
@@ -390,8 +390,16 @@ displayed day count from the real day length, as SeasonHUD does.
 the attribute slide-out, scroll/slider and restriction rail;
 SkillInfoScreen lacks the full bonus/restriction list; SkillRestrictionScreen
 is missing; Jobs lacks multi-job and 14x14 job textures. The EMI recipe
-sidebar arrives with the EMI port. The title screen is an intentional
-deviation.
+sidebar arrives with the EMI port.
+
+**FancyMenu menus:** Aged's full FancyMenu configuration ships again
+(`config/fancymenu/**` incl. the title/sound/universal layouts and the
+`resources/aged/textures` menu art) so the main menu matches the capture;
+only the window title stays "Hearthwind". The harness stages the config
+(matching a fresh install) and the screens tour now captures the title
+screen first (`tour_title`). FancyMenu's one-time welcome popup still
+appears in a brand-new game dir; use `CGT_EXCLUDE_MODS=fancymenu` when a
+run needs popup-free screenshots.
 
 ### 5.8 The Hearthwind guidebook
 

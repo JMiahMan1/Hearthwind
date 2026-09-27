@@ -177,6 +177,13 @@ debug:
   tagsPerPage: 6
 EOF
 
+# Stage the pack's FancyMenu config (the real overrides) so the client sees
+# show_welcome_screen=false like a fresh user install; otherwise FancyMenu's
+# welcome popup covers the first tour screenshots.
+if [ -d "$REPO/conversion/overrides/config/fancymenu" ]; then
+  cp -R "$REPO/conversion/overrides/config/fancymenu" "$WORK/config/"
+fi
+
 # Pre-agree the EULA for the gametest dedicated server. It runs with the
 # JVM's process cwd (NOT --gameDir), and owo-lib's Eula mixin falls back to
 # an interactive System.in prompt which the framework's 10s server-start

@@ -120,8 +120,16 @@ Eight optional professions (Miner, Farmer, Fisher, Warrior, Smither, Brewer, Bui
   - The four LibZ tabs (Inventory Bag / Skills / Jobs / Party) sit above the
     real vanilla inventory at the modpack's exact geometry: 25 GUI px pitch,
     24 px wide raised-selected / lowered-unselected backgrounds, vanilla-item
-    tab icons, and hover tooltips. Clicking a tab switches screens; the bag tab
+    tab icons whose silhouettes match the pack's bag / sword / axe / figure,
+    and hover tooltips. Clicking a tab switches screens; the bag tab
     returns to the vanilla inventory.
+  - A small white **`Lv. N`** label at the bottom-left of the inventory
+    preview shows your overall level, exactly like LevelZ: the average of
+    your twelve skill levels, capped at 30.
+- **Menus (Aged 3.1.2 parity)**: Aged's FancyMenu configuration ships
+  with the pack (custom title/sound/universal layouts and menu artwork);
+  only the window title reads "Hearthwind". The vanilla title screen is
+  replaced by the pack's layout, exactly as a player of Aged would see it.
 - **Survival Guidebook (Aged progression guide parity)**:
   - Starter `/guide`, `/guidebook`, and first-join grants use the canonical
     `lavender:aged_guide_book` when Lavender is loaded. It contains Getting
