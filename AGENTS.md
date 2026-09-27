@@ -280,6 +280,14 @@ python3 ../custom-mods/tools/rcon.py 127.0.0.1 25575 agedtest "summon item ~ ~ ~
   our namespaces and `dehydrationRecipesLoad` asserts every
   dehydration recipe still resolves; model `block/chain` is likewise
   `block/iron_chain` now.
+- Headless gametests occasionally fail with `Cannot invoke
+  "it.unimi.dsi.fastutil.ints.IntArrayList.getInt(int)" because
+  "this.wrapped" is null` inside
+  `GameTestHelper.makeMockServerPlayerInLevel` -> `PlayerList.placeNewPlayer`
+  -> `ChunkMap.addEntity`. That is a fastutil 8.5.18 iterator/rehash race
+  against async player-data loading, not a mod bug - `gh run rerun <id>
+  --failed` clears it (seen once with 8 jobs tests, once with 3 dungeonz
+  tests; all pass on rerun).
 
 ## 1.0.0 focus: Aged parity FIRST (read docs/RELEASE_1.0_PARITY.md)
 
