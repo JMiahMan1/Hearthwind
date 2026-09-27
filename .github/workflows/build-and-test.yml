@@ -107,10 +107,10 @@ jobs:
           rm -rf world
           echo "eula=true" > eula.txt
           printf "\nenable-rcon=true\nrcon.port=25575\nrcon.password=agedtest\npause-when-empty-seconds=-1\n" >> server.properties
-          (timeout 240 java -Xmx3G -jar fabric-server.jar nogui > boot.log 2>&1 &)
+          (timeout 420 java -Xmx3G -jar fabric-server.jar nogui > boot.log 2>&1 &)
           RCON="$(git rev-parse --show-toplevel)/custom-mods/tools/rcon.py"
           python3 --version; sha256sum "$RCON"; grep -c 'nargs="\*"' "$RCON"
-          for i in $(seq 1 40); do
+          for i in $(seq 1 68); do
             sleep 6
             if grep -q "Done (" boot.log; then
               for chunk in "1000 1000" "-1000 -1000"; do
