@@ -32,7 +32,7 @@ items and initials mechanically.
 | campfire | put water bottles on a lit campfire to purify | same (Dehydration boil: 1000 ticks, purified bottle potion) | ✅ | water/purifying |
 | campfire_cauldron | copper cauldron over a campfire boils water; bottles/flasks/buckets | ✅ implemented in hearthwind-survival (set on a lit campfire, stores water, boils to purified after `water_boiling_time`, comparator output) | ✅ | water/cauldrons |
 | copper_cauldron | collects rain, acts as purified water | ✅ implemented (copper cauldron family: rain 10% -> purified, snow 15% -> powder snow, dripstone fills; leveled water/powdered/purified) | ✅ | water/cauldrons |
-| bamboo_pump | pump fills bottles/flasks | **not implemented** | ❌ | (none yet) |
+| bamboo_pump | pump fills bottles/flasks | deferred: the upstream pump is a GPLv3 block + block entity + renderer port with its own inventory and cooldown; purification is already covered by bottles and cauldrons | ❌ | (none yet) |
 | furnace | smelt water bucket to purified bucket | same | ✅ | water/purifying |
 | utilities | glass bottles, 5 flask tiers | same (2/3/4/5/6 sips) | ✅ | water/flasks |
 
@@ -93,6 +93,8 @@ items and initials mechanically.
 | Aged entry | Aged says | Hearthwind | Status | Book |
 |---|---|---|---|---|
 | drawers / drawer_upgrades | Extended Drawers blocks and upgrades | 1024 per drawer, 2/4/8/16 tiers, toggles and networks described | ✅ | stores/drawers, stores/drawer_upgrades |
+| backpacks (Aged: storage/backpacks) | Inmis tiers, BackSlot back/belt, Trinkets slots | eight tiers + ender pouch, B to open, upgrades keep contents, G / Shift+G, accessory slots | ✅ | stores/backpacks |
+| archeology (Aged: archeology/*) | Better Archeology brushing, fossils, artifacts, totems | brushing and fossil displays, shard identification at the Archeology Table, the four totems' real effects | ✅ | antiquities/brushing, antiquities/artifacts |
 | backpacks | Inmis backpacks in a trinket slot, Health-gated | stand-in `inmis:` items in hearthwind-world; Inmis/Trinkets not ported | ➖ | (none) |
 
 ## Battle
