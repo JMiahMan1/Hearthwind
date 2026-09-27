@@ -300,6 +300,72 @@ public final class HearthwindSurvivalGameTests {
         helper.succeed();
     }
 
+    /**
+     * Dehydration's bamboo pump: four pumps purify a bucket, one purifies a
+     * glass bottle, and a leather flask gains two units - after which the
+     * pump rests for the configured cooldown.
+     */
+    @GameTest
+    public void bambooPumpPurifiesItsContainer(GameTestHelper helper) {
+        net.minecraft.core.BlockPos rel = new net.minecraft.core.BlockPos(1, 2, 1);
+        helper.setBlock(rel, dev.jmiahman.hearthwind.survival.hydration.HydrationBlocks.BAMBOO_PUMP.defaultBlockState());
+        net.minecraft.server.level.ServerLevel level = helper.getLevel();
+        var pos = helper.absolutePos(rel);
+        var pump = (dev.jmiahman.hearthwind.survival.hydration.BambooPumpBlockEntity)
+                level.getBlockEntity(pos);
+        helper.assertTrue(pump != null, "the bamboo pump must have a block entity");
+
+        // A bucket needs more than three pumps.
+        pump.setItem(0, new ItemStack(Items.BUCKET));
+        for (int i = 0; i < 3; i++) {
+            pump.increasePumpCount(1);
+            helper.assertTrue(pump.getItem(0).is(Items.BUCKET),
+                    "a bucket must survive fewer than four pumps (" + i + ")");
+        }
+        pump.increasePumpCount(1);
+        helper.assertTrue(pump.getItem(0).is(dev.jmiahman.hearthwind.survival.PurifiedWater.BUCKET),
+                "four pumps must purify the bucket");
+        helper.assertTrue(pump.getCooldown() == HearthwindSurvivalConfig.get().hydration.pumpCooldown,
+                "a conversion must arm the pump cooldown");
+
+        // A glass bottle purifies on the first pump.
+        pump.setCooldown(0);
+        pump.setItem(0, new ItemStack(Items.GLASS_BOTTLE));
+        pump.increasePumpCount(1);
+        ItemStack potion = pump.getItem(0);
+        helper.assertTrue(potion.is(Items.POTION), "a glass bottle must become a potion");
+        var contents = potion.get(net.minecraft.core.component.DataComponents.POTION_CONTENTS);
+        helper.assertTrue(contents != null && contents.is(
+                        dev.jmiahman.hearthwind.survival.PurifiedWater.PURIFIED_POTION),
+                "the potion must hold purified water");
+
+        // A leather flask gains two units.
+        pump.setCooldown(0);
+        ItemStack flask = FlaskItems.setFill(new ItemStack(FlaskItems.LEATHER_FLASK), 1, 0);
+        pump.setItem(0, flask);
+        pump.increasePumpCount(1);
+        var data = pump.getItem(0).get(FlaskItems.FLASK_DATA);
+        helper.assertTrue(data != null && data.fillLevel() == 3, "a flask must gain two units");
+        helper.succeed();
+    }
+
+    /** The container can be taken back out with a sneak + empty hand. */
+    @GameTest
+    public void bambooPumpHandsBackItsContainer(GameTestHelper helper) {
+        net.minecraft.core.BlockPos rel = new net.minecraft.core.BlockPos(1, 2, 1);
+        helper.setBlock(rel, dev.jmiahman.hearthwind.survival.hydration.HydrationBlocks.BAMBOO_PUMP.defaultBlockState());
+        ServerPlayer player = survivalServerPlayer(helper);
+        var pump = (dev.jmiahman.hearthwind.survival.hydration.BambooPumpBlockEntity)
+                helper.getLevel().getBlockEntity(helper.absolutePos(rel));
+        pump.setItem(0, new ItemStack(Items.BUCKET));
+        player.setShiftKeyDown(true);
+        helper.useBlock(rel, player);
+        helper.assertTrue(pump.isEmpty(), "sneaking with an empty hand must take the container back");
+        helper.assertTrue(player.getItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND).is(Items.BUCKET),
+                "the container must land in the player's hand");
+        helper.succeed();
+    }
+
     @GameTest
     public void waterBottleBoilsOnCampfire(GameTestHelper helper) {
         net.minecraft.core.BlockPos rel = new net.minecraft.core.BlockPos(1, 2, 1);

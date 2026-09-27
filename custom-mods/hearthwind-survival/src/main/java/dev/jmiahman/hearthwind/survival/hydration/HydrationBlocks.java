@@ -30,6 +30,8 @@ public final class HydrationBlocks {
     public static CopperLeveledCauldronBlock COPPER_POWDERED_CAULDRON;
     public static CopperLeveledCauldronBlock COPPER_PURIFIED_WATER_CAULDRON;
     public static BlockEntityType<CampfireCauldronBlockEntity> CAMPFIRE_CAULDRON_ENTITY;
+    public static BambooPumpBlock BAMBOO_PUMP;
+    public static BlockEntityType<BambooPumpBlockEntity> BAMBOO_PUMP_ENTITY;
 
     private HydrationBlocks() {}
 
@@ -82,13 +84,22 @@ public final class HydrationBlocks {
                         CopperLeveledCauldronBlock.RAIN_PREDICATE,
                         CopperCauldronBehavior.PURIFIED_WATER_COPPER_CAULDRON_BEHAVIOR));
 
+        BAMBOO_PUMP = Registry.register(BuiltInRegistries.BLOCK, id("bamboo_pump"),
+                new BambooPumpBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.CAULDRON)
+                        .pushReaction(PushReaction.DESTROY)
+                        .setId(blockKey("bamboo_pump"))));
+
         CAMPFIRE_CAULDRON_ENTITY = Registry.register(BuiltInRegistries.BLOCK_ENTITY_TYPE,
                 entityKey("campfire_cauldron_entity"),
                 new BlockEntityType<>(CampfireCauldronBlockEntity::new, Set.of(CAMPFIRE_CAULDRON)));
+        BAMBOO_PUMP_ENTITY = Registry.register(BuiltInRegistries.BLOCK_ENTITY_TYPE,
+                entityKey("bamboo_pump_entity"),
+                new BlockEntityType<>(BambooPumpBlockEntity::new, Set.of(BAMBOO_PUMP)));
 
         registerBlockItem(CAMPFIRE_CAULDRON, "campfire_cauldron");
         registerBlockItem(COPPER_CAULDRON, "copper_cauldron");
+        registerBlockItem(BAMBOO_PUMP, "bamboo_pump");
 
-        log.accept("dehydration hydration blocks registered (campfire_cauldron, copper_cauldron family)");
+        log.accept("dehydration hydration blocks registered (campfire_cauldron, copper_cauldron family, bamboo_pump)");
     }
 }

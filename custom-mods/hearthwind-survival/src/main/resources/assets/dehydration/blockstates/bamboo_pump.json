@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "attached=false": {
+      "model": "dehydration:block/bamboo_pump"
+    },
+    "attached=true,extended=false": {
+      "model": "dehydration:block/bamboo_pump"
+    },
+    "attached=true,extended=true": {
+      "model": "dehydration:block/bamboo_pump_on"
+    }
+  }
+}

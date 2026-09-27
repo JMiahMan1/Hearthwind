@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "B B",
+    "C C",
+    " S "
+  ],
+  "key": {
+    "B": "minecraft:bamboo",
+    "C": "#minecraft:planks",
+    "S": "minecraft:stick"
+  },
+  "result": {
+    "id": "dehydration:bamboo_pump",
+    "count": 1
+  }
+}

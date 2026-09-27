@@ -206,6 +206,18 @@ public final class HearthwindSurvivalConfig {
         public double copperSnowFillChance = 0.15;
         /** Rain fill chance per precipitation tick for the campfire cauldron (Aged: 0.2). */
         public double campfireRainFillChance = 0.2;
+        /**
+         * Ticks the bamboo pump rests after a conversion (upstream
+         * {@code pump_cooldown} = 1200, i.e. a minute; Aged leaves the
+         * default).
+         */
+        public int pumpCooldown = 1200;
+        /**
+         * Upstream {@code pump_requires_water} (default false, and Aged
+         * leaves it off): when on, the pump refuses to work unless it can
+         * see water in the ten-to-sixty blocks above it.
+         */
+        public boolean pumpRequiresWater = false;
     }
 
     /** Family-friendly brewing: alcohol becomes juice / NA medieval drinks. */

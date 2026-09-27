@@ -32,7 +32,7 @@ items and initials mechanically.
 | campfire | put water bottles on a lit campfire to purify | same (Dehydration boil: 1000 ticks, purified bottle potion) | ✅ | water/purifying |
 | campfire_cauldron | copper cauldron over a campfire boils water; bottles/flasks/buckets | ✅ implemented in hearthwind-survival (set on a lit campfire, stores water, boils to purified after `water_boiling_time`, comparator output) | ✅ | water/cauldrons |
 | copper_cauldron | collects rain, acts as purified water | ✅ implemented (copper cauldron family: rain 10% -> purified, snow 15% -> powder snow, dripstone fills; leveled water/powdered/purified) | ✅ | water/cauldrons |
-| bamboo_pump | pump fills bottles/flasks | deferred: the upstream pump is a GPLv3 block + block entity + renderer port with its own inventory and cooldown; purification is already covered by bottles and cauldrons | ❌ | (none yet) |
+| bamboo_pump | Dehydration 1.3.6 ships a bamboo pump block (block entity + single container slot; upstream is GPLv3, so Hearthwind reimplements the behaviour clean-room with its own art) | place on any solid block, right-click once to attach, hand it a bucket / glass bottle / leather flask, then work the handle: a bucket needs 4 pumps, a bottle 1, a flask +2 units; 60 s rest afterwards, the cooldown rides on the item so breaking and re-placing keeps it, optional water requirement, sneak with an empty hand to take the container back | ✅ | water/bamboo_pump |
 | furnace | smelt water bucket to purified bucket | same | ✅ | water/purifying |
 | utilities | glass bottles, 5 flask tiers | same (2/3/4/5/6 sips) | ✅ | water/flasks |
 

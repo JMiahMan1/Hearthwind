@@ -16,13 +16,14 @@ import net.minecraft.resources.Identifier;
  */
 public class GuideBookGameTests implements FabricClientGameTest {
     private static final int SLOW_TIMEOUT_TICKS = 20 * 300;
-    private static final int MIN_ENTRIES = 47;
+    private static final int MIN_ENTRIES = 48;
     private static final int MIN_CATEGORIES = 11;
     private static final String[] TOUR = {
             "hearthwind:first_days/crafting_rock",
             "hearthwind:first_days/flint_tools",
             "hearthwind:water/flasks",
             "hearthwind:water/cauldrons",
+            "hearthwind:water/bamboo_pump",
             "hearthwind:heat_and_cold/clothing",
             "hearthwind:crafts/metals",
             "hearthwind:stores/drawers",
