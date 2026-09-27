@@ -156,6 +156,66 @@ public final class ClientSkillGates {
         return serverSnapshot != null;
     }
 
+    /** The gate maps as the UI sees them: server snapshot when connected, else local files. */
+    public static Map<Identifier, Requirement> miningGates() {
+        return merged(active(activeSnapshot(), Snapshot::breakGates, BREAK_GATES),
+                active(activeSnapshot(), Snapshot::useGates, USE_GATES));
+    }
+
+    public static Map<Identifier, Requirement> craftingGates() {
+        Snapshot s = activeSnapshot();
+        return merged(active(s, Snapshot::craftGates, EMPTY), active(s, Snapshot::smithingGates, EMPTY),
+                active(s, Snapshot::brewingGates, EMPTY));
+    }
+
+    public static Map<Identifier, Requirement> itemGates() {
+        return active(activeSnapshot(), Snapshot::itemGates, EMPTY);
+    }
+
+    public static Map<Identifier, Requirement> entityGates() {
+        return active(activeSnapshot(), Snapshot::entityGates, EMPTY);
+    }
+
+    /** Sorted (level, id) rows for a restriction screen. */
+    public static java.util.List<Map.Entry<Identifier, Requirement>> sortedEntries(
+            Map<Identifier, Requirement> gates) {
+        java.util.List<Map.Entry<Identifier, Requirement>> rows = new java.util.ArrayList<>(gates.entrySet());
+        rows.sort(java.util.Comparator
+                .comparingInt((Map.Entry<Identifier, Requirement> e) -> e.getValue().level())
+                .thenComparing(e -> e.getKey().toString()));
+        return rows;
+    }
+
+    /** Every gate (all kinds) whose requirement names the given skill. */
+    public static java.util.List<Map.Entry<Identifier, Requirement>> allForSkill(String skill) {
+        Map<Identifier, Requirement> all = merged(miningGates(), craftingGates(), itemGates(), entityGates());
+        java.util.List<Map.Entry<Identifier, Requirement>> rows = new java.util.ArrayList<>();
+        for (Map.Entry<Identifier, Requirement> entry : all.entrySet()) {
+            if (entry.getValue().skill().equalsIgnoreCase(skill)) {
+                rows.add(entry);
+            }
+        }
+        rows.sort(java.util.Comparator
+                .comparingInt((Map.Entry<Identifier, Requirement> e) -> e.getValue().level())
+                .thenComparing(e -> e.getKey().toString()));
+        return rows;
+    }
+
+    private static Map<Identifier, Requirement> active(Snapshot snapshot,
+            java.util.function.Function<Snapshot, Map<Identifier, Requirement>> pick,
+            Map<Identifier, Requirement> fallback) {
+        return snapshot == null ? fallback : pick.apply(snapshot);
+    }
+
+    @SafeVarargs
+    private static Map<Identifier, Requirement> merged(Map<Identifier, Requirement>... maps) {
+        Map<Identifier, Requirement> out = new java.util.LinkedHashMap<>();
+        for (Map<Identifier, Requirement> map : maps) {
+            map.forEach(out::putIfAbsent);
+        }
+        return out;
+    }
+
     public static Requirement getItemRequirement(ItemStack stack) {
         if (stack.getItem() instanceof BlockItem bi) {
             Requirement req = getBreakRequirement(bi.getBlock());

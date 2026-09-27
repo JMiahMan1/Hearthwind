@@ -4,6 +4,7 @@ import dev.jmiahman.hearthwind.client.JobsScreen;
 import dev.jmiahman.hearthwind.client.NutrientsScreen;
 import dev.jmiahman.hearthwind.client.PartyScreen;
 import dev.jmiahman.hearthwind.client.SkillInfoScreen;
+import dev.jmiahman.hearthwind.client.SkillRestrictionScreen;
 import dev.jmiahman.hearthwind.client.SkillsScreen;
 import dev.jmiahman.hearthwind.client.SurvivalInfoScreen;
 import net.fabricmc.fabric.api.client.gametest.v1.FabricClientGameTest;
@@ -63,6 +64,40 @@ public class ScreensTourGameTests implements FabricClientGameTest {
             context.waitFor(minecraft -> minecraft.gui.screen() instanceof SkillsScreen, SLOW_TIMEOUT_TICKS);
             context.waitTicks(10);
             context.takeScreenshot("tour_skills");
+
+            // Aged hub parity: the right rail's attributes slide-out and the
+            // mining/crafting gate buttons.
+            context.runOnClient(minecraft -> {
+                if (minecraft.gui.screen() instanceof SkillsScreen screen) {
+                    screen.toggleAttributes();
+                }
+            });
+            context.waitTicks(5);
+            context.takeScreenshot("tour_skills_attributes");
+
+            context.runOnClient(minecraft -> {
+                if (minecraft.gui.screen() instanceof SkillsScreen screen) {
+                    screen.openRestrictions(SkillRestrictionScreen.ListKind.MINING);
+                }
+            });
+            context.waitFor(minecraft -> minecraft.gui.screen() instanceof SkillRestrictionScreen, SLOW_TIMEOUT_TICKS);
+            context.waitTicks(10);
+            context.takeScreenshot("tour_skill_restrictions_mining");
+
+            context.setScreen(SkillsScreen::new);
+            context.waitFor(minecraft -> minecraft.gui.screen() instanceof SkillsScreen, SLOW_TIMEOUT_TICKS);
+            context.runOnClient(minecraft -> {
+                if (minecraft.gui.screen() instanceof SkillsScreen screen) {
+                    screen.openRestrictions(SkillRestrictionScreen.ListKind.CRAFTING);
+                }
+            });
+            context.waitFor(minecraft -> minecraft.gui.screen() instanceof SkillRestrictionScreen, SLOW_TIMEOUT_TICKS);
+            context.waitTicks(10);
+            context.takeScreenshot("tour_skill_restrictions_crafting");
+
+            context.setScreen(SkillsScreen::new);
+            context.waitFor(minecraft -> minecraft.gui.screen() instanceof SkillsScreen, SLOW_TIMEOUT_TICKS);
+            context.waitTicks(10);
 
             context.setScreen(() -> new SkillInfoScreen("mining"));
             context.waitFor(minecraft -> minecraft.gui.screen() instanceof SkillInfoScreen, SLOW_TIMEOUT_TICKS);

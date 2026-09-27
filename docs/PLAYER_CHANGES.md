@@ -145,7 +145,12 @@ Eight optional professions (Miner, Farmer, Fisher, Warrior, Smither, Brewer, Bui
     help page, and twelve skill rows (two columns of six) with [+] buttons
     that spend one experience level per press.
   - Clicking a skill opens its client-only detail page with icon, level,
-    progress bar, description, and Back/E navigation.
+    progress bar, description, the bonus each level grants, and the per-level
+    unlock lists (gate icons grouped by level, with tooltips).
+  - Right icon rail (Aged's hub rail): an attributes button toggles an
+    age-styled slide-out with the live attribute values, and the pickaxe and
+    crafting-table buttons open the mining / crafting restriction lists
+    (scrollable rows showing what is locked and the skill level it needs).
 - **Jobs screen (`J`)**:
   - Rebuilt to the Aged JobsAddon layout: 200x215 panel, "&lt;Name&gt; Jobs"
     title, "Job Cooldown: MM:SS" and employed summary, then eight job cards

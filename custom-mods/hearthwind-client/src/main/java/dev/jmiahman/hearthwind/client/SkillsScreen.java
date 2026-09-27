@@ -55,9 +55,24 @@ public class SkillsScreen extends HearthwindPanelScreen {
             "Increases Melee Damage", "Decreases Exhaustion", "Increases Loot Value" };
 
     private boolean showHelp;
+    private boolean showAttributes;
 
     public SkillsScreen() {
         super(Component.translatable("screen.hearthwind.skills"));
+    }
+
+    /** Rail toggle for the attribute slide-out (called by tests too). */
+    public void toggleAttributes() {
+        this.showAttributes = !this.showAttributes;
+    }
+
+    public boolean attributesOpen() {
+        return this.showAttributes;
+    }
+
+    /** Rail gate buttons: open a restriction list (called by tests too). */
+    public void openRestrictions(SkillRestrictionScreen.ListKind kind) {
+        Minecraft.getInstance().setScreenAndShow(new SkillRestrictionScreen(kind));
     }
 
     @Override
@@ -104,29 +119,67 @@ public class SkillsScreen extends HearthwindPanelScreen {
         graphics.text(font, xpText, this.x + 123 - font.width(xpText) / 2, this.y + 78, INK, false);
 
         drawHelpButton(graphics, font, mouseX, mouseY);
+        drawRailButtons(graphics, font, mouseX, mouseY);
         drawSkillRows(graphics, font, levels, player, mouseX, mouseY);
 
+        if (this.showAttributes) {
+            drawAttributesPanel(graphics, font, levels, player);
+        }
         if (this.showHelp) {
             drawHelpOverlay(graphics, font);
         }
     }
 
+    /**
+     * Aged's right icon rail (LevelZ LevelScreen, x+178): attributes toggle
+     * plus the mining and crafting gate buttons that open
+     * {@link SkillRestrictionScreen}. Our stat/skill art is item stand-ins
+     * (upstream sprites are GPL).
+     */
+    private void drawRailButtons(GuiGraphicsExtractor graphics, Font font, int mouseX, int mouseY) {
+        drawIconButton(graphics, mouseX, mouseY, 16, Items.EXPERIENCE_BOTTLE,
+                this.showAttributes ? "Hide attributes" : "Show attributes");
+        drawIconButton(graphics, mouseX, mouseY, 34, Items.IRON_PICKAXE, "Mining restrictions");
+        drawIconButton(graphics, mouseX, mouseY, 52, Items.CRAFTING_TABLE, "Crafting restrictions");
+    }
+
+    private void drawIconButton(GuiGraphicsExtractor graphics, int mouseX, int mouseY, int relY,
+            Item icon, String tip) {
+        int bx = this.x + 177;
+        int by = this.y + relY;
+        boolean hover = mouseX >= bx && mouseX < bx + 16 && mouseY >= by && mouseY < by + 16;
+        graphics.fill(bx, by, bx + 16, by + 16, hover ? 0x40FFFFFF : 0x30000000);
+        graphics.item(new ItemStack(icon), bx, by);
+        if (hover) {
+            graphics.setTooltipForNextFrame(Component.literal(tip), mouseX, mouseY);
+        }
+    }
+
+    /** 82 px slide-out panel with live attribute values, Aged-style. */
+    private void drawAttributesPanel(GuiGraphicsExtractor graphics, Font font, Map<String, Integer> levels,
+            LocalPlayer player) {
+        int px = this.x + 94;
+        int py = this.y + 14;
+        int pw = 82;
+        int ph = 192;
+        graphics.fill(px, py, px + pw, py + ph, 0xF01E1E1E);
+        graphics.fill(px, py, px + pw, py + 1, 0xFF9A9A9A);
+        graphics.fill(px, py, px + 1, py + ph, 0xFF9A9A9A);
+        Component title = Component.literal("Attributes");
+        graphics.text(font, title, px + pw / 2 - font.width(title) / 2, py + 4, 0xFFE0E0E0, false);
+
+        String[] values = statValues(levels, player);
+        for (int i = 0; i < 6; i++) {
+            int rowY = py + 18 + i * 20;
+            graphics.item(new ItemStack(STAT_ICONS[i]), px + 4, rowY);
+            graphics.text(font, STAT_LABELS[i], px + 22, rowY + 2, 0xFFB0B0B0, false);
+            graphics.text(font, values[i], px + 22, rowY + 10, 0xFFFFFFFF, false);
+        }
+    }
+
     private void drawStats(GuiGraphicsExtractor graphics, Font font, Map<String, Integer> levels,
             LocalPlayer player, int mouseX, int mouseY) {
-        var bonuses = dev.jmiahman.hearthwind.skills.SkillsConfig.get().bonuses;
-        int health = levels.getOrDefault("health", 0);
-        int strength = levels.getOrDefault("strength", 0);
-        int agility = levels.getOrDefault("agility", 0);
-        int defense = levels.getOrDefault("defense", 0);
-        int luck = levels.getOrDefault("luck", 0);
-
-        String[] values = {
-                String.valueOf(Math.round(bonuses.baseStartingHealth + health * bonuses.healthHpPerLevel)),
-                formatStat(defense * bonuses.defenseArmorPerLevel),
-                formatStat((bonuses.agilityBaseMovement + agility * bonuses.agilitySpeedFractionPerLevel) * 10.0),
-                formatStat(1.0 + strength * bonuses.strengthDamagePerLevel),
-                String.valueOf(player != null ? player.getFoodData().getFoodLevel() : 0),
-                formatStat(luck * bonuses.luckPerLevel) };
+        String[] values = statValues(levels, player);
 
         int[] columnX = { 58, 108, 155 };
         int[] valueX = { 76, 126, 173 };
@@ -144,6 +197,23 @@ public class SkillsScreen extends HearthwindPanelScreen {
         if (hovered != null) {
             graphics.setTooltipForNextFrame(Component.literal(hovered), mouseX, mouseY);
         }
+    }
+
+    /** Live attribute readouts shared by the 3x2 grid and the slide-out. */
+    private String[] statValues(Map<String, Integer> levels, LocalPlayer player) {
+        var bonuses = dev.jmiahman.hearthwind.skills.SkillsConfig.get().bonuses;
+        int health = levels.getOrDefault("health", 0);
+        int strength = levels.getOrDefault("strength", 0);
+        int agility = levels.getOrDefault("agility", 0);
+        int defense = levels.getOrDefault("defense", 0);
+        int luck = levels.getOrDefault("luck", 0);
+        return new String[] {
+                String.valueOf(Math.round(bonuses.baseStartingHealth + health * bonuses.healthHpPerLevel)),
+                formatStat(defense * bonuses.defenseArmorPerLevel),
+                formatStat((bonuses.agilityBaseMovement + agility * bonuses.agilitySpeedFractionPerLevel) * 10.0),
+                formatStat(1.0 + strength * bonuses.strengthDamagePerLevel),
+                String.valueOf(player != null ? player.getFoodData().getFoodLevel() : 0),
+                formatStat(luck * bonuses.luckPerLevel) };
     }
 
     private void drawSkillRows(GuiGraphicsExtractor graphics, Font font, Map<String, Integer> levels,
@@ -227,6 +297,29 @@ public class SkillsScreen extends HearthwindPanelScreen {
     protected boolean onContentClick(MouseButtonEvent event) {
         if (event.button() != 0) {
             return false;
+        }
+        if (event.x() >= this.x + 177 && event.x() < this.x + 193) {
+            double relY = event.y() - this.y;
+            if (relY >= 16 && relY < 32) {
+                this.click();
+                this.toggleAttributes();
+                return true;
+            }
+            if (relY >= 34 && relY < 50) {
+                this.click();
+                this.openRestrictions(SkillRestrictionScreen.ListKind.MINING);
+                return true;
+            }
+            if (relY >= 52 && relY < 68) {
+                this.click();
+                this.openRestrictions(SkillRestrictionScreen.ListKind.CRAFTING);
+                return true;
+            }
+        }
+        if (this.showAttributes && event.x() >= this.x + 94 && event.x() < this.x + 176) {
+            this.click();
+            this.showAttributes = false;
+            return true;
         }
         if (event.x() >= this.x + 178 && event.x() < this.x + 191
                 && event.y() >= this.y + 74 && event.y() < this.y + 87) {

@@ -386,10 +386,11 @@ shipped Time & Wind data reads 14, exactly like Aged.
 | Guidebook in the starter hotbar | Lavender `aged_guide_book` | rendered as missing texture; the vendored jar lacked the book entirely | ✅ fixed 2026-09-24 (item definition + refreshed vendored jar); re-verify with client gametests |
 | Starter hotbar: bread x4, apple x4, book, bottle, campfire | Aged capture | book, bottle, campfire | 🟡 verify where Aged's food comes from before changing `StarterKit` |
 
-**Screens** (details in `docs/AGED_UI_PARITY.md`): Level screen still lacks
-the attribute slide-out, scroll/slider and restriction rail;
-SkillInfoScreen lacks the full bonus/restriction list; SkillRestrictionScreen
-is missing; Jobs lacks multi-job and 14x14 job textures. The EMI recipe
+**Screens** (details in `docs/AGED_UI_PARITY.md`): the Level screen has the
+attribute slide-out and the restriction rail (mining/crafting) opening
+`SkillRestrictionScreen` lists; SkillInfoScreen shows per-skill bonuses and
+per-level unlock icons; hub scroll/slider and the remaining bonus text are
+still open; Jobs lacks multi-job and 14x14 job textures. The EMI recipe
 sidebar arrives with the EMI port.
 
 **FancyMenu menus:** Aged's full FancyMenu configuration ships again

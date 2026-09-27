@@ -30,11 +30,13 @@ Aged `LevelScreen`: **200×215** textured panel (`skill_background.png`).
 - K or E closes; LibZ tabs on top; no pause.
 
 Hearthwind `SkillsScreen`: 200×215 Aged-style panel with player preview, six
-attribute readouts, segmented XP bar, 12 skill rows, [+] controls, and shared
-LibZ tabs. Clicking a skill opens the client-only `SkillInfoScreen` for its
-icon, level, progress, description, and back navigation. Remaining Aged UI
-parity: the attribute slide-out, scroll/slider, restriction rail, sprite icons,
-and the full per-level bonus/restriction content.
+attribute readouts, segmented XP bar, 12 skill rows, [+] controls, shared
+LibZ tabs, and the right icon rail: an attributes toggle that opens the
+slide-out attribute panel (live values, icons) plus mining and crafting gate
+buttons that open the restriction lists. Clicking a skill opens the
+client-only `SkillInfoScreen`. Remaining Aged UI parity: sprite icons (ours
+are item stand-ins for GPL art), hub scroll/slider, and the full per-level
+bonus content text.
 
 ## 2. SkillInfoScreen drill-down (partial)
 
@@ -44,16 +46,21 @@ scrollable LineWidgets (10 visible): skill desc lines
 per-level restriction lists (item/block/entity/enchantment icons in rows of
 9). Scroll slider. E → back to LevelScreen, K → LevelScreen.
 
-Hearthwind `SkillInfoScreen` is shipped with the Aged panel geometry and
-back navigation, plus skill icon, level, progress bar, and concise description.
-The remaining work is the full scrollable description/bonus/restriction list
-and Aged sprite treatment.
+Hearthwind `SkillInfoScreen` ships the Aged panel geometry, skill icon, level,
+progress bar, description, per-skill bonus lines read from the live skills
+config, and the per-level unlock lists (gate icons grouped by level with
+overflow counts and tooltips). Remaining: the full scrollable LineWidgets
+list and Aged sprite treatment.
 
-## 3. SkillRestrictionScreen (missing)
+## 3. SkillRestrictionScreen (shipped)
 
 Aged: list screen for crafting/mining/use gate maps, opened from the hub
-rail buttons. Hearthwind gates are enforced + logged, but the restriction list
-screen is not yet shipped.
+rail buttons. Hearthwind `SkillRestrictionScreen` ships the panel, title and
+entry count, eight scrollable rows with target icon, name (tooltip with the
+full requirement), the requiring skill and level, a slider and Back; mining
+and crafting open from the hub rail, while item and creature gates surface in
+the skill drill-down unlock lists. Data comes from the live server gate
+snapshot, falling back to the local gate files when disconnected.
 
 ## 4. Nutrition screen geometry
 
@@ -105,7 +112,9 @@ rule; keep when rebuilding).
   effect-zone tooltips, drop own tab strip) + this doc: shipped.
 - P1: skills hub rebuild (200×215 panel, player preview, XP bar, steppers,
   attributes slide-out, restriction buttons + screens, SkillInfo drill-down,
-  scroll): hub + SkillInfo shipped; restriction rail/scroll/full content remains.
+  scroll): hub, attributes slide-out, restriction rail + screens and the
+  SkillInfo drill-down are shipped; hub scroll/slider and the full bonus text
+  remain.
 - P2: LibZ-geometry tabs + jobs multi/textures: tabs shipped; jobs parity is
   separately tracked.
 - P3: main-menu background: shipped Hearthwind menu, Aged art parity remains.
