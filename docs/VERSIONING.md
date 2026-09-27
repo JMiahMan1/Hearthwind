@@ -26,9 +26,14 @@ mod itself changed in a player-visible way.
 ## Checklist for a release
 
 1. Update `pack.version` in `conversion/build.conf.json`.
-2. Rebuild packs: `python3 conversion/scripts/build_pack.py --server-dir`.
-3. Verify overrides contain the in-house jars
-   (`overrides/mods/passable-foliage-*.jar`, `hearthwind-client` only in the
-   Client pack, never in the Server pack).
+2. Rebuild: `cd custom-mods && ./gradlew build`, then
+   `python3 conversion/scripts/build_pack.py --server-dir`.
+3. Verify the packs - every hearthwind-* and ported module jar present,
+   client jar only in the Client pack, no corrupt jars:
+   `python3 custom-mods/tools/verify_pack.py --all`.
+   `custom-mods/tools/update_prism.sh` and the CI package job run the same
+   check and refuse to continue on failure.
 4. Commit, push, tag `v<pack.version>`, let CI publish the release.
-5. Confirm the GitHub Release has all 3 `.mrpack` assets.
+5. Confirm the published assets, not just the local ones:
+   `python3 custom-mods/tools/verify_pack.py --release v<pack.version>`.
+   The release job also verifies the exact files it is about to upload.

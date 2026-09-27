@@ -41,11 +41,16 @@ INSTANCES="Hearthwind-Full Hearthwind-Minimal Hearthwind-Dev-Client"
 # Never swap jars under a running game: Fabric loads classes lazily, so the
 # first class touched after the file is replaced dies with
 # "ZipFile invalid LOC header (bad signature)" (seen as a crash on opening
-# the inventory screen). Close the game first; --force overrides.
+# the inventory screen). Prism launches via org.prismlauncher.EntryPoint and
+# Fabric through knot.KnotClient, so match those too - the old patterns
+# missed a live Prism game. Close the game first; --force overrides.
 FORCE=""
 for arg in "$@"; do [ "$arg" = "--force" ] && FORCE=1; done
 if [ -z "$FORCE" ] && { pgrep -f "net\.minecraft\.client\.main\.Main" >/dev/null 2>&1 \
-    || pgrep -f "net\.fabricmc\.devlaunchinjector\.Main" >/dev/null 2>&1; }; then
+    || pgrep -f "net\.fabricmc\.devlaunchinjector\.Main" >/dev/null 2>&1 \
+    || pgrep -f "org\.prismlauncher\.EntryPoint" >/dev/null 2>&1 \
+    || pgrep -f "knot\.KnotClient" >/dev/null 2>&1 \
+    || pgrep -f "knot\.KnotServer" >/dev/null 2>&1; }; then
   echo "ERROR: Minecraft is running - refusing to replace mod jars under a live game." >&2
   echo "       Close the game and rerun (use --force to override)." >&2
   exit 1
@@ -62,6 +67,17 @@ LOADER_VER=$(python3 -c "import json; print(json.load(open('$ROOT/conversion/bui
 [ -n "$LOADER_VER" ] || { echo "ERROR: empty loader_version from build.conf.json"; exit 1; }
 
 echo "loader=$LOADER_VER mrpack=$(basename "$MRPACK")"
+
+# Fail fast when the pack itself is incomplete (e.g. packaged before the
+# modules were built): instances must mirror a valid pack, not an empty one.
+# This is the local counterpart of the CI release gate.
+SERVER_MRPACK="${MRPACK/HearthwindClient-/HearthwindServer-}"
+VERIFY_ARGS=("$MRPACK")
+[ -f "$SERVER_MRPACK" ] && VERIFY_ARGS+=("$SERVER_MRPACK")
+python3 "$DIR/verify_pack.py" "${VERIFY_ARGS[@]}" || {
+  echo "ERROR: mrpack failed verification - run ./gradlew build in custom-mods, then build_pack.py --server-dir" >&2
+  exit 2
+}
 
 # Keep the vendored jar sources canonical before the pack gets rebuilt.
 python3 "$ROOT/conversion/scripts/patch_vendored.py" "$ROOT/conversion" || {
@@ -179,6 +195,22 @@ for name in sorted(expected):
     else:
         added += 1
         print(f"  ADD {inst}/{name}")
+
+# A jar rewritten while the game was reading it can look fine by size but
+# carry truncated entries ("invalid LOC header"). Refuse to leave a broken
+# instance behind: test every zip that should be playable.
+corrupt = []
+for name in sorted(expected):
+    jar = target / name
+    try:
+        with zipfile.ZipFile(jar) as archive:
+            if archive.testzip() is not None:
+                corrupt.append(name)
+    except (OSError, zipfile.BadZipFile):
+        corrupt.append(name)
+if corrupt:
+    print(f"ERROR {inst}: corrupt jars after sync: {', '.join(corrupt)}")
+    sys.exit(3)
 
 print(f"  {inst}: mods {len(expected)} expected, {added} added, {updated} updated, {pruned} pruned, {kept} kept")
 PY

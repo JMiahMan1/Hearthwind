@@ -177,23 +177,7 @@ jobs:
       - name: Verify mrpack artifacts exist
         run: |
           ls -lh conversion/build/dist/*.mrpack
-          python3 - <<'EOF'
-          import json, glob, sys, zipfile
-          packs = sorted(glob.glob('conversion/build/dist/*.mrpack'))
-          assert len(packs) == 3, f'expected 3 mrpacks (server + alias + client), got {packs}'
-          for p in packs:
-              with zipfile.ZipFile(p) as z:
-                  idx = json.loads(z.read('modrinth.index.json'))
-                  n_files = len(idx['files'])
-                  over = [n for n in z.namelist() if n.startswith('overrides/mods/')]
-                  print(f'{p}: {n_files} index files, {len(over)} override jars')
-                  assert n_files > 40, 'suspiciously few index files'
-                  assert len(over) >= 40, f'{p}: only {len(over)} override jars - modules not built?'
-                  assert any('hearthwind-survival' in n for n in over), f'{p}: missing hearthwind-survival'
-                  if 'Client' in p:
-                      assert any('hearthwind-client' in n for n in over), f'{p}: missing hearthwind-client'
-                  else:
-                      assert not any('hearthwind-client' in n for n in over), f'{p}: client jar on the server side'
+          python3 custom-mods/tools/verify_pack.py --all
       - name: Upload mrpacks
         uses: actions/upload-artifact@v4
         with:
@@ -220,6 +204,10 @@ jobs:
         with:
           name: modpacks
           path: mrpacks
+      - name: Verify the release packs before publishing
+        # Same checker update_prism runs locally: a pack that cannot pass
+        # this must never reach a GitHub release.
+        run: python3 custom-mods/tools/verify_pack.py mrpacks/*.mrpack
       - name: Publish Prism-ready .mrpack files to GitHub Release
         # Release-notes style rule: plain ASCII hyphens only. No em/en
         # dashes, no AI-isms, no AI watermarks in titles or notes.
