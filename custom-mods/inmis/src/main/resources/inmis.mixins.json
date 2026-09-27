@@ -6,6 +6,11 @@
     "PlayerDropEquipmentMixin",
     "ShapedRecipeMixin"
   ],
+  "client": [
+    "client.AvatarRendererMixin",
+    "client.AvatarRenderStateMixin",
+    "client.LivingEntityRendererInvoker"
+  ],
   "injectors": {
     "defaultRequire": 1
   }

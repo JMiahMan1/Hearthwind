@@ -7,12 +7,18 @@ import dev.jmiahman.hearthwind.client.SkillInfoScreen;
 import dev.jmiahman.hearthwind.client.SkillRestrictionScreen;
 import dev.jmiahman.hearthwind.client.SkillsScreen;
 import dev.jmiahman.hearthwind.client.SurvivalInfoScreen;
+import draylar.inmis.client.InmisBackpackLayer;
+import draylar.inmis.mixin.client.LivingEntityRendererInvoker;
 import net.fabricmc.fabric.api.client.gametest.v1.FabricClientGameTest;
 import net.fabricmc.fabric.api.client.gametest.v1.context.ClientGameTestContext;
 import net.fabricmc.fabric.api.client.gametest.v1.context.TestSingleplayerContext;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import org.lwjgl.glfw.GLFW;
 
 /**
@@ -54,6 +60,27 @@ public class ScreensTourGameTests implements FabricClientGameTest {
             context.waitFor(minecraft -> minecraft.gui.screen() instanceof InventoryScreen, SLOW_TIMEOUT_TICKS);
             context.waitTicks(10);
             context.takeScreenshot("tour_inventory");
+
+            // Inmis parity: a chest-slot backpack renders on the player's
+            // back. Equip one client-side, assert the layer is registered on
+            // the avatar renderer, then spin the inventory preview away from
+            // the camera so the screenshot shows the back.
+            context.runOnClient(minecraft -> minecraft.player.setItemSlot(EquipmentSlot.CHEST,
+                    new ItemStack(BuiltInRegistries.ITEM.get(Identifier.parse("inmis:frayed_backpack"))
+                            .orElseThrow().value())));
+            context.waitTicks(5);
+            context.runOnClient(minecraft -> {
+                var renderer = minecraft.getEntityRenderDispatcher().getRenderer(minecraft.player);
+                if (!(renderer instanceof LivingEntityRendererInvoker invoker)
+                        || invoker.inmis$layers().stream().noneMatch(layer -> layer instanceof InmisBackpackLayer)) {
+                    throw new AssertionError("the Inmis backpack layer must be registered on the avatar renderer");
+                }
+                if (minecraft.gui.screen() instanceof InventoryScreen screen) {
+                    screen.mouseMoved(20, minecraft.getWindow().getGuiScaledHeight() / 2.0);
+                }
+            });
+            context.waitTicks(10);
+            context.takeScreenshot("tour_backpack_on_back");
 
             context.setScreen(NutrientsScreen::new);
             context.waitFor(minecraft -> minecraft.gui.screen() instanceof NutrientsScreen, SLOW_TIMEOUT_TICKS);

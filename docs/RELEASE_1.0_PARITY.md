@@ -380,7 +380,7 @@ shipped Time & Wind data reads 14, exactly like Aged.
 | Element | Aged | Hearthwind | Status |
 |---|---|---|---|
 | LibZ tabs above the panel (bag, sword, axe, figure) | LibZ | `TabStrip` (bundle, iron sword, iron axe, armor stand) | 🟡 legal stand-ins for GPL tab art; silhouettes now match the capture |
-| Left accessory column (5 slots) | **Trinkets** + **BackSlot**/addon + **Inmis** | Inmis backpacks shipped (B key, chest slot, upgrades keep contents) | 🟡 ports: Inmis done 0.1.12; Trinkets + BackSlot column still open |
+| Left accessory column (5 slots) | **Trinkets** + **BackSlot**/addon + **Inmis** | Trinkets Updated fork ships the data-driven slot column; Inmis backpacks open with B, equip in the chest slot and render on the back | 🟡 ports: Trinkets + Inmis done; BackSlot/addon column still open |
 | Weapon/bow slots beside the player preview | **BackSlot** + BackSlotAddon | offhand only | ❌ port |
 | `Lv. N` label on the player preview | LevelZ `inventorySkillLevel` (posX 0 / posY 62, 0.6 scale, white) | `InventoryScreenButtonMixin` draws `Lv. <overall>` | ✅ 2026-09-26; overall level = min(30, sum/12) like LevelZ (was a raw sum, so it showed Lv. 360) |
 | Guidebook in the starter hotbar | Lavender `aged_guide_book` | rendered as missing texture; the vendored jar lacked the book entirely | ✅ fixed 2026-09-24 (item definition + refreshed vendored jar); re-verify with client gametests |

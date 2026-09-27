@@ -46,6 +46,8 @@ subprojects {
 			// JobDefs level tables from the gametest thread
 			implementation project(':hearthwind-skills')
 			implementation project(':hearthwind-jobs')
+			// the tour asserts the Inmis backpack render layer is registered
+			implementation project(':inmis')
 			// guidebook client gametest opens the real Lavender book screen
 			compileOnly project(':lavender')
 			compileOnly files("${rootDir}/../conversion/vendored/compile-libs/owo-lib-0.13.1+26.2.jar")
