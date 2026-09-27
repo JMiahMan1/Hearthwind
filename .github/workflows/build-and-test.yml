@@ -132,7 +132,8 @@ jobs:
                 "execute positioned 1000.0 80.0 1000.0 run execute if entity @e[type=item] run say PROBE_ITEM_OK" \
                 "execute positioned 1000.0 80.0 1000.0 run summon smallships:cog ~ ~ ~ {NoAI:1b}" \
                 "execute positioned 1000.0 80.0 1000.0 run execute if entity @e[type=smallships:cog] run say PROBE_COG_OK" \
-                "kill @e[type=item]" "kill @e[type=smallships:cog]"
+                "kill @e[type=item]" "kill @e[type=smallships:cog]" \
+                || echo "warn: rcon probe batch exited $? (a laggy response timed out; the PROBE_*_OK log greps below are the real assertions)"
               sleep 2
               if ! grep -q "PROBE_ITEM_OK" boot.log; then
                 echo "FAIL: earlystage:rock item probe did not assert"; tail -50 boot.log; exit 1
