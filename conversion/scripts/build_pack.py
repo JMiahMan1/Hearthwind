@@ -60,6 +60,29 @@ def local_jars(mc: str):
             j for j in sorted((ROOT / "custom-mods" / mod / "build" / "libs").glob(f"*{mc}*.jar"))
             if _plain_jar(j)
         ]
+    expected_modules = [
+        "hearthwind-survival",
+        "hearthwind-skills",
+        "hearthwind-jobs",
+        "hearthwind-primitive",
+        "hearthwind-world",
+        "hearthwind-client",
+        *PORTED_MODULES,
+    ]
+    missing = []
+    for mod in expected_modules:
+        libs = ROOT / "custom-mods" / mod / "build" / "libs"
+        if not any(_plain_jar(j) for j in libs.glob(f"*{mc}*.jar")):
+            missing.append(mod)
+    if missing:
+        # Shipping without these silently produces a pack that is missing
+        # every Hearthwind system (the v0.1.3-v0.1.9 release bug: the CI
+        # package job never built the modules).
+        raise SystemExit(
+            "error: missing built module jars for "
+            + ", ".join(missing)
+            + " - run ./gradlew build in custom-mods first"
+        )
     return vendored, custom
 
 

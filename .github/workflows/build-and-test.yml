@@ -160,6 +160,9 @@ jobs:
         with:
           distribution: temurin
           java-version: '26'
+      - name: Build all modules
+        run: ./gradlew build --no-daemon --max-workers=2
+        working-directory: custom-mods
       - name: Resolve deps + build pack
         run: |
           python3 conversion/scripts/resolve_deps.py --allow-missing
@@ -182,9 +185,15 @@ jobs:
               with zipfile.ZipFile(p) as z:
                   idx = json.loads(z.read('modrinth.index.json'))
                   n_files = len(idx['files'])
-                  n_over = sum(1 for n in z.namelist() if n.startswith('overrides/'))
-                  print(f'{p}: {n_files} index files, {n_over} override entries')
+                  over = [n for n in z.namelist() if n.startswith('overrides/mods/')]
+                  print(f'{p}: {n_files} index files, {len(over)} override jars')
                   assert n_files > 40, 'suspiciously few index files'
+                  assert len(over) >= 40, f'{p}: only {len(over)} override jars - modules not built?'
+                  assert any('hearthwind-survival' in n for n in over), f'{p}: missing hearthwind-survival'
+                  if 'Client' in p:
+                      assert any('hearthwind-client' in n for n in over), f'{p}: missing hearthwind-client'
+                  else:
+                      assert not any('hearthwind-client' in n for n in over), f'{p}: client jar on the server side'
       - name: Upload mrpacks
         uses: actions/upload-artifact@v4
         with:
