@@ -104,18 +104,21 @@ public class SkillsScreen extends HearthwindPanelScreen {
         String levelText = "Level " + overall;
         graphics.text(font, levelText, this.x + 91 - font.width(levelText) / 2, this.y + 56, INK, false);
 
-        int points = player != null ? player.experienceLevel : 0;
+        int points = ClientSkillData.points();
         String pointsText = "Points " + points;
         graphics.text(font, pointsText, this.x + 156 - font.width(pointsText) / 2, this.y + 56, INK, false);
 
-        // XP bar: vanilla XP progress toward the next spendable point, priced
+        // XP bar: action-XP progress toward the next overall level, priced
         // with the LevelZ curve (25 at level 0, matching the reference).
+        // Each overall level banks one skill point; hearts and the other
+        // bonuses follow the levels you buy, never the bar.
         int next = nextCost(overall);
-        float progress = player != null ? player.experienceProgress : 0f;
-        int current = Math.round(progress * next);
+        long earned = xpForLevel(overall);
+        int current = (int) Math.max(0L, ClientSkillData.totalXp() - earned);
+        float progress = next > 0 ? Math.min(1f, current / (float) next) : 0f;
         drawSegmentedBar(graphics, this.x + 58, this.y + 68, 131, 5, progress);
 
-        String xpText = "Xp " + current + " / " + next;
+        String xpText = "Xp " + Math.min(current, next) + " / " + next;
         graphics.text(font, xpText, this.x + 123 - font.width(xpText) / 2, this.y + 78, INK, false);
 
         drawHelpButton(graphics, font, mouseX, mouseY);
@@ -219,7 +222,7 @@ public class SkillsScreen extends HearthwindPanelScreen {
     private void drawSkillRows(GuiGraphicsExtractor graphics, Font font, Map<String, Integer> levels,
             LocalPlayer player, int mouseX, int mouseY) {
         int max = maxLevel();
-        int points = player != null ? player.experienceLevel : 0;
+        int points = ClientSkillData.points();
         String hovered = null;
         for (int i = 0; i < SKILL_ORDER.length; i++) {
             int col = i / 6;
@@ -277,11 +280,13 @@ public class SkillsScreen extends HearthwindPanelScreen {
         String[] lines = {
                 "Skills",
                 "",
-                "Your skills level up as you play: mine, farm,",
-                "fight, brew, trade and craft to earn skill XP.",
+                "The XP bar fills as you mine, farm, fight,",
+                "brew, trade and craft; each level it reaches",
+                "banks one skill point.",
                 "",
-                "Points are your experience levels. Spend one",
-                "on the [+] button to raise any skill by 1.",
+                "Spend a point on [+] to raise a skill by one.",
+                "Your hearts, damage and speed bonuses follow",
+                "the level you bought.",
                 "",
                 "Higher skills unlock better tools, weapons,",
                 "armor and stations through the content gates.",
@@ -360,7 +365,7 @@ public class SkillsScreen extends HearthwindPanelScreen {
         if (player == null) {
             return false;
         }
-        int points = player.experienceLevel;
+        int points = ClientSkillData.points();
         if (points <= 0 && !player.getAbilities().instabuild) {
             return false;
         }
@@ -426,6 +431,15 @@ public class SkillsScreen extends HearthwindPanelScreen {
             return dev.jmiahman.hearthwind.skills.SkillXp.nextCost(Math.min(level, maxLevel() - 1));
         } catch (Throwable t) {
             return 25;
+        }
+    }
+
+    /** Cumulative xp to reach {@code level}; mirrors the server curve. */
+    private static long xpForLevel(int level) {
+        try {
+            return dev.jmiahman.hearthwind.skills.SkillXp.xpForLevel(Math.min(level, maxLevel() - 1));
+        } catch (Throwable t) {
+            return 0L;
         }
     }
 

@@ -1327,11 +1327,14 @@ public final class HearthwindSurvivalGameTests {
         var buf = bufFor(helper);
         SkillsSyncPayload sent = new SkillsSyncPayload(
                 java.util.List.of("mining", "smithing", "farming"),
-                java.util.List.of(200, 1, 31));
+                java.util.List.of(200, 1, 31), 200, 7, 999_999);
         SkillsSyncPayload.CODEC.encode(buf, sent);
         SkillsSyncPayload got = SkillsSyncPayload.CODEC.decode(buf);
         helper.assertTrue(got.skills().equals(sent.skills()) && got.levels().equals(sent.levels()),
                 "skills payload must round-trip with varint-wide levels: " + got);
+        helper.assertTrue(got.overall() == sent.overall() && got.points() == sent.points()
+                        && got.totalXp() == sent.totalXp(),
+                "overall, points and total xp must round-trip: " + got);
         helper.assertTrue(!buf.isReadable(), "skills codec must be symmetric (no leftover bytes)");
         helper.succeed();
     }

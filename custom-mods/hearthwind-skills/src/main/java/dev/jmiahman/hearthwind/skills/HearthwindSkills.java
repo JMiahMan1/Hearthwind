@@ -93,14 +93,9 @@ public class HearthwindSkills implements ModInitializer {
 					String skillId = payload.skill();
 					try {
 						Skill skill = Skill.byId(skillId);
-						int currentLvl = SkillXp.level(player, skill);
-						if (currentLvl < SkillXp.maxLevel()
-								&& (player.experienceLevel > 0 || player.getAbilities().instabuild)) {
-							if (!player.getAbilities().instabuild) {
-								player.setExperienceLevels(player.experienceLevel - 1);
-							}
-							SkillXp.setLevel(player, skill, currentLvl + 1);
-				SkillsSync.send(player);
+						// LevelZ parity: the "+" stepper spends one banked
+						// skill point; action XP only fills the level bar.
+						if (SkillXp.skillUp(player, skill)) {
 							player.level().playSound(null, player.blockPosition(),
 									net.minecraft.sounds.SoundEvents.PLAYER_LEVELUP,
 									net.minecraft.sounds.SoundSource.PLAYERS, 0.6f, 1.2f);

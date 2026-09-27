@@ -14,7 +14,8 @@ contract of what the pack does. Grown from the Aged fork; server-side only.
   - **Glass Bottle**: For collecting water and managing early hydration.
   - **Campfire**: For immediate shelter heating against freezing conditions and cooking raw perishables. Campfires **place unlit** - strike them yourself.
 - **Health Skill Scaling**:
-  Leveling up the **Health** skill unlocks +0.5 heart (+1.0 HP) per level:
+  Buying a **Health** skill level unlocks +0.5 heart (+1.0 HP) per level
+  (action XP alone never raises your hearts - you spend the points first):
   - Level 0: 3 Hearts (6.0 HP)
   - Level 14: 10 Hearts (20.0 HP - vanilla standard)
   - Level 30: 18 Hearts (36.0 HP - end-game powerhouse)
@@ -45,7 +46,7 @@ Gates are loaded from the migrated LevelZ corpus in the world datapack
 rebuild. **676 gates are active**: 303 mining, 162 smithing, 148 crafting, 23 brewing, 16 block-use, 12 item-use, 12 entity.
 
 - **Mining Gates**: Mud Bricks (1), Sandstone (2), Bricks (3), **Stone and Cobblestone (5)**, Diorite (6), Andesite (8), Granite (10), Terracotta (11), **Iron Ore (13)**, Deepslate (18), **Diamond (21)**, Obsidian (25), Netherite (27). Breaking a gated block shows the skill and level you need.
-- **Earning your first Mining levels**: every pickaxe-mineable block is gated, so the loose **surface rocks and flint** you pick up are the tier-0 mining activity — breaking them is what raises Mining from 0. You also start with 2 skill points to spend as soon as you join.
+- **Earning your first Mining levels**: every pickaxe-mineable block is gated, so the loose **surface rocks and flint** you pick up are the tier-0 mining activity — breaking them is what raises Mining from 0. Action XP banks **skill points** as your overall LevelZ level rises; you start with none and spend your first points on Mining (LevelZ's points model, exactly like Aged).
 - **Surface rock & flint spawning (earlystage parity)**: mounds generate only in forest/hill/mountain/river biomes plus mushroom fields and stony shores, on bare dirt or stone with open sky — not in oceans, deserts, or on grass. Look for bare-dirt patches, not open plains.
 - **Crafting rock interaction**: place usable items (`earlystage:usable_crafting_rock_items`) by right-clicking the 3×3 grid on the rock's short top face — side and angled raycasts on the 8px shape count; only a true bottom-face hit is rejected.
 - **Crafting rock (knapping grid)**: place a usable item (stick, flint, ores, planks, logs, dirt, leaves — full `earlystage:usable_crafting_rock_items` tag) into the 3×3 grid by right-clicking any face of the 8px-tall top shape (side and angled hits count). Two rock hits craft; wear destroys the block.
@@ -128,8 +129,8 @@ Eight optional professions (Miner, Farmer, Fisher, Warrior, Smither, Brewer, Bui
     and hover tooltips. Clicking a tab switches screens; the bag tab
     returns to the vanilla inventory.
   - A small white **`Lv. N`** label at the bottom-left of the inventory
-    preview shows your overall level, exactly like LevelZ: the average of
-    your twelve skill levels, capped at 30.
+    preview shows your overall LevelZ level (total skill XP converted to
+    levels), capped at 30.
 - **Accessory slots (Trinkets)**: the inventory shows a column of trinket
   slots beside your avatar (hat, back, necklace, gloves, rings - the
   data-driven Trinkets groups). Aged's 1.20 Trinkets is replaced by the
@@ -158,7 +159,11 @@ Eight optional professions (Miner, Farmer, Fisher, Warrior, Smither, Brewer, Bui
     agility, strength, stamina, luck) in a 3x2 grid, "Level N / Points N"
     line, segmented XP bar with "Xp n / next" (Aged 25 + 1.6L curve), a "?"
     help page, and twelve skill rows (two columns of six) with [+] buttons
-    that spend one experience level per press.
+    that spend **one skill point** per press.
+  - **LevelZ points model**: action XP raises your overall level and banks
+    one skill point per level; skill levels and their bonuses (hearts
+    included) only change when you buy them with [+]. Nothing raises your
+    attributes on its own.
   - Clicking a skill opens its client-only detail page with icon, level,
     progress bar, description, the bonus each level grants, and the per-level
     unlock lists (gate icons grouped by level, with tooltips).

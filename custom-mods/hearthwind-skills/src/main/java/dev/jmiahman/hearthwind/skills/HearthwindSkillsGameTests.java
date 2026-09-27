@@ -38,21 +38,64 @@ public final class HearthwindSkillsGameTests {
         SkillXp.addXp(pig, Skill.MINING, 50);
         helper.assertTrue(SkillXp.xp(pig, Skill.MINING) == 150.0,
                 "xp accumulates in attachment");
-        helper.assertTrue(SkillXp.level(pig, Skill.MINING) == 5,
-                "150 xp on the Aged curve (cumulative 25/51/79/108/139/172) = level 5");
+        helper.assertTrue(SkillXp.level(pig, Skill.MINING) == 0,
+                "action XP never raises a skill level by itself (LevelZ parity)");
+        helper.assertTrue(SkillXp.overallLevel(pig) == 5,
+                "150 total xp on the Aged curve (25/51/79/108/139) = overall level 5");
+        helper.assertTrue(SkillXp.points(pig) == 5,
+                "each overall level banks one skill point");
         helper.assertTrue(SkillXp.xp(pig, Skill.ARCHERY) == 0.0,
                 "other skills untouched");
         helper.succeed();
     }
 
     @GameTest
+    public void skillPointsBuyLevelsAndHearts(GameTestHelper helper) {
+        var player = newPlayer(helper);
+        double baseHealth = player.getMaxHealth();
+        SkillXp.addXp(player, Skill.HEALTH, SkillXp.xpForLevel(3));
+        helper.assertTrue(player.getMaxHealth() == baseHealth,
+                "banking points must not add hearts before the upgrade");
+        helper.assertTrue(SkillXp.points(player) == 3, "3 overall levels = 3 points");
+        helper.assertTrue(SkillXp.skillUp(player, Skill.HEALTH), "point spent");
+        helper.assertTrue(SkillXp.level(player, Skill.HEALTH) == 1, "health level 1");
+        helper.assertTrue(SkillXp.points(player) == 2, "one point left");
+        helper.assertTrue(player.getMaxHealth() == baseHealth + 1.0,
+                "one bought health level adds exactly one heart-half pair (1 HP)");
+        helper.succeed();
+    }
+
+    @GameTest
+    public void skillUpWithoutPointsIsRejected(GameTestHelper helper) {
+        var pig = helper.spawn(EntityTypes.PIG, 1, 2, 1);
+        helper.assertTrue(!SkillXp.skillUp(pig, Skill.MINING),
+                "no points banked yet, the stepper must be a no-op");
+        helper.assertTrue(SkillXp.level(pig, Skill.MINING) == 0, "still level 0");
+        helper.succeed();
+    }
+
+    @GameTest
+    public void legacyXpMigratesToStoredLevels(GameTestHelper helper) {
+        var pig = helper.spawn(EntityTypes.PIG, 1, 2, 1);
+        // 0.1.x saves only had the XP map with derived levels; migration
+        // must keep every level the player already had.
+        pig.setAttached(SkillXp.XP, java.util.Map.of("health", (double) SkillXp.xpForLevel(9)));
+        SkillXp.migrate(pig);
+        helper.assertTrue(SkillXp.level(pig, Skill.HEALTH) == 9,
+                "migration preserves the auto-levels from old saves");
+        helper.assertTrue(SkillXp.points(pig) == 0,
+                "migration grants no free points");
+        helper.succeed();
+    }
+
+    @GameTest
     public void maxedSkillStopsAccruing(GameTestHelper helper) {
         var pig = helper.spawn(EntityTypes.PIG, 1, 2, 1);
+        SkillXp.setLevel(pig, Skill.STRENGTH, SkillXp.maxLevel());
         double huge = Double.MAX_VALUE / 4;
         SkillXp.addXp(pig, Skill.STRENGTH, huge);
-        int level = SkillXp.level(pig, Skill.STRENGTH);
-        helper.assertTrue(level == SkillXp.maxLevel(), "huge xp caps level");
-        SkillXp.addXp(pig, Skill.STRENGTH, huge); // must be a no-op, not overflow
+        helper.assertTrue(SkillXp.xp(pig, Skill.STRENGTH) == 0.0,
+                "maxed skills stop banking xp, no overflow");
         helper.assertTrue(SkillXp.level(pig, Skill.STRENGTH) == SkillXp.maxLevel(),
                 "still capped after further adds");
         helper.succeed();
@@ -65,7 +108,7 @@ public final class HearthwindSkillsGameTests {
         SkillsConfig.get().bonuses.healthHpPerLevel = 1.0;
         helper.assertTrue(SkillAttributes.bonusFor(pig, Skill.HEALTH) == -14.0,
                 "0 health level = -14 HP modifier (6 HP total = 3 hearts)");
-        SkillXp.addXp(pig, Skill.HEALTH, SkillXp.xpForLevel(14));
+        SkillXp.setLevel(pig, Skill.HEALTH, 14);
         helper.assertTrue(SkillAttributes.bonusFor(pig, Skill.HEALTH) == 0.0,
                 "14 health levels x 1.0 = +14 HP (20 HP total = 10 hearts)");
         helper.assertTrue(SkillAttributes.bonusFor(pig, Skill.SMITHING) == 0.0,
@@ -397,7 +440,7 @@ public final class HearthwindSkillsGameTests {
         var pig = helper.spawn(EntityTypes.PIG, 1, 2, 1);
         SkillsConfig.get().bonuses.baseStartingHealth = 6.0;
         SkillsConfig.get().bonuses.healthHpPerLevel = 2.0;
-        SkillXp.addXp(pig, Skill.HEALTH, SkillXp.xpForLevel(5));
+        SkillXp.setLevel(pig, Skill.HEALTH, 5);
         double bonus = SkillAttributes.bonusFor(pig, Skill.HEALTH);
         helper.assertTrue(bonus == -4.0, "5 health levels x 2.0 = -4.0 HP modifier (16 HP total = 8 hearts)");
         helper.succeed();

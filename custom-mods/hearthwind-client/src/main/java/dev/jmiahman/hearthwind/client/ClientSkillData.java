@@ -16,6 +16,9 @@ public final class ClientSkillData {
     private static long expireTick = 0;
     /** Skill id -> highest level seen via skill-up payloads (skills tab). */
     private static final Map<String, Integer> KNOWN_LEVELS = new ConcurrentHashMap<>();
+    private static int overall = 0;
+    private static int points = 0;
+    private static int totalXp = 0;
 
     private ClientSkillData() {}
 
@@ -27,28 +30,30 @@ public final class ClientSkillData {
         expireTick = mc.level != null ? mc.level.getGameTime() + 60 : 0;
     }
 
-    /** Full-sync entry point: replaces the entire known-levels map. */
-    public static void replaceAll(Map<String, Integer> levels) {
+    /** Full-sync entry point: replaces the entire skill state. */
+    public static void replaceAll(Map<String, Integer> levels, int overallLevel, int skillPoints, int totalXpValue) {
         KNOWN_LEVELS.clear();
         KNOWN_LEVELS.putAll(levels);
+        overall = overallLevel;
+        points = skillPoints;
+        totalXp = totalXpValue;
     }
 
     public static String skillId() { return skillId; }
     public static Map<String, Integer> knownLevels() { return KNOWN_LEVELS; }
     public static int level() { return level; }
+    /** Unspent skill points (LevelZ {@code skillPoints}). */
+    public static int points() { return points; }
+    /** Total action XP banked toward future overall levels. */
+    public static int totalXp() { return totalXp; }
 
     /**
-     * LevelZ "overall level": the average of the twelve skill levels, floored.
-     * {@code PlayerStatsManager.getOverallLevel} caps it at LevelZ's max
-     * level 30, and the server-side {@code HearthwindLevels.overallLevel}
-     * keeps the same 30 cap for dungeon admission.
+     * LevelZ overall level: synced from the server's total action XP. It is
+     * the number of levels reached, not an average of skill levels; each one
+     * banked a skill point.
      */
     public static int overallLevel() {
-        int total = 0;
-        for (int value : KNOWN_LEVELS.values()) {
-            total += value;
-        }
-        return Math.min(30, total / 12);
+        return overall;
     }
     public static boolean isActive() {
         Minecraft mc = net.minecraft.client.Minecraft.getInstance();

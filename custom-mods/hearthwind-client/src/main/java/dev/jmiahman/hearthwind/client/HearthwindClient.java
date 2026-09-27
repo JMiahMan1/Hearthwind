@@ -106,7 +106,8 @@ public class HearthwindClient implements ClientModInitializer {
                 for (int i = 0; i < payload.skills().size(); i++) {
                     levels.put(payload.skills().get(i), payload.levels().get(i));
                 }
-                context.client().execute(() -> ClientSkillData.replaceAll(levels));
+                context.client().execute(() -> ClientSkillData.replaceAll(levels,
+                        payload.overall(), payload.points(), payload.totalXp()));
             });
             LOGGER.info("Hearthwind Client networking: receiver for {}", SkillsSyncPayload.TYPE.id());
         } catch (Exception e) {

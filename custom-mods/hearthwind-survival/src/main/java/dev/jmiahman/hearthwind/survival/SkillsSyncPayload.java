@@ -8,10 +8,12 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.Identifier;
 
 /**
- * Full skill-state sync (all 12 skills, not just level-ups): sent on login
- * and after every level-up so panel tabs and toasts always reflect reality.
+ * Full skill-state sync (all 12 purchased levels plus the overall level and
+ * unspent skill points): sent on login and after every change so panel tabs
+ * always reflect reality.
  */
-public record SkillsSyncPayload(List<String> skills, List<Integer> levels) implements CustomPacketPayload {
+public record SkillsSyncPayload(List<String> skills, List<Integer> levels, int overall, int points, int totalXp)
+        implements CustomPacketPayload {
     public static final Type<SkillsSyncPayload> TYPE =
             new Type<>(Identifier.fromNamespaceAndPath("hearthwind_survival", "skills_sync"));
 
@@ -26,7 +28,10 @@ public record SkillsSyncPayload(List<String> skills, List<Integer> levels) imple
                         skills[i] = buf.readUtf();
                         levels[i] = buf.readVarInt();
                     }
-                    return new SkillsSyncPayload(List.of(skills), toBoxed(levels));
+                    int overall = buf.readVarInt();
+                    int points = buf.readVarInt();
+                    int totalXp = buf.readVarInt();
+                    return new SkillsSyncPayload(List.of(skills), toBoxed(levels), overall, points, totalXp);
                 }
 
                 @Override
@@ -36,6 +41,9 @@ public record SkillsSyncPayload(List<String> skills, List<Integer> levels) imple
                         buf.writeUtf(payload.skills().get(i));
                         buf.writeVarInt(payload.levels().get(i));
                     }
+                    buf.writeVarInt(payload.overall());
+                    buf.writeVarInt(payload.points());
+                    buf.writeVarInt(payload.totalXp());
                 }
             };
 

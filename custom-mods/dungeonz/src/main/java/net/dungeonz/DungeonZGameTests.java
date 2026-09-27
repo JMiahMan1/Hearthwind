@@ -360,32 +360,60 @@ public final class DungeonZGameTests {
         }
     }
 
+    /**
+     * Sets the XP-based overall LevelZ level: adds exactly the total XP the
+     * curve needs, found by binary search over {@code SkillXp.levelFor}.
+     */
+    private static void setOverallLevel(ServerPlayer player, int target) {
+        try {
+            java.lang.reflect.Method levelFor = SKILL_XP.getMethod("levelFor", double.class);
+            java.lang.reflect.Method addXp = SKILL_XP.getMethod("addXp",
+                    net.minecraft.world.entity.Entity.class, SKILL, double.class);
+            double lo = 0.0;
+            double hi = 1.0;
+            while (((Number) levelFor.invoke(null, hi)).intValue() < target) {
+                hi *= 2.0;
+            }
+            for (int i = 0; i < 100; i++) {
+                double mid = (lo + hi) / 2.0;
+                if (((Number) levelFor.invoke(null, mid)).intValue() < target) {
+                    lo = mid;
+                } else {
+                    hi = mid;
+                }
+            }
+            if (hi > 0.5) {
+                addXp.invoke(null, player, skillByName("mining"), hi);
+            }
+        } catch (ReflectiveOperationException exception) {
+            throw new AssertionError(exception);
+        }
+    }
+
     @GameTest
     public void hearthwindLevelGateBlocksAndAdmitsBySkillLevels(GameTestHelper helper) {
-        var player = helper.makeMockServerPlayerInLevel();
-        for (String skillId : HearthwindLevels.SKILLS) {
-            setSkillLevel(player, skillId, 0);
-        }
-        helper.assertTrue(HearthwindLevels.overallLevel(player) == 0, "zero skills must yield level zero");
-        helper.assertTrue(HearthwindLevels.meetsRequiredLevel(player, 0), "zero must meet requirement zero");
-        helper.assertFalse(HearthwindLevels.meetsRequiredLevel(player, 1), "zero must not meet requirement one");
+        var zero = helper.makeMockServerPlayerInLevel();
+        helper.assertTrue(HearthwindLevels.overallLevel(zero) == 0, "a fresh player must be level zero");
+        helper.assertTrue(HearthwindLevels.meetsRequiredLevel(zero, 0), "zero must meet requirement zero");
+        helper.assertFalse(HearthwindLevels.meetsRequiredLevel(zero, 1), "zero must not meet requirement one");
 
-        setSkillLevel(player, "mining", 11);
-        helper.assertTrue(HearthwindLevels.overallLevel(player) == 0, "11 divided by 12 must round down to zero");
-        helper.assertFalse(HearthwindLevels.meetsRequiredLevel(player, 1), "fractional average must not admit at one");
-        setSkillLevel(player, "mining", 12);
-        helper.assertTrue(HearthwindLevels.overallLevel(player) == 1, "12 divided by 12 must yield one");
-        helper.assertTrue(HearthwindLevels.meetsRequiredLevel(player, 1), "exact threshold one must admit");
-        helper.assertFalse(HearthwindLevels.meetsRequiredLevel(player, 2), "one must not meet requirement two");
+        var one = helper.makeMockServerPlayerInLevel();
+        setOverallLevel(one, 1);
+        helper.assertTrue(HearthwindLevels.overallLevel(one) == 1, "one level of XP must yield level one");
+        helper.assertTrue(HearthwindLevels.meetsRequiredLevel(one, 1), "exact threshold one must admit");
+        helper.assertFalse(HearthwindLevels.meetsRequiredLevel(one, 2), "one must not meet requirement two");
 
-        for (String skillId : HearthwindLevels.SKILLS) {
-            setSkillLevel(player, skillId, 30);
-        }
-        helper.assertTrue(HearthwindLevels.overallLevel(player) == 30, "all skills at 30 must yield maximum 30");
-        helper.assertTrue(HearthwindLevels.meetsRequiredLevel(player, 0), "maximum must meet requirement zero");
-        helper.assertTrue(HearthwindLevels.meetsRequiredLevel(player, 29), "maximum must meet requirement below maximum");
-        helper.assertTrue(HearthwindLevels.meetsRequiredLevel(player, 30), "exact maximum threshold must admit");
-        helper.assertFalse(HearthwindLevels.meetsRequiredLevel(player, 31), "maximum must not admit above the cap");
+        // Bought skill levels grant their own bonuses but must not inflate the
+        // dungeon admission level - that follows total XP, like LevelZ.
+        setSkillLevel(one, "mining", 30);
+        helper.assertTrue(HearthwindLevels.overallLevel(one) == 1, "purchased levels must not move the overall level");
+        helper.assertFalse(HearthwindLevels.meetsRequiredLevel(one, 2), "purchases must not admit a two-gate");
+
+        var max = helper.makeMockServerPlayerInLevel();
+        setOverallLevel(max, 30);
+        helper.assertTrue(HearthwindLevels.overallLevel(max) == 30, "30 levels of XP must yield the capped maximum");
+        helper.assertTrue(HearthwindLevels.meetsRequiredLevel(max, 30), "exact maximum threshold must admit");
+        helper.assertFalse(HearthwindLevels.meetsRequiredLevel(max, 31), "maximum must not admit above the cap");
         helper.succeed();
     }
 
@@ -451,20 +479,15 @@ public final class DungeonZGameTests {
             helper.assertTrue(portal.getDungeon() == gated, "portal must resolve the gated test dungeon");
 
             var low = helper.makeMockServerPlayerInLevel();
-            for (String skillId : HearthwindLevels.SKILLS) {
-                setSkillLevel(low, skillId, 0);
-            }
-            helper.assertTrue(HearthwindLevels.overallLevel(low) == 0, "zeroed skills must yield level zero");
+            helper.assertTrue(HearthwindLevels.overallLevel(low) == 0, "a fresh player must be level zero");
             helper.assertTrue(!HearthwindLevels.meetsRequiredLevel(low, requiredLevel), "level zero must not meet requirement five");
             DungeonHelper.teleportDungeon(low, portalPos, low.getUUID());
             helper.assertTrue(portal.getWaitingUuids().isEmpty(), "below-threshold player must be denied (text.dungeonz.required_level) with no join");
             helper.assertTrue(portal.getdungeonTeleportCountdown() == 0, "denied player must not start the teleport countdown");
 
             var high = helper.makeMockServerPlayerInLevel();
-            for (String skillId : HearthwindLevels.SKILLS) {
-                setSkillLevel(high, skillId, 30);
-            }
-            helper.assertTrue(HearthwindLevels.meetsRequiredLevel(high, requiredLevel), "maxed skills must meet requirement five");
+            setOverallLevel(high, 30);
+            helper.assertTrue(HearthwindLevels.meetsRequiredLevel(high, requiredLevel), "maxed level must meet requirement five");
             DungeonHelper.teleportDungeon(high, portalPos, high.getUUID());
             helper.assertTrue(portal.getWaitingUuids().contains(high.getUUID()), "above-threshold player must enter the min-group join path");
             helper.assertTrue(portal.getdungeonTeleportCountdown() == 0, "incomplete min-group must wait, not count down");

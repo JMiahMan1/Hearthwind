@@ -2,7 +2,6 @@ package dev.jmiahman.hearthwind.skills;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import net.minecraft.server.level.ServerPlayer;
 
@@ -14,17 +13,21 @@ import net.minecraft.server.level.ServerPlayer;
 public final class SkillsSync {
 
     public static void send(ServerPlayer player) {
-        Map<String, Double> xpMap = player.getAttached(SkillXp.XP);
+        // Mock players (gametests) have no network connection; skipping the
+        // send is safe because their state is read directly.
+        if (player.connection == null) {
+            return;
+        }
         List<String> ids = new ArrayList<>();
         List<Integer> levels = new ArrayList<>();
         for (Skill skill : Skill.values()) {
-            double total = xpMap != null && xpMap.containsKey(skill.id)
-                    ? xpMap.get(skill.id) : 0.0;
             ids.add(skill.id);
-            levels.add(SkillXp.levelFor(total));
+            levels.add(SkillXp.level(player, skill));
         }
         dev.jmiahman.hearthwind.survival.SkillsSyncPayload payload =
-                new dev.jmiahman.hearthwind.survival.SkillsSyncPayload(ids, levels);
+                new dev.jmiahman.hearthwind.survival.SkillsSyncPayload(ids, levels,
+                        SkillXp.overallLevel(player), SkillXp.points(player),
+                        (int) SkillXp.totalXp(player));
         net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking.send(player, payload);
     }
 
