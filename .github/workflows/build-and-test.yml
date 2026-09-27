@@ -179,6 +179,9 @@ jobs:
         run: |
           ls -lh conversion/build/dist/*.mrpack
           python3 custom-mods/tools/verify_pack.py --all
+          # Strict mrpack spec validation: index hashes/sizes/env flags,
+          # dependency map and the overrides layout a launcher needs.
+          python3 custom-mods/tools/verify_mrpack.py --all
       - name: Upload mrpacks
         uses: actions/upload-artifact@v4
         with:
@@ -206,9 +209,11 @@ jobs:
           name: modpacks
           path: mrpacks
       - name: Verify the release packs before publishing
-        # Same checker update_prism runs locally: a pack that cannot pass
-        # this must never reach a GitHub release.
-        run: python3 custom-mods/tools/verify_pack.py mrpacks/*.mrpack
+        # Same checkers update_prism runs locally: a pack that cannot pass
+        # these must never reach a GitHub release.
+        run: |
+          python3 custom-mods/tools/verify_pack.py mrpacks/*.mrpack
+          python3 custom-mods/tools/verify_mrpack.py mrpacks/*.mrpack
       - name: Publish Prism-ready .mrpack files to GitHub Release
         # Release-notes style rule: plain ASCII hyphens only. No em/en
         # dashes, no AI-isms, no AI watermarks in titles or notes.

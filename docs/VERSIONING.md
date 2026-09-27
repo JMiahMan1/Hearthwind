@@ -30,10 +30,15 @@ mod itself changed in a player-visible way.
    `python3 conversion/scripts/build_pack.py --server-dir`.
 3. Verify the packs - every hearthwind-* and ported module jar present,
    client jar only in the Client pack, no corrupt jars:
-   `python3 custom-mods/tools/verify_pack.py --all`.
-   `custom-mods/tools/update_prism.sh` and the CI package job run the same
-   check and refuse to continue on failure.
+   `python3 custom-mods/tools/verify_pack.py --all`, then the strict
+   mrpack spec check `python3 custom-mods/tools/verify_mrpack.py --all`
+   (index hashes/sizes, `env` flags, dependency map, overrides layout -
+   the things a launcher needs to import the pack).
+   `custom-mods/tools/update_prism.sh` and the CI package job run both
+   checks and refuse to continue on failure.
 4. Commit, push, tag `v<pack.version>`, let CI publish the release.
 5. Confirm the published assets, not just the local ones:
-   `python3 custom-mods/tools/verify_pack.py --release v<pack.version>`.
+   `python3 custom-mods/tools/verify_pack.py --release v<pack.version>`
+   and `python3 custom-mods/tools/verify_mrpack.py --release v<pack.version>`
+   (`--deep` also re-downloads every index file and re-hashes it).
    The release job also verifies the exact files it is about to upload.

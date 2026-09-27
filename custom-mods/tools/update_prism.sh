@@ -78,6 +78,12 @@ python3 "$DIR/verify_pack.py" "${VERIFY_ARGS[@]}" || {
   echo "ERROR: mrpack failed verification - run ./gradlew build in custom-mods, then build_pack.py --server-dir" >&2
   exit 2
 }
+# Strict mrpack spec check (index hashes/sizes/env flags, dependency map,
+# overrides layout): a launcher must be able to install the pack as shipped.
+python3 "$DIR/verify_mrpack.py" "${VERIFY_ARGS[@]}" || {
+  echo "ERROR: mrpack failed strict mrpack validation (index hashes, dependencies or overrides layout)" >&2
+  exit 2
+}
 
 # Keep the vendored jar sources canonical before the pack gets rebuilt.
 python3 "$ROOT/conversion/scripts/patch_vendored.py" "$ROOT/conversion" || {
