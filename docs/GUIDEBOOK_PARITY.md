@@ -59,7 +59,7 @@ items and initials mechanically.
 | Aged entry | Aged says | Hearthwind | Status | Book |
 |---|---|---|---|---|
 | standard / thick / thin | normal +1, thick (leather, wolf, fur-lined) x2, thin none; wanderer cools | same (+1 / +3 / 0 / -1) | ✅ | heat_and_cold/clothing |
-| special | immersive armors sets and bonuses | immersive_armors ships | ✅ (not described yet) | (todo) |
+| special | immersive armors sets and bonuses | all ten suits ship and are crafted; bonuses, gilded netherite and trade outfits described | ✅ | heat_and_cold/suits_of_renown |
 
 ## Character
 
@@ -92,7 +92,7 @@ items and initials mechanically.
 
 | Aged entry | Aged says | Hearthwind | Status | Book |
 |---|---|---|---|---|
-| drawers / drawer_upgrades | Extended Drawers blocks and upgrades | Extended Drawers ships | ✅ (not described yet) | (todo) |
+| drawers / drawer_upgrades | Extended Drawers blocks and upgrades | 1024 per drawer, 2/4/8/16 tiers, toggles and networks described | ✅ | stores/drawers, stores/drawer_upgrades |
 | backpacks | Inmis backpacks in a trinket slot, Health-gated | stand-in `inmis:` items in hearthwind-world; Inmis/Trinkets not ported | ➖ | (none) |
 
 ## Battle
@@ -100,9 +100,10 @@ items and initials mechanically.
 | Aged entry | Aged says | Hearthwind | Status | Book |
 |---|---|---|---|---|
 | dungeonz | compass, calibrate at cartography table, portal | same | ✅ | perils/dungeons |
-| blackstone_golem / the_eye / void_shadow | AdventureZ bosses | AdventureZ ported | ✅ (not described yet) | (todo, verify stats) |
+| blackstone_golem / the_eye | AdventureZ bosses | both ported; altar circle, shard offerings, 600/800 HP, rage/below-half behaviour and drops described | ✅ | perils/blackstone_golem, perils/the_eye |
+| void_shadow | AdventureZ final void boss | entity ported but the VoidZ dimension/gate is not shipped: nothing leads to it | ➖ | (none until VoidZ or a gate exists) |
 | chaos_spawner | Dungeon Now Loading boss | DnL deferred | ➖ | (none) |
-| ender_dragon | True Ending dragon phases | True Ending vendored | ✅ (not described yet) | (todo) |
+| ender_dragon | True Ending dragon phases | phases, shield-piercing attacks, shockwaves and the crystal re-summoning ritual described | ✅ | perils/ender_dragon |
 
 ## Archeology
 
@@ -114,13 +115,15 @@ items and initials mechanically.
 
 first_days/felling_trees, first_days/buckets, water/thirst, water/hydrating_food,
 food/cooking, seasons/farming_the_year, crafts/steel, perils/the_wild,
-perils/downed, perils/beasts, ages/the_ages.
+perils/downed, perils/beasts, ages/the_ages, stores/drawers,
+stores/drawer_upgrades, heat_and_cold/suits_of_renown,
+perils/blackstone_golem, perils/the_eye, perils/ender_dragon.
 
 ## Fix queue (❌ rows), in order
 
 1. ~~Diet deficiency bug~~ done.
 2. Job XP sources: builder place, fisher catch, smither anvil/smithing/furnace output, farmer craft/smoke food, brewer brew.
 3. ~~Party XP sharing~~ done.
-4. Aged water chain: purify bottles on a lit campfire; copper (rain) cauldron; campfire cauldron; bamboo pump.
+4. Aged water chain: bottles on a lit campfire now boil and pop off the edge (done); copper (rain) cauldron, campfire cauldron and bamboo pump still to port.
 5. End Remastered eye sources (not a book entry in Aged, but the eyes are unobtainable).
-6. Guide entries for Extended Drawers, Immersive Armors sets, AdventureZ bosses, True Ending.
+6. ~~Guide entries for Extended Drawers, Immersive Armors sets, AdventureZ bosses, True Ending~~ done 2026-09-27 (Void Shadow waits for a gate).

@@ -12,6 +12,15 @@ import org.jetbrains.annotations.NotNull;
 
 public class LinkFeature implements MarkdownFeature {
 
+    /**
+     * Click action id for {@code [text](^book:entry)} internal links. 26.2
+     * {@link ClickEvent.OpenUrl} validates its URI, and the {@code ^} prefix
+     * is not a legal URI scheme, so internal links travel as a custom click
+     * event and {@code BookCompiler} resolves them against the open book.
+     */
+    public static final net.minecraft.resources.Identifier INTERNAL_LINK_ID =
+            net.minecraft.resources.Identifier.fromNamespaceAndPath("lavender", "entry_link");
+
     @Override
     public String name() {
         return "links";
@@ -45,8 +54,11 @@ public class LinkFeature implements MarkdownFeature {
 
             if (tokens.peek() instanceof CloseLinkToken right) {
                 tokens.nibble();
+                var clickEvent = right.link.startsWith("^")
+                        ? new ClickEvent.Custom(INTERNAL_LINK_ID, java.util.Optional.of(net.minecraft.nbt.StringTag.valueOf(right.link)))
+                        : new ClickEvent.OpenUrl(java.net.URI.create(right.link));
                 return new Parser.FormattingNode(style -> style.withClickEvent(
-                        new ClickEvent.OpenUrl(java.net.URI.create(right.link))
+                        clickEvent
                 ).withHoverEvent(
                         new HoverEvent.ShowText(Component.literal(right.link))
                 ).withColor(ChatFormatting.BLUE)).addChild(content);

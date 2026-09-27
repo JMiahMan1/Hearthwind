@@ -95,14 +95,19 @@ public class BookCompiler extends OwoUICompiler {
                 if (style == null || this.owner == null) return false;
 
                 var clickEvent = style.getClickEvent();
+                String internalLink = null;
                 if (clickEvent instanceof ClickEvent.OpenUrl openUrl && openUrl.uri().toString().startsWith("^")) {
-                    var linkTarget = this.resolveLinkTarget(openUrl.uri().toString());
+                    internalLink = openUrl.uri().toString();
+                } else if (clickEvent instanceof ClickEvent.Custom custom
+                        && custom.id().equals(io.wispforest.lavendermd.feature.LinkFeature.INTERNAL_LINK_ID)) {
+                    internalLink = custom.payload().flatMap(net.minecraft.nbt.Tag::asString).orElse(null);
+                }
+                if (internalLink != null) {
+                    var linkTarget = this.resolveLinkTarget(internalLink);
                     if (linkTarget != null && linkTarget.supplier != null) {
                         this.owner.navPush(linkTarget.supplier.get());
-                        return true;
-                    } else {
-                        return false;
                     }
+                    return true;
                 } else {
                     return false;
                 }

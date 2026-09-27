@@ -131,6 +131,9 @@ def main():
         for letter in re.findall(r"drop-cap@hearthwind:guide\|letter=([a-z])", body):
             if letter not in initials:
                 problems.append(f"{where}: no initial texture for '{letter}'")
+        for params in re.findall(r"<\|drop-cap@hearthwind:guide\|([^|]*)\|>", body):
+            if "letter=" not in params or ",text=" not in params:
+                problems.append(f"{where}: malformed drop-cap parameters '{params[:48]}'")
         for tok in re.findall(r"\{([a-z_]+)\}", body):
             known_formatting = {"black", "dark_blue", "dark_green", "dark_aqua", "dark_red", "dark_purple",
                                 "gold", "gray", "dark_gray", "blue", "green", "aqua", "red", "light_purple",
