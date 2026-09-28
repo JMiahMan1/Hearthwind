@@ -37,7 +37,7 @@ see vanilla mob models either way.
 Two files are published per release / CI artifact (`mod-jars` on
 [Actions](../../actions)):
 
-- `HearthwindServer-<ver>-mc26.2.mrpack` - **required** (server mods + `world/datapacks/hearthwind/` and any other packs under `conversion/datapacks/`)
+- `Hearthwind-<ver>-mc26.2.mrpack` - **required** (server mods + `world/datapacks/hearthwind/` and any other packs under `conversion/datapacks/`)
 - `HearthwindClient-<ver>-mc26.2.mrpack` - **optional** (players who want HUD/companion visuals)
 
 The mrpack declares `dependencies`: `minecraft 26.2`, `fabric-loader 0.19.5`,
@@ -49,7 +49,7 @@ dedicated-server layout. For singleplayer, copy the same folders into
 
 Server install:
 
-1. Grab `HearthwindServer-*.mrpack` from
+1. Grab `Hearthwind-*.mrpack` from
    [Releases](../../releases) or CI.
 2. Import it into the [Modrinth App](https://modrinth.com/app)
    (Create instance -> From file) or run it headlessly with

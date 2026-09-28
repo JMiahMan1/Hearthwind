@@ -125,7 +125,7 @@ def dist_packs_for_current_version() -> list[Path]:
     version, mc = build_conf()
     packs = [DIST / f"Hearthwind-{version}-mc{mc}.mrpack",
              DIST / f"HearthwindClient-{version}-mc{mc}.mrpack",
-             DIST / f"HearthwindServer-{version}-mc{mc}.mrpack"]
+             DIST / f"Hearthwind-{version}-mc{mc}.mrpack"]
     return packs
 
 

@@ -198,7 +198,7 @@ def dist_packs(only_client: bool = False) -> list[Path]:
     # targets.minecraft; the pack file names embed both.
     version = config["pack"]["version"]
     mc = config["targets"]["minecraft"]
-    patterns = [f"HearthwindClient-{version}-mc{mc}.mrpack", f"HearthwindServer-{version}-mc{mc}.mrpack"]
+    patterns = [f"HearthwindClient-{version}-mc{mc}.mrpack", f"Hearthwind-{version}-mc{mc}.mrpack"]
     if not only_client:
         patterns.insert(0, f"Hearthwind-{version}-mc{mc}.mrpack")
     found = [dist / p for p in patterns if (dist / p).exists()]

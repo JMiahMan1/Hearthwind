@@ -221,9 +221,13 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           ls -lh mrpacks/*.mrpack
+          # The release ships two packs (client / dedicated server); the notes
+          # lead with which one to download so nobody installs the wrong file.
+          python3 custom-mods/tools/release_notes.py "${{ github.ref_name }}" mrpacks > release-notes.md
+          cat release-notes.md
           gh release create "${{ github.ref_name }}" mrpacks/*.mrpack \
             --title "Hearthwind ${{ github.ref_name }}" \
-            --notes "Prism-ready downloads: grab a .mrpack below and import it via Prism Launcher > Add Instance > Import. Artifacts expire; release files do not."
+            --notes-file release-notes.md
 
   # REAL client gametests under xvfb (fabric-client-gametest-api-v1): boots the
   # full client mod set with -Dfabric.client.gametest in a throwaway game dir,

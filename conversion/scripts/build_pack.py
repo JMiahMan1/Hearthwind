@@ -3,7 +3,7 @@
 
 Outputs (in conversion/dist and conversion/build/dist):
   - modrinth.index.json          Modrinth pack format index
-  - Hearthwind-<ver>-mc<mc>.mrpack        installable server pack (server required, client optional -> vanilla join)
+  - Hearthwind-<ver>-mc<mc>.mrpack        dedicated-server pack (server required, client optional)
   - HearthwindClient-<ver>-mc<mc>.mrpack  optional client HUD pack (client required, server unsupported)
   - server/<mod>.jar             plain server mods dir (with --server-dir)
   - client/mods/<mod>.jar        plain client mods dir (hearthwind-client)
@@ -230,7 +230,6 @@ def main():
     slug = conf["pack"]["slug"]  # hearthwind
     ver = conf["pack"]["version"]
     mrpack = DIST / f"{slug.title()}-{ver}-mc{mc}.mrpack"  # Hearthwind-0.1.0-mc26.2.mrpack
-    mrpack_legacy = DIST / f"HearthwindServer-{ver}-mc{mc}.mrpack"  # back-compat alias
 
     datapacks_root = ROOT / "conversion" / "datapacks"
     datapacks = sorted(
@@ -264,9 +263,8 @@ def main():
         for j in local:
             z.write(j, "overrides/mods/" + j.name)
     # legacy alias
-    shutil.copy(mrpack, mrpack_legacy)
     # also copy to conversion/dist for legacy tooling
-    for p in [mrpack, mrpack_legacy, idx_path]:
+    for p in [mrpack, idx_path]:
         shutil.copy(p, DIST_LEGACY / p.name)
     print(
         f"Wrote {mrpack.name} ({mrpack.stat().st_size // 1024} KiB, {len(server_files)} mods + {len(local)} override jars)"
@@ -308,6 +306,13 @@ def main():
     print(
         f"Wrote {client_mrpack.name} ({client_mrpack.stat().st_size // 1024} KiB, {len(local_c)} override jars, {len(list(resourcepacks.glob('*.zip'))) if resourcepacks.is_dir() else 0} resourcepacks) - client companion (client-required)"
     )
+
+    # Stale packs from earlier versions (and the retired HearthwindServer-
+    # alias) must not linger in dist: a release uploads whatever is in there.
+    for old in DIST.glob("*.mrpack"):
+        if old.name not in (mrpack.name, client_mrpack.name):
+            print(f"  prune stale pack: {old.name}")
+            old.unlink()
 
     if args.server_dir:
         sdir = DIST / "server"

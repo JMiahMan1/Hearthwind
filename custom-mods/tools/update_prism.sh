@@ -71,7 +71,7 @@ echo "loader=$LOADER_VER mrpack=$(basename "$MRPACK")"
 # Fail fast when the pack itself is incomplete (e.g. packaged before the
 # modules were built): instances must mirror a valid pack, not an empty one.
 # This is the local counterpart of the CI release gate.
-SERVER_MRPACK="${MRPACK/HearthwindClient-/HearthwindServer-}"
+SERVER_MRPACK="${MRPACK/HearthwindClient-/Hearthwind-}"
 VERIFY_ARGS=("$MRPACK")
 [ -f "$SERVER_MRPACK" ] && VERIFY_ARGS+=("$SERVER_MRPACK")
 python3 "$DIR/verify_pack.py" "${VERIFY_ARGS[@]}" || {
