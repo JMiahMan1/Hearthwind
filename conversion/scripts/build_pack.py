@@ -3,7 +3,7 @@
 
 Outputs (in conversion/dist and conversion/build/dist):
   - modrinth.index.json          Modrinth pack format index
-  - Hearthwind-<ver>-mc<mc>.mrpack        dedicated-server pack (server required, client optional)
+  - HearthwindServer-<ver>-mc<mc>.mrpack  dedicated-server pack (server required, client optional)
   - HearthwindClient-<ver>-mc<mc>.mrpack  optional client HUD pack (client required, server unsupported)
   - server/<mod>.jar             plain server mods dir (with --server-dir)
   - client/mods/<mod>.jar        plain client mods dir (hearthwind-client)
@@ -206,7 +206,7 @@ def main():
         "formatVersion": 1,
         "game": "minecraft",
         "versionId": conf["pack"]["version"],
-        "name": conf["pack"]["name"],
+        "name": conf["pack"]["name"] + " Server",
         "summary": conf["pack"]["summary"],
         "files": server_files,
         # Only loader elements belong here. A mod id (fabric-api) is NOT a
@@ -230,7 +230,7 @@ def main():
 
     slug = conf["pack"]["slug"]  # hearthwind
     ver = conf["pack"]["version"]
-    mrpack = DIST / f"{slug.title()}-{ver}-mc{mc}.mrpack"  # Hearthwind-0.1.0-mc26.2.mrpack
+    mrpack = DIST / f"{slug.title()}Server-{ver}-mc{mc}.mrpack"  # HearthwindServer-0.1.0-mc26.2.mrpack
 
     datapacks_root = ROOT / "conversion" / "datapacks"
     datapacks = sorted(
@@ -308,8 +308,8 @@ def main():
         f"Wrote {client_mrpack.name} ({client_mrpack.stat().st_size // 1024} KiB, {len(local_c)} override jars, {len(list(resourcepacks.glob('*.zip'))) if resourcepacks.is_dir() else 0} resourcepacks) - client companion (client-required)"
     )
 
-    # Stale packs from earlier versions (and the retired HearthwindServer-
-    # alias) must not linger in dist: a release uploads whatever is in there.
+    # Stale packs from earlier versions must not linger in dist: a release
+    # uploads whatever is in there.
     for old in DIST.glob("*.mrpack"):
         if old.name not in (mrpack.name, client_mrpack.name):
             print(f"  prune stale pack: {old.name}")

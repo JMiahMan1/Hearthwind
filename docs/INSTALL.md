@@ -4,6 +4,17 @@ Target: Minecraft **26.2**, Fabric loader 0.19.5+, Java 25. One repo builds
 **both** sides: server is required, client companion is optional (see
 `docs/PROJECT_DIRECTION.md#distribution-model`).
 
+## Why two packs
+
+`HearthwindClient-<version>-mc26.2.mrpack` is the download for almost everyone: the
+server-side mods **and** the client-only mods (HUD, menus, keybinds) plus the world
+datapacks, config and resource packs. It runs on its own for singleplayer and connects
+to our servers as-is.
+
+`HearthwindServer-<version>-mc26.2.mrpack` is for dedicated-server hosts: the same
+server-side mods and world data without the client-only mods - a leaner download, and
+players joining that server do not receive mods they never use.
+
 ## Players: joining a server
 
 **Server is authoritative - vanilla works.** A vanilla 26.2 client connects
@@ -37,7 +48,7 @@ see vanilla mob models either way.
 Two files are published per release / CI artifact (`mod-jars` on
 [Actions](../../actions)):
 
-- `Hearthwind-<ver>-mc26.2.mrpack` - **required** (server mods + `world/datapacks/hearthwind/` and any other packs under `conversion/datapacks/`)
+- `HearthwindServer-<ver>-mc26.2.mrpack` - **required** (server mods + `world/datapacks/hearthwind/` and any other packs under `conversion/datapacks/`)
 - `HearthwindClient-<ver>-mc26.2.mrpack` - **optional** (players who want HUD/companion visuals)
 
 The mrpack declares `dependencies`: `minecraft 26.2`, `fabric-loader 0.19.5`,
@@ -49,7 +60,7 @@ dedicated-server layout. For singleplayer, copy the same folders into
 
 Server install:
 
-1. Grab `Hearthwind-*.mrpack` from
+1. Grab `HearthwindServer-*.mrpack` from
    [Releases](../../releases) or CI.
 2. Import it into the [Modrinth App](https://modrinth.com/app)
    (Create instance -> From file) or run it headlessly with

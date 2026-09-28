@@ -41,7 +41,7 @@ def main() -> int:
     conf = json.loads((REPO / "conversion" / "build.conf.json").read_text())
     mc = conf["targets"]["minecraft"]
     client = pack_dir / f"HearthwindClient-{version}-mc{mc}.mrpack"
-    server = pack_dir / f"Hearthwind-{version}-mc{mc}.mrpack"
+    server = pack_dir / f"HearthwindServer-{version}-mc{mc}.mrpack"
 
     rows = []
     for name, path, audience, purpose in (
@@ -72,6 +72,18 @@ def main() -> int:
     for name, audience, purpose, files, overrides in rows:
         lines.append(f"| `{name}` | {audience} | {files} | {overrides} |")
     lines += [
+        "",
+        "## Why there are two files",
+        "",
+        "`HearthwindClient-*.mrpack` is the download for almost everyone: it carries the",
+        "server-side mods **and** the client-only mods (HUD, menus, keybinds) plus the",
+        "world datapacks, config and resource packs, so it runs on its own for singleplayer",
+        "and connects to our servers as-is.",
+        "",
+        "`HearthwindServer-*.mrpack` is for dedicated-server hosts only: the same",
+        "server-side mods and world data, but without the client-only mods - a leaner",
+        "download, and players joining that server do not receive mods they never use.",
+        "Local singleplayer needs only the client pack.",
         "",
         "Both files are Modrinth `.mrpack` archives; the launcher downloads the index",
         "mods and installs the bundled jars:",
