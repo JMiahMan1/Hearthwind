@@ -7,7 +7,7 @@ Catches the class of breakage that crashes the client at startup:
   - mixin config classes absent from the jar
   - declared `depends` ids with no provider jar in the same mods dir
 
-Usage: python3 tools/verify_prism.py [InstanceName] (default Hearthwind-Dev-Client)
+Usage: python3 tools/verify_prism.py [InstanceName] (default Hearthwind-Client)
 Exit nonzero on any error.
 """
 import json
@@ -15,7 +15,7 @@ import sys
 import zipfile
 from pathlib import Path
 
-INST = sys.argv[1] if len(sys.argv) > 1 else "Hearthwind-Dev-Client"
+INST = sys.argv[1] if len(sys.argv) > 1 else "Hearthwind-Client"
 MODS = Path.home() / "Library/Application Support/PrismLauncher/instances" / INST / "minecraft/mods"
 
 # dependency ids always provided by the loader/environment, not by a mod jar

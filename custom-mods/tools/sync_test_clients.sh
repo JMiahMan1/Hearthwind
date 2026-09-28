@@ -10,8 +10,8 @@ REPO="$(cd "$(dirname "$0")/../.." && pwd)"
 DESTS=(
   "$REPO/dev-server/mods"
   "$REPO/dev-client/client/mods"
-  "$HOME/Library/Application Support/PrismLauncher/instances/Hearthwind-Full/minecraft/mods"
-  "$HOME/Library/Application Support/PrismLauncher/instances/Hearthwind-Minimal/minecraft/mods"
+  "$HOME/Library/Application Support/PrismLauncher/instances/Hearthwind-Client/minecraft/mods"
+  "$HOME/Library/Application Support/PrismLauncher/instances/Hearthwind-Server/minecraft/mods"
 )
 
 jars=$(find "$REPO/custom-mods" -path "*build/libs/*26.2*.jar" ! -name "*sources*" ! -name "*javadoc*" 2>/dev/null)
