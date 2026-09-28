@@ -320,6 +320,21 @@ def main():
         cdir = DIST / "client"
         (sdir / "mods").mkdir(parents=True, exist_ok=True)
         (cdir / "mods").mkdir(parents=True, exist_ok=True)
+        # Prune jars this build did not ask for BEFORE copying anything. A mod
+        # whose resolved pick changed (a new version was published) otherwise
+        # lingers here forever, so a later boot tests one version while the
+        # mrpack ships another - and when the old name is a vendored jar the
+        # two builds of the same mod end up in mods/ side by side.
+        want_server = {r["picked"]["file"]["filename"] for r in ready_server}
+        want_server |= {j.name for j in vendored_jars}
+        want_client = want_server | {
+            r["picked"]["file"]["filename"] for r in ready_client_only
+        }
+        for d, want in ((sdir / "mods", want_server), (cdir / "mods", want_client)):
+            for stale in sorted(d.glob("*.jar")):
+                if stale.name not in want:
+                    print(f"  prune stale jar: {stale.name}")
+                    stale.unlink()
         for r in ready_server:
             dest = sdir / "mods" / r["picked"]["file"]["filename"]
             if (

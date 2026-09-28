@@ -245,6 +245,10 @@ def main():
             rec = {
                 "file": slug or pid,
                 "slug": slug,
+                # Keep the pid: aged_parity_diff.py attributes dist jars by
+                # resolved filename and a manifest entry's local_override needs
+                # the pid, and an auto-dep with no pid is unattributable.
+                "project_id": pid,
                 "action": "add:auto-dep",
                 "auto_added_by": [f"{parent_file} ({parent_slug})"],
                 "target_mc": mc,
