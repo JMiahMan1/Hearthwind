@@ -1,5 +1,8 @@
 package draylar.inmis;
 
+import draylar.inmis.config.BackpackInfo;
+import draylar.inmis.config.InmisConfig;
+import draylar.inmis.compat.TrinketsCompat;
 import draylar.inmis.item.BackpackItem;
 import draylar.inmis.item.component.BackpackComponent;
 import draylar.inmis.menu.BackpackMenu;
@@ -150,6 +153,62 @@ public final class InmisGameTests {
         BackpackComponent read = result.get(Inmis.BACKPACK_COMPONENT);
         helper.assertTrue(read != null && read.getContainer().getItem(0).is(Items.EMERALD),
                 "upgraded backpack must keep its contents");
+        helper.succeed();
+    }
+
+    /**
+     * The shipped config/inmis.json is Aged's file verbatim, comments and
+     * all: it spells the key {@code isFireImmune} (not {@code fireImmune})
+     * and carries {@code //} comment lines that strict Gson would reject.
+     * Both are easy to break silently, so parse the real bytes here.
+     */
+    @GameTest
+    public void shippedConfigParsesLikeAged(GameTestHelper helper) {
+        String json = """
+                {
+                // Whether Shulker Boxes should be blacklisted
+                "requireEmptyForUnequip": false,
+                "backpacks": [
+                  { "name": "baby", "rowWidth": 3, "numberOfRows": 1, "isFireImmune": false, "openSound": "minecraft:item.armor.equip_leather" },
+                  { "name": "blazing", "rowWidth": 9, "numberOfRows": 6, "isFireImmune": true, "openSound": "minecraft:item.armor.equip_leather" }
+                ]
+                }
+                """;
+        InmisConfig parsed = InmisConfig.parse(json);
+        helper.assertTrue(parsed != null, "a config with comment lines must still parse");
+        helper.assertTrue(!parsed.requireEmptyForUnequip,
+                "Aged ships requireEmptyForUnequip false");
+        BackpackInfo blazing = parsed.backpacks.stream()
+                .filter(info -> info.getName().equals("blazing")).findFirst().orElseThrow();
+        helper.assertTrue(blazing.isFireImmune(),
+                "isFireImmune must bind: the only fireproof tier would lose it otherwise");
+        helper.succeed();
+    }
+
+    @GameTest
+    public void trinketsCompatIsOptIn(GameTestHelper helper) {
+        // The addon features are read-side only and must degrade quietly when
+        // Trinkets is absent, so the lookup is allowed to return null.
+        helper.assertTrue(TrinketsCompat.findBackpack(null) == null,
+                "a null attachment must not blow up");
+        if (!TrinketsCompat.isEnabled()) {
+            helper.assertTrue(TrinketsCompat.findEquippedBackpack(
+                            helper.makeMockServerPlayerInLevel()) == null,
+                    "disabled compatibility must find nothing");
+        }
+        helper.succeed();
+    }
+
+    /** The addon's 3D backpack models ship with the module, MIT-attributed. */
+    @GameTest
+    public void backpackModelAssetsShip(GameTestHelper helper) {
+        for (String id : Inmis.BACKPACKS.stream().map(item -> item.getTier().getName()).toList()) {
+            String texture = "assets/inmis/textures/entity/" + id + "_backpack.png";
+            helper.assertTrue(getClass().getClassLoader().getResource(texture) != null,
+                    "missing 3D backpack texture: " + texture);
+        }
+        helper.assertTrue(getClass().getClassLoader().getResource("LICENSE_inmisaddon") != null,
+                "the addon model textures are MIT and must ship their licence");
         helper.succeed();
     }
 }

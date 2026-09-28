@@ -231,8 +231,9 @@
    "file": "inmisaddon",
    "slug": "inmisaddon",
    "project_id": "c4aa1Mqq",
-   "action": "keep",
-   "reason": "Deferred with the accessory stack: adds Trinkets slots + on-back rendering to Inmis backpacks; revisit after Trinkets",
+   "action": "rebuild",
+   "reason": "Rebuilt inside the inmis module (MIT). Upstream has no 26.2 build and its Trinkets calls target dev.emi.trinkets, while the fork we ship is eu.pb4.trinkets, so the features were re-implemented against the 26.2 API: 3D backpack models (BackpackModel/BabyBackpackModel + the 9 MIT textures), Trinkets-slot equip so a worn backpack opens with B and renders on the back, and Aged's config keys (requireEmptyForUnequip, trinketRendering, guiTitleColor). The libz inventory tab stays dependency-gated because libz has no 26.2 build yet.",
+   "realized_by": "inmis",
    "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
   },
   {

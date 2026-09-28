@@ -70,7 +70,7 @@ Resolver `missing` minus already-solved local ports/vendored jars/in-house rebui
 
 | Cluster | Mods | Notes |
 |---|---|---|
-| Accessory slots | `trinkets`, `inmis`+`inmisaddon`, `backslot`+`backslotaddon` | port as **ONE best** (de-kludge) |
+| Accessory slots | `libz` (tab strip above the panel) | the Trinkets/BackSlot/Inmis stack shipped 0.1.24 and the Inmis Addon was rebuilt in-tree on 2026-09-28; LibZ is the remaining piece and has no 26.2 build yet |
 | Weapons / smith | `medievalweapons`, `amarite`, `smitherz`+`libz`, `travelerz` | smitherz/travelerz may rebuild into skills/jobs instead |
 | Furniture | `another-furniture`, `grass-overhaul` | pure content / ambience |
 | Transport | `niftycarts`, `villager-transportation` | cheap near-miss ports |
@@ -85,7 +85,7 @@ Resolver `missing` minus already-solved local ports/vendored jars/in-house rebui
 ### Not counted as open (already delivered)
 
 - **Local ports / vendored**: profundis, lukis-grand-capitals, undergroundworlds, dungeons+, MoogsNether/End/StructureLib, ForgeConfigAPIPort, desert-dungeon, unnamed-desert, betterendcities-vanilla, lavender, logbegone, pockets, couplings, entitycollisionfpsfix, memoryleakfix, async-locator, passable-foliage, athena, chipped, exposure, dungeonz, smallships, villagesandpillages, YUNG×6, gardens-of-the-dead, natures-spirit, tlc, medieval-buildings, true-ending, birds-boids, kiwi, arrp.
-- **In-house rebuilds**: endrem eyes (`hearthwind-world` `endrem/`), herdspanic (`HerdPanic`), villager-transportation (listed as world scope; verify feature depth before calling parity complete), plus the full rebuild groups in `mods-manifest.json`.
+- **In-house rebuilds**: endrem eyes (`hearthwind-world` `endrem/`), herdspanic (`HerdPanic`), inmisaddon (3D backpack models + Trinkets slot support, rebuilt inside the `inmis` module on 2026-09-28), villager-transportation (listed as world scope; verify feature depth before calling parity complete), plus the full rebuild groups in `mods-manifest.json`.
 
 ---
 

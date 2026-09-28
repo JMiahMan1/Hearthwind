@@ -1,5 +1,7 @@
 package draylar.inmis.config;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * One backpack tier: registry name ({@code <name>_backpack}), row width,
  * number of rows, fire immunity, opening sound id and whether the item can
@@ -10,6 +12,10 @@ public final class BackpackInfo {
     private final String name;
     private final int rowWidth;
     private final int numberOfRows;
+    // Upstream's config (and Aged's) spells this `isFireImmune`, so the plain
+    // field name would leave every tier non-fireproof when the shipped
+    // config/inmis.json is read back.
+    @SerializedName("isFireImmune")
     private final boolean fireImmune;
     private String openSound;
     private boolean dyeable;

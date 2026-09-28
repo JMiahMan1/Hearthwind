@@ -6,6 +6,7 @@ import draylar.inmis.Inmis;
 
 import java.io.IOException;
 import java.io.Reader;
+import java.io.StringReader;
 import java.io.Writer;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -24,6 +25,16 @@ public final class InmisConfig {
     public List<String> blacklist = List.of();
     public boolean playSound = true;
     public boolean requireArmorTrinketToOpen = false;
+    /**
+     * Upstream refuses to let a player take a non-empty backpack off a
+     * trinket slot. The Trinkets fork we ship exposes no unequip/canUnequip
+     * hook ({@code TrinketAttachment} and {@code TrinketInventory} have none),
+     * so there is no place to enforce it for worn backpacks and we do not
+     * pretend otherwise. Aged 3.1.2 ships this false, so the shipped
+     * behaviour is identical either way; the key is carried so a config
+     * copied from Aged still round-trips.
+     */
+    public boolean requireEmptyForUnequip = false;
     public boolean allowBackpacksInChestplate = true;
     public boolean enableTrinketCompatibility = true;
     public boolean spillArmorBackpacksOnDeath = false;
@@ -47,10 +58,10 @@ public final class InmisConfig {
 
     public static InmisConfig load(Path configDir) {
         Path file = configDir.resolve("inmis.json");
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        Gson gson = new GsonBuilder().setPrettyPrinting().setLenient().create();
         if (Files.exists(file)) {
             try (Reader reader = Files.newBufferedReader(file)) {
-                InmisConfig loaded = gson.fromJson(reader, InmisConfig.class);
+                InmisConfig loaded = parse(reader);
                 if (loaded != null && loaded.backpacks != null && !loaded.backpacks.isEmpty()) {
                     return loaded;
                 }
@@ -69,5 +80,28 @@ public final class InmisConfig {
             Inmis.LOGGER.warn("Could not write inmis.json", exception);
         }
         return config;
+    }
+
+    /**
+     * Parses config text the way the shipped file is read.
+     *
+     * <p>Lenient on purpose: {@code config/inmis.json} is Aged's file
+     * verbatim and keeps its {@code //} comment lines, which strict Gson
+     * rejects - and a rejected file falls back to the defaults and then gets
+     * overwritten, so the comments have to parse rather than be stripped.
+     */
+    public static InmisConfig parse(Reader reader) {
+        try {
+            return new GsonBuilder().setPrettyPrinting().setLenient().create()
+                    .fromJson(reader, InmisConfig.class);
+        } catch (Exception exception) {
+            Inmis.LOGGER.warn("Could not parse inmis.json", exception);
+            return null;
+        }
+    }
+
+    /** Same as {@link #parse(Reader)} for in-memory text. */
+    public static InmisConfig parse(String json) {
+        return parse(new StringReader(json));
     }
 }

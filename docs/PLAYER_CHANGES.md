@@ -231,6 +231,31 @@ Eight optional professions (Miner, Farmer, Fisher, Warrior, Smither, Brewer, Bui
 - The Lost Castle still only generates more than 5000 blocks from spawn, on flat ground - that is
   upstream's spawn check, unchanged.
 
+### Inmis Addon (inmis) - backpacks get their 3D models and Trinkets slots (2026-09-28)
+
+Aged 3.1.2 ships a separate `inmisaddon` mod on top of Inmis. Upstream has no
+26.2 build, so those features are now rebuilt inside our Inmis module:
+
+- **3D backpacks.** A backpack worn on your back is drawn as a real 3D model
+  with its own texture (stone/metal/leather variants per tier, plus the smaller
+  baby backpack) instead of the flat item sprite, and a dyed backpack is tinted
+  with its dye colour. Dyed looks are drawn through 26.2's three-channel model
+  tint, so a blue-green dye shades slightly differently than in 1.20.1.
+- **Trinkets slots.** A backpack placed in a Trinkets slot (chest:back and any
+  other slot that accepts one) counts as equipped: pressing **B** opens it, and
+  it renders on your back. Trinkets stays an optional dependency - a standalone
+  Inmis install behaves exactly as before.
+- **Aged's config keys.** The pack now ships Aged's `config/inmis.json`
+  verbatim, including its comments. Two real bugs came with it: the tier key is
+  spelled `isFireImmune` (so the blazing backpack keeps its fire immunity), and
+  the file is parsed leniently so the comment lines are kept instead of being
+  overwritten on first launch.
+- `requireEmptyForUnequip` is carried so an Aged config round-trips, but it is
+  only meaningful for Trinkets removal, which the Trinkets fork gives no hook
+  for. Aged ships it `false`, so behaviour matches Aged either way.
+- The addon's LibZ inventory tab stays gated behind LibZ, which has no 26.2
+  build yet, so it is not active in this pack.
+
 ### 26.2 Port Status
 - Verified 2026-09-24: full `./gradlew build` green; server gametests **300/300 passed** (container); client gametests **PASS** (container, 33 screenshots); fresh-world Profundis smoke passed forced chunk generation with no broken-chunk errors.
 - Cooking removals now default **on** with the shipped Candlelight stoves and cooking stations: vanilla furnace recipes for bread, cooked beef, and other cooked foods are removed; non-cooking recipes remain available.

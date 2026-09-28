@@ -102,6 +102,20 @@ subprojects {
 			implementation project(':hearthwind-survival')
 		}
 	}
+	if (project.name == 'inmis') {
+		dependencies {
+			// The Inmis Addon features (Trinkets slot support, the 3D backpack
+			// models, guiTitleColor) talk to the real Trinkets API, so the
+			// adopted upstream fork is needed at compile time.  The jar is
+			// byte-identical to the one the pack ships (sha1 matches the
+			// resolved Modrinth file), so recompile it when resolved.json
+			// changes the picked version.  compileOnly, not implementation:
+			// the raw jar must not leak onto modules that depend on
+			// project(':inmis') (hearthwind-client does), or loom merges
+			// Trinkets' interface extensions into their Minecraft classes.
+			compileOnly files("${rootDir}/../conversion/vendored/compile-libs/trinkets-4.1.1+26.2.jar")
+		}
+	}
 	if (project.name == 'letsdo-nethervinery') {
 		dependencies {
 			implementation project(':letsdo-vinery')

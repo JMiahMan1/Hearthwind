@@ -7,12 +7,15 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import draylar.inmis.client.InmisBackpackLayer;
 import draylar.inmis.client.InmisRenderStateHolder;
+import draylar.inmis.compat.TrinketsCompat;
+import draylar.inmis.item.BackpackItem;
 import net.minecraft.client.model.player.PlayerModel;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.player.AvatarRenderer;
 import net.minecraft.client.renderer.entity.state.AvatarRenderState;
 import net.minecraft.world.entity.Avatar;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.item.ItemStack;
 
 @Mixin(AvatarRenderer.class)
 public abstract class AvatarRendererMixin {
@@ -25,6 +28,14 @@ public abstract class AvatarRendererMixin {
 
     @Inject(method = "extractRenderState", at = @At("TAIL"))
     private void inmis$captureChestItem(Avatar entity, AvatarRenderState state, float partialTicks, CallbackInfo ci) {
-        ((InmisRenderStateHolder) state).inmis$setChestItem(entity.getItemBySlot(EquipmentSlot.CHEST));
+        ItemStack chest = entity.getItemBySlot(EquipmentSlot.CHEST);
+        if (chest.getItem() instanceof BackpackItem) {
+            ((InmisRenderStateHolder) state).inmis$setChestItem(chest);
+            return;
+        }
+
+        // Inmis Addon: a backpack sitting in a Trinkets slot still renders on
+        // the back, so the layer falls back to the trinket lookup.
+        ((InmisRenderStateHolder) state).inmis$setChestItem(TrinketsCompat.findEquippedBackpack(entity));
     }
 }

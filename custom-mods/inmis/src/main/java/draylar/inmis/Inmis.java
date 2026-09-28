@@ -32,9 +32,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Inmis backpack port for 26.2 (MIT, upstream by Draylar). Behaviour mirrors
- * the 1.21 sources; the trinket integration is omitted because Trinkets is
- * not partnered into this pack, and the back rendering lives in a follow-up.
+ * Inmis backpack port for 26.2 (MIT, upstream by Draylar), including the
+ * Inmis Addon features: backpacks worn in a Trinkets slot are found by the
+ * open-backpack keybind and drawn on the back as a 3D model, and the 3D
+ * models plus the Aged config keys ship with the pack. Trinkets itself is
+ * optional ({@code suggests}), so the lookup is guarded at runtime.
  */
 public class Inmis implements ModInitializer {
 

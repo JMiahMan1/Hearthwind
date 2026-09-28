@@ -1,6 +1,7 @@
 package draylar.inmis.network;
 
 import draylar.inmis.Inmis;
+import draylar.inmis.compat.TrinketsCompat;
 import draylar.inmis.item.BackpackItem;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
@@ -42,6 +43,18 @@ public final class InmisNetworking {
         if (!Inmis.CONFIG.requireArmorTrinketToOpen && offhand.getItem() instanceof BackpackItem) {
             BackpackItem.openScreen(player, offhand);
             return;
+        }
+
+        // A backpack worn in a Trinkets slot counts as equipped, so the B
+        // keybind opens it even though it is in neither the armour nor the
+        // main inventory. Checked before the ender pouch fallback because a
+        // worn backpack is the more specific match.
+        if (!Inmis.CONFIG.requireArmorTrinketToOpen) {
+            ItemStack trinketed = TrinketsCompat.findEquippedBackpack(player);
+            if (trinketed != null) {
+                BackpackItem.openScreen(player, trinketed);
+                return;
+            }
         }
 
         for (int i = 0; i < inventory.getContainerSize(); i++) {
