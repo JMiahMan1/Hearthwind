@@ -36,6 +36,8 @@ def main() -> int:
     if not version:
         print("usage: release_notes.py <version> [<pack-dir>]", file=sys.stderr)
         return 2
+    # CI passes the tag ("v0.1.25"); the packs are named without the prefix.
+    version = version[1:] if version.startswith("v") else version
     pack_dir = Path(sys.argv[2]) if len(sys.argv) > 2 else DEFAULT_DIR
 
     conf = json.loads((REPO / "conversion" / "build.conf.json").read_text())
@@ -56,6 +58,11 @@ def main() -> int:
             continue
         files, overrides = inspect(path)
         rows.append((name.name, audience, purpose, files, overrides))
+
+    if not rows:
+        print(f"release_notes: no HearthwindClient/HearthwindServer-{version}-mc{mc}.mrpack in {pack_dir}",
+              file=sys.stderr)
+        return 3
 
     lines = [
         f"# Hearthwind {version}",
