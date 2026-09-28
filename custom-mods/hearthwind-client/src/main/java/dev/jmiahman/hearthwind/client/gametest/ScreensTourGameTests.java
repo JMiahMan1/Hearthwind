@@ -109,6 +109,17 @@ public class ScreensTourGameTests implements FabricClientGameTest {
             context.waitTicks(10);
             context.takeScreenshot("tour_backslot");
 
+            // BackSlot Addon parity: a shield on the back and a sword on the
+            // belt get their own hip-mounted transforms.
+            context.runOnClient(minecraft -> {
+                net.backslot.BackSlotSlots.set(minecraft.player, net.backslot.BackSlot.BACK_SLOT,
+                        new ItemStack(net.minecraft.world.item.Items.SHIELD));
+                net.backslot.BackSlotSlots.set(minecraft.player, net.backslot.BackSlot.BELT_SLOT,
+                        new ItemStack(net.minecraft.world.item.Items.IRON_SWORD));
+            });
+            context.waitTicks(10);
+            context.takeScreenshot("tour_backslot_addon");
+
             context.setScreen(NutrientsScreen::new);
             context.waitFor(minecraft -> minecraft.gui.screen() instanceof NutrientsScreen, SLOW_TIMEOUT_TICKS);
             context.waitTicks(10);

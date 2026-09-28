@@ -44,6 +44,24 @@ public class BackItemLayer extends RenderLayer<AvatarRenderState, PlayerModel> {
                 ItemDisplayContext.FIXED, minecraft.level, null, 0);
 
         poseStack.pushPose();
+        if (BackSlot.CONFIG.allowShieldOnBack && stack.getItem() instanceof net.minecraft.world.item.ShieldItem) {
+            // BackSlot Addon: a shield rides flat across the back.
+            poseStack.mulPose(Axis.ZP.rotationDegrees(45));
+            double y = 0.145;
+            if (minecraft.player == null || minecraft.player.getMainHandItem().isEmpty()) {
+                y = 0.18;
+            }
+            if (BackSlot.CONFIG.shieldClipping) {
+                y += 0.125;
+            }
+            poseStack.translate(0.71, 0.72, y + 0.42);
+            float scale = BackSlot.CONFIG.backslotScaling;
+            poseStack.scale(scale, scale, scale);
+            this.renderState.submit(poseStack, submitNodeCollector, lightCoords,
+                    OverlayTexture.NO_OVERLAY, state.outlineColor);
+            poseStack.popPose();
+            return;
+        }
         if (stack.getItem() instanceof BlockItem) {
             poseStack.mulPose(Axis.YP.rotationDegrees(52));
             poseStack.mulPose(Axis.XP.rotationDegrees(40));

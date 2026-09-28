@@ -28,6 +28,17 @@ public class BackSlotConfig {
     public float beltslotScaling = 1.0f;
     public boolean dropHolding = true;
 
+    /**
+     * BackSlot Addon parity (upstream backslotaddon 1.1.1): the shield gets
+     * its own back transform, two swords can share the back, and a lantern
+     * on the belt hangs behind the shoulder.
+     */
+    public boolean doubleBackSword = true;
+    public boolean allowShieldOnBack = true;
+    public boolean shieldClipping = true;
+    public boolean allowLanternOnBelt = true;
+    public boolean lanternOnBack = false;
+
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
     public static BackSlotConfig load(Path configDir) {

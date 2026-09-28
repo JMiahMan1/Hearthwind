@@ -3,5 +3,6 @@
   "backSlotY": 18,
   "beltSlotX": 36,
   "beltSlotY": 36,
-  "hudSlotX": -21
+  "hudSlotX": -21,
+  "lantern_on_back": true
 }

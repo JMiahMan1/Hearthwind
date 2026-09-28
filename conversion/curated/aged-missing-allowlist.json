@@ -266,7 +266,7 @@
   {
    "project_id": "s2w3oC2W",
    "filename": "backslotaddon-1.1.1.jar",
-   "reason": "W4 port queue (plan 5.2): backslotaddon - evaluation done: shield-on-back/double-sword/lantern render refinements and light; the port ships the functional back+belt slots and generic rendering, exact addon transforms tracked as render polish."
+   "reason": "W4 port queue (plan 5.2): backslotaddon - ported into the backslot module 0.1.24 (shield-on-back, double-back-sword and lantern-on-belt transforms, Aged's lantern_on_back setting)"
   },
   {
    "project_id": "sG4TqDb8",
