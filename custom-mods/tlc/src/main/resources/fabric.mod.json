@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "id": "tlc",
+  "version": "${version}",
+  "name": "The Lost Castle",
+  "description": "Former structure of End Remastered, The Lost Castle introduces an enormous castle that you'll be able to find with the help of a map given by a journeyman cartographer. Ported to Minecraft 26.2 for Hearthwind.",
+  "authors": [
+    "Jack Bagel"
+  ],
+  "contact": {
+    "homepage": "https://fabricmc.net/",
+    "sources": "https://github.com/FabricMC/fabric-example-mod"
+  },
+  "license": "GNU LGPLv3",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "com.teamremastered.tlc.TheLostCastleFabric"
+    ]
+  },
+  "mixins": [
+    "tlc.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.19.2",
+    "fabric-api": "*",
+    "minecraft": ">=26.1",
+    "java": ">=25"
+  }
+}

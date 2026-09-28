@@ -35,7 +35,7 @@ PORTED_MODULES = (
     "letsdo-farm-and-charm", "letsdo-nethervinery",
     "chipped", "dungeonz", "athena", "exposure",
     "passable-foliage", "profundis", "adventurez", "fleshz",
-    "smallships", "inmis", "lootbeams", "backslot",
+    "smallships", "inmis", "lootbeams", "backslot", "tlc",
 )
 
 

@@ -613,8 +613,9 @@
    "file": "tlc",
    "slug": "the-lost-castle",
    "project_id": "FGlHZl7X",
-   "action": "keep",
-   "cat": "structures"
+   "action": "rebuild",
+   "cat": "structures",
+   "note": "Ported in-tree as the custom-mods/tlc module: 26.2 turned StructureProcessor into an interface with a MapCodec registry, which the upstream 26.1 build (the only Java 25 one) cannot satisfy. The module keeps the upstream package, datapack and assets, and reads both the 2.x and the 1.0.x config schemas so Aged's config/tlc.json (strongholds off) keeps working."
   },
   {
    "file": "medieval_buildings",
