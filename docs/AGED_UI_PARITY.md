@@ -14,7 +14,12 @@ reimplementation — no upstream code/assets copied):
 
 ## 1. Level screen = the hub (no separate hub screen)
 
-Aged `LevelScreen`: **200×215** textured panel (`skill_background.png`).
+Aged `LevelScreen`: **200×236** textured panel (`skill_background.png`).
+The measured 1.21 capture is 200x236 rows: rows 0-19 are a BLACK tab band,
+rows 20-21 the 2 px white inner ring, rows 22-230 the flat `#C6C6C6` face,
+rows 231-232 a `#555555` bottom shadow and rows 233-235 the black outer edge
+(`job_background.png` in the JobsAddon gallery capture is the same chrome).
+Content coordinates are face-relative, i.e. 20 rows below the panel top.
 - Title `text.levelz.gui.title` with player name, centered ~x+118.
 - 3D player preview top-left (`InventoryScreen.drawEntity`, 30px scale),
   rotatable with two arrow buttons beside it.
@@ -29,18 +34,18 @@ Aged `LevelScreen`: **200×215** textured panel (`skill_background.png`).
 - Click skill icon → **SkillInfoScreen(skillId)** drill-down.
 - K or E closes; LibZ tabs on top; no pause.
 
-Hearthwind `SkillsScreen`: 200×215 Aged-style panel with player preview, six
+Hearthwind `SkillsScreen`: 200×236 Aged-style panel with player preview, six
 attribute readouts, segmented XP bar, 12 skill rows, [+] controls, shared
-LibZ tabs, and the right icon rail: an attributes toggle that opens the
-slide-out attribute panel (live values, icons) plus mining and crafting gate
-buttons that open the restriction lists. Clicking a skill opens the
-client-only `SkillInfoScreen`. Remaining Aged UI parity: sprite icons (ours
-are item stand-ins for GPL art), hub scroll/slider, and the full per-level
-bonus content text.
+LibZ tabs in the black band, and the right icon rail: an attributes toggle
+that opens the slide-out attribute panel (live values, icons) plus mining and
+crafting gate buttons that open the restriction lists. Clicking a skill opens
+the client-only `SkillInfoScreen`. Remaining Aged UI parity: sprite icons
+(ours are item stand-ins for GPL art), hub scroll/slider, and the full
+per-level bonus content text.
 
 ## 2. SkillInfoScreen drill-down (partial)
 
-Aged: 200×215 textured (`skill_info_background.png`), title + `Lv.X` header,
+Aged: 200×236 textured (`skill_info_background.png`), title + `Lv.X` header,
 scrollable LineWidgets (10 visible): skill desc lines
 (`skill.levelz.<key>.<i>`), bonus lines (`bonus.levelz.<key>.<i>`), then
 per-level restriction lists (item/block/entity/enchantment icons in rows of
@@ -83,17 +88,35 @@ click switches screen. Registered per screen class (`inventoryTabs` for
 inventory-parented screens, `otherTabs` keyed by parent class); gated by
 `inventoryButton` config + `shouldShow`/`canClick` per tab.
 
+The measured gallery captures refine this: on the Jobs and Level panels the
+strip sits INSIDE the panel's 20 px black band (every tab starts one pixel
+above the band and the selected one is only taller, so it merges into the
+face), while the inventory capture still floats the strip above the vanilla
+panel. Both placements ship (`TabStrip.drawInBand` / `TabStrip.draw`), and
+`ScreensTourGameTests` asserts the band hit boxes: a click inside the band
+picks a tab, a click just below it does not.
+
 Hearthwind `TabStrip`: four always-present tabs (Inventory, Skills, Jobs, Party)
-with LibZ geometry, and the inventory is rendered as the real vanilla panel.
-Clicking a tab switches screens; the bag tab returns to inventory. The strip
-also appears on the new skill detail screen.
+with LibZ geometry, banded on the info panels and floating on the inventory,
+and the inventory is rendered as the real vanilla panel. Clicking a tab
+switches screens; the bag tab returns to inventory. The strip also appears on
+the new skill detail screen.
 
 ## 6. Jobs
 
 Aged/JobsAddon: jobs positioned by numeric id, 14×14 GUI textures,
 per-job max levels, jobs earn LevelZ XP; the PACK allows up to 3 active
-jobs. Hearthwind: single active job, vanilla item icons, no job textures,
-no multi-job. (Server `/job join/leave/info` + XP hooks exist.)
+jobs. The measured `Job_Screen.png` capture puts the title on face row 6,
+"Job Cooldown: MM:SS" on row 19, the employed line on row 32, and eight
+91×38 cards in two columns from face row 46 with a 95/41 pitch, a 14×14
+icon, the name, "Lv. N" and an 81×5 XP bar flush with the card bottom.
+Order: Lumberjack/Miner, Farmer/Warrior, Builder/Smither, Fisher/Brewer.
+
+Hearthwind: same panel geometry, the same 91×38 cards, pitch, icon slot and
+XP bar, and the same job order. Up to 3 active jobs, and the employed line
+now names every job ("Employed Jobs: Miner, Lumberjack, Fisher") instead of
+truncating. Still open: Aged's 14×14 per-job GUI textures (we use vanilla
+item icons). (Server `/job join/leave/info` + XP hooks exist.)
 
 ## 7. Main menu background (out of scope for now)
 
@@ -110,11 +133,12 @@ rule; keep when rebuilding).
 
 - P0: nutrients geometry parity (142 panel, 23 pitch, bar+value layout,
   effect-zone tooltips, drop own tab strip) + this doc: shipped.
-- P1: skills hub rebuild (200×215 panel, player preview, XP bar, steppers,
+- P1: skills hub rebuild (200×236 panel, player preview, XP bar, steppers,
   attributes slide-out, restriction buttons + screens, SkillInfo drill-down,
   scroll): hub, attributes slide-out, restriction rail + screens and the
   SkillInfo drill-down are shipped; hub scroll/slider and the full bonus text
   remain.
-- P2: LibZ-geometry tabs + jobs multi/textures: tabs shipped; jobs parity is
-  separately tracked.
+- P2: LibZ-geometry tabs + jobs multi/textures: tabs shipped (banded on the
+  info panels, floating on the inventory); multi-job shipped, the 14×14 job
+  textures remain.
 - P3: main-menu background: shipped Hearthwind menu, Aged art parity remains.

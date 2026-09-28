@@ -364,7 +364,9 @@ not drive 1.0.0 work.
 - `hearthwind-world`: seasons (21 days, Aged value), per-crop season
   multipliers, winter breeding block, HerdPanic, End Remastered eyes,
   fauna.
-- `hearthwind-client`: HUD, Nutrients/Skills/Jobs/Party screens, SeasonHud.
+- `hearthwind-client`: HUD, Nutrients/Skills/Jobs/Party screens, SeasonHud,
+  WelcomeScreen, and the shared 200x236 panel chrome (20 px black tab band,
+  banded LibZ tabs) measured off the Aged captures.
 - `dungeonz`: ported; 23 server gametests. Remaining: jigsaw generation
   path, criteria/loot asserts.
 - Hygiene: remove `.tmp-test-server/` and `.tmp/` scratch at task end;

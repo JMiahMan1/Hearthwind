@@ -7,6 +7,7 @@ import dev.jmiahman.hearthwind.client.SkillInfoScreen;
 import dev.jmiahman.hearthwind.client.SkillRestrictionScreen;
 import dev.jmiahman.hearthwind.client.SkillsScreen;
 import dev.jmiahman.hearthwind.client.SurvivalInfoScreen;
+import dev.jmiahman.hearthwind.client.TabStrip;
 import dev.jmiahman.hearthwind.client.WelcomeScreen;
 import dev.jmiahman.hearthwind.survival.StarterKit;
 import draylar.inmis.client.InmisBackpackLayer;
@@ -221,6 +222,23 @@ public class ScreensTourGameTests implements FabricClientGameTest {
             context.setScreen(JobsScreen::new);
             context.waitFor(minecraft -> minecraft.gui.screen() instanceof JobsScreen, SLOW_TIMEOUT_TICKS);
             context.waitTicks(10);
+            // Aged's panel chrome: the four LibZ tabs sit INSIDE the 20 px
+            // black band at the top of the panel, so a click in the band picks
+            // a tab and a click just below the face edge must not.
+            context.runOnClient(minecraft -> {
+                if (!(minecraft.gui.screen() instanceof JobsScreen screen)) {
+                    throw new AssertionError("the Jobs screen should be open for the tab band check");
+                }
+                int left = screen.panelLeft();
+                int top = screen.panelTop();
+                if (TabStrip.clickedInBand(left + 4, top + 6, left, top, TabStrip.Tab.JOBS)
+                        != TabStrip.Tab.INVENTORY) {
+                    throw new AssertionError("the first tab must be clickable inside the panel band");
+                }
+                if (TabStrip.clickedInBand(left + 4, top + 30, left, top, TabStrip.Tab.JOBS) != null) {
+                    throw new AssertionError("a click below the tab band must not hit a tab");
+                }
+            });
             context.takeScreenshot("tour_jobs");
 
             context.setScreen(PartyScreen::new);

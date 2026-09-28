@@ -46,7 +46,19 @@ CUSTOM_MODS = ROOT / "custom-mods"
 # CI does not need it because every shipped Aged mod is keyed by project_id.
 REPORT_HINTS = ROOT / ".tmp" / "k3_parity_audit.md"
 
-ACTIONS = {"keep", "rebuild", "client-optional", "add", "dependency", "drop"}
+ACTIONS = {
+    "keep",
+    "rebuild",
+    "client-optional",
+    "add",
+    "dependency",
+    "drop",
+    # An Aged mod we do NOT ship yet and have a per-mod decision for (it sits
+    # in the W4 port queue / the allowlist). Truth over aspiration: claiming
+    # `keep` for a mod that is not in the pack is a lie, `drop` is a decision
+    # we have not taken, so this action names "tracked, not shipped".
+    "port",
+}
 # In-house 26.2 ports of third-party mods. Imported from build_pack so the
 # two scripts can never drift (a stale copy once made the gate reject a port).
 sys.path.insert(0, str(Path(__file__).resolve().parent))

@@ -124,7 +124,7 @@ the feel comes from additions. Everything is measured at GUI scale 3
 | Thirst | 10 teardrops, `#1AAFE7`/`#0E86CA`, right-aligned in the band **directly above hunger** | droplets above hunger, shift up when air bubbles show | ✅ |
 | Temperature | vertical 7×27 tube **right of hotbar** + 12×12 unit box + trend arrow, `#1D2946` outline | TempHud right of hotbar with unit box and trend chevron | ✅ |
 | Season | top-left (2,2), 9×9 icon + "Season, Day N/M" one string, season-tinted (spring `#FFA3BB`) | SeasonHud top-left procedural 9×9 badge with per-season tint | ✅ |
-| Panels | vanilla grey, 4 **item-icon** tabs ~20×22 with 14×14 icons, selected brighter+taller | icon tab strip (apple/bottle/campfire/sword/axe), jobs card grid, dark text | ✅ close |
+| Panels | vanilla grey `#C6C6C6` 200×236 with a **20 px black tab band**, 4 item-icon tabs 24 wide on a 25 px pitch (selected only taller), flat dark text | same chrome (band regenerated to the measured 236 rows), 4 item-icon tabs in the band, jobs card grid in Aged's two-column order with `Lv. N` and an 81×5 XP bar, multi-job summary | ✅ 0.1.32 |
 | Nutrients | 5 rows, **segmented** 140×5 bars, red→amber→yellow→green over near-black track | 5 segmented bars with category textures and right-aligned values | ✅ |
 | Inventory | tabs merged onto the inventory + left button column + player preview | four tabs merged onto the real vanilla inventory; skill/nutrient panels remain separate | 🟡 tabs shipped |
 | Fonts | vanilla everywhere (SeasonHUD ships 9×9 bitmap season icons) | vanilla | ✅ |

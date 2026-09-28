@@ -15,16 +15,24 @@ import net.minecraft.sounds.SoundEvents;
 /**
  * Shared base for the Hearthwind info panels (Skills, Jobs, Party).
  *
- * <p>Reproduces the reference panel chrome: 200x215 body, a 1 px black
- * outline, a 2 px white inner highlight and a flat {@code #C6C6C6} face,
- * with the LibZ tab strip drawn on top. All content coordinates are
- * panel-relative and come from the LevelZ/JobsAddon/PartyAddon sources.
+ * <p>Reproduces the reference panel chrome: 200x236 body, a 20 px black
+ * band at the top that the four LibZ tabs sit in, a 1 px black outline, a
+ * 2 px white inner highlight and a flat {@code #C6C6C6} face. All content
+ * coordinates are face-relative and come from the LevelZ/JobsAddon/
+ * PartyAddon sources: {@link #x}/{@link #y} is the top left of the FACE, so
+ * the band never shifts a screen's own layout.
  */
 @Environment(EnvType.CLIENT)
 public abstract class HearthwindPanelScreen extends Screen {
 
     public static final int PANEL_W = 200;
-    public static final int PANEL_H = 215;
+    public static final int PANEL_H = 236;
+
+    /**
+     * Height of the black tab band above the face. Aged's panel is 236 rows
+     * tall and its content starts 20 rows below the top, inside the face.
+     */
+    public static final int FACE_TOP = 20;
 
     private static final net.minecraft.resources.Identifier PANEL_TEXTURE =
             net.minecraft.resources.Identifier.fromNamespaceAndPath("hearthwind", "textures/gui/hearthwind_panel.png");
@@ -53,7 +61,17 @@ public abstract class HearthwindPanelScreen extends Screen {
     protected void init() {
         super.init();
         this.x = (this.width - PANEL_W) / 2;
-        this.y = (this.height - PANEL_H) / 2;
+        this.y = (this.height - PANEL_H) / 2 + FACE_TOP;
+    }
+
+    /** Top left of the whole panel, band included. */
+    public int panelTop() {
+        return this.y - FACE_TOP;
+    }
+
+    /** Left edge of the panel; the same value as the face's {@link #x}. */
+    public int panelLeft() {
+        return this.x;
     }
 
     @Override
@@ -61,20 +79,20 @@ public abstract class HearthwindPanelScreen extends Screen {
         super.extractRenderState(graphics, mouseX, mouseY, delta);
         drawPanel(graphics);
         drawContent(graphics, this.font, mouseX, mouseY);
-        TabStrip.draw(graphics, this.x, this.y, activeTab(), mouseX, mouseY);
+        TabStrip.drawInBand(graphics, this.x, panelTop(), activeTab(), mouseX, mouseY);
     }
 
-    /** Solid textured panel chrome (black outline, white ring, beveled face). */
+    /** Solid textured panel chrome (tab band, black outline, white ring, face). */
     protected void drawPanel(GuiGraphicsExtractor graphics) {
         graphics.blit(net.minecraft.client.renderer.RenderPipelines.GUI_TEXTURED,
-                PANEL_TEXTURE, this.x, this.y, 0F, 0F, PANEL_W, PANEL_H, PANEL_W, PANEL_H,
+                PANEL_TEXTURE, this.x, panelTop(), 0F, 0F, PANEL_W, PANEL_H, PANEL_W, PANEL_H,
                 0xFFFFFFFF);
     }
 
     @Override
     public boolean mouseClicked(MouseButtonEvent event, boolean doubled) {
         if (event.button() == 0) {
-            TabStrip.Tab tab = TabStrip.clicked(event.x(), event.y(), this.x, this.y, activeTab());
+            TabStrip.Tab tab = TabStrip.clickedInBand(event.x(), event.y(), this.x, panelTop(), activeTab());
             if (tab != null && tab != activeTab()) {
                 click();
                 TabStrip.open(tab);

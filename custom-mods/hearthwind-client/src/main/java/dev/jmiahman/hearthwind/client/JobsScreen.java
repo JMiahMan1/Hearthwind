@@ -20,10 +20,12 @@ import net.minecraft.world.item.Items;
  * Aged 3.1.2 / JobsAddon JobScreen rebuild (clean-room: layout studied from
  * the GPL JobsAddon source, reimplemented on our job state and 26.2 APIs).
  *
- * <p>200x215 panel, "&lt;Name&gt; Jobs" title, "Job Cooldown: MM:SS" and an
- * employed summary, then eight 91x38 job cards in two columns: icon slot,
- * name, centred "Lv. N" and a segmented XP bar. Clicking a card sends the
- * existing {@code /job join|leave} command path.
+ * <p>200x236 panel with the black tab band, "&lt;Name&gt; Jobs" title at
+ * face row 6, "Job Cooldown: MM:SS" at 19, the employed summary at 32, then
+ * eight 91x38 job cards in two columns starting at face row 46 with a 95/41
+ * pitch: a 14x14 icon at (+5,+5), the name at (+23,+4), "Lv. N" at (+35,+19)
+ * and the 81x5 XP bar at (+5,+29), flush with the card bottom. Clicking a
+ * card sends the existing {@code /job join|leave} command path.
  */
 @Environment(EnvType.CLIENT)
 public class JobsScreen extends HearthwindPanelScreen {
@@ -60,9 +62,10 @@ public class JobsScreen extends HearthwindPanelScreen {
 
     @Override
     protected void drawPanel(GuiGraphicsExtractor graphics) {
-        // Exact Aged: 200x215 blit from 256x256 job_background.png at (x,y) uv 0,0
+        // Aged's JobsAddon background: the same 200x236 LibZ chrome, tab band
+        // included, blitted from the 256x256 sheet at (panelTop).
         graphics.blit(RenderPipelines.GUI_TEXTURED, BACKGROUND,
-                this.x, this.y, 0F, 0F, PANEL_W, PANEL_H, 256, 256, 0xFFFFFFFF);
+                this.x, panelTop(), 0F, 0F, PANEL_W, PANEL_H, 256, 256, 0xFFFFFFFF);
     }
 
     @Override
@@ -71,11 +74,11 @@ public class JobsScreen extends HearthwindPanelScreen {
         String playerName = mc.player != null ? mc.player.getName().getString() : "Player";
 
         Component title = Component.translatable("screen.hearthwind.jobs.title", playerName);
-        graphics.text(font, title, this.x + 100 - font.width(title) / 2, this.y + 7, INK, false);
+        graphics.text(font, title, this.x + 100 - font.width(title) / 2, this.y + 6, INK, false);
 
         graphics.text(font, "Job Cooldown: " + formatCooldown(ClientJobData.cooldownRemainingMillis()),
-                this.x + 12, this.y + 20, INK, false);
-        graphics.text(font, employedText(), this.x + 12, this.y + 33, INK, false);
+                this.x + 11, this.y + 19, INK, false);
+        graphics.text(font, employedText(), this.x + 11, this.y + 32, INK, false);
 
         boolean cooldown = ClientJobData.onCooldown();
         boolean slotsFull = ClientJobData.employed().size() >= ClientJobData.maxEmployed();
@@ -84,7 +87,7 @@ public class JobsScreen extends HearthwindPanelScreen {
             int col = i % 2;
             int row = i / 2;
             int cx = this.x + 7 + col * 95;
-            int cy = this.y + 47 + row * 41;
+            int cy = this.y + 46 + row * 41;
             ClientJobData.JobInfo info = ClientJobData.job(JOB_ORDER[i]);
             boolean employed = info != null && info.employed();
             boolean blocked = !employed && (cooldown || slotsFull);
@@ -123,7 +126,7 @@ public class JobsScreen extends HearthwindPanelScreen {
                 cx + 5, cy + 5, (float) index * 14F, 10F, 14, 14, 256, 256, 0xFFFFFFFF);
 
         String name = id.substring(0, 1).toUpperCase() + id.substring(1);
-        // Aged offsets: title at bx+23,by+4 (cx+5+18) white 16777215; level at bx+35,by+19 (cx+17+18?) – use exact bx+23/bx+35
+        // Aged offsets: title at bx+23,by+4, level at bx+35,by+19, both white.
         graphics.text(font, name, cx + 23, cy + 4, 0xFFFFFFFF, false);
         String lv = "Lv. " + level;
         graphics.text(font, lv, cx + 35, cy + 19, 0xFFFFFFFF, false);
@@ -166,13 +169,12 @@ public class JobsScreen extends HearthwindPanelScreen {
         for (String id : employed) {
             caps.add(id.substring(0, 1).toUpperCase() + id.substring(1));
         }
+        // Aged allows three jobs at once, so the summary names every one of
+        // them: "Employed Job: X" for one, "Employed Jobs: X, Y, Z" after that.
         if (caps.size() == 1) {
             return "Employed Job: " + caps.get(0);
         }
-        if (caps.size() == 2) {
-            return "Employed Jobs: " + caps.get(0) + ", " + caps.get(1);
-        }
-        return "Employed Jobs: " + caps.get(0) + ", " + caps.get(1) + ", ...";
+        return "Employed Jobs: " + String.join(", ", caps);
     }
 
     private static String formatCooldown(long millis) {
@@ -196,7 +198,7 @@ public class JobsScreen extends HearthwindPanelScreen {
             int col = i % 2;
             int row = i / 2;
             int cx = this.x + 7 + col * 95;
-            int cy = this.y + 47 + row * 41;
+            int cy = this.y + 46 + row * 41;
             if (event.x() >= cx && event.x() < cx + 91 && event.y() >= cy && event.y() < cy + 38) {
                 String id = JOB_ORDER[i];
                 ClientJobData.JobInfo info = ClientJobData.job(id);

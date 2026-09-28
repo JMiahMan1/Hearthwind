@@ -377,9 +377,9 @@
    "file": "libz",
    "slug": "libz",
    "project_id": "yUBXc3AH",
-   "action": "keep",
-   "reason": "Library for z-series mods being replaced",
-   "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
+   "action": "port",
+   "reason": "MIT library for the z-series mods. Upstream has no 26.2 build, so the mod itself is a W4 port-queue gap (plan 5.2) and is NOT shipped. What we do ship is the clean-room `TabStrip` reimplementation of LibZ's DrawTabHelper geometry (24x27/25/21 tabs, 25 px pitch) in hearthwind-client, plus the 200x236 banded panel chrome measured off the Aged captures (0.1.32).",
+   "note": "Clean-room layout reimplementation shipped in-tree; the mod itself still needs a port"
   },
   {
    "file": "fabric-seasons",

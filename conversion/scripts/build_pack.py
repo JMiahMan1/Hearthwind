@@ -327,7 +327,8 @@ def main():
         # two builds of the same mod end up in mods/ side by side.
         want_server = {r["picked"]["file"]["filename"] for r in ready_server}
         want_server |= {j.name for j in vendored_jars}
-        want_client = want_server | {
+        want_server |= {j.name for j in server_custom_jars}
+        want_client = want_server | {j.name for j in custom_jars} | {
             r["picked"]["file"]["filename"] for r in ready_client_only
         }
         for d, want in ((sdir / "mods", want_server), (cdir / "mods", want_client)):

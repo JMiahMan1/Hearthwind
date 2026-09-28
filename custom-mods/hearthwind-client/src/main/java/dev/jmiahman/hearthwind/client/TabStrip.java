@@ -26,6 +26,11 @@ import net.minecraft.world.item.Items;
  * <p>Tab art from LevelZ / JobsAddon / PartyAddon is GPL and is NOT copied:
  * the four tabs use vanilla item icons (bundle, iron sword, iron axe, armor
  * stand) to reproduce the gallery's bag/sword/axe/figure silhouette legally.
+ *
+ * <p>Two placements exist: {@link #draw} keeps the LibZ float above the panel
+ * (the inventory screen, which has no band) and {@link #drawInBand} drops the
+ * same strip one pixel into the panel's black band, which is where the Aged
+ * Jobs and Level captures put it.
  */
 @Environment(EnvType.CLIENT)
 public final class TabStrip {
@@ -64,6 +69,22 @@ public final class TabStrip {
      */
     public static void draw(GuiGraphicsExtractor graphics, int panelX, int panelY,
             Tab active, int mouseX, int mouseY) {
+        drawStrip(graphics, panelX, panelY - 21, 2, active, mouseX, mouseY);
+    }
+
+    /**
+     * Draws the strip inside a panel's black tab band: every tab starts one
+     * pixel above the band and the selected one is only taller, which is what
+     * the Aged Jobs and Level captures show (the tabs sit in the band, not
+     * above the panel).
+     */
+    public static void drawInBand(GuiGraphicsExtractor graphics, int panelX, int panelTop,
+            Tab active, int mouseX, int mouseY) {
+        drawStrip(graphics, panelX, panelTop - 1, 0, active, mouseX, mouseY);
+    }
+
+    private static void drawStrip(GuiGraphicsExtractor graphics, int panelX, int restTop, int raisedBy,
+            Tab active, int mouseX, int mouseY) {
         Tab hovered = null;
         Tab[] tabs = Tab.values();
         for (int i = 0; i < tabs.length; i++) {
@@ -77,13 +98,13 @@ public final class TabStrip {
                 u -= 24;
             }
             int height = selected ? 27 : (first ? 25 : 21);
-            int tabY = selected ? panelY - 23 : panelY - 21;
+            int tabY = (selected ? restTop - raisedBy : restTop);
 
             graphics.blit(RenderPipelines.GUI_TEXTURED, TAB_SHEET, tabX, tabY, u, 0,
                     TAB_WIDTH, height, 256, 256, 0xFFFFFFFF);
-            graphics.item(new ItemStack(tab.icon), tabX + 4, panelY - 17);
+            graphics.item(new ItemStack(tab.icon), tabX + 4, restTop + 4);
 
-            if (!selected && isOver(i, panelX, panelY, mouseX, mouseY, false)) {
+            if (!selected && isOver(i, panelX, restTop, raisedBy, mouseX, mouseY, false)) {
                 hovered = tab;
             }
         }
@@ -94,9 +115,19 @@ public final class TabStrip {
 
     /** Returns the tab under the cursor, or null. Mirrors LibZ click bounds. */
     public static Tab clicked(double mouseX, double mouseY, int panelX, int panelY, Tab active) {
+        return clickStrip(mouseX, mouseY, panelX, panelY - 21, 2, active);
+    }
+
+    /** Banded variant of {@link #clicked}: {@code panelTop} is the band's top. */
+    public static Tab clickedInBand(double mouseX, double mouseY, int panelX, int panelTop, Tab active) {
+        return clickStrip(mouseX, mouseY, panelX, panelTop - 1, 0, active);
+    }
+
+    private static Tab clickStrip(double mouseX, double mouseY, int panelX, int restTop, int raisedBy,
+            Tab active) {
         Tab[] tabs = Tab.values();
         for (int i = 0; i < tabs.length; i++) {
-            if (isOver(i, panelX, panelY, mouseX, mouseY, tabs[i] == active)) {
+            if (isOver(i, panelX, restTop, raisedBy, mouseX, mouseY, tabs[i] == active)) {
                 return tabs[i];
             }
         }
@@ -105,13 +136,15 @@ public final class TabStrip {
 
     /**
      * LibZ {@code isPointWithinBounds} reproduction: X spans the 24 px tab
-     * body, Y spans either the raised (selected) or resting strip.
+     * body, Y spans the tab's own box (raised tabs start higher).
      */
-    private static boolean isOver(int index, int panelX, int panelY, double mouseX, double mouseY, boolean selected) {
+    private static boolean isOver(int index, int panelX, int restTop, int raisedBy,
+            double mouseX, double mouseY, boolean selected) {
         double localX = mouseX - panelX - index * TAB_PITCH;
-        double localY = mouseY - panelY;
-        int minY = selected ? -25 : -21;
-        return localX >= 0 && localX < TAB_WIDTH && localY >= minY && localY < 0;
+        double localY = mouseY - restTop;
+        int height = selected ? 27 : (index == 0 ? 25 : 21);
+        int top = selected ? -raisedBy : 0;
+        return localX >= 0 && localX < TAB_WIDTH && localY >= top && localY < top + height;
     }
 
     /** Opens the destination panel for a given tab. */

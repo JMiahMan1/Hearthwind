@@ -168,12 +168,13 @@ Eight optional professions (Miner, Farmer, Fisher, Warrior, Smither, Brewer, Bui
     temperature, nutrition, crafting, skills/jobs, downed/revive, and progression.
   - The vanilla written-book fallback remains available when Lavender is absent.
 - **Skills screen (`K`)**:
-  - Rebuilt to the Aged LevelZ layout: 200x215 panel, "&lt;Name&gt; Skills"
-    title, live player model preview, six attribute readouts (health, defense,
-    agility, strength, stamina, luck) in a 3x2 grid, "Level N / Points N"
-    line, segmented XP bar with "Xp n / next" (Aged 25 + 1.6L curve), a "?"
-    help page, and twelve skill rows (two columns of six) with [+] buttons
-    that spend **one skill point** per press.
+  - Rebuilt to the Aged LevelZ layout: 200x236 panel with the black tab band
+    the four LibZ tabs sit in, "&lt;Name&gt; Skills" title, live player model
+    preview, six attribute readouts (health, defense, agility, strength,
+    stamina, luck) in a 3x2 grid, "Level N / Points N" line, segmented XP bar
+    with "Xp n / next" (Aged 25 + 1.6L curve), a "?" help page, and twelve
+    skill rows (two columns of six) with [+] buttons that spend **one skill
+    point** per press.
   - **LevelZ points model**: action XP raises your overall level and banks
     one skill point per level; skill levels and their bonuses (hearts
     included) only change when you buy them with [+]. Nothing raises your
@@ -186,10 +187,13 @@ Eight optional professions (Miner, Farmer, Fisher, Warrior, Smither, Brewer, Bui
     crafting-table buttons open the mining / crafting restriction lists
     (scrollable rows showing what is locked and the skill level it needs).
 - **Jobs screen (`J`)**:
-  - Rebuilt to the Aged JobsAddon layout: 200x215 panel, "&lt;Name&gt; Jobs"
-    title, "Job Cooldown: MM:SS" and employed summary, then eight job cards
-    (icon slot, name, centred "Lv. N", segmented XP bar). **You may now hold
-    up to 3 jobs at once** (Aged `employedJobs`), job XP is kept per job even
+  - Rebuilt to the Aged JobsAddon layout: 200x236 panel (black tab band, same
+    chrome as the skills screen), "&lt;Name&gt; Jobs" title, "Job Cooldown:
+    MM:SS" and the employed summary, then eight job cards (icon slot, name,
+    "Lv. N", segmented XP bar) in Aged's two-column order (Lumberjack/Miner,
+    Farmer/Warrior, Builder/Smither, Fisher/Brewer). **You may now hold
+    up to 3 jobs at once** (Aged `employedJobs`), the employed line names all
+    of them, job XP is kept per job even
     after leaving, and changing jobs starts the Aged **20-minute change
     cooldown** (24000 ticks). Joining/leaving uses the same `/job` command
     path as before.
