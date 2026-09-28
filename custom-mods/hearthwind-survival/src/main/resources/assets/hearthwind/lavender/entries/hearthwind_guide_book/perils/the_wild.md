@@ -11,6 +11,8 @@
 
 ;;;;;
 
-Every {gilt}200 blocks{} farther, monsters gain more health and hit harder.
+Every {gilt}200 blocks{} farther from spawn, and every 25 blocks deeper down
+or higher up, creatures gain more health, hit harder and wear a thicker
+hide. Young animals are spared, and so is the Warden.
 
 {faded}Travel far only when you are ready for it.{}

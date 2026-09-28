@@ -162,11 +162,122 @@ public final class HearthwindSkillsGameTests {
         if (after == 1) {
             helper.assertTrue(inst.getValue() > base, "modifier raises max health");
         }
-        net.minecraft.world.entity.Entity pig = helper.spawn(EntityTypes.PIG, 1, 2, 1);
-        helper.assertTrue(zombie instanceof net.minecraft.world.entity.monster.Monster
-                && !(pig instanceof net.minecraft.world.entity.monster.Monster),
-                "only monsters are buffable");
         helper.succeed();
+    }
+
+    @GameTest
+    public void mobScalingArmorCapAndOtherDimensions(GameTestHelper helper) {
+        SkillsConfig.get().mobScaling.enabled = true;
+        // rpgdifficulty maxFactorProtection: the ONE uncapped factor feeds
+        // health, damage and armor, and armor has the lowest cap (2.0), so a
+        // mob at 2x health is only wearing 2x armor.
+        double twenty = MobScaling.factorFor(20, 0);
+        helper.assertTrue(Math.abs(twenty - 2.0) < 0.0001,
+                "twenty steps is exactly 2.0x, got " + twenty);
+        double forty = MobScaling.factorFor(40, 0);
+        helper.assertTrue(Math.abs(forty - 3.0) < 0.0001,
+                "forty steps is 3.0x health and damage, got " + forty);
+        helper.assertTrue(MobScaling.cappedFactor(forty, 2.0) == 2.0,
+                "armor factor caps at two");
+        helper.assertTrue(MobScaling.cappedFactor(forty, 3.0) == 3.0
+                        && MobScaling.cappedFactor(forty, 4.0) == 3.0,
+                "forty steps is inside the damage and health caps");
+        // excludeDistanceInOtherDimension / excludeHeightInOtherDimension:
+        // the wilds are dangerous in the overworld only.
+        helper.assertTrue(MobScaling.stepsFor(5000, true) == 23,
+                "far from spawn in the overworld = 23 steps");
+        helper.assertTrue(MobScaling.stepsFor(5000, false) == 0,
+                "far from spawn in another dimension = 0 steps");
+        helper.assertTrue(MobScaling.heightStepsFor(287, true) == 9,
+                "deep underground = 9 height steps");
+        helper.assertTrue(MobScaling.heightStepsFor(287, false) == 0,
+                "another dimension ignores height");
+        SkillsConfig.get().mobScaling.excludeDistanceInOtherDimension = false;
+        SkillsConfig.get().mobScaling.excludeHeightInOtherDimension = false;
+        helper.assertTrue(MobScaling.stepsFor(5000, false) == 23
+                && MobScaling.heightStepsFor(287, false) == 9,
+                "the switches really are the gate");
+        SkillsConfig.get().mobScaling.excludeDistanceInOtherDimension = true;
+        SkillsConfig.get().mobScaling.excludeHeightInOtherDimension = true;
+        helper.succeed();
+    }
+
+    @GameTest
+    public void bossScalingUsesItsOwnFactorAndPlayerStep(GameTestHelper helper) {
+        SkillsConfig.get().mobScaling.enabled = true;
+        // Boss health uses bossDistanceFactor (0.05/step) and caps at 3.0,
+        // with no height term at all.
+        helper.assertTrue(Math.abs(MobScaling.bossFactorFor(0, 0) - 1.0) < 0.0001,
+                "a boss near spawn is vanilla strength");
+        helper.assertTrue(Math.abs(MobScaling.bossFactorFor(10, 0) - 1.5) < 0.0001,
+                "ten steps is 1.5x (bossDistanceFactor 0.05)");
+        helper.assertTrue(Math.abs(MobScaling.bossFactorFor(0, 1) - 1.3) < 0.0001,
+                "one player fighting it is +30% health");
+        helper.assertTrue(Math.abs(MobScaling.bossFactorFor(0, 3) - 1.9) < 0.0001,
+                "three players is +90% health");
+        helper.assertTrue(MobScaling.bossFactorFor(60, 3) == 3.0,
+                "boss health still caps at three");
+        SkillsConfig.get().mobScaling.dynamicBossModification = false;
+        helper.assertTrue(Math.abs(MobScaling.bossFactorFor(0, 3) - 1.0) < 0.0001,
+                "the player step can be switched off");
+        SkillsConfig.get().mobScaling.dynamicBossModification = true;
+        helper.succeed();
+    }
+
+    @GameTest
+    public void passivesScaleButBabiesAndExcludedTypesDoNot(GameTestHelper helper) {
+        SkillsConfig.get().mobScaling.enabled = true;
+        helper.assertTrue(MobScaling.isExcluded(EntityTypes.WARDEN),
+                "the warden is on rpgdifficulty's excluded list");
+        helper.assertTrue(MobScaling.isExcluded(EntityTypes.ENDER_DRAGON),
+                "so is the ender dragon (it scales through the boss path instead)");
+        helper.assertTrue(!MobScaling.isExcluded(EntityTypes.ZOMBIE),
+                "an ordinary zombie scales");
+        // Nothing in the pack ships c:bosses in the folder the game reads, so
+        // no entity is a boss by tag here either; the dragon reaches the boss
+        // path by id (see MobScaling#isBoss).
+        helper.assertTrue(!MobScaling.isBoss(EntityTypes.ZOMBIE),
+                "no zombie is a tagged boss");
+
+        var pig = helper.spawn(EntityTypes.PIG, 1, 2, 1);
+        reset(pig);
+        far(pig);
+        MobScaling.apply(pig);
+        helper.assertTrue(scaled(pig, net.minecraft.world.entity.ai.attributes.Attributes.MAX_HEALTH),
+                "adult livestock scales too - rpgdifficulty only skips babies");
+
+        var baby = helper.spawn(EntityTypes.PIG, 3, 2, 1);
+        baby.setAge(-12000);
+        reset(baby);
+        far(baby);
+        MobScaling.apply(baby);
+        helper.assertTrue(!scaled(baby, net.minecraft.world.entity.ai.attributes.Attributes.MAX_HEALTH),
+                "a baby animal is never scaled");
+        helper.succeed();
+    }
+
+    /** Drops any mob-scaling modifier so a test can re-apply from scratch. */
+    private static void reset(net.minecraft.world.entity.Mob mob) {
+        for (var attribute : java.util.List.of(
+                net.minecraft.world.entity.ai.attributes.Attributes.MAX_HEALTH,
+                net.minecraft.world.entity.ai.attributes.Attributes.ATTACK_DAMAGE,
+                net.minecraft.world.entity.ai.attributes.Attributes.ARMOR)) {
+            var instance = mob.getAttribute(attribute);
+            if (instance != null && instance.hasModifier(MobScaling.MODIFIER_ID)) {
+                instance.removeModifier(MobScaling.MODIFIER_ID);
+            }
+        }
+    }
+
+    /** Moves a mob far enough from spawn to earn several scaling steps. */
+    private static void far(net.minecraft.world.entity.Entity entity) {
+        entity.setPos(3000.0, 100.0, 3000.0);
+    }
+
+    private static boolean scaled(net.minecraft.world.entity.Mob mob,
+            net.minecraft.core.Holder<net.minecraft.world.entity.ai.attributes.Attribute> attribute) {
+        var instance = mob.getAttribute(attribute);
+        return instance != null && instance.hasModifier(MobScaling.MODIFIER_ID);
     }
 
     @GameTest

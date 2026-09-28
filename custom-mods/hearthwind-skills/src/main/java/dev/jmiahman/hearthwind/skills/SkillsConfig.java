@@ -3,6 +3,8 @@ package dev.jmiahman.hearthwind.skills;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -109,8 +111,33 @@ public final class SkillsConfig {
         public double maxFactorHealth = 4.0;
         /** Attack damage multiplier cap - rpgdifficulty: maxFactorDamage 3.0. */
         public double maxFactorDamage = 3.0;
+        /** Armor multiplier cap - rpgdifficulty: maxFactorProtection 2.0. */
+        public double maxFactorProtection = 2.0;
         /** Hard cap on total steps a mob can receive - rpgdifficulty: maxFactorHealth 4.0 (60 steps). */
         public int maxSteps = 60;
+        /** No distance scaling outside the overworld - rpgdifficulty: excludeDistanceInOtherDimension. */
+        public boolean excludeDistanceInOtherDimension = true;
+        /** No height scaling outside the overworld - rpgdifficulty: excludeHeightInOtherDimension. */
+        public boolean excludeHeightInOtherDimension = true;
+        /**
+         * Entity ids that never scale at all - rpgdifficulty: excludedEntity
+         * (Aged ships the warden's and the ender dragon's; the third entry
+         * upstream lists belongs to a mod this pack does not ship).
+         */
+        public List<String> excludedEntities = new ArrayList<>(List.of(
+                "minecraft:warden", "minecraft:ender_dragon"));
+        /** Whether the {@code c:bosses} members and the dragon scale at all - rpgdifficulty: affectBosses. */
+        public boolean affectBosses = true;
+        /** Boss health cap - rpgdifficulty: bossMaxFactor 3.0. */
+        public double bossMaxFactorHealth = 3.0;
+        /** Health gained per distance step for bosses - rpgdifficulty: bossDistanceFactor 0.05. */
+        public double bossDistanceFactor = 0.05;
+        /** Whether a boss grows with every player who is fighting it - rpgdifficulty: dynamicBossModification. */
+        public boolean dynamicBossModification = true;
+        /** Health added per nearby player - rpgdifficulty: dynamicBossModificator 0.3. */
+        public double dynamicBossModificator = 0.3;
+        /** How close a player must be to count as fighting the boss (rpgdifficulty: 128-block box). */
+        public double dynamicBossRadius = 128.0;
     }
 
     public static class Gates {

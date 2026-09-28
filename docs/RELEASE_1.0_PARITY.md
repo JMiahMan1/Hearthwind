@@ -320,7 +320,7 @@ writes it in the Decision column of the tracker (section 8).
 | `paxi` | datapack | world datapack instead of paxi loader |
 | `reciperemover` | hearthwind-primitive `RecipeRemovals` | 95 removals active |
 | `revive` | hearthwind-survival `ReviveManager` | verify against revive-1.0.7 config (overrides/config/revive.json5) |
-| `rpgdifficulty` | hearthwind-skills `MobScaling` | 🟡 0.1.18: distanceFactor 0.05/200 blocks + heightFactor 0.1/25 blocks with 4x health and 3x damage caps; protection/speed caps, random rolls, special zombies and boss scaling still open |
+| `rpgdifficulty` | hearthwind-skills `MobScaling` | 🟡 0.1.29: distanceFactor 0.05/200 blocks + heightFactor 0.1/25 blocks with 4x health, 3x damage and 2x armor caps, the warden/ender-dragon exclusion list, overworld-only steps (`exclude*InOtherDimension`), adult passive scaling and the boss path (distance factor + 0.3 per nearby player, 3x health cap). Still open: the 30% +/-3% health/damage roll, the 5%/10% big/speed zombies, `extraXp`, `dropMoreLoot`, `creeperExplosionFactor` and the levelZ factor. Deviations on purpose: Aged's `c:bosses` tag ships as `entity_types/` (plural) so it resolves empty - we read the tag as written and also route the ender dragon, whose "players nearby" box in Aged is a malformed AABB at world origin that never matches; we use the intended 128-block radius |
 | `seasonhud-fabric` | hearthwind-client `SeasonHud` | upstream has a 26.2 build but needs fabric-seasons |
 | `spoiledz` | hearthwind-survival | superset (container spoilage) |
 | `tieredz` | hearthwind-primitive `TierRegistry` | 199 affix files + reforge; verify rarity weights 50/35/15/8/3/0 |
@@ -566,7 +566,10 @@ real rendering change: re-check HUD/inventory screenshots).
 **W3: Close parity gaps in the Hearthwind rebuilds (section 5.3).**
 Highest gameplay impact first: jobs curve, 3 concurrent jobs and switch
 cooldown (done 0.1.28 - all three were already live; 0.1.28 added the
-missing earn paths: anvil/smithing, brewer, builder placement); RPGDifficulty caps and boss scaling; steel ratio (done 0.1.19:
+missing earn paths: anvil/smithing, brewer, builder placement); RPGDifficulty
+caps and boss scaling (done 0.1.29: armor 2x cap, exclusion list, overworld-only
+steps, adult livestock, boss path; the 30% roll and the big/speed zombies stay
+open); steel ratio (done 0.1.19:
 3 iron + 1 coal @600t); LevelZ craft/smithing/brewing gate enforcement
 (verified already enforced); dirty-water duration 200t (verified at
 parity); seasonal bonemeal (done 0.1.18). Every fix lands with a gametest
