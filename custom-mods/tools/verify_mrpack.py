@@ -106,6 +106,12 @@ def check_pack(path: Path, problems: list[str]) -> dict:
                     _fail(problems, f"{path.name}: dependency {key} has an invalid version {value!r}")
             if "minecraft" not in dependencies:
                 _fail(problems, f"{path.name}: dependencies are missing 'minecraft'")
+            # Launchers validate this map against the known loader elements;
+            # a mod id here makes the Modrinth App refuse the whole pack.
+            for key in dependencies:
+                if key not in LOADER_ELEMENTS:
+                    _fail(problems, f"{path.name}: dependency '{key}' is not a launcher element "
+                                    f"(allowed: {', '.join(sorted(LOADER_ELEMENTS))})")
 
         files = index.get("files")
         if not isinstance(files, list) or not files:

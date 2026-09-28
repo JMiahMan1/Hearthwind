@@ -209,12 +209,13 @@ def main():
         "name": conf["pack"]["name"],
         "summary": conf["pack"]["summary"],
         "files": server_files,
+        # Only loader elements belong here. A mod id (fabric-api) is NOT a
+        # valid element: the Modrinth App rejected the pack with
+        # "unknown element fabric-api". fabric-api is already installed from
+        # the files index below.
         "dependencies": {
             "minecraft": mc,
             "fabric-loader": conf["targets"]["loader_version"],
-            # Some launchers (Modrinth App, MultiMC family) install fabric-api
-            # only when declared; pin the exact resolved version.
-            "fabric-api": fabric_api_version,
         },
     }
 
