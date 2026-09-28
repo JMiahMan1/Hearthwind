@@ -66,7 +66,7 @@ items and initials mechanically.
 | Aged entry | Aged says | Hearthwind | Status | Book |
 |---|---|---|---|---|
 | skills | K or 2nd tab; 12 skills; restrictions | same; 649 gates | ✅ | soul/skills |
-| jobs | 3 jobs, 20 min cooldown, max 150; XP: lumberjack logs, miner ores, farmer crops **+ craft/smoke food**, warrior kills, builder **place blocks**, smither **anvil/smithing/furnace**, fisher **fishing**, brewer | 3 jobs, 1-day cooldown; XP **only** from breaking ladder blocks and killing ladder mobs | ❌ builder/fisher/smither/brewer/farmer-cooking XP | soul/jobs (describes break/kill only) |
+| jobs | 3 jobs, 20 min cooldown, max 150; XP: lumberjack logs, miner ores, farmer crops **+ craft/smoke food**, warrior kills, builder **place blocks**, smither **anvil/smithing/furnace**, fisher **fishing**, brewer | 3 jobs, 24000t (20 min) change cooldown, max 150, Aged's exponential cost curve; XP from break, kill, craft, furnace/smoker/blast, fish, anvil, smithing, place, brew | ✅ (fixed 0.1.28) | soul/jobs |
 | party | share vanilla + LevelZ XP with online members in the same dimension, +5% per player | orb XP pools at the leader and splits evenly among members in the leader's world. Aged's code never applied the +5% (display only); kept as Aged, flagged for review | ✅ (fixed 2026-09-24) | soul/party |
 
 ## Produce
@@ -124,7 +124,7 @@ perils/blackstone_golem, perils/the_eye, perils/ender_dragon.
 ## Fix queue (❌ rows), in order
 
 1. ~~Diet deficiency bug~~ done.
-2. Job XP sources: **partially done 0.1.20** - crafting-table results, furnace/smoker/blast-furnace outputs and fishing catches now pay job XP (the item decides which ladder); smither anvil/smithing output, brewer brewing (potion-effect ladder) and builder placing remain deferred (anvil/smithing result slots are anonymous `ItemCombinerMenu` slots; builder has no place event).
+2. Job XP sources: **done 0.1.28** - crafting-table results, furnace/smoker/blast-furnace outputs, fishing catches, anvil and smithing results, block placement (builder) and brewing (brewer, by potion id) all pay job XP. Campfire cooking still pays nothing: 26.2 campfires drop the result from a playerless tick.
 3. ~~Party XP sharing~~ done.
 4. Aged water chain: bottles on a lit campfire now boil and pop off the edge (done); copper (rain) cauldron, campfire cauldron and bamboo pump still to port.
 5. End Remastered eye sources (not a book entry in Aged, but the eyes are unobtainable).

@@ -96,7 +96,7 @@ Legend: ✅ parity · 🟡 partial/different tuning · ❌ missing
 | System | Aged | Hearthwind | Status |
 |---|---|---|---|
 | Skills | LevelZ: max 30, start 2 pts, xp 25×1.6ⁿ, 12 skills, **400 gate files**, procs (crit 3%, double-dmg, reflect 5%, survive 50%, twin 20%) | max 30, base 30/level, 12 skills, **649 gates from the corpus**, procs live | ✅ gates + procs |
-| Jobs | 8 jobs, max level 150, 100×1.6ⁿ, 3 jobs at once, 1-day switch cooldown, **per-level content ladders (miner→iron 7/diamond 20, smither→steel 8, builder 533 blocks)**, 103 restricted recipes | 8 jobs, 100 pts/level, Age gating, `/job` commands, **8 ladders read from the corpus (XP = content tier)** | 🟡 no exponential job curve, no cooldown/multi-job |
+| Jobs | 8 jobs, max level 150, 100×1.6ⁿ, 3 jobs at once, 24000t (20 min) switch cooldown, **per-level content ladders (miner→iron 7/diamond 20, smither→steel 8, builder 533 blocks)**, 103 restricted recipes | 8 jobs, 100 pts/level, Age gating, `/job` commands, **8 ladders read from the corpus (XP = content tier)**, curve + 3 slots + cooldown (0.1.28) | 🟡 0.1.28: only campfire cooking pays nothing (no player in the tick) |
 | Affixes | Tiered: 199 files, rarities 50/35/15/8/3/0 | **same 199 files + reforge** | ✅ |
 | Mob scaling | RPGDifficulty: distance 300/200, caps hp 4×/dmg 3×/prot 2×/speed 1.8×, special zombies, boss scaling | grace 300, step 200, +1 hp/+0.3 dmg per step, max 60 steps | 🟡 no caps/protection/speed/boss |
 | Primitive | earlystage: rock/flint, crafting rock (2 hits/80 wear), beginner deaths 3, sieve, **steel = 2 iron + 2 coal @5200 t** | same hits/wear/deaths, sieve drops byte-equal, steel = **1 iron + 2 coal** | 🟡 steel recipe ratio differs |
@@ -204,8 +204,13 @@ in-game HUD is not FancyMenu. Our HUD is therefore the right architecture.
    uncraftable), and job ladders **gate nothing** - crafting denial in Aged
    comes from LevelZ skill gates - so `jobCraftGating` now defaults to false
    (it used to block e.g. iron ingots for anyone who wasn't a miner).
-   Still missing: the exponential job curve (150 levels, 100×1.6ⁿ), holding
-   three jobs at once, and the 1-day job-switch cooldown.
+   0.1.28 closed the rest: the exponential `100 + 1.6*L` curve, the
+   150-level cap, three concurrent jobs and the 24000t (20-minute, not
+   one-day - the old note misread it) job-change cooldown are all live, and
+   every Aged earn path pays (anvil/smithing results, brewing by potion id,
+   block placement for the builder). Only campfire cooking is silent: 26.2
+   campfires drop the cooked result from a playerless tick, so there is no
+   player to credit.
 6. **~~RecipeRemover parity~~ DONE** (hearthwind-primitive `RecipeRemovals`)
    — 73 ore/tech recipes are stripped from the recipe map as it is installed
    (mixin on `RecipeManager#apply`, so crafting, furnaces and the recipe book

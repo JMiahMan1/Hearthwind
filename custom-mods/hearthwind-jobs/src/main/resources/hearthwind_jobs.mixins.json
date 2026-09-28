@@ -3,12 +3,16 @@
 	"package": "dev.jmiahman.hearthwind.jobs.mixin",
 	"compatibilityLevel": "JAVA_25",
 	"mixins": [
+		"AnvilMenuJobXpMixin",
+		"BlockItemJobXpMixin",
+		"BrewingStandPotionSlotJobXpMixin",
 		"CraftingGateAccessor",
 		"CraftingGateMixin",
 		"FishingHookJobXpMixin",
 		"FurnaceResultSlotJobXpMixin",
 		"PlayerAdvancementsMixin",
-		"ResultSlotJobXpMixin"
+		"ResultSlotJobXpMixin",
+		"SmithingMenuJobXpMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

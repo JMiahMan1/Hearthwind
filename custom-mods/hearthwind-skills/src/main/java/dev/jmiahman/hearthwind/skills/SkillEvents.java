@@ -63,18 +63,11 @@ public final class SkillEvents {
                     }
                     return true;
                 });
-        // Smithing: XP when taking a result from the smithing table
-        net.fabricmc.fabric.api.event.player.UseBlockCallback.EVENT.register((player, world, hand, hitResult) -> {
-            if (player instanceof ServerPlayer sp) {
-                var state = world.getBlockState(hitResult.getBlockPos());
-                if (state.is(net.minecraft.world.level.block.Blocks.SMITHING_TABLE)) {
-                    // XP awarded via SmithingResultMixin (see hearthwind-jobs smithing mixin)
-                    // Fallback: award small XP on interaction with the table
-                    SkillXp.addXp(sp, Skill.SMITHING, SkillsConfig.get().xp.smithingPerInteract);
-                }
-            }
-            return net.minecraft.world.InteractionResult.PASS;
-        });
+        // Smithing: XP when the crafted result is taken out of the smithing
+        // table, in SmithingGateMixin (SmithingMenu#onTake). It used to be
+        // paid here on any click that landed on a smithing table, which
+        // trained the skill for nothing at all and double-paid against the
+        // real result on top of that.
         // Trade: XP on villager trade completion
         net.fabricmc.fabric.api.event.player.UseEntityCallback.EVENT.register((player, world, hand, entity, hit) -> {
             if (player instanceof ServerPlayer sp

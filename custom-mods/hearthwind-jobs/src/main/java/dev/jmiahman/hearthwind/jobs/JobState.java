@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
 
 import com.mojang.serialization.Codec;
 
@@ -270,6 +271,57 @@ public final class JobState {
 
     /** Awards XP to every employed job whose ladder lists {@code id}. */
     public static void awardIfMatch(Entity entity, String id) {
+        awardMatching(entity, id, jobDef -> true);
+    }
+
+    /**
+     * Awards XP to the employed jobs whose ladder lists {@code id} and that
+     * {@code jobFilter} accepts. The filter is how the same block id can pay
+     * different jobs: Aged pays the builder for <em>placing</em> a block and
+     * not for breaking it, so the placement and break hooks pass opposite
+     * filters for the same id.
+     */
+    public static void awardIfMatch(Entity entity, String id, Predicate<JobDefs.JobDef> jobFilter) {
+        awardMatching(entity, id, jobFilter);
+    }
+
+    /**
+     * Awards one corpus tier to a single named job, bypassing the ladder
+     * match. The brewer is the reason this exists: its ladder is keyed by
+     * potion effects and enchantments, which are neither block nor item ids,
+     * so {@link #awardIfMatch} can never match a brewed potion.
+     *
+     * @param tier the corpus level the id appears under, or 0 for the flat
+     *             {@code xpPerAction} fallback
+     */
+    public static void awardTier(Entity entity, String jobId, int tier) {
+        Data d = data(entity);
+        if (!d.employed().contains(jobId)) {
+            return;
+        }
+        JobDefs.JobDef def = JobDefs.byId(jobId);
+        if (def == null) {
+            return;
+        }
+        Map<String, Double> xpByJob = new HashMap<>(d.xpByJob());
+        if (!applyAward(entity, jobId, def, tier, xpByJob)) {
+            return;
+        }
+        entity.setAttached(STATE, new Data(d.job(), d.xp(), d.employed(), xpByJob, d.cooldownEnd()));
+    }
+
+    /**
+     * Same as {@link #awardTier(Entity, String, int)} but looks the tier up
+     * for {@code id}, so a caller that already knows the action counts as
+     * work (a block the placement tag lists, say) does not also have to
+     * re-check the job ladder: content on the ladder pays its level,
+     * anything else pays the flat {@code xpPerAction}.
+     */
+    public static void awardTier(Entity entity, String jobId, String id) {
+        awardTier(entity, jobId, JobCorpus.levelFor(jobId, id));
+    }
+
+    private static void awardMatching(Entity entity, String id, Predicate<JobDefs.JobDef> jobFilter) {
         Data d = data(entity);
         if (d.employed().isEmpty()) {
             return;
@@ -278,39 +330,48 @@ public final class JobState {
         boolean changed = false;
         for (String jobId : d.employed()) {
             JobDefs.JobDef def = JobDefs.byId(jobId);
-            if (def == null) {
+            if (def == null || !jobFilter.test(def)) {
                 continue;
-            }
-            double current = xpByJob.getOrDefault(jobId, 0.0);
-            int before = levelFor(jobId, current);
-            if (before >= capLevel(def)) {
-                continue; // maxed jobs stop accruing
             }
             if (!matchesAny(def, id)) {
                 continue;
             }
-            // Reward tiers: content listed in the corpus pays its unlock level
-            // (iron ore as a miner pays 7, diamond 20); anything outside the
-            // ladder pays the flat fallback.
-            int tier = JobCorpus.levelFor(jobId, id);
-            double amount = tier > 0 ? tier : HearthwindJobsConfig.get().xpPerAction;
-            double newXp = current + amount;
-            xpByJob.put(jobId, newXp);
-            changed = true;
-            int after = levelFor(jobId, newXp);
-            if (entity instanceof ServerPlayer p && after > before) {
-                p.sendSystemMessage(Component.literal(
-                        "Job level up! You are now " + jobId + " level " + after + "."));
-                JobRewards.apply(p, jobId, after);
-                // Builder 3 can open Age 5 when the rail criterion was held
-                // closed by the age5 skill/job gates (vanilla triggers cannot
-                // see job levels - PlayerAdvancementTracker re-awards it).
-                PlayerAdvancementTracker.tryCompleteAge5(p);
-            }
+            changed |= applyAward(entity, jobId, def, JobCorpus.levelFor(jobId, id), xpByJob);
         }
         if (changed) {
             entity.setAttached(STATE, new Data(d.job(), d.xp(), d.employed(), xpByJob, d.cooldownEnd()));
         }
+    }
+
+    /**
+     * Adds one award to {@code xpByJob} and fires the level-up side effects.
+     * Reward tiers: content listed in the corpus pays its unlock level (iron
+     * ore as a miner pays 7, diamond 20); anything outside the ladder pays
+     * the flat fallback.
+     *
+     * @return false when the job is already capped and gained nothing
+     */
+    private static boolean applyAward(Entity entity, String jobId, JobDefs.JobDef def, int tier,
+            Map<String, Double> xpByJob) {
+        double current = xpByJob.getOrDefault(jobId, 0.0);
+        int before = levelFor(jobId, current);
+        if (before >= capLevel(def)) {
+            return false; // maxed jobs stop accruing
+        }
+        double amount = tier > 0 ? tier : HearthwindJobsConfig.get().xpPerAction;
+        double newXp = current + amount;
+        xpByJob.put(jobId, newXp);
+        int after = levelFor(jobId, newXp);
+        if (entity instanceof ServerPlayer p && after > before) {
+            p.sendSystemMessage(Component.literal(
+                    "Job level up! You are now " + jobId + " level " + after + "."));
+            JobRewards.apply(p, jobId, after);
+            // Builder 3 can open Age 5 when the rail criterion was held
+            // closed by the age5 skill/job gates (vanilla triggers cannot
+            // see job levels - PlayerAdvancementTracker re-awards it).
+            PlayerAdvancementTracker.tryCompleteAge5(p);
+        }
+        return true;
     }
 
     private static boolean matchesAny(JobDefs.JobDef def, String id) {

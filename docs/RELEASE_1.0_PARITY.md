@@ -134,10 +134,18 @@ Still open (do these first, section 6, W0):
     pump.
   - The fallback written guidebook in `StarterKit` has wrong facts.
   - The Comfort card screen (`SurvivalInfoScreen`) can't be opened in game.
-  - Jobs earn XP only from breaking ladder blocks and killing ladder mobs.
-    Aged also pays builder for placing blocks, fisher for fishing, smither
-    for anvil/smithing/furnace output, farmer for crafting/smoking food, and
-    brewer for brewing. Those jobs barely level today (`JobEvents.java`).
+  - ~~Jobs earn XP only from breaking ladder blocks and killing ladder
+    mobs.~~ Fixed 0.1.28: every Aged earn path now pays. Breaking (`AFTER`)
+    and kills feed the ladders; item gains feed them through the crafting,
+    furnace, fishing, **anvil and smithing** result slots; a new
+    `BlockItem#place` hook pays the builder for the reference
+    `jobsaddon:builder_placing_blocks` tag (deliberately a different list from
+    the ladder, and breaking a block never pays the builder); and a
+    `BrewingStandMenu$PotionSlot#onTake` hook pays the brewer by POTION id,
+    since the brewer corpus is keyed by potions and could otherwise never
+    level. Remaining sub-gap: campfire cooking, whose 26.2 result is dropped
+    into the world by a playerless tick (no menu, no slot) - smoker and blast
+    furnace outputs do pay, they share `FurnaceResultSlot`.
   - ~~Party XP sharing was not wired.~~ Fixed 2026-09-24 to PartyAddon's real
     behaviour (orb XP pools at the leader, split evenly among members in the
     leader's level); see 5.10 for the advertised-but-unapplied bonus.
@@ -304,7 +312,7 @@ writes it in the Decision column of the tracker (section 8).
 | `environmentz` | hearthwind-survival | continuous biome drift vs Aged banded deltas; acclimatization loaded but not applied |
 | `fabric-seasons` | hearthwind-world | ✅ seasonLengthTicks 504000 with the day count derived from the live day length; bonemeal blocked out of season (isSeasonMessingBonemeal) since 0.1.18 |
 | `herdspanic` | hearthwind-world `HerdPanic` | DECISION: upstream HerdPanic now has a Fabric 26.3 build |
-| `jobsaddon` | hearthwind-jobs | no 150-level exponential curve, no 3 concurrent jobs, no 1-day switch cooldown |
+| `jobsaddon` | hearthwind-jobs | ✅ 0.1.28: the Aged shape is live - 3 employed slots, 150-level cap, 24000t change cooldown, exponential `100 + 1.6*L` curve, 8 jobs with corpus ladders, and every earn path hooked (break, kill, craft, furnace/smoker/blast, fish, anvil, smithing, place, brew); open: campfire cooking has no player to credit, `jobCraftGating` (off by default on purpose) |
 | `levelz` | hearthwind-skills | 649 gates live; crafting/smithing/brewing gates loaded but not enforced; XP curve differs (Aged 25x1.6^n) |
 | `naturalist` | hearthwind-world (fauna port) | DECISION: upstream Naturalist now has a 26.2 Fabric build (2.0.5+26.2) |
 | `nutritionz` | hearthwind-survival | HearthWind 5-group diet replaces near-inert NutritionZ (intentional HW change) |
@@ -557,7 +565,8 @@ real rendering change: re-check HUD/inventory screenshots).
 
 **W3: Close parity gaps in the Hearthwind rebuilds (section 5.3).**
 Highest gameplay impact first: jobs curve, 3 concurrent jobs and switch
-cooldown; RPGDifficulty caps and boss scaling; steel ratio (done 0.1.19:
+cooldown (done 0.1.28 - all three were already live; 0.1.28 added the
+missing earn paths: anvil/smithing, brewer, builder placement); RPGDifficulty caps and boss scaling; steel ratio (done 0.1.19:
 3 iron + 1 coal @600t); LevelZ craft/smithing/brewing gate enforcement
 (verified already enforced); dirty-water duration 200t (verified at
 parity); seasonal bonemeal (done 0.1.18). Every fix lands with a gametest

@@ -1,11 +1,24 @@
 package dev.jmiahman.hearthwind.jobs;
 
 import net.fabricmc.fabric.api.gametest.v1.GameTest;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.alchemy.PotionContents;
+import net.minecraft.world.item.alchemy.Potions;
+import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.GameType;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.Vec3;
 
 public final class HearthwindJobsGameTests {
     public HearthwindJobsGameTests() {}
@@ -300,6 +313,125 @@ public final class HearthwindJobsGameTests {
         helper.assertTrue(JobGates.allowed(player, new net.minecraft.world.item.ItemStack(
                         net.minecraft.world.item.Items.IRON_INGOT)),
                 "anyone may craft an iron ingot without being a miner");
+        helper.succeed();
+    }
+
+    /**
+     * The builder's earning list is a data file, not a ladder: without this
+     * loader the placement hook has nothing to match against and the builder
+     * job can never be trained.
+     */
+    @GameTest
+    public void builderPlacementTagLoads(GameTestHelper helper) {
+        JobDefs.ensureLoaded();
+        helper.assertTrue(JobCorpus.placementTagCount() >= 20,
+                "builder_placing_blocks must load its 26 entries ("
+                        + JobCorpus.placementTagCount() + ")");
+        helper.assertTrue(JobCorpus.isBuilderPlacement(Blocks.OAK_PLANKS.defaultBlockState()),
+                "oak planks are on the placement tag");
+        helper.assertTrue(JobCorpus.isBuilderPlacement(Blocks.COBBLESTONE_WALL.defaultBlockState()),
+                "tag references must resolve, not just plain block ids");
+        helper.assertTrue(JobCorpus.isBuilderPlacement(Blocks.OBSIDIAN.defaultBlockState()),
+                "obsidian is listed as a plain block id");
+        helper.assertTrue(!JobCorpus.isBuilderPlacement(Blocks.DIRT.defaultBlockState()),
+                "dirt is not builder work");
+        helper.assertTrue(!JobCorpus.isBuilderPlacement(Blocks.STONE.defaultBlockState()),
+                "stone is not builder work either (rock features list it, not the placement tag)");
+        helper.succeed();
+    }
+
+    @GameTest
+    public void placingBlocksPaysTheBuilder(GameTestHelper helper) {
+        var player = helper.makeMockServerPlayerInLevel();
+        // The hook ignores instabuild players, like every other earning hook.
+        player.getAbilities().instabuild = false;
+        player.setAttached(JobState.STATE, new JobState.Data("builder", 0.0));
+        // Click the top face of a stone we control, well clear of the mock
+        // player, so the placement is the ordinary "build on a solid block"
+        // case and cannot be obstructed by an entity.
+        var base = new BlockPos(5, 64, 5);
+        helper.setBlock(base, Blocks.STONE.defaultBlockState());
+        var baseWorld = helper.absolutePos(base);
+        var ctx = new BlockPlaceContext(player, InteractionHand.MAIN_HAND,
+                new ItemStack(Blocks.OAK_PLANKS), new BlockHitResult(
+                        Vec3.atCenterOf(baseWorld.above()), Direction.UP, baseWorld, false));
+        InteractionResult result = ((BlockItem) Blocks.OAK_PLANKS.asItem()).place(ctx);
+        helper.assertTrue(result instanceof InteractionResult.Success,
+                "the placement itself must succeed, got " + result);
+        helper.assertTrue(JobState.xp(player, "builder") > 0.0,
+                "placing a plank must pay the builder, got " + JobState.xp(player, "builder"));
+        // ... and placing something the tag does not list pays nothing.
+        var before = JobState.xp(player, "builder");
+        JobEvents.awardBlockPlaced(player, Blocks.DIRT.defaultBlockState());
+        helper.assertTrue(JobState.xp(player, "builder") == before,
+                "dirt is not builder work and must not pay");
+        // A block that is on both lists pays its corpus tier, not the flat
+        // fallback.
+        int obsidianTier = JobCorpus.levelFor("builder", "minecraft:obsidian");
+        helper.assertTrue(obsidianTier > 0, "obsidian must be on the builder ladder");
+        JobEvents.awardBlockPlaced(player, Blocks.OBSIDIAN.defaultBlockState());
+        helper.assertTrue(Math.abs(JobState.xp(player, "builder") - before - obsidianTier) < 0.001,
+                "obsidian must pay its corpus tier " + obsidianTier);
+        // A creative-mode placer earns nothing.
+        player.getAbilities().instabuild = true;
+        var afterCreative = JobState.xp(player, "builder");
+        JobEvents.awardBlockPlaced(player, Blocks.OBSIDIAN.defaultBlockState());
+        helper.assertTrue(JobState.xp(player, "builder") == afterCreative,
+                "an instabuild placer must not pay");
+        helper.succeed();
+    }
+
+    /**
+     * The break hook is the mirror image: the same block id is on the
+     * builder's ladder, so without the filter a builder who takes a wall
+     * apart would be paid twice for the same wall - once for placing it and
+     * once for breaking it.
+     */
+    @GameTest
+    public void breakingDoesNotPayTheBuilder(GameTestHelper helper) {
+        var player = helper.makeMockServerPlayerInLevel();
+        player.setAttached(JobState.STATE, new JobState.Data("builder", 0.0));
+        JobState.awardIfMatch(player, "minecraft:oak_planks",
+                jobDef -> !jobDef.id.equals("builder"));
+        helper.assertTrue(JobState.xp(player, "builder") == 0.0,
+                "the builder must not be paid for breaking, got " + JobState.xp(player, "builder"));
+        // The miner, who is on the same ladder, still is.
+        player.setAttached(JobState.STATE, new JobState.Data("miner", 0.0));
+        JobState.awardIfMatch(player, "minecraft:iron_ore",
+                jobDef -> !jobDef.id.equals("builder"));
+        helper.assertTrue(JobState.xp(player, "miner") > 0.0, "the miner is still paid for iron ore");
+        helper.succeed();
+    }
+
+    @GameTest
+    public void brewingPaysTheBrewerCorpusTier(GameTestHelper helper) {
+        var player = helper.makeMockServerPlayerInLevel();
+        player.setAttached(JobState.STATE, new JobState.Data("brewer", 0.0));
+        int tier = JobCorpus.levelFor("brewer", "minecraft:strong_swiftness");
+        helper.assertTrue(tier > 0, "strong swiftness must be on the brewer ladder");
+        JobEvents.awardBrew(player, PotionContents.createItemStack(Items.POTION, Potions.STRONG_SWIFTNESS));
+        helper.assertTrue(Math.abs(JobState.xp(player, "brewer") - tier) < 0.001,
+                "brewing strong swiftness must pay its corpus tier " + tier
+                        + " (got " + JobState.xp(player, "brewer") + ")");
+        // Water is not on the ladder, so it pays nothing at all.
+        double before = JobState.xp(player, "brewer");
+        JobEvents.awardBrew(player, PotionContents.createItemStack(Items.POTION, Potions.WATER));
+        helper.assertTrue(JobState.xp(player, "brewer") == before,
+                "an unlisted potion must not pay the brewer");
+        helper.succeed();
+    }
+
+    /** The anvil and smithing table pay the smither for the result, not for the click. */
+    @GameTest
+    public void anvilAndSmithingResultsPayTheSmither(GameTestHelper helper) {
+        var player = helper.makeMockServerPlayerInLevel();
+        player.setAttached(JobState.STATE, new JobState.Data("smither", 0.0));
+        JobEvents.awardItem(player, new ItemStack(Items.IRON_INGOT));
+        double afterAnvil = JobState.xp(player, "smither");
+        helper.assertTrue(afterAnvil > 0.0, "an anvil iron ingot must pay the smither");
+        JobEvents.awardItem(player, new ItemStack(Items.DIAMOND));
+        helper.assertTrue(JobState.xp(player, "smither") > afterAnvil,
+                "a smithing table result must pay the smither too");
         helper.succeed();
     }
 }

@@ -57,8 +57,6 @@ public final class SkillsConfig {
         public double farmingPerAnimalKill = 2.0;
         /** Defense XP each time the player takes incoming entity damage. */
         public double defensePerHit = 1.0;
-        /** Smithing XP per smithing table interaction (result pickup handled via mixin). */
-        public double smithingPerInteract = 3.0;
         /** Smithing XP awarded upon taking a completed craft from the smithing table. */
         public double smithingPerCraft = 15.0;
         /** Alchemy XP awarded upon brewing completion or potion creation. */

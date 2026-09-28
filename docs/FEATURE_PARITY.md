@@ -1,6 +1,6 @@
 # Feature parity matrix - Hearthwind (26.2 rebuild) vs Aged 3.1.2 (MC 1.20.1)
 
-> **1.0.0 scope (2026-09-24):** `docs/RELEASE_1.0_PARITY.md` governs 1.0.0 and wins wherever this file disagrees. Several ✅ rows here overstate parity (jobs curve/cooldown, RPGDifficulty caps, seasons). The gap list is in the plan's section 5.3.
+> **1.0.0 scope (2026-09-24):** `docs/RELEASE_1.0_PARITY.md` governs 1.0.0 and wins wherever this file disagrees. Several ✅ rows here overstate parity (RPGDifficulty caps, seasons; the jobs curve/cooldown row was corrected to 🟡 in 0.1.28). The gap list is in the plan's section 5.3.
 
 Living document. Status per system the original pack shipped; goal is
 parity first, deliberate improvement where noted. UPDATE WITH EVERY
@@ -19,7 +19,7 @@ over (with reason)
 | spoiledz | Spoilage | `spoiledz:perishable_items` + `non_spoiling_items`, same config | ✅ | Inventory & container food spoilage with hot-biome multiplier and non-spoiling exemptions |
 | levelz | Skills x12 | `data/levelz` ~400 files → `data/hearthwind_skills/gates` | ✅ | 12 skills, 3-heart start progression (+0.5 heart/level), 750+ break/use/craft gates, triangular XP curves, skill capstones/procs |
 | rpg-difficulty | Distance mob scaling | `config/hearthwind_skills.json` mobScaling | ✅ | Distance mob scaling past grace radius, capped scaling |
-| jobs-addon | Jobs x8 | `data/jobsaddon` → `data/hearthwind_jobs` (8 jobs), `config/hearthwind_jobs.json` | ✅ | 8 jobs (miner, farmer, fisher, warrior, smither, brewer, builder, lumberjack), `/job join/leave/info` commands, job ladders, Age gating |
+| jobs-addon | Jobs x8 | `data/jobsaddon` (kept), `config/hearthwind_jobs.json` | 🟡 0.1.28 | 8 jobs (miner, farmer, fisher, warrior, smither, brewer, builder, lumberjack), `/job join/leave/info`, corpus ladders, Age gating, 3 employed slots, 150 cap, 24000t cooldown, exponential curve; earn paths: break, kill, craft, furnace/smoker/blast, fish, anvil, smithing, place, brew. Missing: campfire cooking pays (26.2 campfire drops output from a playerless tick), recipe gating (`jobCraftGating`, off by default) |
 | party-addon | Parties & Shared XP | `PartyManager`, `PartyCommand` | ✅ | `/party create/invite/accept/leave` commands, party shared XP range distribution |
 | earlystage | Primitive start | `data/earlystage` (sieve drops, flint/steel recipes) | ✅ | Surface rock & flint mounds, sieve mechanics, knapping start, 3 beginner deaths forgiveness, steel economy |
 | tiered | Random gear tiers | `data/tiered` 199 files | ✅ | 199 affixes + equipment reforge recipes loaded into `TierRegistry` |

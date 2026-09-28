@@ -45,6 +45,14 @@ public final class JobCorpus {
 
     private static final Map<String, Map<String, Integer>> CONTENT = new HashMap<>();
     private static final Set<String> RESTRICTED_RECIPES = new LinkedHashSet<>();
+    /**
+     * The builder's earning list from {@code data/jobsaddon/tags/block/}:
+     * block ids and tag names the reference pays for <em>placing</em>. Kept
+     * as strings because the file mixes plain ids with tag references.
+     */
+    private static final Set<String> PLACEMENT_TAGS = new LinkedHashSet<>();
+    /** The single corpus file that defines the builder's earning list. */
+    private static final String PLACEMENT_TAG_FILE = "builder_placing_blocks.json";
     private static Object loadedFrom = null;
 
     private JobCorpus() {}
@@ -70,7 +78,56 @@ public final class JobCorpus {
                 : manager.listResources("restricted", id -> id.getPath().endsWith(".json")).entrySet()) {
             loadRestricted(entry.getValue());
         }
+        PLACEMENT_TAGS.clear();
+        // Only the jobsaddon placement list is the builder's earnings list.
+        // Other namespaces ship their own data/<ns>/tags/block files (aged
+        // decor tags, earlystage rock-feature blocks) which are NOT placement
+        // work and would silently widen what the builder earns.
+        for (Map.Entry<Identifier, net.minecraft.server.packs.resources.Resource> entry
+                : manager.listResources("tags/block", id -> id.getNamespace().equals("jobsaddon")
+                        && id.getPath().equals("tags/block/" + PLACEMENT_TAG_FILE)).entrySet()) {
+            loadPlacementTag(entry.getKey(), entry.getValue());
+        }
         loadedFrom = manager;
+    }
+
+    /**
+     * Reads {@code data/jobsaddon/tags/block/builder_placing_blocks.json}
+     * into {@link #PLACEMENT_TAGS}. This tag is the builder's earning list in
+     * the reference model and it is NOT part of any job ladder, so it has to
+     * be loaded separately or the placement hook cannot know what Aged paid
+     * for. Values may be plain ids or tag references, and
+     * {@code {"id": ..., "required": false}} entries name mods we may not
+     * ship - they are kept, because a tag that resolves to nothing never
+     * matches a block state.
+     */
+    private static void loadPlacementTag(Identifier id,
+            net.minecraft.server.packs.resources.Resource resource) {
+        try (InputStream stream = resource.open()) {
+            JsonObject data = JsonParser.parseReader(new InputStreamReader(stream)).getAsJsonObject();
+            JsonElement values = data.get("values");
+            if (values == null || !values.isJsonArray()) {
+                return;
+            }
+            for (JsonElement element : values.getAsJsonArray()) {
+                String value;
+                if (element.isJsonPrimitive()) {
+                    value = element.getAsString();
+                } else if (element.isJsonObject() && element.getAsJsonObject().has("id")) {
+                    JsonObject entry = element.getAsJsonObject();
+                    value = entry.get("id").getAsString();
+                    // Optional entries name mods we may not ship; loading the
+                    // tag anyway is harmless because a tag that resolves to
+                    // nothing simply never matches a block state.
+                } else {
+                    continue;
+                }
+                PLACEMENT_TAGS.add(value);
+            }
+        } catch (Exception e) {
+            HearthwindJobs.LOGGER.warn("jobsaddon: could not read placement tag {}: {}",
+                    id, e.toString());
+        }
     }
 
     private static void loadLadder(net.minecraft.server.packs.resources.Resource resource,
@@ -161,6 +218,52 @@ public final class JobCorpus {
     /** True when crafting this recipe must not pay job XP. */
     public static boolean isRestrictedRecipe(Identifier recipeId) {
         return recipeId != null && RESTRICTED_RECIPES.contains(recipeId.toString());
+    }
+
+    /** How many entries the builder placement tag contributed. */
+    public static int placementTagCount() {
+        return PLACEMENT_TAGS.size();
+    }
+
+    /**
+     * True when placing {@code state} is builder work per the reference
+     * placement tag. Values may be a plain block id
+     * ({@code minecraft:obsidian}) or a tag ({@code #minecraft:planks}); a
+     * tag that does not resolve in this install simply matches nothing.
+     *
+     * <p>An empty tag list means the corpus shipped no placement tag, and
+     * then any block on the builder ladder still pays - the hook must not
+     * stop working just because an optional tag file is missing.
+     *
+     * <p>Tag names resolve against the live block tags, so a tag from a mod
+     * we do not ship simply never matches.
+     */
+    public static boolean isBuilderPlacement(net.minecraft.world.level.block.state.BlockState state) {
+        String id = net.minecraft.core.registries.BuiltInRegistries.BLOCK
+                .getKey(state.getBlock()).toString();
+        if (PLACEMENT_TAGS.isEmpty()) {
+            return levelFor("builder", id) > 0;
+        }
+        for (String value : PLACEMENT_TAGS) {
+            if (value.charAt(0) == '#') {
+                String tagName = value.substring(1);
+                int colon = tagName.indexOf(':');
+                if (colon < 0) {
+                    continue;
+                }
+                net.minecraft.tags.TagKey<net.minecraft.world.level.block.Block> tag =
+                        net.minecraft.tags.TagKey.create(
+                                net.minecraft.core.registries.Registries.BLOCK,
+                                net.minecraft.resources.Identifier.fromNamespaceAndPath(
+                                        tagName.substring(0, colon), tagName.substring(colon + 1)));
+                if (state.is(tag)) {
+                    return true;
+                }
+            } else if (value.equals(id)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public static List<String> summary() {
