@@ -217,6 +217,20 @@ Eight optional professions (Miner, Farmer, Fisher, Warrior, Smither, Brewer, Bui
   - **Unnamed Desert** (u_desert): desert/badlands jigsaw garnish (fossils, ruins, oases, geyser, termite mounds) — ARR content redistributed as ported jar.
   - **Better End Cities**: vanilla end-city piece NBT overhaul.
 
+### The Lost Castle (tlc) - ported to 26.2 (2026-09-27)
+- The Lost Castle is back after being unusable on 26.2. It ships as an in-tree port instead of the
+  upstream jar: 26.2 made `StructureProcessor` an interface whose registry stores `MapCodec`s, which
+  the only available upstream build (26.1, Java 25) cannot satisfy, and it was the one mod in the pack
+  compiled for Java 26 - so every launcher that provisioned the game's own Java 25 crashed on install.
+- Nothing about the structure changed: same jigsaw castle, same 12 template pieces, same loot tables,
+  same cartographer map trade, same `tlc:foundation_processor` randomisation of the yellow-concrete
+  placeholder blocks into stone variants.
+- **Vanilla strongholds stay disabled**, matching Aged 3.1.2. The pack ships Aged's exact
+  `config/tlc.json`; the port reads both that 1.0.x schema and the newer 2.x one, so existing configs
+  keep working whichever shape they use.
+- The Lost Castle still only generates more than 5000 blocks from spawn, on flat ground - that is
+  upstream's spawn check, unchanged.
+
 ### 26.2 Port Status
 - Verified 2026-09-24: full `./gradlew build` green; server gametests **300/300 passed** (container); client gametests **PASS** (container, 33 screenshots); fresh-world Profundis smoke passed forced chunk generation with no broken-chunk errors.
 - Cooking removals now default **on** with the shipped Candlelight stoves and cooking stations: vanilla furnace recipes for bread, cooked beef, and other cooked foods are removed; non-cooking recipes remain available.

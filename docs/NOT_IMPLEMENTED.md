@@ -22,10 +22,11 @@ Snapshot 2026-09-22: resolver `ready=57/138`, `missing=66` — but **28 of those
 5. **YUNG Suite (6 Mods)**:
    - `yungs-api`, `better-nether-fortresses`, `better-end-island`, `better-desert-temples`, `better-jungle-temples`, `better-ocean-monuments` on 26.2 (vendored local builds).
 6. **Additional 26.x Native & Ported Mods**:
-   - `the-lost-castle` (`tlc`), `medieval-buildings`, `birds-boids` & `boids`, `extended-drawers`, `scholar`, `chalk-colorful-addon`, `true-ending`, `supermartijn642configlib` & `supermartijn642corelib`, `kiwi`, `arrp`.
+   - `medieval-buildings`, `birds-boids` & `boids`, `extended-drawers`, `scholar`, `chalk-colorful-addon`, `true-ending`, `supermartijn642configlib` & `supermartijn642corelib`, `kiwi`, `arrp`.
 7. **custom-mods 26.2 ports (2026-09-22, all boot-smoked + in Prism)**:
    - `lavender` (+ `owo-lib`), `logbegone`, `pockets`, `couplings`, `entitycollisionfpsfix`, `memoryleakfix`, `async-locator`, `passable-foliage`.
    - Also: `athena`, `chipped`, `exposure`, `dungeonz`.
+   - `the-lost-castle` (`tlc`): ported to an in-tree module (`custom-mods/tlc`) on 2026-09-27. No upstream 26.2 build exists, and 26.2 turned `StructureProcessor` into an interface whose registry stores `MapCodec`s, which the upstream 26.1 build cannot satisfy; the module keeps the upstream package, jigsaw datapack and assets, and reads both the 2.x and 1.0.x config schemas so Aged's strongholds-off config still applies.
 8. **In-House Replacements (`custom-mods/`)**:
    - `hearthwind-survival`: Replaces `dehydration`, `environmentz`, `nutritionz`, `spoiledz`, and `revive` (teardrop thirst HUD, dirty water effect, authentic glass thermometer, 5 nutrient groups, spoilage, downed/revive).
    - `hearthwind-skills`: Replaces `levelz`, `rpgdifficulty` (12 skills, 3-heart start, 676+ gates, triangular curves, mob scaling).
