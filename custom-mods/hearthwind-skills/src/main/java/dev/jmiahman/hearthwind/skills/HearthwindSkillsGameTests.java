@@ -66,6 +66,30 @@ public final class HearthwindSkillsGameTests {
     }
 
     @GameTest
+    public void aNewPlayerStartsWithTheAgedSkillPoints(GameTestHelper helper) {
+        // No newPlayer() here on purpose: makeMockServerPlayerInLevel() runs the
+        // real join handler, so this asserts what an actual player receives.
+        var player = helper.makeMockServerPlayerInLevel();
+        helper.assertTrue(SkillXp.points(player) == 2,
+                "Aged levelz.json5 startPoints: 2 - two points before earning anything");
+        helper.assertTrue(player.experienceLevel == 2, "and the two vanilla XP bar levels");
+        helper.assertTrue(SkillXp.skillUp(player, Skill.MINING),
+                "so the first point can be spent immediately");
+        helper.assertTrue(SkillXp.level(player, Skill.MINING) == 1, "Mining bought outright");
+        // Spend the rest, which puts the account back into the exact state a
+        // fresh one has. The grant must still not repeat.
+        SkillXp.skillUp(player, Skill.MINING);
+        player.setExperienceLevels(0);
+        helper.assertTrue(SkillXp.points(player) == 0, "both starting points spent");
+        HearthwindSkills.grantStartingRewards(player);
+        helper.assertTrue(SkillXp.points(player) == 0,
+                "re-joining must not refill the points, even from a spent state");
+        helper.assertTrue(player.experienceLevel == 0, "nor the XP bar");
+        helper.assertTrue(SkillXp.level(player, Skill.MINING) == 2, "the bought levels survive");
+        helper.succeed();
+    }
+
+    @GameTest
     public void skillUpWithoutPointsIsRejected(GameTestHelper helper) {
         var pig = helper.spawn(EntityTypes.PIG, 1, 2, 1);
         helper.assertTrue(!SkillXp.skillUp(pig, Skill.MINING),
@@ -678,6 +702,14 @@ public final class HearthwindSkillsGameTests {
         abilities.instabuild = false;
         abilities.invulnerable = false;
         player.onUpdateAbilities();
+        // makeMockServerPlayerInLevel places the player through PlayerList, which
+        // fires the real join handler, so a mock player already carries Aged's two
+        // starting skill points and two XP bar levels. Tests that measure the skill
+        // point economy want a neutral account, so wind that grant back off; the
+        // grant itself is covered by aNewPlayerStartsWithTheAgedSkillPoints.
+        SkillXp.grantPoints(player, -SkillXp.points(player));
+        player.setExperienceLevels(0);
+        player.totalExperience = 0;
         return player;
     }
 

@@ -367,6 +367,11 @@ not drive 1.0.0 work.
 - `hearthwind-client`: HUD, Nutrients/Skills/Jobs/Party screens, SeasonHud,
   WelcomeScreen, and the shared 200x215 panel chrome (LibZ tabs floating on the
   21 rows above the panel) measured pixel-for-pixel off the Aged captures.
+  The old `SurvivalInfoScreen` meter cards were DELETED in 0.1.34: Aged has no
+  hydration/temperature panel (Dehydration and EnvironmentZ ship no screen and
+  no keybind), so for parity nothing binds one. Aged's own stat panel -
+  NutritionZ's 176x142 diet screen - is a pixel-exact rebuild, opened by the
+  9x9 button at the inventory's top right.
 - `dungeonz`: ported; 23 server gametests. Remaining: jigsaw generation
   path, criteria/loot asserts.
 - Hygiene: remove `.tmp-test-server/` and `.tmp/` scratch at task end;

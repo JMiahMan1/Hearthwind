@@ -79,9 +79,16 @@ below** (x+27,y+36), numeric `value / max` at x+127; bar hover zones: left
 arrow (11×10 at 5,5) → inventory. NO self-drawn tabs (LibZ draws them on
 tabbed screens only; plain screens like this have none).
 
-Hearthwind `NutrientsScreen`: 176×**166** panel, pitch **24**, custom tab
-strip, separate bar sprites. Deltas to fix: panel height, row pitch,
-bar placement/width, numeric format, effect-zone tooltips, drop own tabs.
+Hearthwind `NutrientsScreen`: ✅ **pixel-exact.** It blits the same
+176×**142** region of the same atlas, title at y+7, rows at y+25/y+26/y+36
+with a 23 px pitch, the 141×5 bar at x+27, and the `%s/%s` value at x+127.
+Verified twice, not assumed: the reference capture
+(`.tmp/aged-gallery/Nutrition_Screen.png`, 2845×1600) measures S=6.0 with
+the panel at (895, 375) and the five 30 px bar bands on logical rows
+36/59/82/105/128, and the row-1 value column's first dark pixel is at
+exactly logical x=127. (This section previously claimed a 176×166 panel
+with a 24 px pitch and "deltas to fix" - that was stale, left over from
+before the screen was rebuilt against the real 1.0.11 source.)
 
 ## 5. LibZ tabs (the real tab system)
 

@@ -294,20 +294,24 @@ public final class StarterKit {
         // Page 2: Thirst & Hydration
         pages.add(Filterable.passThrough(Component.literal(
                 "§0§lTHIRST & HYDRATION§r\n\n" +
-                "10 blue droplets appear directly above your hunger bar.\n\n" +
+                "10 droplets fill the row just above your hunger bar.\n\n" +
                 "§1Drinking:§r\n" +
-                "• Use your §9Glass Bottle§0 or craft a §9Leather Flask§0.\n" +
-                "• Crouch + right-click water with an empty hand for a quick sip.\n" +
+                "• Craft a §9Leather Flask§0 and right-click open water to fill it.\n" +
+                "• An empty §9Glass Bottle§0 only becomes purified water at a\n" +
+                "  campfire, a cauldron over fire, or a bamboo pump.\n" +
+                "• Sneak and hold right-click on §9still§0 water with an empty\n" +
+                "  hand for ~4s. The source is used up, and it may leave you Thirsty.\n" +
                 "• Many foods & drinks (apples, melons, stews, milk, teas) also restore thirst."
         )));
 
         // Page 3: Body Temperature
         pages.add(Filterable.passThrough(Component.literal(
                 "§0§lBODY TEMPERATURE§r\n\n" +
-                "A body icon and thermometer beside your hotbar track core temperature (from -2400 to +2400).\n\n" +
+                "The body icon above your hotbar is your core temperature (-2400 to +2400);\n" +
+                "the thermometer beside it is the ambient reading.\n\n" +
                 "§9Freezing (-1800):§r Cold biomes, night, rain, altitude; iced armor and ice packs.\n\n" +
                 "§6Overheating (+1800):§r Deserts, nether, lava, magma; -30% attack damage.\n\n" +
-                "§2Warmth:§r Lit campfires, lava and furnaces heat you within 3 blocks in sight; leather and wolf-fur armor give +3 a piece.\n\n" +
+                "§2Warmth:§r Lit campfires, lava and furnaces heat you within 3 blocks (blocks must be in sight); leather and Wolf Pelt armor give +3 a piece.\n\n" +
                 "At §9-2400§0 you freeze; at §6+2400§0 you exhaust. Find shelter or shade!"
         )));
 
@@ -337,9 +341,9 @@ public final class StarterKit {
                 "§0§lAGE 0 - STRANDED§r\n\n" +
                 "Mining stone is gated behind §8Mining 5§0.\n\n" +
                 "§6How to start:§0\n" +
-                "1. Gather loose §8Surface Rocks§0 and §7Flint§0 by hand on riverbanks and terrain.\n" +
+                "1. Gather loose §8Rock§0 and §7Flint§0 by hand - they spawn on the surface in forests, hills, mountains and riverbanks.\n" +
                 "2. Breaking rocks earns your first Mining XP.\n" +
-                "3. You start with §22 Skill Points§0 — spend them right away in your Skills menu!"
+                "3. You start with §22 Skill Points§0 - press §aK§0 and spend them on a skill's §a+§0 button."
         )));
 
         // Page 7: Skills & Professions
@@ -353,7 +357,8 @@ public final class StarterKit {
         // Page 8: Downed & Revive
         pages.add(Filterable.passThrough(Component.literal(
                 "§0§lDOWNED & REVIVE§r\n\n" +
-                "With other players online, a killing blow downs you for 60 seconds instead.\n\n" +
+                "With other players online, a killing blow downs you for 60 seconds instead -\n" +
+                "but a second killing blow while downed is fatal.\n\n" +
                 "Teammates can channel for 3 seconds to revive you back to 3 hearts.\n\n" +
                 "Stick together, build sturdy shelter, and master the Ages!\n\n" +
                 "§8Type §6/guide§8 anytime to get a new copy of this book.§r"

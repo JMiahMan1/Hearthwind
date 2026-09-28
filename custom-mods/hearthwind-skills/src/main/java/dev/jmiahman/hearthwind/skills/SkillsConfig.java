@@ -24,6 +24,15 @@ public final class SkillsConfig {
     public final Bonuses bonuses = new Bonuses();
     public final MobScaling mobScaling = new MobScaling();
     public final Gates gates = new Gates();
+
+    /**
+     * Unspent skill points a brand-new player starts with - Aged's
+     * <code>levelz.json5</code> ships <code>"startPoints": 2</code> with
+     * <code>"enableStartPoints": true</code>, so a fresh Aged player can spend
+     * two points in the Skills screen before earning anything. Granted once,
+     * on the player's first join, next to the two vanilla XP bar levels.
+     */
+    public int startSkillPoints = 2;
     public final Procs procs = new Procs();
 
     /** Public no-arg ctor required so Gson keeps field-initializer defaults. */

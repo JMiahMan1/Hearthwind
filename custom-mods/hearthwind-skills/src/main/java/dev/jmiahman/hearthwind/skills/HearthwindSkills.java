@@ -32,10 +32,7 @@ public class HearthwindSkills implements ModInitializer {
 		// On login:
 		ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
 				net.minecraft.server.level.ServerPlayer player = handler.getPlayer();
-				var xpMap = player.getAttached(SkillXp.XP);
-				if ((xpMap == null || xpMap.isEmpty()) && player.experienceLevel == 0 && player.totalExperience == 0) {
-					player.setExperienceLevels(2);
-				}
+				grantStartingRewards(player);
 				SkillAttributes.applyAll(player);
 				SkillsSync.send(player);
 				try {
@@ -109,5 +106,31 @@ public class HearthwindSkills implements ModInitializer {
 				SkillsConfig.get().mobScaling.enabled ? "on" : "off",
 				SkillsConfig.get().gates.enabled ? "on" : "off");
 		LOGGER.info("Skill procs {}", SkillsConfig.get().procs.enabled ? "on" : "off");
+	}
+
+	/**
+	 * What a brand-new player is handed on their first join: the two vanilla XP
+	 * bar levels and, from Aged's <code>levelz.json5</code>
+	 * (<code>"startPoints": 2</code>, <code>"enableStartPoints": true</code>),
+	 * two unspent skill points they can spend immediately.
+	 *
+	 * <p>Two guards, and both are needed. The
+	 * {@link SkillXp#STARTER_GRANTED} marker makes the grant once per account:
+	 * the "looks brand new" state check on its own would re-hand the points
+	 * every time a player who already spent them logs back in. The state check
+	 * then covers a world that carries an account over from a build without the
+	 * grant, where a player mid-career is left untouched.
+	 */
+	static void grantStartingRewards(net.minecraft.server.level.ServerPlayer player) {
+		if (Boolean.TRUE.equals(player.getAttached(SkillXp.STARTER_GRANTED))) {
+			return;
+		}
+		var xpMap = player.getAttached(SkillXp.XP);
+		if ((xpMap == null || xpMap.isEmpty()) && SkillXp.points(player) == 0
+				&& player.experienceLevel == 0 && player.totalExperience == 0) {
+			player.setExperienceLevels(2);
+			SkillXp.grantPoints(player, SkillsConfig.get().startSkillPoints);
+		}
+		player.setAttached(SkillXp.STARTER_GRANTED, Boolean.TRUE);
 	}
 }

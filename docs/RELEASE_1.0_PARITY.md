@@ -139,8 +139,26 @@ Still open (do these first, section 6, W0):
     cauldron, the bamboo pump, the three brewing recipes and
     `dehydration:hydration`. The audit's 28 deviations and 14 gaps are the
     hydration workstream.
-  - The fallback written guidebook in `StarterKit` has wrong facts.
-  - The Comfort card screen (`SurvivalInfoScreen`) can't be opened in game.
+  - ~~The fallback written guidebook in `StarterKit` has wrong facts.~~ Fixed
+    0.1.34: a claim-by-claim audit against the implementation (and against
+    Aged's own `levelz.json5`) found two false claims and four stale ones.
+    The false ones were real bugs in our own build, not just in the book:
+    a new player was handed **no** skill points where Aged's
+    `"startPoints": 2, "enableStartPoints": true` hands out two (now
+    `SkillsConfig.startSkillPoints`, granted once on first join), and an
+    empty glass bottle restores no thirst in this pack and cannot be filled
+    from open water, which the book told players to do. The book also now
+    says the thermometer is the ambient reading (not the body value), that
+    the bare-hand sip needs *still* water held for ~4 s and uses the source
+    up, that loose items are "Rock"/"Flint" in five biome groups, and that a
+    second killing blow while downed is fatal.
+  - ~~The Comfort card screen (`SurvivalInfoScreen`) can't be opened in
+    game.~~ Closed 0.1.34, see the HUD table row: Aged has no such panel at
+    all, so the screen was deleted. For the record, the one stat panel Aged
+    does have - NutritionZ's - is already a pixel-exact rebuild: the capture
+    measures 176x142 at S=6 with the value column starting at exactly x+127
+    and the five bars on rows 36/59/82/105/128 (23 px pitch), which is what
+    `NutrientsScreen` draws.
   - ~~Jobs earn XP only from breaking ladder blocks and killing ladder
     mobs.~~ Fixed 0.1.28: every Aged earn path now pays. Breaking (`AFTER`)
     and kills feed the ladders; item gains feed them through the crafting,
@@ -383,7 +401,7 @@ gametest captures `.tmp/shots/cgt/0022_tour_inventory.png` and
 | Item drop beams | **LootBeams** | hearthwind `lootbeams` | ✅ ported 0.1.13 (rarity/name colour, white hidden, enchant sparkles, 12-tick age gate) |
 | Long days: 20 min day + 10 min night | **Time & Wind** (`dayDuration 24000`, `nightDuration 12000`) | hearthwind-world `TimeAndWind` | ✅ 2026-09-26 port. Reads Aged's `config/time-and-wind/` files; day runs at 0.5x clock rate, night 1.0x, sleeping races the clock (Aged's config is v1-patched by the upstream mod to 30x, which the port mirrors), rates travel in vanilla time packets so every client sees the correct sky |
 | Particles, camera, first-person body | FBP, Particular, Camera Overhaul, First-person Model, 3D Skin Layers, Spawn Animations, ImmersiveThunder | none | ❌ (5.1 / 5.2) |
-| Comfort status card beside inventory | none | hearthwind-client | ➕ Hearthwind addition: keep or hide? (team decision) |
+| Hydration / temperature stat panel | none (NutritionZ 1.0.11 has **only** a diet panel; Dehydration 1.3.6 and EnvironmentZ 2.0.8 ship **no** screen class and register **no** keybind - their jars contain zero `KeyBinding` references) | none | 🟢 decided 0.1.34: **hide it.** Our own `SurvivalInfoScreen` (a "Hydration Level 12.4 / 20.0" card) had no Aged counterpart and no way to open it, so it was deleted rather than bound. Aged shows thirst as the droplet row above the hunger bar and temperature as the mannequin + thermometer, which we already match |
 
 **Season day count.** Aged runs 504000-tick seasons with Time & Wind's
 36000-tick days; SeasonHUD divides the season length by the live day length,
@@ -559,7 +577,8 @@ Adopt Overflowing Bars; port Time & Wind and move seasons to tick length;
 add the `Lv. N` preview label; match the tab icons; re-verify the
 guidebook in the starter kit (done 0.1.30: the starter hotbar is Aged's
 five welcome-screen commands, and `WelcomeScreen` rebuilds the welcome
-screen that grants them); decide on the Comfort card; the Hearthwind
+screen that grants them); the Comfort card is decided - deleted, because Aged
+has no hydration or temperature panel (0.1.34); the Hearthwind
 guidebook (section 5.8). Then port the
 accessory stack (Trinkets, BackSlot + addon, Inmis + addon), because it
 defines the inventory silhouette. Screens: the panel chrome and the floating tab strip now match the captures

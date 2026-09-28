@@ -62,6 +62,19 @@ public final class SkillXp {
                     .buildAndRegister(
                             Identifier.fromNamespaceAndPath("levelz", "skill_points"));
 
+    /**
+     * Whether this account has already been given the starting rewards. The
+     * state check alone is not enough: a player who spends both starting points
+     * and both XP levels looks exactly like a fresh account, so without this
+     * marker every re-join would hand out another two points.
+     */
+    public static final AttachmentType<Boolean> STARTER_GRANTED =
+            AttachmentRegistry.<Boolean>builder()
+                    .persistent(Codec.BOOL)
+                    .copyOnDeath()
+                    .buildAndRegister(
+                            Identifier.fromNamespaceAndPath("levelz", "starter_granted"));
+
     private SkillXp() {}
 
     /**

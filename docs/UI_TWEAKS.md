@@ -34,9 +34,14 @@ is an assets-only resource pack retexturing vanilla GUIs — that is the
    anchored at panel edge, 1 px gap, active tab raised 2 px and merged
    into the panel (no bottom border), inactive tabs darker + hover
    brightening. Matches Aged's chrome.
-2. **SurvivalInfoScreen (Skills/Jobs/Thirst/Temp) rebuilt** — dark
+2. ~~**SurvivalInfoScreen (Skills/Jobs/Thirst/Temp) rebuilt** — dark
    readable text on the light panel (no white-on-gray haze), all labels
-   fit within the 176 px panel, hints shortened.
+   fit within the 176 px panel, hints shortened.~~ **Removed 0.1.34.** Its
+   thirst and temperature cards had no Aged counterpart - Dehydration 1.3.6
+   and EnvironmentZ 2.0.8 ship no screen class and no keybind, only HUD
+   rows - so for parity the screen was deleted rather than bound. The tabs
+   it used still live on in `TabStrip`; the Screens it was rebuilt for now
+   have their own classes.
 3. **Jobs → card grid** — 2-column cards (79x26) with icon slot, job
    name, current job shows green face + `Lv N` + XP progress bar,
    non-current shows Join affordance; click card to join/leave

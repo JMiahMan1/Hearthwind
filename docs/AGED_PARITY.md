@@ -96,7 +96,7 @@ Legend: ✅ parity · 🟡 partial/different tuning · ❌ missing
 
 | System | Aged | Hearthwind | Status |
 |---|---|---|---|
-| Skills | LevelZ: max 30, start 2 pts, xp 25×1.6ⁿ, 12 skills, **400 gate files**, procs (crit 3%, double-dmg, reflect 5%, survive 50%, twin 20%) | max 30, base 30/level, 12 skills, **649 gates from the corpus**, procs live | ✅ gates + procs |
+| Skills | LevelZ: max 30, start 2 pts (`startPoints: 2`, `enableStartPoints: true`), xp 25×1.6ⁿ, 12 skills, **400 gate files**, procs (crit 3%, double-dmg, reflect 5%, survive 50%, twin 20%) | max 30, base 30/level, 12 skills, **649 gates from the corpus**, procs live, `startSkillPoints = 2` granted once on first join | ✅ gates + procs + 0.1.34: the 2 starting points shipped (a new player used to get none, because only the vanilla XP bar level was set) |
 | Jobs | 8 jobs, max level 150, 100×1.6ⁿ, 3 jobs at once, 24000t (20 min) switch cooldown, **per-level content ladders (miner→iron 7/diamond 20, smither→steel 8, builder 533 blocks)**, 103 restricted recipes | 8 jobs, 100 pts/level, Age gating, `/job` commands, **8 ladders read from the corpus (XP = content tier)**, curve + 3 slots + cooldown (0.1.28) | 🟡 0.1.28: only campfire cooking pays nothing (no player in the tick) |
 | Affixes | Tiered: 199 files, rarities 50/35/15/8/3/0 | **same 199 files + reforge** | ✅ |
 | Mob scaling | RPGDifficulty: distance 300/200, caps hp 4×/dmg 3×/prot 2×/speed 1.8×, special zombies, boss scaling | grace 300, step 200, one factor on hp/dmg/armor with caps 4×/3×/2×, warden+dragon excluded, steps overworld-only, adult livestock scale, boss path 0.05/step + 0.3 per nearby player (cap 3×) | 🟡 0.1.29: caps/exclusions/boss live; the 30% ±3% roll and the big/speed zombies are still missing (upstream never applies the 1.8× speed cap) |
@@ -121,7 +121,7 @@ the feel comes from additions. Everything is measured at GUI scale 3
 
 | Element | Aged | Hearthwind | Status |
 |---|---|---|---|
-| Thirst | 10 teardrops, `#1AAFE7`/`#0E86CA`, right-aligned in the band **directly above hunger** | droplets above hunger, shift up when air bubbles show | ✅ |
+| Thirst | 10 teardrops, `#1AAFE7`/`#0E86CA`, in the vanilla **air-bubble row** (`x/2+91`, `y-49`), no number and no flask icon | droplets above hunger, shift up when air bubbles show | ✅ 0.1.34: docs corrected - the old claim of a 13x13 flask icon was false; Aged's `ThirstHudRender` draws nothing but the 9x9 droplets |
 | Temperature | vertical 7×27 tube **right of hotbar** + 12×12 unit box + trend arrow, `#1D2946` outline | TempHud right of hotbar with unit box and trend chevron | ✅ |
 | Season | top-left (2,2), 9×9 icon + "Season, Day N/M" one string, season-tinted (spring `#FFA3BB`) | SeasonHud top-left procedural 9×9 badge with per-season tint | ✅ |
 | Panels | vanilla grey `#C6C6C6` 200×215, 4 item-icon tabs 24 wide on a 25 px pitch floating on the 21 rows above the panel (selected only taller), flat dark text | the same chrome, regenerated pixel-for-pixel off the captures (0.1.33; 0.1.32 shipped a wrong 200×236 "band" reading), 4 item-icon tabs floating above every panel, jobs card grid in Aged's two-column order with `Lv. N` and an 81×5 XP bar, multi-job summary | ✅ 0.1.32 / ✅ re-measured 0.1.33 |

@@ -7,7 +7,6 @@ import dev.jmiahman.hearthwind.client.PartyScreen;
 import dev.jmiahman.hearthwind.client.SkillInfoScreen;
 import dev.jmiahman.hearthwind.client.SkillRestrictionScreen;
 import dev.jmiahman.hearthwind.client.SkillsScreen;
-import dev.jmiahman.hearthwind.client.SurvivalInfoScreen;
 import dev.jmiahman.hearthwind.client.TabStrip;
 import dev.jmiahman.hearthwind.client.WelcomeScreen;
 import dev.jmiahman.hearthwind.survival.StarterKit;
@@ -289,16 +288,6 @@ public class ScreensTourGameTests implements FabricClientGameTest {
             context.waitFor(minecraft -> minecraft.gui.screen() instanceof PartyScreen, SLOW_TIMEOUT_TICKS);
             context.waitTicks(10);
             context.takeScreenshot("tour_party");
-
-            context.setScreen(() -> new SurvivalInfoScreen(SurvivalInfoScreen.Kind.THIRST));
-            context.waitFor(minecraft -> minecraft.gui.screen() instanceof SurvivalInfoScreen, SLOW_TIMEOUT_TICKS);
-            context.waitTicks(10);
-            context.takeScreenshot("tour_thirst");
-
-            context.setScreen(() -> new SurvivalInfoScreen(SurvivalInfoScreen.Kind.TEMPERATURE));
-            context.waitFor(minecraft -> minecraft.gui.screen() instanceof SurvivalInfoScreen, SLOW_TIMEOUT_TICKS);
-            context.waitTicks(10);
-            context.takeScreenshot("tour_temperature");
 
             context.getInput().pressKey(GLFW.GLFW_KEY_ESCAPE);
             context.waitTicks(5);
