@@ -46,6 +46,9 @@ REPO = Path(__file__).resolve().parents[2]
 HEX40 = re.compile(r"^[0-9a-f]{40}$")
 HEX128 = re.compile(r"^[0-9a-f]{128}$")
 ENV_VALUES = {"required", "optional", "unsupported"}
+# Launchers resolve `dependencies` against loader elements only; anything
+# else (a mod id, for instance) makes the Modrinth App refuse the pack.
+LOADER_ELEMENTS = {"minecraft", "java", "fabric-loader", "quilt-loader", "forge", "neoforge"}
 ALLOWED_OVERRIDE_ROOTS = {
     "mods",
     "config",

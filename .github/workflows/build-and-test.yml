@@ -175,6 +175,9 @@ jobs:
             --datapack conversion/datapacks/hearthwind \
             --baseline custom-mods/tools/feature_cycle_baseline.txt \
             --strict
+      - name: Test the mrpack verifier
+        run: python3 custom-mods/tools/tests/test_verify_mrpack.py
+
       - name: Verify mrpack artifacts exist
         run: |
           ls -lh conversion/build/dist/*.mrpack
