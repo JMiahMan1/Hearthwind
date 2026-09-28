@@ -291,7 +291,7 @@ def patch_kiwi_jar(path: Path) -> str:
     return "patched"
 
 
-def _kiwi_candidate_roots(root: Path) -> list[Path]:
+def _candidate_roots(root: Path) -> list[Path]:
     roots = [
         root / "vendored",
         root / "build" / "dist" / "server" / "mods",
@@ -300,9 +300,10 @@ def _kiwi_candidate_roots(root: Path) -> list[Path]:
         root / "dist" / "client" / "mods",
     ]
     # Prism test instances so a bare update_prism / hand-copy cannot ship
-    # an unpatched ContributorsClient again.
+    # unpatched bytes.  These must track the live instance names: the pack
+    # is one instance per published mrpack now.
     prism = Path.home() / "Library" / "Application Support" / "PrismLauncher" / "instances"
-    for inst in ("Hearthwind-Full", "Hearthwind-Minimal", "Hearthwind-Dev-Client"):
+    for inst in ("Hearthwind-Client", "Hearthwind-Server"):
         mods = prism / inst / "minecraft" / "mods"
         if mods.is_dir():
             roots.append(mods)
@@ -310,12 +311,12 @@ def _kiwi_candidate_roots(root: Path) -> list[Path]:
 
 
 def patch_all(conversion_root: Path | None = None) -> dict[str, int]:
-    """Patch every kiwi jar under conversion/ and managed Prism instances."""
+    """Patch every vendored jar that needs it, under conversion/ and Prism."""
     if conversion_root is None:
         conversion_root = Path(__file__).resolve().parents[1]
     counts = {"patched": 0, "already": 0, "skip": 0}
     seen: set[Path] = set()
-    for root_dir in _kiwi_candidate_roots(conversion_root):
+    for root_dir in _candidate_roots(conversion_root):
         for jar in sorted(root_dir.glob("kiwi*.jar")):
             key = jar.resolve()
             if key in seen:

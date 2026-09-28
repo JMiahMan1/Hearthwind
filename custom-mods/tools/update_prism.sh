@@ -124,17 +124,11 @@ python3 "$ROOT/conversion/scripts/patch_vendored.py" "$ROOT/conversion" || {
 }
 
 # --- per-instance: create if absent, loader bump + mrpack mod set + overrides ---
-# The pack needs a Java 26 runtime (e.g. tlc/The Lost Castle ships class file
-# version 70), so pin the newest 26 JRE we can find instead of letting Prism
-# fall back to whatever it auto-detects.
-JAVA_26="$(/usr/libexec/java_home -v 26 2>/dev/null || true)"
-if [ -z "$JAVA_26" ]; then
-  for candidate in /usr/local/opt/openjdk/libexec/openjdk.jdk/Contents/Home \
-                   /Library/Java/JavaVirtualMachines/openjdk.jdk/Contents/Home; do
-    if [ -x "$candidate/bin/java" ]; then JAVA_26="$candidate"; break; fi
-  done
-fi
-echo "java26=${JAVA_26:-<none>}"
+# No Java pin: MC 26.2's version manifest declares Java 25 and Prism
+# auto-provisions the matching runtime, which is exactly what a Modrinth
+# user gets.  Overriding it is what masked a Java-26 mod (class file 70)
+# in the pack - verify_mrpack.py now rejects any jar needing a newer
+# class file than the game declares, so the automatic runtime is safe.
 
 for inst in $INSTANCES; do
   idir="$INST_ROOT/$inst"
@@ -153,25 +147,45 @@ for inst in $INSTANCES; do
     mkdir -p "$idir/minecraft/mods" "$idir/minecraft/saves"
   fi
 
+  # Repair a stale runtime pin on every run, not just when the metadata is
+  # missing: an earlier revision forced a Java 26 location, which hides the
+  # pack's real runtime contract from us (MC 26.2 declares Java 25).
+  if [ -f "$idir/instance.cfg" ]; then
+    python3 - "$idir" <<'PY'
+import sys
+from pathlib import Path
+
+cfg_path = Path(sys.argv[1]) / "instance.cfg"
+lines = cfg_path.read_text().splitlines()
+# AutomaticJava belongs under the [General] header, not above it: an INI
+# parser drops keys that appear before any section.
+kept = [ln for ln in lines
+        if not ln.startswith(("JavaPath=", "OverrideJavaLocation=", "AutomaticJava=",
+                              "JavaSignature=", "JavaVendor=", "JavaVersion="))]
+section = next((i for i, ln in enumerate(kept) if ln.strip().startswith("[")), -1)
+kept.insert(section + 1, "AutomaticJava=true")
+cfg_path.write_text("\n".join(kept) + "\n")
+PY
+  fi
+
   # Prism only lists an instance when the metadata is there, so write (or
   # repair) it whenever it is missing - a half-created instance dir from an
   # aborted run must not be left without instance.cfg/mmc-pack.json.
   if [ ! -f "$idir/instance.cfg" ] || [ ! -f "$idir/mmc-pack.json" ]; then
-    python3 - "$idir" "$inst" "$TEMPLATE_PACK" "$MRPACK_I" "$JAVA_26" <<'PY'
+    python3 - "$idir" "$inst" "$TEMPLATE_PACK" "$MRPACK_I" <<'PY'
 import json
 import sys
 import uuid
 import zipfile
 
-idir, inst, template, mrpack, java26 = sys.argv[1:6]
+idir, inst, template, mrpack = sys.argv[1:5]
 # The pack is a zip: read the launcher index out of it, never as plain text.
 with zipfile.ZipFile(mrpack) as zf:
     index = json.loads(zf.read("modrinth.index.json"))
 deps = index.get("dependencies", {})
 
-java_line = f"JavaPath={java26}/bin/java\n" if java26 else ""
 cfg = f"""[General]
-AutomaticJava=false
+AutomaticJava=true
 ConfigVersion=1.3
 IconKey=default
 InstanceType=OneSix
@@ -179,8 +193,7 @@ JavaArchitecture=64
 JoinServerOnLaunch=false
 ManagedPack=false
 MaxMemAlloc=4096
-OverrideJavaLocation=true
-{java_line}name={inst}
+name={inst}
 uuid={uuid.uuid4().hex}
 lastTimePlayed=0
 totalTimePlayed=0

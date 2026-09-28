@@ -26,6 +26,14 @@ import verify_mrpack  # noqa: E402
 GOOD_JAR = b"fake-mod-jar-bytes"
 
 
+def class_jar(major: int) -> bytes:
+    """A minimal valid jar holding one .class file with the given major."""
+    buf = io.BytesIO()
+    with zipfile.ZipFile(buf, "w") as zf:
+        zf.writestr("mod/Class.class", b"\xca\xfe\xba\xbe\x00\x00" + major.to_bytes(2, "big") + b"\x00" * 8)
+    return buf.getvalue()
+
+
 def _index(**overrides):
     payload = GOOD_JAR
     entry = {
@@ -131,6 +139,15 @@ class VerifyMrpackTests(unittest.TestCase):
 
     def test_corrupt_override_jar_is_rejected(self):
         self.assertTrue(self.check(_index(), {"overrides/mods/broken.jar": b"not a zip at all"}))
+
+    def test_java25_override_jar_passes(self):
+        self.assertEqual(self.check(_index(), {"overrides/mods/ok.jar": class_jar(69)}), [])
+
+    def test_java26_override_jar_is_rejected(self):
+        # The exact regression: a vendored mod compiled for Java 26 (class 70)
+        # in a pack whose launcher provisions Java 25 crashes every install.
+        problems = self.check(_index(), {"overrides/mods/newer.jar": class_jar(70)})
+        self.assertTrue(any("class file 70" in p for p in problems), problems)
 
 
 if __name__ == "__main__":

@@ -17,6 +17,10 @@ fabricmr modpack format rules:
   (`mods`, `config`, `resourcepacks`, `resourcepacks-disabled`, `shaderpacks`,
   `resources`, `world`, `client-overrides`, `server-overrides`) and every
   jar inside `overrides/mods` is a readable zip;
+* no jar (override, or index file under `--deep`) needs a class file newer
+  than the Java a launcher provisions for MC 26.2 (25 / class file 69) - a
+  Java 26 mod crashes auto-provisioned launchers with
+  `UnsupportedClassVersionError`;
 * the archive itself is a readable zip without encrypted or absolute paths.
 
 Usage:
@@ -62,6 +66,29 @@ ALLOWED_OVERRIDE_ROOTS = {
     "saves",
     "kubejs",
 }
+
+
+# A launcher provisions the Java version Mojang ships in the 26.2 version
+# manifest (Java 25), so no jar in the pack may need a newer class file than
+# that.  A Java-26 (class 70) mod in overrides/ crash installs on every
+# auto-provisioned launcher with UnsupportedClassVersionError.
+MAX_CLASS_MAJOR = 69
+JAVA_FOR_MAX_CLASS = MAX_CLASS_MAJOR - 44
+
+
+def _max_class_major(jar: zipfile.ZipFile) -> int:
+    """Highest class-file major version among the jar's .class entries."""
+    highest = 0
+    for info in jar.infolist():
+        if not info.filename.endswith(".class"):
+            continue
+        # 8-byte header: magic 0xCAFEBABE (4 bytes) + minor (2) + major (2).
+        with jar.open(info) as handle:
+            if len(handle.read(8)) < 8:
+                continue
+            handle.seek(6)
+            highest = max(highest, int.from_bytes(handle.read(2), "big"))
+    return highest
 
 
 def _fail(problems: list[str], message: str) -> None:
@@ -172,6 +199,13 @@ def check_pack(path: Path, problems: list[str]) -> dict:
                 with zipfile.ZipFile(__import__("io").BytesIO(archive.read(name))) as jar:
                     if jar.testzip() is not None:
                         _fail(problems, f"{path.name}: override jar {name} is corrupt")
+                    major = _max_class_major(jar)
+                    if major > MAX_CLASS_MAJOR:
+                        _fail(problems,
+                              f"{path.name}: override jar {name} needs class file {major} "
+                              f"(Java {major - 44}), but a launcher provisions Java {JAVA_FOR_MAX_CLASS} for "
+                              f"MC 26.2 (class file {MAX_CLASS_MAJOR}); it would crash with "
+                              "UnsupportedClassVersionError")
             except zipfile.BadZipFile as exc:
                 _fail(problems, f"{path.name}: override jar {name} is not a zip ({exc})")
         return index
@@ -198,6 +232,16 @@ def deep_check(path: Path, index: dict, problems: list[str]) -> None:
             _fail(problems, f"{path.name}: {jar} sha1 mismatch")
         if hashlib.sha512(data).hexdigest() != entry["hashes"]["sha512"]:
             _fail(problems, f"{path.name}: {jar} sha512 mismatch")
+        try:
+            with zipfile.ZipFile(__import__("io").BytesIO(data)) as downloaded:
+                major = _max_class_major(downloaded)
+            if major > MAX_CLASS_MAJOR:
+                _fail(problems,
+                      f"{path.name}: index jar {jar} needs class file {major} (Java {major - 44}), "
+                      f"but a launcher provisions Java {JAVA_FOR_MAX_CLASS} for MC 26.2; it would crash "
+                      "with UnsupportedClassVersionError")
+        except zipfile.BadZipFile as exc:
+            _fail(problems, f"{path.name}: index jar {jar} is not a zip ({exc})")
 
 
 def dist_packs(only_client: bool = False) -> list[Path]:
@@ -248,8 +292,10 @@ def main() -> int:
         return 3
 
     problems: list[str] = []
+    counts: list[tuple[Path, int]] = []
     for pack in packs:
         index = check_pack(pack, problems)
+        counts.append((pack, len((index or {}).get("files", []))))
         if args.deep and index:
             deep_check(pack, index, problems)
     if problems:
@@ -257,9 +303,9 @@ def main() -> int:
         for problem in problems:
             print(f"  - {problem}")
         return 2
-    for pack in packs:
+    for pack, count in counts:
         print(f"verify_mrpack: OK {pack.name} ({pack.stat().st_size // (1024 * 1024)} MiB, "
-              f"{len(index.get('files', []))} index files)"
+              f"{count} index files)"
               + (" [deep verified]" if args.deep else ""))
     return 0
 
