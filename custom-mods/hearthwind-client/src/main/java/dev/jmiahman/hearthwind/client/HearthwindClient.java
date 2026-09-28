@@ -174,7 +174,8 @@ public class HearthwindClient implements ClientModInitializer {
         try {
             ThirstHud.register();
             TempHud.register();
-            JobHud.register();
+            // Aged has no on-screen job indicator: job progress lives in the
+            // jobs screen and chat messages, so the HUD stays clean.
             SeasonHud.register();
             // Aged has no on-screen level-up banner: skill and job gains are
             // announced in chat only, so SkillToast stays unregistered.
