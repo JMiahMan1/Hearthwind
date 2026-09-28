@@ -16,6 +16,9 @@
   "entrypoints": {
     "main": [
       "com.teamremastered.tlc.TheLostCastleFabric"
+    ],
+    "fabric-gametest": [
+      "com.teamremastered.tlc.TlcGameTests"
     ]
   },
   "mixins": [

@@ -61,6 +61,7 @@ for d in "$REPO"/custom-mods/hearthwind-*/build/libs \
          "$REPO"/custom-mods/chipped/build/libs \
          "$REPO"/custom-mods/dungeonz/build/libs \
           "$REPO"/custom-mods/adventurez/build/libs \
+          "$REPO"/custom-mods/tlc/build/libs \
           "$REPO"/custom-mods/fleshz/build/libs \
           "$REPO"/custom-mods/exposure/build/libs \
           "$REPO"/custom-mods/lavender/build/libs \
@@ -76,11 +77,12 @@ for d in "$REPO"/custom-mods/hearthwind-*/build/libs \
   mod="$(basename "$(dirname "$(dirname "$d")")")"
   dest="$R/custom-mods/$mod/build/libs"
   mkdir -p "$dest"
-  for j in "$d"/*26.2+0.1.0.jar; do
-    [ -f "$j" ] || continue
-    case "$j" in *sources*) continue ;; esac
-    cp "$j" "$dest/"
-  done
+  # Mirror the plain jar set instead of cp-ing into it: a plain cp leaves the
+  # volume holding a jar from an earlier build, so a rebuilt module can stage
+  # stale bytes (it hid the tlc gametests for a whole run).  -sources never
+  # ships into the test server.
+  rsync -a --delete --prune-empty-dirs \
+    --include='*26.2+0.1.0.jar' --exclude='*' "$d/" "$dest/"
 done
 
 # 3. pack mod sets + tuning corpus + server base mods

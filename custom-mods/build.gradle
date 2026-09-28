@@ -302,7 +302,7 @@ subprojects {
 				modCompileClasspath "net.fabricmc.fabric.api:fabric-client-gametest-api-v1:6.0.0+515ac5339e"
 			}
 		}
-		if (name == 'hearthwind-survival' || name == 'hearthwind-skills' || name == 'hearthwind-jobs' || name == 'hearthwind-world' || name == 'dungeonz' || name == 'passable-foliage' || name == 'fleshz' || name == 'adventurez' || name.startsWith('letsdo-')) {
+		if (name == 'hearthwind-survival' || name == 'hearthwind-skills' || name == 'hearthwind-jobs' || name == 'hearthwind-world' || name == 'dungeonz' || name == 'tlc' || name == 'passable-foliage' || name == 'fleshz' || name == 'adventurez' || name.startsWith('letsdo-')) {
 			dependencies {
 				// fabric-api aggregator POM hides module classes at compile
 				// time; pin gametest API for @GameTest compilation.

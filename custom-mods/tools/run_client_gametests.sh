@@ -83,8 +83,10 @@ for cand in (
             pass
         break
 
-def score(ver: str):
-    return (mc in ver, ver)
+def score(ver: str, jar):
+    # Newest build wins a tie: an in-tree module is versioned "<mc>+0.1.0"
+    # while the upstream jar it replaces carries the MC id in its own version.
+    return (mc in ver, ver, jar.stat().st_mtime)
 
 by_id = {}
 for j in sorted(mods.glob("*.jar")):
@@ -99,7 +101,7 @@ for j in sorted(mods.glob("*.jar")):
         continue
     if not mid:
         continue
-    by_id.setdefault(mid, []).append((score(ver), j))
+    by_id.setdefault(mid, []).append((score(ver, j), j))
 removed = 0
 for mid, entries in by_id.items():
     if len(entries) < 2:

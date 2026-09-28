@@ -135,9 +135,13 @@ for cand in (
             pass
         break
 
-def score(ver: str):
-    # prefer versions that contain the pack MC id, then lexicographic max
-    return (mc in ver, ver)
+def score(ver: str, jar):
+    # Prefer versions that contain the pack MC id, then the highest version.
+    # A module we build in-tree is versioned "<mc>+0.1.0" while the upstream
+    # jar it replaces carries the MC id in its own version, so the two tie and
+    # lexicographic order used to delete OUR jar and keep the stale upstream
+    # one (it hid the tlc gametests). Newest build wins any remaining tie.
+    return (mc in ver, ver, jar.stat().st_mtime)
 
 by_id = {}
 for j in sorted(mods.glob("*.jar")):
@@ -152,7 +156,7 @@ for j in sorted(mods.glob("*.jar")):
         continue
     if not mid:
         continue
-    by_id.setdefault(mid, []).append((score(ver), j))
+    by_id.setdefault(mid, []).append((score(ver, j), j))
 removed = 0
 for mid, entries in by_id.items():
     if len(entries) < 2:
@@ -165,8 +169,9 @@ if removed:
     print(f"deduped {removed} stale duplicate mod jars by id")
 # report any remaining multi-version ambiguity for boids-like cases
 for mid, entries in by_id.items():
-    if len(entries) > 1:
-        print(f"WARN multi remaining? {mid}: {[e[1].name for e in entries]}")
+    survivors = [e[1] for e in entries if e[1].exists()]
+    if len(survivors) > 1:
+        print(f"WARN multi remaining? {mid}: {[e.name for e in survivors]}")
 PY
 
 # Ship the migrated tuning corpus with the throwaway world so gametests read
