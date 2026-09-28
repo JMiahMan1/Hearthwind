@@ -24,11 +24,6 @@
    "reason": "W4 port queue (plan 5.2): emiffect - not yet ported"
   },
   {
-   "project_id": "7E6n9qa8",
-   "filename": "welcomescreen-1.0.1.jar",
-   "reason": "W4 port queue (plan 5.2): welcomescreen - not yet ported"
-  },
-  {
    "project_id": "9J82qMn9",
    "filename": "nameplate-1.1.4.jar",
    "reason": "W4 port queue (plan 5.2): nameplate - Aged ships it disabled (config/nameplate.json sets showLevel=false, which gates the whole renderer; verified in the 1.1.4 bytecode), so there is nothing to match."

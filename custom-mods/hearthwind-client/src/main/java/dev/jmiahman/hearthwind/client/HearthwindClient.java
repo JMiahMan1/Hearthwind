@@ -170,6 +170,25 @@ public class HearthwindClient implements ClientModInitializer {
             LOGGER.warn("Failed to register downed receiver", e);
         }
 
+        // Aged's welcome screen: the server asks for it on the first join and
+        // the Start button answers back (see StarterKit).
+        try {
+            ClientPlayNetworking.registerGlobalReceiver(
+                    dev.jmiahman.hearthwind.survival.WelcomeScreenPayload.TYPE,
+                    (payload, context) -> {
+                        if (payload.show()) {
+                            context.client().execute(ClientWelcomeData::onServerSaysShow);
+                        }
+                    });
+            net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents.DISCONNECT
+                    .register((handler, client) -> ClientWelcomeData.reset());
+            net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents.END_CLIENT_TICK
+                    .register(ClientWelcomeData::tick);
+            LOGGER.info("Hearthwind Client networking: receiver for welcome_screen");
+        } catch (Exception e) {
+            LOGGER.warn("Failed to register welcome screen receiver", e);
+        }
+
         // HUDs & Keybindings
         try {
             ThirstHud.register();

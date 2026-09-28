@@ -134,8 +134,9 @@ public class MiningGameTests implements FabricClientGameTest {
                 throw new AssertionError("job join failed, jobId=" + jobId);
             }
 
-            // StarterKit fills slots 0-2 (guide book, bottle, campfire) on join;
-            // give the miner a pickaxe so the break looks like a real mining action.
+            // The welcome screen's Start button fills hotbar 0/1/4/7/8 (bread,
+            // apples, guide book, purified water, campfire); give the miner a
+            // pickaxe so the break looks like a real mining action.
             world.getServer().computeOnServer(server -> {
                 ServerPlayer p = server.getPlayerList().getPlayers().get(0);
                 p.getInventory().clearContent();

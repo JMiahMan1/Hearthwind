@@ -1,10 +1,16 @@
 package dev.jmiahman.hearthwind.survival;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
+import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.commands.Commands;
 import net.minecraft.core.component.DataComponents;
@@ -15,25 +21,114 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.Filterable;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.component.WrittenBookContent;
 
 /**
- * Starter kit & Guidebook system for Hearthwind (Aged 3.1.2 Parity).
- * Grants players a Survival Guidebook, a Glass Bottle, and a Campfire on first join.
+ * Starter kit &amp; Guidebook system for Hearthwind (Aged 3.1.2 Parity).
+ *
+ * <p>Aged does not hand anything out during {@code JOIN}. The pack ships the
+ * {@code welcomescreen} mod with an {@code aged_welcome_screen} datapack, so
+ * joining a world opens a welcome screen and its {@code Start} button runs:
+ *
+ * <pre>
+ * /item replace entity @s hotbar.0 with minecraft:bread 4
+ * /item replace entity @s hotbar.1 with minecraft:apple 4
+ * /item replace entity @s hotbar.4 with lavender:dynamic_book{BookId:'aged:aged_guide_book'}
+ * /item replace entity @s hotbar.7 with minecraft:potion{Potion:'minecraft:purified_water'}
+ * /item replace entity @s hotbar.8 with minecraft:campfire
+ * </pre>
+ *
+ * <p>So the slots, the counts and the purified water bottle are all part of the
+ * first ten minutes a player sees, and the {@code Start} button is what grants
+ * them. We rebuild that flow: the server sends {@link WelcomeScreenPayload} on
+ * the first join, the client shows {@code WelcomeScreen}, and the button's
+ * {@link WelcomeStartPayload} is what calls {@link #grantStarterKit}.
+ *
+ * <p>Deviation: Aged's command names the potion {@code minecraft:purified_water}
+ * (Dehydration 1.3.6 registers it with
+ * {@code Registry.register(Registries.POTION, "purified_water", ...)}, which
+ * defaults to the vanilla namespace). Our dehydration port registers the same
+ * potion as {@code dehydration:purified_water}, so the granted item is the real
+ * purified water bottle rather than an unresolvable potion reference.
  */
 public final class StarterKit {
     public static final String STARTER_TAG = "hearthwind:starter_kit_granted";
 
+    /** Hotbar slot of the first bread stack (Aged {@code hotbar.0}). */
+    public static final int SLOT_BREAD = 0;
+    /** Hotbar slot of the apples (Aged {@code hotbar.1}). */
+    public static final int SLOT_APPLE = 1;
+    /** Hotbar slot of the guide book (Aged {@code hotbar.4}). */
+    public static final int SLOT_GUIDE = 4;
+    /** Hotbar slot of the purified water bottle (Aged {@code hotbar.7}). */
+    public static final int SLOT_PURIFIED_WATER = 7;
+    /** Hotbar slot of the campfire (Aged {@code hotbar.8}). */
+    public static final int SLOT_CAMPFIRE = 8;
+
+    /**
+     * Ticks a client gets to answer the welcome payload before the loadout is
+     * granted anyway: three seconds, long enough to read the screen and press
+     * Start, short enough that nobody waits for supplies.
+     */
+    private static final int FALLBACK_TICKS = 60;
+
+    /** Players waiting on a {@code WelcomeStartPayload}, with ticks left. */
+    private static final Map<UUID, PendingWelcome> pendingFallbacks = new HashMap<>();
+
+    /** A player who was offered the welcome screen and has not answered yet. */
+    private record PendingWelcome(ServerPlayer player, int ticksLeft) {
+        PendingWelcome tick() {
+            return new PendingWelcome(this.player, this.ticksLeft - 1);
+        }
+    }
+
     private StarterKit() {}
 
     public static void register() {
+        PayloadTypeRegistry.clientboundPlay().register(WelcomeScreenPayload.TYPE, WelcomeScreenPayload.CODEC);
+        PayloadTypeRegistry.serverboundPlay().register(WelcomeStartPayload.TYPE, WelcomeStartPayload.CODEC);
+        ServerPlayNetworking.registerGlobalReceiver(WelcomeStartPayload.TYPE,
+                (payload, context) -> {
+                    if (!payload.pressed()) {
+                        return;
+                    }
+                    ServerPlayer player = context.player();
+                    context.server().execute(() -> beginAdventure(player));
+                });
+
         ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
             ServerPlayer player = handler.getPlayer();
-            if (!player.entityTags().contains(STARTER_TAG)) {
-                grantStarterKit(player);
-                player.addTag(STARTER_TAG);
+            if (player.entityTags().contains(STARTER_TAG)) {
+                return;
+            }
+            // Aged: nothing is granted until the welcome screen's Start button
+            // runs its commands. The payload is sent unconditionally - a client
+            // without hearthwind-client simply does not decode it - because
+            // ServerPlayNetworking.canSend is always false here: fabric-api only
+            // sends the client's channel registration from
+            // ClientPlayNetworkAddon#onServerReady, which the client reaches
+            // *after* the respawn packet this event runs behind. The fallback
+            // below is what covers a client that never answers, so it is armed
+            // BEFORE the send and a failed send must never skip it.
+            armWelcomeFallback(player, FALLBACK_TICKS);
+            try {
+                ServerPlayNetworking.send(player, new WelcomeScreenPayload(true));
+            } catch (RuntimeException e) {
+                HearthwindSurvival.LOGGER.warn(
+                        "Could not send the welcome payload to {}; the fallback will grant the loadout",
+                        player.getName().getString(), e);
             }
         });
+
+        // Nobody may be left with an empty hotbar because their client could
+        // not show (or did not answer) the welcome screen: a client without
+        // hearthwind-client, or a player who quit mid-screen, still gets the
+        // loadout three seconds later. The tag makes this a no-op once the Start
+        // button (or an earlier fallback) has already granted it. The pending
+        // entry holds the player itself, not a lookup, so a client that hangs
+        // up before the fallback fires is still covered.
+        ServerTickEvents.END_SERVER_TICK.register(server -> tickWelcomeFallbacks());
 
         // Command to retrieve a replacement survival guidebook
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
@@ -58,19 +153,115 @@ public final class StarterKit {
         });
     }
 
-    public static void grantStarterKit(ServerPlayer player) {
-        giveOrDrop(player, createGuidebook());
-        giveOrDrop(player, new ItemStack(Items.GLASS_BOTTLE));
-        giveOrDrop(player, new ItemStack(Items.CAMPFIRE));
-        player.sendSystemMessage(Component.literal("§6§l[Hearthwind]§r §eWelcome! You have been granted the Hearthwind Guide Book, a Glass Bottle, and a Campfire."));
+    /**
+     * Put a player back in the state of a first join and offer the welcome
+     * screen again: the tag goes, the five Aged hotbar slots are emptied, and
+     * the payload is re-sent.
+     *
+     * <p>The client gametest tour drives the whole welcome path (screen, Start
+     * button, loadout) against a real client, and a session that already joined
+     * a world earlier has the tag set, so the tour needs a deterministic first
+     * join instead of whatever the previous test happened to leave behind.
+     */
+    public static void resetAndOfferWelcomeScreen(ServerPlayer player) {
+        player.removeTag(STARTER_TAG);
+        for (int slot : new int[] {SLOT_BREAD, SLOT_APPLE, SLOT_GUIDE, SLOT_PURIFIED_WATER, SLOT_CAMPFIRE}) {
+            player.getInventory().setItem(slot, ItemStack.EMPTY);
+        }
+        pendingFallbacks.put(player.getUUID(), new PendingWelcome(player, FALLBACK_TICKS));
+        try {
+            ServerPlayNetworking.send(player, new WelcomeScreenPayload(true));
+        } catch (RuntimeException e) {
+            HearthwindSurvival.LOGGER.warn("Could not send the welcome payload; the fallback will grant the loadout", e);
+        }
     }
 
+    /**
+     * Remember that this player still owes the server an answer to the welcome
+     * payload, and that {@link #tickWelcomeFallbacks()} grants the loadout in
+     * {@code ticks} ticks if nothing arrives.
+     *
+     * <p>Armed BEFORE the payload is sent, so a client whose channel send throws
+     * still gets its supplies.
+     */
+    static void armWelcomeFallback(ServerPlayer player, int ticks) {
+        pendingFallbacks.put(player.getUUID(), new PendingWelcome(player, ticks));
+    }
+
+    /**
+     * Count every unanswered welcome offer down and grant the loadout to the
+     * ones that ran out of ticks. One tick per server tick, so the default
+     * {@link #FALLBACK_TICKS} is three seconds.
+     */
+    static void tickWelcomeFallbacks() {
+        if (pendingFallbacks.isEmpty()) {
+            return;
+        }
+        List<UUID> due = new ArrayList<>();
+        pendingFallbacks.replaceAll((uuid, pending) -> {
+            if (pending.ticksLeft() <= 1) {
+                due.add(uuid);
+                return pending;
+            }
+            return pending.tick();
+        });
+        for (UUID uuid : due) {
+            PendingWelcome pending = pendingFallbacks.remove(uuid);
+            if (pending != null) {
+                beginAdventure(pending.player());
+            }
+        }
+    }
+
+    /** True while this player still owes the server an answer to the welcome payload. */
+    public static boolean isAwaitingWelcomeStart(ServerPlayer player) {
+        return pendingFallbacks.containsKey(player.getUUID());
+    }
+
+    /** Inventory first, world drop when the pack is full. */
     private static void giveOrDrop(ServerPlayer player, ItemStack stack) {
-        if (stack.isEmpty()) return;
+        if (stack.isEmpty()) {
+            return;
+        }
         boolean added = player.getInventory().add(stack);
         if (!added || !stack.isEmpty()) {
             player.drop(stack, false);
         }
+    }
+
+    /**
+     * The player pressed {@code Start}: grant the loadout once and mark the tag
+     * so the welcome screen never opens for them again.
+     */
+    public static void beginAdventure(ServerPlayer player) {
+        if (player.entityTags().contains(STARTER_TAG)) {
+            return;
+        }
+        pendingFallbacks.remove(player.getUUID());
+        grantStarterKit(player);
+        player.addTag(STARTER_TAG);
+    }
+
+    /**
+     * Aged's five welcome-screen commands, hotbar slots and all: bread x4,
+     * apples x4, the guide book, a purified water bottle and a campfire.
+     * Slots are overwritten, exactly like {@code /item replace entity @s}.
+     */
+    public static void grantStarterKit(ServerPlayer player) {
+        player.getInventory().setItem(SLOT_BREAD, new ItemStack(Items.BREAD, 4));
+        player.getInventory().setItem(SLOT_APPLE, new ItemStack(Items.APPLE, 4));
+        player.getInventory().setItem(SLOT_GUIDE, createGuidebook());
+        player.getInventory().setItem(SLOT_PURIFIED_WATER, purifiedWaterBottle());
+        player.getInventory().setItem(SLOT_CAMPFIRE, new ItemStack(Items.CAMPFIRE));
+        player.sendSystemMessage(Component.literal(
+                "§6§l[Hearthwind]§r §eYour supplies are in the hotbar: bread, apples, the guide book, "
+                        + "a bottle of purified water and a campfire. Type §6/guide§e any time for a new book."));
+    }
+
+    private static ItemStack purifiedWaterBottle() {
+        ItemStack potion = new ItemStack(Items.POTION);
+        potion.set(DataComponents.POTION_CONTENTS, new PotionContents(PurifiedWater.PURIFIED_POTION));
+        return potion;
     }
 
     public static ItemStack createGuidebook() {
@@ -94,8 +285,9 @@ public final class StarterKit {
                 "You begin with §c3 Hearts (6.0 HP)§0.\n\n" +
                 "Level up your §1Health§0 skill to unlock up to §c18 Hearts (36 HP)§0.\n\n" +
                 "§2§lStarter Equipment:§r\n" +
+                "• Bread x4 and Apples x4\n" +
                 "• Survival Guidebook\n" +
-                "• Glass Bottle\n" +
+                "• A Bottle of Purified Water\n" +
                 "• Campfire"
         )));
 

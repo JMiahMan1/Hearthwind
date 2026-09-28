@@ -2129,45 +2129,124 @@ public final class HearthwindSurvivalGameTests {
                 BuiltInRegistries.ITEM.getKey(item) + " must quench " + expected + " (got " + quench + ")");
     }
 
+    /**
+     * Aged 3.1.2 hands out nothing during join: the {@code welcomescreen} mod
+     * shows a welcome screen and its {@code Start} button runs five
+     * {@code /item replace entity @s hotbar.N} commands. Those slots, items and
+     * counts are the first ten minutes of the game, so they are pinned here.
+     */
     @GameTest
-    public void starterKitContainsGuidebookBottleAndCampfire(GameTestHelper helper) {
+    public void welcomeLoadoutMatchesTheAgedStartButton(GameTestHelper helper) {
         ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        // placeNewPlayer fires our JOIN handler, which grants the loadout
+        // directly for a connection that cannot answer the welcome payload.
+        // Start from a clean slate so this test pins the Start path itself.
+        player.removeTag(StarterKit.STARTER_TAG);
         player.getInventory().clearContent();
 
-        StarterKit.grantStarterKit(player);
+        StarterKit.beginAdventure(player);
 
-        // Verify Guidebook
-        boolean hasBook = false;
-        boolean hasBottle = false;
-        boolean hasCampfire = false;
+        ItemStack bread = player.getInventory().getItem(StarterKit.SLOT_BREAD);
+        helper.assertTrue(bread.is(Items.BREAD) && bread.getCount() == 4,
+                "hotbar " + StarterKit.SLOT_BREAD + " must hold bread x4 (Aged hotbar.0), got " + bread);
 
-        for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
-            ItemStack stack = player.getInventory().getItem(i);
-            boolean hasLavenderGuide = false;
-            if (FabricLoader.getInstance().isModLoaded("lavender")) {
-                hasLavenderGuide = BuiltInRegistries.ITEM.getOptional(GuideBook.ID)
-                        .map(item -> stack.is(item))
-                        .orElse(false);
-            }
-            if (hasLavenderGuide) {
-                hasBook = true;
-            } else if (stack.is(Items.WRITTEN_BOOK)) {
-                var content = stack.get(DataComponents.WRITTEN_BOOK_CONTENT);
-                if (content != null && content.title().raw().contains("Hearthwind Survival Guide")
-                        && content.pages().size() >= 5) {
-                    hasBook = true;
-                }
-            } else if (stack.is(Items.GLASS_BOTTLE)) {
-                hasBottle = true;
-            } else if (stack.is(Items.CAMPFIRE)) {
-                hasCampfire = true;
+        ItemStack apples = player.getInventory().getItem(StarterKit.SLOT_APPLE);
+        helper.assertTrue(apples.is(Items.APPLE) && apples.getCount() == 4,
+                "hotbar " + StarterKit.SLOT_APPLE + " must hold apples x4 (Aged hotbar.1), got " + apples);
+
+        ItemStack book = player.getInventory().getItem(StarterKit.SLOT_GUIDE);
+        boolean hasLavenderGuide = FabricLoader.getInstance().isModLoaded("lavender")
+                && BuiltInRegistries.ITEM.getOptional(GuideBook.ID).map(book::is).orElse(false);
+        boolean hasWrittenGuide = false;
+        if (book.is(Items.WRITTEN_BOOK)) {
+            var content = book.get(DataComponents.WRITTEN_BOOK_CONTENT);
+            hasWrittenGuide = content != null && content.title().raw().contains("Hearthwind Survival Guide")
+                    && content.pages().size() >= 5;
+        }
+        helper.assertTrue(hasLavenderGuide || hasWrittenGuide,
+                "hotbar " + StarterKit.SLOT_GUIDE + " must hold the guide book (Aged hotbar.4), got " + book);
+
+        ItemStack bottle = player.getInventory().getItem(StarterKit.SLOT_PURIFIED_WATER);
+        String potionId = "none";
+        if (bottle.is(Items.POTION)) {
+            var contents = bottle.get(DataComponents.POTION_CONTENTS);
+            if (contents != null) {
+                potionId = contents.potion().flatMap(holder -> holder.unwrapKey())
+                        .map(key -> key.identifier().toString()).orElse("none");
             }
         }
+        helper.assertTrue("dehydration:purified_water".equals(potionId),
+                "hotbar " + StarterKit.SLOT_PURIFIED_WATER
+                        + " must hold a purified water potion (Aged hotbar.7), got potion " + potionId);
 
-        helper.assertTrue(hasBook, "Player must receive a valid Survival Guidebook with pages");
-        helper.assertTrue(hasBottle, "Player must receive a Glass Bottle");
-        helper.assertTrue(hasCampfire, "Player must receive a Campfire");
+        ItemStack campfire = player.getInventory().getItem(StarterKit.SLOT_CAMPFIRE);
+        helper.assertTrue(campfire.is(Items.CAMPFIRE),
+                "hotbar " + StarterKit.SLOT_CAMPFIRE + " must hold a campfire (Aged hotbar.8), got " + campfire);
 
+        // The tag is what keeps the welcome screen away for good.
+        helper.assertTrue(player.entityTags().contains(StarterKit.STARTER_TAG),
+                "starting the adventure must tag the player");
+        player.getInventory().getItem(StarterKit.SLOT_BREAD).setCount(1);
+        StarterKit.beginAdventure(player);
+        helper.assertTrue(player.getInventory().getItem(StarterKit.SLOT_BREAD).getCount() == 1,
+                "a second Start must not refill the hotbar");
+
+        helper.succeed();
+    }
+
+    /**
+     * A client that cannot show the welcome screen (no hearthwind-client, or a
+     * player who quits while it is up) still gets the loadout: the server
+     * grants it on its own a few seconds after the payload goes unanswered.
+     *
+     * <p>The countdown is stepped by hand. Waiting for real server ticks would
+     * prove nothing, because the server drops every gametest mock player one
+     * tick after it joins - the embedded connection cannot decode the
+     * {@code cardinal-components:entity_sync} packet, so the player is kicked
+     * before the offer could ever expire on its own.
+     */
+    @GameTest
+    public void welcomeFallbackGrantsTheLoadoutWithoutAClientAnswer(GameTestHelper helper) {
+        ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        // The join handler armed the fallback and a headless test never answers
+        // it, so the fallback is the only thing that can fill the hotbar here.
+        helper.assertTrue(StarterKit.isAwaitingWelcomeStart(player),
+                "the join handler must arm the welcome fallback");
+        player.getInventory().clearContent();
+        player.removeTag(StarterKit.STARTER_TAG);
+        helper.assertFalse(player.entityTags().contains(StarterKit.STARTER_TAG),
+                "the join handler must not grant the loadout on its own");
+
+        // The countdown is driven by hand rather than by waiting real ticks: a
+        // gametest mock player is dropped by the server one tick after it joins
+        // (it cannot decode cardinal-components' entity_sync packet), so there
+        // is no live player to still be holding the offer 60 ticks later. The
+        // method stepped here is the one END_SERVER_TICK calls, and it grants on
+        // the last tick of the countdown, not one tick later.
+        StarterKit.armWelcomeFallback(player, 3);
+        for (int tick = 1; tick < 3; tick++) {
+            StarterKit.tickWelcomeFallbacks();
+            helper.assertFalse(player.entityTags().contains(StarterKit.STARTER_TAG),
+                    "the loadout must wait for the whole countdown, tick " + tick + " of 3");
+        }
+        StarterKit.tickWelcomeFallbacks();
+        helper.assertFalse(StarterKit.isAwaitingWelcomeStart(player),
+                "an answered offer must not come back around");
+        helper.assertTrue(player.entityTags().contains(StarterKit.STARTER_TAG),
+                "the unanswered welcome payload must fall back to granting the loadout");
+        helper.assertTrue(player.getInventory().getItem(StarterKit.SLOT_BREAD).is(Items.BREAD),
+                "the fallback must put the Aged loadout in the hotbar");
+        helper.assertTrue(player.getInventory().getItem(StarterKit.SLOT_CAMPFIRE).is(Items.CAMPFIRE),
+                "the fallback must put the Aged loadout in the hotbar");
+
+        // And the Start button's own path still short-circuits it.
+        player.removeTag(StarterKit.STARTER_TAG);
+        player.getInventory().clearContent();
+        StarterKit.armWelcomeFallback(player, 1);
+        StarterKit.beginAdventure(player);
+        StarterKit.tickWelcomeFallbacks();
+        helper.assertTrue(player.getInventory().getItem(StarterKit.SLOT_GUIDE) != ItemStack.EMPTY,
+                "answering the payload must grant the loadout at once");
         helper.succeed();
     }
 }

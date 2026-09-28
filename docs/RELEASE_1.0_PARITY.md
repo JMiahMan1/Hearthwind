@@ -282,7 +282,7 @@ writes it in the Decision column of the tracker (section 8).
 | `trinkets` | trinkets-3.7.2.jar | both | 1.21.1 | MIT | yes | C full |
 | `villagertradefix` | villagerfix-1.0.4.jar | both | 1.21.1 | MIT | yes | C full |
 | `voidz` | voidz-1.0.11.jar | both | 1.21.1 | GPL-3.0-only | yes | C full |
-| `welcomescreen` | welcomescreen-1.0.1.jar | both | 1.21.1 | MIT | yes | C full |
+| `welcomescreen` | welcomescreen-1.0.1.jar | both | 1.21.1 | MIT | yes | ✅ rebuilt in-tree 0.1.30 (not ported) |
 | `borderless-mining` | borderless-mining-1.1.8+1.20.1.jar | client | 1.20.2 | MIT | yes | C full |
 | `emiffect` | emiffect-fabric-1.1.2+mc1.20.1.jar | client | 1.21.1 | MIT | yes | C full |
 | `emitrades` | emitrades-fabric-1.2.1+mc1.20.1.jar | client | 1.20.4 | MIT | yes | C full |
@@ -300,7 +300,7 @@ writes it in the Decision column of the tracker (section 8).
 | `deuf-refabricated` | DEUF_Refabricated-MC1.20.1-1.1.0.jar | both | 1.21.3 | MIT | none listed | D no-source |
 | `villager-transportation` | villager-transportation-1.3.1.jar | both | 1.21.4 | All-Rights-Reserved | none listed | D no-source |
 
-### 5.3 Rebuilt in Hearthwind modules (20)
+### 5.3 Rebuilt in Hearthwind modules (21)
 
 | Aged mod | Replaced by | Known parity gaps / notes |
 |---|---|---|
@@ -324,6 +324,7 @@ writes it in the Decision column of the tracker (section 8).
 | `seasonhud-fabric` | hearthwind-client `SeasonHud` | upstream has a 26.2 build but needs fabric-seasons |
 | `spoiledz` | hearthwind-survival | superset (container spoilage) |
 | `tieredz` | hearthwind-primitive `TierRegistry` | 199 affix files + reforge; verify rarity weights 50/35/15/8/3/0 |
+| `welcomescreen` | hearthwind-client `WelcomeScreen` + hearthwind-survival `StarterKit` | ✅ 0.1.30: the Aged first-join welcome screen (title, three text blocks, the 256x256 pack image left of centre, the `Start` button) and the five `/item replace entity @s hotbar.N` commands it runs - bread x4, apples x4, the guide book, a purified water bottle, a campfire, in Aged's hotbar slots. Escape starts the game too, so nobody is stuck without supplies. Deviations on purpose: the image is the Hearthwind title art we own (Aged's `aged:textures/pack.png` is not redistributable), there is no Discord button (no invite to link), the second text block drops Aged's knapping line because the Hearthwind crafting rock is a 3x3 grid and not a knapping bench, and the granted potion is our real `dehydration:purified_water` where Aged's command names a `minecraft:purified_water` potion that only Dehydration 1.3.6 ever registered |
 
 ### 5.4 AgedAddition 1.0.6 (bundled jar, not on Modrinth)
 
@@ -395,7 +396,8 @@ shipped Time & Wind data reads 14, exactly like Aged.
 | Weapon/bow slots beside the player preview | **BackSlot** + BackSlotAddon | offhand only | ❌ port |
 | `Lv. N` label on the player preview | LevelZ `inventorySkillLevel` (posX 0 / posY 62, 0.6 scale, white) | `InventoryScreenButtonMixin` draws `Lv. <overall>` | ✅ 2026-09-26; overall level = min(30, sum/12) like LevelZ (was a raw sum, so it showed Lv. 360) |
 | Guidebook in the starter hotbar | Lavender `aged_guide_book` | rendered as missing texture; the vendored jar lacked the book entirely | ✅ fixed 2026-09-24 (item definition + refreshed vendored jar); re-verify with client gametests |
-| Starter hotbar: bread x4, apple x4, book, bottle, campfire | Aged capture | book, bottle, campfire | 🟡 verify where Aged's food comes from before changing `StarterKit` |
+| Starter hotbar: bread x4, apple x4, book, bottle, campfire | Aged capture | the same five items, same hotbar slots | ✅ 0.1.30. The capture's food is not a spawn bonus: Aged's `welcomescreen` mod shows a welcome screen on the first join and its **Start** button runs five `/item replace entity @s hotbar.N` commands - `hotbar.0` bread x4, `hotbar.1` apples x4, `hotbar.4` the Lavender guide book, `hotbar.7` a `purified_water` potion, `hotbar.8` a campfire. We rebuilt that flow (`hearthwind-client` `WelcomeScreen` + `hearthwind-survival` `StarterKit`) and match the slots, counts and items; the one deviation is the potion id (Aged names `minecraft:purified_water`, we register `dehydration:purified_water`) |
+| Welcome screen on the first join | **Welcomescreen** + the `aged_welcome_screen` paxi datapack (title, three text blocks, the 256x256 pack image left of centre, `Start` at the top right) | `WelcomeScreen` (same layout and texts) | ✅ 0.1.30, with two deliberate differences: the image is the Hearthwind title art we own (Aged's `aged:textures/pack.png` is not redistributable) and there is no Discord button (Hearthwind has no invite to link) |
 
 **Screens** (details in `docs/AGED_UI_PARITY.md`): the Level screen has the
 attribute slide-out and the restriction rail (mining/crafting) opening
@@ -541,7 +543,9 @@ confirm. When we keep Aged's behaviour instead, list that too.
 **W1: First-impression and HUD parity (what a player sees in the first 10 minutes).**
 Adopt Overflowing Bars; port Time & Wind and move seasons to tick length;
 add the `Lv. N` preview label; match the tab icons; re-verify the
-guidebook in the starter kit; decide on the Comfort card; the Hearthwind
+guidebook in the starter kit (done 0.1.30: the starter hotbar is Aged's
+five welcome-screen commands, and `WelcomeScreen` rebuilds the welcome
+screen that grants them); decide on the Comfort card; the Hearthwind
 guidebook (section 5.8). Then port the
 accessory stack (Trinkets, BackSlot + addon, Inmis + addon), because it
 defines the inventory silhouette. Screens: finish the Level-screen rail and
@@ -581,9 +585,11 @@ voidz, travelerz, inmis + inmisaddon, backslot + addon, trinkets,
 antique-atlas + surveyor, another-furniture, bento-box, connectiblechains,
 niftycarts, villager-transportation, smarter-farmers, villagertradefix,
 fishing-real, treechop, hearths, immersive-snow, grass-overhaul, lootbeams,
-nameplate, particular, time-wind, welcomescreen, the EMI family), then
+nameplate, particular, time-wind, the EMI family), then
 client-only feel mods, then perf/fix libraries. Each is a per-mod team
-decision; record it before starting.
+decision; record it before starting. (`welcomescreen` left the queue in
+0.1.30: rebuilt in-tree as the welcome screen plus the five starter-loadout
+commands.)
 
 **W5: Look and feel.** Resource packs and shaders from 5.6 (check each
 license before redistributing), and client configs as their mods land.

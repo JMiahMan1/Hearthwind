@@ -90,6 +90,7 @@ Legend: ✅ parity · 🟡 partial/different tuning · ❌ missing
 | Diet | NutritionZ is nearly inert (2 item ids); "diet" = food variety | 5 nutrient groups, decay 0.02/s, deficiency debuffs, balanced bonus hearts | ✅ superset (intentional) |
 | Spoilage | `seasonSpoilage 8`, 69 non-spoiling (alcohol/tea) | interval 200, chance 0.002, hot ×2, **container spoilage**, non-spoiling tag | ✅ superset |
 | Downed/revive | Revive 1.0.7 (`config/revive.json5`) | 60 s bleedout, 3 s channel, revive at 6 HP | 🟡 rebuilt; verify tuning against Aged's revive.json5 |
+| First ten minutes | WelcomeScreen: a welcome screen on the first join whose **Start** button runs `/item replace entity @s hotbar.0/.1/.4/.7/.8` = bread x4, apples x4, the guide book, a `purified_water` potion, a campfire | same screen, same texts, same five commands in the same hotbar slots (0.1.30) | ✅ 0.1.30, two deliberate differences: our own title art instead of Aged's `aged:textures/pack.png`, and the granted potion is our `dehydration:purified_water` |
 
 ### Progression
 

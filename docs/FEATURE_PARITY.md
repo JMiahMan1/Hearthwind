@@ -26,6 +26,7 @@ over (with reason)
 | fabric-seasons + seasonhud + crop-growth-modifier | Seasons & crops | `hearthwind-world`, `config/hearthwind_world.json` | ✅ | 21-day seasons (Aged `seasons.json` 504000 ticks), top-left SeasonHUD widget (`[Icon] Season, Day N/21`), 15 per-crop growth multipliers, winter snow layering |
 | revive | Downed & Revive | `ReviveManager`, `hearthwind-survival` | ✅ | 60s bleedout crawl state, call for help, 3s team revive channel |
 | let's do family | Agriculture suite | `letsdo-*` (external repo) | ✅ | Farm & Charm, Vinery, Candlelight, Meadow, HerbalBrews, Brewery, Nether Vinery crops and stations |
+| welcomescreen | First-join welcome screen + starter loadout | `hearthwind-client` `WelcomeScreen`, `hearthwind-survival` `StarterKit` | ✅ 0.1.30 | Aged's welcome screen (title, three text blocks, pack image, `Start` button) and the five `/item replace entity @s hotbar.N` commands it runs: bread x4, apples x4, guide book, purified water bottle, campfire - same slots as Aged. Escape starts the game too. Differences on purpose: our own title art, no Discord button, the knapping line dropped from the second text block (our crafting rock is a 3x3 grid) |
 
 ## Contrib Ports (Vendored 26.2 Builds)
 

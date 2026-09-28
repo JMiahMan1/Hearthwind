@@ -24,6 +24,11 @@
   "screen.hearthwind.skills.title": "%s Skills",
   "screen.hearthwind.jobs.title": "%s Jobs",
   "screen.hearthwind.party.title": "%s Party",
+  "screen.hearthwind.welcome": "Welcome to Hearthwind!",
+  "screen.hearthwind.welcome.start": "Start",
+  "screen.hearthwind.welcome.text.guide": "Before you start your journey: the guide book is waiting in your hotbar, and the command /guide gets you a new one at any time.",
+  "screen.hearthwind.welcome.text.first": "One of your first tasks is food and fresh water.\nAnother is picking up stones and flint from the ground - break them with your bare hand.\nTwo rocks make a crafting rock: place it, lay items on its grid, and strike it with another rock.",
+  "screen.hearthwind.welcome.text.pack": "Hearthwind is a slow pack. Learn the skills, take a job, and the Ages will open as you earn them.",
 
   "skill.hearthwind.farming": "Farming",
   "skill.hearthwind.mining": "Mining",

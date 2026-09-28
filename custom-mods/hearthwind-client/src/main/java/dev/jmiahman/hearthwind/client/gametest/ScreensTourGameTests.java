@@ -7,6 +7,8 @@ import dev.jmiahman.hearthwind.client.SkillInfoScreen;
 import dev.jmiahman.hearthwind.client.SkillRestrictionScreen;
 import dev.jmiahman.hearthwind.client.SkillsScreen;
 import dev.jmiahman.hearthwind.client.SurvivalInfoScreen;
+import dev.jmiahman.hearthwind.client.WelcomeScreen;
+import dev.jmiahman.hearthwind.survival.StarterKit;
 import draylar.inmis.client.InmisBackpackLayer;
 import draylar.inmis.mixin.client.LivingEntityRendererInvoker;
 import net.fabricmc.fabric.api.client.gametest.v1.FabricClientGameTest;
@@ -48,6 +50,38 @@ public class ScreensTourGameTests implements FabricClientGameTest {
         try (TestSingleplayerContext world = context.worldBuilder().create()) {
             world.getConnection().waitForChunksRender(SLOW_TIMEOUT_TICKS);
             context.waitTicks(40);
+
+            // Aged's welcome screen: it opens on a first join and its Start
+            // button is what hands over the starter loadout, so this pass
+            // covers the whole path - screen, button, five hotbar slots.
+            // The tour asks the server for a deterministic first join (a
+            // session that joined a world earlier already has the starter tag,
+            // so the screen would legitimately stay closed). waitFor fails the
+            // test on timeout.
+            world.getServer().computeOnServer(server -> {
+                net.minecraft.server.level.ServerPlayer p = server.getPlayerList().getPlayers().get(0);
+                StarterKit.resetAndOfferWelcomeScreen(p);
+                return Boolean.TRUE;
+            });
+            context.waitFor(minecraft -> minecraft.gui.screen() instanceof WelcomeScreen, SLOW_TIMEOUT_TICKS);
+            context.waitTicks(10);
+            context.takeScreenshot("tour_welcome");
+            context.clickScreenButton("screen.hearthwind.welcome.start");
+            context.waitFor(minecraft -> minecraft.gui.screen() == null, SLOW_TIMEOUT_TICKS);
+            // Twenty ticks is far short of the server's 60-tick fallback, and
+            // in singleplayer the two tick together: the loadout can only be in
+            // the hotbar this early if the Start button's payload did it.
+            context.waitTicks(20);
+            for (int slot : new int[] {StarterKit.SLOT_BREAD, StarterKit.SLOT_APPLE, StarterKit.SLOT_GUIDE,
+                    StarterKit.SLOT_PURIFIED_WATER, StarterKit.SLOT_CAMPFIRE}) {
+                int count = world.getServer().computeOnServer(server -> {
+                    net.minecraft.server.level.ServerPlayer p = server.getPlayerList().getPlayers().get(0);
+                    return p.getInventory().getItem(slot).getCount();
+                });
+                if (count == 0) {
+                    throw new AssertionError("Start left hotbar slot " + slot + " empty");
+                }
+            }
             closeAnyScreen(context);
 
             // Drive every screen through context.setScreen: the fabric-gametest

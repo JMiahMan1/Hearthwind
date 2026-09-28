@@ -8,11 +8,18 @@ contract of what the pack does. Grown from the Aged fork; server-side only.
 
 - **Starting Health (3 Hearts / 6.0 Max HP)**:
   Players begin their journey with only **3 Hearts (6.0 HP)**. Surviving the early game requires caution and preparation.
-- **Starter Kit & Guidebook**:
-  On first world spawn, every player is automatically granted:
-  - **Hearthwind Survival Guide**: The canonical `hearthwind:hearthwind_guide_book` guidebook, covering survival rules, temperature, nutrients, Age 0 rock gathering, skills, jobs, and progression. A vanilla written-book fallback remains available without Lavender. Use `/guide` or `/guidebook` anytime to receive a replacement copy.
-  - **Glass Bottle**: For collecting water and managing early hydration.
-  - **Campfire**: For immediate shelter heating against freezing conditions and cooking raw perishables. Campfires **place unlit** - strike them yourself.
+- **Welcome screen and starter loadout**:
+  The first time you join a world, a **welcome screen** tells you what to do first
+  (food and fresh water; stones and flint by hand; two rocks make a crafting rock)
+  and its **Start** button fills your hotbar exactly like Aged's:
+  - slot 1: **Bread x4**
+  - slot 2: **Apples x4**
+  - slot 5: **Hearthwind Survival Guide** - the `hearthwind:hearthwind_guide_book` guidebook covering survival rules, temperature, nutrients, rock gathering, skills, jobs and the Ages. A vanilla written-book fallback remains available without Lavender. Use `/guide` or `/guidebook` anytime to receive a replacement copy.
+  - slot 8: **Purified water bottle** - safe to drink, no thirst risk
+  - slot 9: **Campfire** - heats you against freezing conditions and cooks raw perishables. Campfires **place unlit** - strike them yourself with bark.
+  Escape also starts the game, so you are never stuck behind the screen. The screen
+  only appears once per player; if you dismiss it the world keeps its tag and the
+  loadout is yours for good.
 - **Health Skill Scaling**:
   Buying a **Health** skill level unlocks +0.5 heart (+1.0 HP) per level
   (action XP alone never raises your hearts - you spend the points first):

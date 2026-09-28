@@ -45,9 +45,8 @@ public class DietGameTests implements FabricClientGameTest {
             });
             context.waitTicks(5);
 
-            // StarterKit puts the survival guide book in the inventory/offhand;
-            // a failed main-hand use falls through to the offhand and opens the
-            // book screen. Clear it so only the apple is usable.
+            // Defensive: a failed main-hand use falls through to the offhand and
+            // opens whatever is there. Clear it so only the apple is usable.
             context.runOnClient(minecraft -> {
                 minecraft.player.getInventory().setItem(net.minecraft.world.entity.player.Inventory.SLOT_OFFHAND,
                         net.minecraft.world.item.ItemStack.EMPTY);
@@ -57,8 +56,8 @@ public class DietGameTests implements FabricClientGameTest {
             int vitaminsBefore = nutrient(world.getServer(), 3);
             int mineralsBefore = nutrient(world.getServer(), 4);
 
-            // StarterKit fills the hotbar (guide book, bottle, campfire) on join,
-            // so clear the inventory first to give the apple a predictable slot 0.
+            // Clear the inventory first so the apple lands in a predictable
+            // hotbar slot 0 whatever the world handed the player.
             world.getServer().computeOnServer(server -> {
                 ServerPlayer p = server.getPlayerList().getPlayers().get(0);
                 p.getInventory().clearContent();
