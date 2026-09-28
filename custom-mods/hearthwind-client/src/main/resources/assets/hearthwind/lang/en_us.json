@@ -29,7 +29,6 @@
   "screen.hearthwind.welcome.text.guide": "Before you start your journey: the guide book is waiting in your hotbar, and the command /guide gets you a new one at any time.",
   "screen.hearthwind.welcome.text.first": "One of your first tasks is food and fresh water.\nAnother is picking up stones and flint from the ground - break them with your bare hand.\nTwo rocks make a crafting rock: place it, lay items on its grid, and strike it with another rock.",
   "screen.hearthwind.welcome.text.pack": "Hearthwind is a slow pack. Learn the skills, take a job, and the Ages will open as you earn them.",
-
   "skill.hearthwind.farming": "Farming",
   "skill.hearthwind.mining": "Mining",
   "skill.hearthwind.smithing": "Smithing",
@@ -42,7 +41,6 @@
   "skill.hearthwind.archery": "Archery",
   "skill.hearthwind.alchemy": "Alchemy",
   "skill.hearthwind.trade": "Trade",
-
   "job.hearthwind.fisher": "Fisher",
   "job.hearthwind.miner": "Miner",
   "job.hearthwind.farmer": "Farmer",
@@ -50,5 +48,6 @@
   "job.hearthwind.smither": "Smither",
   "job.hearthwind.brewer": "Brewer",
   "job.hearthwind.builder": "Builder",
-  "job.hearthwind.lumberjack": "Lumberjack"
+  "job.hearthwind.lumberjack": "Lumberjack",
+  "screen.hearthwind.welcome.hint": "Click Start or press Esc to begin"
 }

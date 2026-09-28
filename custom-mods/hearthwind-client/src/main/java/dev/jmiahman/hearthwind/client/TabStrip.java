@@ -26,11 +26,6 @@ import net.minecraft.world.item.Items;
  * <p>Tab art from LevelZ / JobsAddon / PartyAddon is GPL and is NOT copied:
  * the four tabs use vanilla item icons (bundle, iron sword, iron axe, armor
  * stand) to reproduce the gallery's bag/sword/axe/figure silhouette legally.
- *
- * <p>Two placements exist: {@link #draw} keeps the LibZ float above the panel
- * (the inventory screen, which has no band) and {@link #drawInBand} drops the
- * same strip one pixel into the panel's black band, which is where the Aged
- * Jobs and Level captures put it.
  */
 @Environment(EnvType.CLIENT)
 public final class TabStrip {
@@ -66,21 +61,15 @@ public final class TabStrip {
     /**
      * Draws the four-tab strip above {@code panelX/panelY}. {@code active} may
      * be null (no selected tab).
+     *
+     * <p>The strip floats above the panel in every Aged capture: the Jobs and
+     * Level panels are 200x215 and the tabs sit on the 21 rows directly above
+     * the panel, with the selected tab raised 2 px and merging into the panel's
+     * top edge.
      */
     public static void draw(GuiGraphicsExtractor graphics, int panelX, int panelY,
             Tab active, int mouseX, int mouseY) {
         drawStrip(graphics, panelX, panelY - 21, 2, active, mouseX, mouseY);
-    }
-
-    /**
-     * Draws the strip inside a panel's black tab band: every tab starts one
-     * pixel above the band and the selected one is only taller, which is what
-     * the Aged Jobs and Level captures show (the tabs sit in the band, not
-     * above the panel).
-     */
-    public static void drawInBand(GuiGraphicsExtractor graphics, int panelX, int panelTop,
-            Tab active, int mouseX, int mouseY) {
-        drawStrip(graphics, panelX, panelTop - 1, 0, active, mouseX, mouseY);
     }
 
     private static void drawStrip(GuiGraphicsExtractor graphics, int panelX, int restTop, int raisedBy,
@@ -116,11 +105,6 @@ public final class TabStrip {
     /** Returns the tab under the cursor, or null. Mirrors LibZ click bounds. */
     public static Tab clicked(double mouseX, double mouseY, int panelX, int panelY, Tab active) {
         return clickStrip(mouseX, mouseY, panelX, panelY - 21, 2, active);
-    }
-
-    /** Banded variant of {@link #clicked}: {@code panelTop} is the band's top. */
-    public static Tab clickedInBand(double mouseX, double mouseY, int panelX, int panelTop, Tab active) {
-        return clickStrip(mouseX, mouseY, panelX, panelTop - 1, 0, active);
     }
 
     private static Tab clickStrip(double mouseX, double mouseY, int panelX, int restTop, int raisedBy,

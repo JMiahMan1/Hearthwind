@@ -9,7 +9,6 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.FormattedCharSequence;
@@ -46,8 +45,9 @@ import net.minecraft.util.FormattedCharSequence;
  * GUI scale is 480x270 logical, and the headless test client runs 427x240 -
  * and there the right-hand text column would run off the edge. Below
  * {@link #WIDE_MIN_WIDTH} the same content is stacked in one centred column,
- * and if the window is too short even for that the pack art goes first and
- * then the last text block.
+ * the pack art becomes a letterbox strip that shrinks to the room left, and the
+ * last text blocks are given up before the Start button is ever pushed out of
+ * reach.
  */
 @Environment(EnvType.CLIENT)
 public class WelcomeScreen extends Screen {
@@ -56,17 +56,30 @@ public class WelcomeScreen extends Screen {
             "hearthwind", "textures/gui/title/main_menu_background.png");
     /** Aged's {@code image_1} box; we sample a 16:9 crop of the title art into it. */
     private static final int PACK_ART_BOX = 256;
-    private static final int ART_U = 832;
-    private static final int ART_V = 468;
+    /** Centre of the crop in the 1920x1080 title texture. */
+    private static final int ART_CENTER_U = 960;
+    private static final int ART_CENTER_V = 540;
     private static final int ART_FULL_W = 256;
     private static final int ART_FULL_H = 144;
+    /**
+     * How much of the source texture one screen pixel covers. Drawing the art
+     * with the 11-argument blit samples a w x h region and draws it 1:1, so a
+     * 256x144 sample of a 1920x1080 texture is magnified on any display and
+     * reads as grainy. Sampling a 3x larger region and scaling it down is what
+     * makes the art smooth; the 3x is simply "more source than we draw".
+     */
+    private static final int ART_OVERSAMPLE = 3;
+    private static final int ART_TEX_W = 1920;
+    private static final int ART_TEX_H = 1080;
     /** A letterbox strip of the same art, for the narrow single-column layout. */
     private static final int ART_STRIP_MAX_W = 512;
     private static final int ART_STRIP_H = 72;
-    private static final int ART_STRIP_V = 508;
+    /** Below this the strip is not worth the vertical room it would cost. */
+    private static final int ART_STRIP_MIN_H = 32;
 
     private static final int TITLE_COLOR = 0xFFF3DFCD;
     private static final int TEXT_COLOR = 0xFFE6DFD2;
+    private static final int HINT_COLOR = 0xFFA79A87;
     private static final int SHADE_COLOR = 0xFF0B1016;
 
     /** Aged's text column width. */
@@ -119,7 +132,6 @@ public class WelcomeScreen extends Screen {
 
     @Override
     public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
-        super.extractRenderState(graphics, mouseX, mouseY, delta);
         Font font = this.font;
         Layout layout = layout();
         int centerX = this.width / 2;
@@ -129,9 +141,16 @@ public class WelcomeScreen extends Screen {
         // use the Hearthwind title art so the first thing a player sees in a
         // world is the same art as the main menu.
         if (layout.artW() > 0) {
-            graphics.blit(RenderPipelines.GUI_TEXTURED, PACK_ART,
-                    layout.artX(), layout.artY(), (float) layout.artU(), (float) layout.artV(),
-                    layout.artW(), layout.artH(), 1920, 1080, 0xFFFFFFFF);
+            // Destination rect + source rect, so the GPU scales a large crop
+            // down instead of magnifying a small one.
+            int srcW = Math.min(ART_TEX_W, layout.artW() * ART_OVERSAMPLE);
+            int srcH = Math.min(ART_TEX_H, layout.artH() * ART_OVERSAMPLE);
+            float u0 = clampToTexture(ART_CENTER_U - srcW / 2.0F, srcW, ART_TEX_W);
+            float v0 = clampToTexture(ART_CENTER_V - srcH / 2.0F, srcH, ART_TEX_H);
+            graphics.blit(PACK_ART,
+                    layout.artX(), layout.artY(),
+                    layout.artX() + layout.artW(), layout.artY() + layout.artH(),
+                    u0, u0 + srcW, v0, v0 + srcH);
         }
 
         Component title = this.title;
@@ -146,6 +165,25 @@ public class WelcomeScreen extends Screen {
             }
             y += GAP;
         }
+
+        // The escape hatch, spelled out. Aged's screen has one button and
+        // players reported not finding it; the hint costs one line and makes
+        // the way in unmissable. Escape works too, see shouldCloseOnEsc.
+        Component hint = Component.translatable("screen.hearthwind.welcome.hint");
+        graphics.text(font, hint, centerX - font.width(hint) / 2, layout.hintY(), HINT_COLOR, false);
+
+        // Widgets last: the opaque background above is a full-screen fill, so
+        // extracting the Start button before it would paint the button out.
+        // That is exactly what hid it for 0.1.30-0.1.33.
+        super.extractRenderState(graphics, mouseX, mouseY, delta);
+    }
+
+    /**
+     * Keeps an oversampled source rect inside the texture: near an edge the
+     * window shrinks so the region still has the size we asked for.
+     */
+    private static float clampToTexture(float start, int size, int textureSize) {
+        return Math.max(0.0F, Math.min(start, textureSize - size));
     }
 
     /**
@@ -171,35 +209,71 @@ public class WelcomeScreen extends Screen {
         List<FormattedCharSequence> pack = block("pack", wrap);
         List<List<FormattedCharSequence>> blocks = new ArrayList<>(List.of(guide, first, pack));
 
+        // The button and its hint are reserved BEFORE anything else and are then
+        // clamped into the window: a player must never be left without a way in,
+        // whatever the window size. The escape key works too, but a button the
+        // layout pushed off the bottom of the screen is invisible, and players
+        // reported not finding it.
+        int hintH = font.lineHeight + 4;
+        int buttonY = clamp(this.height - BUTTON_H - MARGIN - hintH, MARGIN, this.height - BUTTON_H - MARGIN);
+        int buttonX = wide ? centerX + 90 - BUTTON_W / 2 : centerX - BUTTON_W / 2;
+
         if (wide) {
             // Aged: pack art in the box left of centre, the three text blocks in
             // the right-hand column, Start below them.
             int blocksHeight = blocksHeight(blocks, lineHeight);
-            return new Layout(ART_U, ART_V, ART_FULL_W, ART_FULL_H,
+            return new Layout(ART_FULL_W, ART_FULL_H,
                     centerX - 150, centerY - 20 - PACK_ART_BOX / 2,
                     centerY - 14, blocks, centerY + 40 - blocksHeight / 2,
-                    centerX + 90 - BUTTON_W / 2, centerY - 105);
+                    buttonX, buttonY, hintAbove(buttonY, hintH));
         }
 
-        // Narrow: one centred column with a letterbox strip of the same art, and
-        // the art is the first thing to go if the window is too short for it.
+        // Narrow: one centred column with a letterbox strip of the same art. The
+        // text gets what is left above the button; blocks, then lines, then the
+        // art are given up in that order.
         int stripW = Math.min(this.width, ART_STRIP_MAX_W);
-        int buttonY = this.height - BUTTON_H - MARGIN;
-        int budget = buttonY - MARGIN;
-        int textHeight = font.lineHeight + GAP + blocksHeight(blocks, lineHeight);
-        boolean art = textHeight + GAP + ART_STRIP_H <= budget;
-        int content = textHeight + (art ? ART_STRIP_H + GAP : 0);
-        while (!art && blocks.size() > 1 && content > budget) {
-            content -= blocks.get(blocks.size() - 1).size() * lineHeight + GAP;
+        int textTop = font.lineHeight + GAP;
+        int budget = buttonY - GAP - MARGIN - textTop;
+        while (blocks.size() > 1 && blocksHeight(blocks, lineHeight) > budget) {
             blocks = new ArrayList<>(blocks.subList(0, blocks.size() - 1));
         }
-        int top = Math.max(MARGIN, (this.height - (content + BUTTON_H + 2 * MARGIN)) / 2);
-        int artY = top + font.lineHeight + GAP;
-        return new Layout(art ? (1920 - stripW) / 2 : 0, art ? ART_STRIP_V : 0,
-                art ? stripW : 0, art ? ART_STRIP_H : 0,
+        if (blocks.size() == 1 && blocks.get(0).size() * lineHeight > budget) {
+            // A window too short even for one whole block keeps as many of its
+            // leading lines as fit rather than overflowing into the button.
+            int lines = Math.max(1, budget / lineHeight);
+            blocks = new ArrayList<>(List.of(new ArrayList<>(blocks.get(0).subList(0,
+                    Math.min(lines, blocks.get(0).size())))));
+        }
+        int textHeight = blocksHeight(blocks, lineHeight);
+        // The strip shrinks to whatever vertical room is left rather than being
+        // all or nothing: on a 427x240 window (a 1080p display at GUI scale 4)
+        // the full 72 px strip does not fit under the reserved button, and a
+        // bare text screen is a worse first impression than a thin band of art.
+        int free = buttonY - GAP - MARGIN - textTop - textHeight;
+        int stripH = free >= ART_STRIP_MIN_H + GAP ? Math.min(ART_STRIP_H, free - GAP) : 0;
+        boolean art = stripH > 0;
+        int content = textHeight + (art ? stripH + GAP : 0) + textTop;
+        int top = clamp((this.height - (content + BUTTON_H + hintH + 2 * MARGIN)) / 2,
+                MARGIN, Math.max(MARGIN, buttonY - GAP - content));
+        int artY = top + textTop;
+        return new Layout(art ? stripW : 0, stripH,
                 (this.width - stripW) / 2, artY,
-                top, blocks, art ? artY + ART_STRIP_H + GAP : artY,
-                centerX - BUTTON_W / 2, buttonY);
+                top, blocks, art ? artY + stripH + GAP : artY,
+                buttonX, buttonY, hintAbove(buttonY, hintH));
+    }
+
+    /**
+     * Where the hint goes: under the button when there is room for it, otherwise
+     * above it, so it is never drawn off the bottom edge.
+     */
+    private int hintAbove(int buttonY, int hintH) {
+        return buttonY + BUTTON_H + 4 <= this.height - MARGIN
+                ? buttonY + BUTTON_H + 4
+                : Math.max(MARGIN, buttonY - GAP - hintH + 4);
+    }
+
+    private static int clamp(int value, int min, int max) {
+        return Math.max(min, Math.min(value, Math.max(min, max)));
     }
 
     /** One of the three Aged text blocks, pre-wrapped for this window. */
@@ -216,6 +290,7 @@ public class WelcomeScreen extends Screen {
     }
 
     /** Everything {@link #layout()} needs; {@code artW == 0} means no art. */
-    private record Layout(int artU, int artV, int artW, int artH, int artX, int artY, int titleY,
-            List<List<FormattedCharSequence>> blocks, int blocksTop, int buttonX, int buttonY) {}
+    private record Layout(int artW, int artH, int artX, int artY, int titleY,
+            List<List<FormattedCharSequence>> blocks, int blocksTop, int buttonX, int buttonY,
+            int hintY) {}
 }

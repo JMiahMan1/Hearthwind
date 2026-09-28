@@ -19,8 +19,7 @@ import net.minecraft.world.item.Items;
  * Aged 3.1.2 / LevelZ SkillScreen rebuild (clean-room: layout studied from
  * the GPL LevelZ source, reimplemented on our data and 26.2 APIs).
  *
- * <p>200x236 panel centred (black tab band on top), "&lt;Name&gt; Skills"
- * title centred at x+120/y+7,
+ * <p>200x215 panel centred, "&lt;Name&gt; Skills" title centred at x+120/y+7,
  * player model preview at the left, six attribute readouts in a 3x2 grid,
  * "Level N   Points N" line, segmented XP bar with "Xp n / next" text and
  * twelve skill rows (two columns, six rows) with [+1] buttons.
@@ -275,7 +274,7 @@ public class SkillsScreen extends HearthwindPanelScreen {
     }
 
     private void drawHelpOverlay(GuiGraphicsExtractor graphics, Font font) {
-        graphics.fill(this.x + 3, this.y + 3, this.x + PANEL_W - 3, panelTop() + PANEL_H - 3, 0xE0202020);
+        graphics.fill(this.x + 3, this.y + 3, this.x + PANEL_W - 3, this.y + PANEL_H - 3, 0xE0202020);
         int tx = this.x + 12;
         int ty = this.y + 24;
         String[] lines = {

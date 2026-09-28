@@ -17,9 +17,12 @@ contract of what the pack does. Grown from the Aged fork; server-side only.
   - slot 5: **Hearthwind Survival Guide** - the `hearthwind:hearthwind_guide_book` guidebook covering survival rules, temperature, nutrients, rock gathering, skills, jobs and the Ages. A vanilla written-book fallback remains available without Lavender. Use `/guide` or `/guidebook` anytime to receive a replacement copy.
   - slot 8: **Purified water bottle** - safe to drink, no thirst risk
   - slot 9: **Campfire** - heats you against freezing conditions and cooks raw perishables. Campfires **place unlit** - strike them yourself with bark.
-  Escape also starts the game, so you are never stuck behind the screen. The screen
-  only appears once per player; if you dismiss it the world keeps its tag and the
-  loadout is yours for good.
+  Escape also starts the game, so you are never stuck behind the screen. The
+  screen only appears once per player; if you dismiss it the world keeps its tag and the
+  loadout is yours for good. 0.1.33: the **Start button is always on screen** and now
+  draws on top of the background (it was clickable but invisible), the pack art is
+  smooth at any window size, and a "Click Start or press Esc to begin" line sits under
+  the button so the way in is impossible to miss.
 - **Health Skill Scaling**:
   Buying a **Health** skill level unlocks +0.5 heart (+1.0 HP) per level
   (action XP alone never raises your hearts - you spend the points first):
@@ -33,6 +36,15 @@ contract of what the pack does. Grown from the Aged fork; server-side only.
 - **Beginner death forgiveness**: your first `beginnerDeathCount` lethal deaths (default 3, `config/hearthwind_primitive.json`) keep your inventory. The counter **resets when you finish eating food** or **sleep in a bed**. After the budget is spent, deaths drop items normally.
 - **Wooden shield (earlystage)**: off-hand wooden shield with vanilla-style `BLOCKS_ATTACKS` (90% reduction, 3 damage threshold, durability cost). Axes (and other disable-blocking attackers) put it on a **100-tick** disable cooldown.
 - **Bark, axes & fire (earlystage)**: flint and steel axes strip logs like vanilla axes and drop **bark** (`earlystage:*_bark`, all 11 wood types); sieving also yields bark rarely. Campfires always place **unlit** — right-click one with bark to light it (consumes 1 bark; flint and steel works too). Lit campfires cook food and boil water bottles (see Thirst).
+- **Purifying water, fixed (0.1.33)**: a bottle now leaves the fire when it
+  finishes - it pops clear of the campfire's edge instead of sitting buried in
+  the block, with a soft chime and a steam/bubble burst. A boil that is
+  interrupted when the fire goes out now **freezes** and resumes from where it
+  was when you relight, instead of silently decaying away (Aged parity), and
+  putting a bottle on a dark campfire tells you to light the fire first. Cook
+  time is 1000 ticks (50s), the literal constant Aged's Dehydration 1.3.6
+  passes to `addItem`; Aged has no chime, no particles and no hint message,
+  they are Hearthwind additions.
 
 ## Survival needs (replaces Dehydration + EnvironmentZ + NutritionZ)
 
@@ -40,7 +52,7 @@ Vanilla Minecraft only tracks hunger. Hearthwind adds:
 
 | System | What you see | Rules |
 |---|---|---|
-| **Thirst** | 10 blue teardrops in the 9-px band immediately above hunger, right-aligned to hotbar right edge, with a 13×13 glass flask icon on the left. Drinking dirty water shifts droplets from blue to murky green for the duration of the thirst debuff. | **Scale** `dehydration:hydration` 0..20. **Drain** `baseDrain 0.025` (~13m empty) ×2 sprint +0.05 per `thirst` amp. **Drink** the leather flask (+4 per sip), and **eating or drinking any catalogued food now rehydrates you**: melon slice +1, glow berries and chorus fruit +2, stews +3, apple +4, golden apple +6, milk bucket +8 - 38 foods and drinks are catalogued across 12 tiers (`config/hearthwind_survival.json`: `thirst.useHydrationCorpus`, `hydrationCorpusScale`). Empty-hand on still water while sneaking: hold right-click ~4s to drink +1 with gulp sounds, may inflict temporary `dehydration:thirst` (green teardrop HUD, halved chance in rivers), and consumes the source block. **Purified water** (`dehydration:purified_water` fluid/block/bucket — smelt a water bucket, or place water bottles on a **lit campfire** and they boil into purified bottles in ~50s) never inflicts thirst; any other potion is a 1-droplet drink with a **15%** chance of temporary `dehydration:thirst` (15s). |
+| **Thirst** | 10 blue teardrops in the 9-px band immediately above hunger, right-aligned to hotbar right edge, with a 13×13 glass flask icon on the left. Drinking dirty water shifts droplets from blue to murky green for the duration of the thirst debuff. | **Scale** `dehydration:hydration` 0..20. **Drain** `baseDrain 0.025` (~13m empty) ×2 sprint +0.05 per `thirst` amp. **Drink** the leather flask (+4 per sip), and **eating or drinking any catalogued food now rehydrates you**: melon slice +1, glow berries and chorus fruit +2, stews +3, apple +4, golden apple +6, milk bucket +8 - 38 foods and drinks are catalogued across 12 tiers (`config/hearthwind_survival.json`: `thirst.useHydrationCorpus`, `hydrationCorpusScale`). Empty-hand on still water while sneaking: hold right-click ~4s to drink +1 with gulp sounds, may inflict temporary `dehydration:thirst` (green teardrop HUD, halved chance in rivers), and consumes the source block. **Purified water** (`dehydration:purified_water` fluid/block/bucket — smelt a water bucket, or place water bottles on a **lit campfire** and they boil into purified bottles in ~50s; a boil on a fire that goes out **freezes and resumes** when you relight it (Aged parity), and placing a bottle on a dark campfire says so) never inflicts thirst; any other potion is a 1-droplet drink with a **15%** chance of temporary `dehydration:thirst` (15s). |
 | **Body temperature** | Bottom-anchored 13×13 body-status icon at (screen centre - 7, bottom - 52) + 16×32 glass thermometer at (centre + 95, bottom - 32). EnvironmentZ 2.0.8 draws nothing else (no unit box, no trend arrow, no status words) and the port matches that. | Faithful EnvironmentZ 2.0.8 port (data values mirror the version Aged 3.1.2 ships). **Body temperature** is an integer **-2400..+2400** recomputed once per 10 ticks: bands -2400 very cold / -1800 freezing / -240 comfortable / +240 hot / +1800 overheating / +2400. **Thermometer** reads a separate -6..+6 value driven only by climate, shade, height and nearby heat. **Seasons** shift both body and thermometer (winter -3, summer +2, spring +0.5, autumn 0; `daysPerSeason = 21`). **Heat sources** (lava 4/3/2/1, campfire, soul campfire, fire, soul fire, magma, lava cauldron, lit furnace/blast furnace/smoker: 3/2/1/0; torch/soul torch 1 at 0) only count within 3 blocks with a clear line of sight, at most `max_count` of each; snow/ice cool -3/-2/-1. **Worn armor** +1/piece, insulated (polar bear fur, wolf/leather) +3/piece, iced chainmail-style armor -5 and wears off one charge per calculation; **warm armor +3 takes precedence** over its +1. **Wetness 0..200**: water +100, rain +1, dries -1 per calculation, soaked (≥180) costs -6 and any wet costs -3. **Shade** (no sky) -1. **Height**: +2 below y=0, +1 below y=30, 0 up to y=120, -1 above, -2 above y=190. **Acclimatization** pulls you back to comfort (±10/±15 at ±180/±1600), and cold/heat resistance+protection pools (max 600, from items and effects) soak the incoming delta before your body changes. **Debuffs** by band: cold -8% speed, freezing -25% speed / -20% attack speed, hot -12% attack damage, overheating -30% attack damage / -20% attack speed. At **-2400** you take 1 freezing damage; at **+2400** you gain 0.07 exhaustion. |
 | **Diet & Nutrition** | Five nutrients - **Carbs, Protein, Fat, Vitamins, Minerals** (NutritionZ 1.0.11 parity) - in the original 176×142 nutrients panel on the `N` key or the 9×9 inventory tab; **hold Shift** on any catalogued food for its nutrition tooltip | Each nutrient is an integer `0..300` starting at 150. Eating/drinking adds the item's positive values from the full Aged NutritionZ corpus (vanilla + bakery/brewery/candlelight/farm_and_charm/herbalbrews/meadow/vinery/nethervinery/dehydration/naturalist/natures_spirit/adventurez compat). Losing a hunger point to exhaustion decays all five by 1. At **≤30** the datapack's negative effects fire, at **≥270** the positive ones (long status effects + attribute modifiers): low vitamins = Weakness, high vitamins = Regeneration, high carbs = +attack/move speed, high protein = +damage/knockback, high fat = +armor, high minerals = Haste. Hover the left/right ends of a bar to preview its effects. |
 | **Food Spoilage** | Food slowly rots in inventory & containers | Perishable meats, fish, and produce rot into rotten flesh over time - twice as fast in hot biomes. Sealed teas, alcohol, and honey never spoil. **Tanning**: 4 rotten flesh craft into 1 leather. |
@@ -163,13 +175,13 @@ Eight optional professions (Miner, Farmer, Fisher, Warrior, Smither, Brewer, Bui
   replaced by the pack's layout, exactly as a player of Aged would see it.
 - **Survival Guidebook (Aged progression guide parity)**:
   - Starter `/guide`, `/guidebook`, and first-join grants use the canonical
-    `lavender:aged_guide_book` when Lavender is loaded. It contains Getting
-    Started, Survival, Skills & Jobs, and Ages categories covering hydration,
-    temperature, nutrition, crafting, skills/jobs, downed/revive, and progression.
+    `hearthwind:hearthwind_guide_book` when Lavender is loaded (11 categories,
+    48 entries) covering hydration, temperature, nutrition, crafting,
+    skills/jobs, downed/revive, and progression.
   - The vanilla written-book fallback remains available when Lavender is absent.
 - **Skills screen (`K`)**:
-  - Rebuilt to the Aged LevelZ layout: 200x236 panel with the black tab band
-    the four LibZ tabs sit in, "&lt;Name&gt; Skills" title, live player model
+  - Rebuilt to the Aged LevelZ layout: 200x215 panel with the four LibZ tabs
+    floating on the rows above it, "&lt;Name&gt; Skills" title, live player model
     preview, six attribute readouts (health, defense, agility, strength,
     stamina, luck) in a 3x2 grid, "Level N / Points N" line, segmented XP bar
     with "Xp n / next" (Aged 25 + 1.6L curve), a "?" help page, and twelve
@@ -187,8 +199,8 @@ Eight optional professions (Miner, Farmer, Fisher, Warrior, Smither, Brewer, Bui
     crafting-table buttons open the mining / crafting restriction lists
     (scrollable rows showing what is locked and the skill level it needs).
 - **Jobs screen (`J`)**:
-  - Rebuilt to the Aged JobsAddon layout: 200x236 panel (black tab band, same
-    chrome as the skills screen), "&lt;Name&gt; Jobs" title, "Job Cooldown:
+  - Rebuilt to the Aged JobsAddon layout: 200x215 panel (same chrome as the
+    skills screen), "&lt;Name&gt; Jobs" title, "Job Cooldown:
     MM:SS" and the employed summary, then eight job cards (icon slot, name,
     "Lv. N", segmented XP bar) in Aged's two-column order (Lumberjack/Miner,
     Farmer/Warrior, Builder/Smither, Fisher/Brewer). **You may now hold

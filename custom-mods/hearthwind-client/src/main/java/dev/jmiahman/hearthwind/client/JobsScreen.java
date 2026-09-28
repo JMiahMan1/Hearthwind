@@ -20,12 +20,13 @@ import net.minecraft.world.item.Items;
  * Aged 3.1.2 / JobsAddon JobScreen rebuild (clean-room: layout studied from
  * the GPL JobsAddon source, reimplemented on our job state and 26.2 APIs).
  *
- * <p>200x236 panel with the black tab band, "&lt;Name&gt; Jobs" title at
- * face row 6, "Job Cooldown: MM:SS" at 19, the employed summary at 32, then
- * eight 91x38 job cards in two columns starting at face row 46 with a 95/41
- * pitch: a 14x14 icon at (+5,+5), the name at (+23,+4), "Lv. N" at (+35,+19)
- * and the 81x5 XP bar at (+5,+29), flush with the card bottom. Clicking a
- * card sends the existing {@code /job join|leave} command path.
+ * <p>200x215 panel, "&lt;Name&gt; Jobs" title on panel row 7,
+ * "Job Cooldown: MM:SS" at 20, the employed summary at 33, then eight 91x38
+ * job cards in two columns starting at panel row 47 with a 95/41 pitch. All
+ * offsets measured off the Aged {@code Job_Screen.png} capture: a 16x16 icon
+ * at (+4,+4), the name at (+23,+4), "Lv. N" at (+35,+19) and the 81x5 XP bar
+ * at (+5,+29), 4 px above the card's bottom border. Clicking a card sends
+ * the existing {@code /job join|leave} command path.
  */
 @Environment(EnvType.CLIENT)
 public class JobsScreen extends HearthwindPanelScreen {
@@ -62,10 +63,10 @@ public class JobsScreen extends HearthwindPanelScreen {
 
     @Override
     protected void drawPanel(GuiGraphicsExtractor graphics) {
-        // Aged's JobsAddon background: the same 200x236 LibZ chrome, tab band
-        // included, blitted from the 256x256 sheet at (panelTop).
+        // Aged's JobsAddon background: the same 200x215 LibZ chrome, blitted
+        // from the 256x256 sheet at the panel's top left.
         graphics.blit(RenderPipelines.GUI_TEXTURED, BACKGROUND,
-                this.x, panelTop(), 0F, 0F, PANEL_W, PANEL_H, 256, 256, 0xFFFFFFFF);
+                this.x, this.y, 0F, 0F, PANEL_W, PANEL_H, 256, 256, 0xFFFFFFFF);
     }
 
     @Override
@@ -74,11 +75,11 @@ public class JobsScreen extends HearthwindPanelScreen {
         String playerName = mc.player != null ? mc.player.getName().getString() : "Player";
 
         Component title = Component.translatable("screen.hearthwind.jobs.title", playerName);
-        graphics.text(font, title, this.x + 100 - font.width(title) / 2, this.y + 6, INK, false);
+        graphics.text(font, title, this.x + 100 - font.width(title) / 2, this.y + 7, INK, false);
 
         graphics.text(font, "Job Cooldown: " + formatCooldown(ClientJobData.cooldownRemainingMillis()),
-                this.x + 11, this.y + 19, INK, false);
-        graphics.text(font, employedText(), this.x + 11, this.y + 32, INK, false);
+                this.x + 12, this.y + 20, INK, false);
+        graphics.text(font, employedText(), this.x + 12, this.y + 33, INK, false);
 
         boolean cooldown = ClientJobData.onCooldown();
         boolean slotsFull = ClientJobData.employed().size() >= ClientJobData.maxEmployed();
@@ -87,7 +88,7 @@ public class JobsScreen extends HearthwindPanelScreen {
             int col = i % 2;
             int row = i / 2;
             int cx = this.x + 7 + col * 95;
-            int cy = this.y + 46 + row * 41;
+            int cy = this.y + 47 + row * 41;
             ClientJobData.JobInfo info = ClientJobData.job(JOB_ORDER[i]);
             boolean employed = info != null && info.employed();
             boolean blocked = !employed && (cooldown || slotsFull);
@@ -121,12 +122,15 @@ public class JobsScreen extends HearthwindPanelScreen {
         graphics.blit(RenderPipelines.GUI_TEXTURED, BUTTONS,
                 cx, cy, 0F, (float) textureY * 38F, 91, 38, 256, 256, 0xFFFFFFFF);
 
-        // Aged parity: ICON_TEXTURES 256x256, job icon 14x14 at (index*14,10) inside card at (+5,+5) -> cx+5,cy+5
+        // The capture puts the icon 4 px in from the card's top left. Aged's
+        // own per-job art is 16x16; our stand-in sheet is 14x14 on a 14 px
+        // pitch, so only the offset is parity-accurate.
         graphics.blit(RenderPipelines.GUI_TEXTURED, ICONS_TEX,
-                cx + 5, cy + 5, (float) index * 14F, 10F, 14, 14, 256, 256, 0xFFFFFFFF);
+                cx + 4, cy + 4, (float) index * 14F, 10F, 14, 14, 256, 256, 0xFFFFFFFF);
 
         String name = id.substring(0, 1).toUpperCase() + id.substring(1);
-        // Aged offsets: title at bx+23,by+4, level at bx+35,by+19, both white.
+        // Measured off the capture: name ink starts at bx+23 on by+4, "Lv. N"
+        // ink at bx+35 on by+19, both white.
         graphics.text(font, name, cx + 23, cy + 4, 0xFFFFFFFF, false);
         String lv = "Lv. " + level;
         graphics.text(font, lv, cx + 35, cy + 19, 0xFFFFFFFF, false);
@@ -198,7 +202,7 @@ public class JobsScreen extends HearthwindPanelScreen {
             int col = i % 2;
             int row = i / 2;
             int cx = this.x + 7 + col * 95;
-            int cy = this.y + 46 + row * 41;
+            int cy = this.y + 47 + row * 41;
             if (event.x() >= cx && event.x() < cx + 91 && event.y() >= cy && event.y() < cy + 38) {
                 String id = JOB_ORDER[i];
                 ClientJobData.JobInfo info = ClientJobData.job(id);

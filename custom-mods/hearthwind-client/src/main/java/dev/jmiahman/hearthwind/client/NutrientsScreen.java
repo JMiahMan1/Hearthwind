@@ -72,7 +72,6 @@ public class NutrientsScreen extends Screen {
 
     @Override
     public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
-        super.extractRenderState(graphics, mouseX, mouseY, delta);
         Font font = Minecraft.getInstance().font;
 
         graphics.blit(RenderPipelines.GUI_TEXTURED, ICONS, this.x, this.y, 0f, 0f,
@@ -126,6 +125,8 @@ public class NutrientsScreen extends Screen {
         boolean arrowHovered = isPointWithinBounds(5, 5, 11, 10, mouseX, mouseY);
         graphics.blit(RenderPipelines.GUI_TEXTURED, ICONS, this.x + 5, this.y + 5,
                 arrowHovered ? 187f : 176f, 0f, 11, 10, 256, 256, 0xFFFFFFFF);
+        // Widgets last, so a full-screen panel blit can never paint them out.
+        super.extractRenderState(graphics, mouseX, mouseY, delta);
     }
 
     @Override

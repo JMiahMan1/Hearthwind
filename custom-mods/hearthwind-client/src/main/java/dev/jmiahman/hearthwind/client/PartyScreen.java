@@ -13,8 +13,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 
 /**
- * Party Addon-inspired party screen on the shared Aged panel (200x236,
- * black tab band included).
+ * Party Addon-inspired party screen on the shared Aged panel (200x215).
  * Left column lists our synced party members (player head + name + distance
  * + health bar); right column shows party info and the leave/disband/PvP
  * actions wired to the existing {@code /party} commands. Invitations are not

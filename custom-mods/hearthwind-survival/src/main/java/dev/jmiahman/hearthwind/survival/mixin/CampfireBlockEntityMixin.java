@@ -41,6 +41,47 @@ public abstract class CampfireBlockEntityMixin {
     }
 
     /**
+     * Aged parity: a boil in progress FREEZES when the fire goes out, it does
+     * not decay. Vanilla 26.2's {@code cooldownTick} clamps progress down by
+     * two every tick, so a bottle that reached 900 of 1000 and lost its fire
+     * silently slid back to zero and could never finish. Take the tick over
+     * whenever a water bottle is on the fire: freeze those slots, decay
+     * everything else exactly as vanilla does.
+     */
+    @Inject(method = "cooldownTick", at = @At("HEAD"), cancellable = true)
+    private static void hearthwind$freezeBoilOnDarkFire(net.minecraft.world.level.Level level,
+            BlockPos pos, BlockState state, CampfireBlockEntity entity, CallbackInfo ci) {
+        var accessor = (dev.jmiahman.hearthwind.survival.mixin.CampfireBlockEntityAccessor) entity;
+        net.minecraft.core.NonNullList<ItemStack> items = accessor.hearthwind$items();
+        boolean boiling = false;
+        for (int slot = 0; slot < items.size(); slot++) {
+            if (CampfirePurification.isWaterPotion(items.get(slot))) {
+                boiling = true;
+                break;
+            }
+        }
+        if (!boiling) {
+            return;
+        }
+        int[] progress = accessor.hearthwind$cookingProgress();
+        int[] time = accessor.hearthwind$cookingTime();
+        boolean changed = false;
+        for (int slot = 0; slot < items.size(); slot++) {
+            if (progress[slot] <= 0) {
+                continue;
+            }
+            if (!CampfirePurification.isWaterPotion(items.get(slot))) {
+                progress[slot] = net.minecraft.util.Mth.clamp(progress[slot] - 2, 0, time[slot]);
+            }
+            changed = true;
+        }
+        if (changed) {
+            entity.setChanged();
+        }
+        ci.cancel();
+    }
+
+    /**
      * Vanilla spawns dark item smoke over every occupied campfire slot; for a
      * boiling water bottle we want steam, so pretend the slot is empty and let
      * {@link CampfirePurification} emit white particles instead.

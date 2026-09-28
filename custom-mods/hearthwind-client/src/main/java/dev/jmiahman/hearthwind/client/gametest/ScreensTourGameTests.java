@@ -1,5 +1,6 @@
 package dev.jmiahman.hearthwind.client.gametest;
 
+import dev.jmiahman.hearthwind.client.HearthwindPanelScreen;
 import dev.jmiahman.hearthwind.client.JobsScreen;
 import dev.jmiahman.hearthwind.client.NutrientsScreen;
 import dev.jmiahman.hearthwind.client.PartyScreen;
@@ -15,9 +16,11 @@ import draylar.inmis.mixin.client.LivingEntityRendererInvoker;
 import net.fabricmc.fabric.api.client.gametest.v1.FabricClientGameTest;
 import net.fabricmc.fabric.api.client.gametest.v1.context.ClientGameTestContext;
 import net.fabricmc.fabric.api.client.gametest.v1.context.TestSingleplayerContext;
+import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
@@ -39,6 +42,42 @@ import org.lwjgl.glfw.GLFW;
  */
 public class ScreensTourGameTests implements FabricClientGameTest {
     private static final int SLOW_TIMEOUT_TICKS = 20 * 300;
+
+    /**
+     * The welcome screen's Start button must be a real, visible widget: inside
+     * the window, big enough to hit, and not hidden. This screen once called
+     * {@code super.extractRenderState} FIRST and then painted an opaque
+     * full-screen fill over it, so the button existed, was clickable and was
+     * invisible - the "I cannot find the way in" reports. The same trap is why
+     * every hearthwind screen now extracts its widgets last; the pixels of
+     * {@code 0023_tour_welcome.png} in the same run are the evidence.
+     */
+    private static void assertStartButtonReachable(ClientGameTestContext context) {
+        context.runOnClient(client -> {
+            if (!(client.gui.screen() instanceof WelcomeScreen screen)) {
+                throw new AssertionError("the welcome screen is not open");
+            }
+            AbstractWidget start = null;
+            for (Object child : screen.children()) {
+                if (child instanceof AbstractWidget widget && widget.getMessage().getString()
+                        .equals(Component.translatable("screen.hearthwind.welcome.start").getString())) {
+                    start = widget;
+                }
+            }
+            if (start == null) {
+                throw new AssertionError("the welcome screen has no Start button widget");
+            }
+            int[] box = {start.getX(), start.getY(), start.getWidth(), start.getHeight()};
+            if (box[0] < 0 || box[1] < 0 || box[0] + box[2] > screen.width || box[1] + box[3] > screen.height) {
+                throw new AssertionError("the Start button is off-screen: x=" + box[0] + " y=" + box[1]
+                        + " w=" + box[2] + " h=" + box[3] + " screen=" + screen.width + "x" + screen.height);
+            }
+            if (!start.visible || !start.active) {
+                throw new AssertionError("the Start button is not renderable: visible=" + start.visible
+                        + " active=" + start.active);
+            }
+        });
+    }
 
     @Override
     public void runTest(ClientGameTestContext context) {
@@ -66,6 +105,7 @@ public class ScreensTourGameTests implements FabricClientGameTest {
             });
             context.waitFor(minecraft -> minecraft.gui.screen() instanceof WelcomeScreen, SLOW_TIMEOUT_TICKS);
             context.waitTicks(10);
+            assertStartButtonReachable(context);
             context.takeScreenshot("tour_welcome");
             context.clickScreenButton("screen.hearthwind.welcome.start");
             context.waitFor(minecraft -> minecraft.gui.screen() == null, SLOW_TIMEOUT_TICKS);
@@ -222,21 +262,25 @@ public class ScreensTourGameTests implements FabricClientGameTest {
             context.setScreen(JobsScreen::new);
             context.waitFor(minecraft -> minecraft.gui.screen() instanceof JobsScreen, SLOW_TIMEOUT_TICKS);
             context.waitTicks(10);
-            // Aged's panel chrome: the four LibZ tabs sit INSIDE the 20 px
-            // black band at the top of the panel, so a click in the band picks
-            // a tab and a click just below the face edge must not.
+            // Aged's panel chrome, measured off Job_Screen.png: the panel is
+            // 200x215 and the four LibZ tabs FLOAT on the 21 rows above it, so
+            // a click there picks a tab and a click inside the panel must not.
             context.runOnClient(minecraft -> {
                 if (!(minecraft.gui.screen() instanceof JobsScreen screen)) {
-                    throw new AssertionError("the Jobs screen should be open for the tab band check");
+                    throw new AssertionError("the Jobs screen should be open for the tab strip check");
                 }
                 int left = screen.panelLeft();
                 int top = screen.panelTop();
-                if (TabStrip.clickedInBand(left + 4, top + 6, left, top, TabStrip.Tab.JOBS)
+                if (TabStrip.clicked(left + 4, top - 15, left, top, TabStrip.Tab.JOBS)
                         != TabStrip.Tab.INVENTORY) {
-                    throw new AssertionError("the first tab must be clickable inside the panel band");
+                    throw new AssertionError("the first tab must be clickable above the panel");
                 }
-                if (TabStrip.clickedInBand(left + 4, top + 30, left, top, TabStrip.Tab.JOBS) != null) {
-                    throw new AssertionError("a click below the tab band must not hit a tab");
+                if (TabStrip.clicked(left + 4, top + 5, left, top, TabStrip.Tab.JOBS) != null) {
+                    throw new AssertionError("a click inside the panel must not hit a tab");
+                }
+                if (HearthwindPanelScreen.PANEL_W != 200 || HearthwindPanelScreen.PANEL_H != 215) {
+                    throw new AssertionError("the Aged panel is 200x215, not "
+                            + HearthwindPanelScreen.PANEL_W + "x" + HearthwindPanelScreen.PANEL_H);
                 }
             });
             context.takeScreenshot("tour_jobs");

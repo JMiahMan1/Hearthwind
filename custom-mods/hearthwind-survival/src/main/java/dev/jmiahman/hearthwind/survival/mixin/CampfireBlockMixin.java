@@ -40,6 +40,11 @@ public abstract class CampfireBlockMixin {
         if (level instanceof ServerLevel serverLevel
                 && CampfirePurification.placeWaterBottle(serverLevel, player, campfire, itemStack)) {
             player.awardStat(Stats.INTERACT_WITH_CAMPFIRE);
+            // The reference mod accepts the bottle on a cold fire and says
+            // nothing, so a player waits forever. Keep the rule, add the news.
+            if (!CampfirePurification.isLit(state) && player instanceof net.minecraft.server.level.ServerPlayer serverPlayer) {
+                CampfirePurification.warnAboutUnlitFire(serverPlayer);
+            }
             cir.setReturnValue(InteractionResult.SUCCESS_SERVER);
         } else {
             cir.setReturnValue(InteractionResult.CONSUME);

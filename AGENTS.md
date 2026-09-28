@@ -365,8 +365,8 @@ not drive 1.0.0 work.
   multipliers, winter breeding block, HerdPanic, End Remastered eyes,
   fauna.
 - `hearthwind-client`: HUD, Nutrients/Skills/Jobs/Party screens, SeasonHud,
-  WelcomeScreen, and the shared 200x236 panel chrome (20 px black tab band,
-  banded LibZ tabs) measured off the Aged captures.
+  WelcomeScreen, and the shared 200x215 panel chrome (LibZ tabs floating on the
+  21 rows above the panel) measured pixel-for-pixel off the Aged captures.
 - `dungeonz`: ported; 23 server gametests. Remaining: jigsaw generation
   path, criteria/loot asserts.
 - Hygiene: remove `.tmp-test-server/` and `.tmp/` scratch at task end;

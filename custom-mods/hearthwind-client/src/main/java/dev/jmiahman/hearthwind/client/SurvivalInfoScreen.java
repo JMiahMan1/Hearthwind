@@ -65,7 +65,6 @@ public class SurvivalInfoScreen extends Screen {
 
     @Override
     public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
-        super.extractRenderState(graphics, mouseX, mouseY, delta);
         Font font = Minecraft.getInstance().font;
         graphics.blitSprite(RenderPipelines.GUI_TEXTURED, PANEL, this.x, this.y, 176, 166);
         TabStrip.draw(graphics, this.x, this.y, null, mouseX, mouseY);
@@ -80,6 +79,8 @@ public class SurvivalInfoScreen extends Screen {
         boolean hoverArrow = within(5, 5, 11, 10, mouseX, mouseY);
         graphics.blitSprite(RenderPipelines.GUI_TEXTURED, hoverArrow ? ARROW_HOVER : ARROW, this.x + 5, this.y + 5,
                 11, 10);
+        // Widgets last, so a full-screen panel blit can never paint them out.
+        super.extractRenderState(graphics, mouseX, mouseY, delta);
     }
 
     private void drawThirst(GuiGraphicsExtractor graphics, Font font) {

@@ -129,9 +129,16 @@ Still open (do these first, section 6, W0):
   - The config keys `dirtyWaterSicknessChance/Duration`,
     `throatIrritationDuration` and the biome thirst-drain multipliers are
     never read.
-  - Aged's Dehydration water chain is missing: purifying bottles on a
-    campfire, the campfire cauldron, the copper rain cauldron and the bamboo
-    pump.
+  - Aged's Dehydration water chain is partly here: purifying bottles on a
+    campfire shipped in 0.1.33 (`CampfirePurification`, reverse-engineered off
+    Dehydration 1.3.6 - the 1000-tick boil, the block-corner drop, the frozen
+    progress on a dark fire, documented with the full audit in
+    `docs/AGED_HYDRATION.md`), and the campfire fuel tag came across (the
+    sapling-to-sticks recipe was already in the pack). Still missing: the
+    campfire cauldron, the copper rain
+    cauldron, the bamboo pump, the three brewing recipes and
+    `dehydration:hydration`. The audit's 28 deviations and 14 gaps are the
+    hydration workstream.
   - The fallback written guidebook in `StarterKit` has wrong facts.
   - The Comfort card screen (`SurvivalInfoScreen`) can't be opened in game.
   - ~~Jobs earn XP only from breaking ladder blocks and killing ladder
@@ -391,7 +398,7 @@ shipped Time & Wind data reads 14, exactly like Aged.
 
 | Element | Aged | Hearthwind | Status |
 |---|---|---|---|
-| LibZ tabs in the panel's black band (bag, sword, axe, figure) | LibZ | `TabStrip` (bundle, iron sword, iron axe, armor stand) | ✅ 0.1.32 placement: the measured Jobs/Level captures put the strip INSIDE the 20 px black band of the 200x236 panel, so the info panels draw it banded and hit-test it there; 🟡 the art is a legal stand-in for GPL tab art, silhouettes match the capture |
+| LibZ tabs floating above the panel (bag, sword, axe, figure) | LibZ | `TabStrip` (bundle, iron sword, iron axe, armor stand) | ✅ placement (0.1.32, re-measured 0.1.33): every Aged capture floats the strip on the 21 rows above the 200x215 panel, the selected tab only taller so it merges into the panel edge, which is what `TabStrip.draw`/`clicked` do and what `ScreensTourGameTests` asserts; 🟡 the art is a legal stand-in for GPL tab art, silhouettes match the capture |
 | Left accessory column (5 slots) | **Trinkets** + **BackSlot**/addon + **Inmis** | Trinkets Updated fork (data-driven slots), BackSlot back+belt slots (G / Shift+G, HUD + avatar rendering) with the BackSlot Addon shield/sword/lantern renders, Inmis backpacks (B, chest slot, on-back) with the Addon's 3D backpack models and Trinkets-slot support | ✅ 0.1.27: ports done 0.1.24 (Trinkets, Inmis, BackSlot + Addon) and the Inmis Addon rebuilt in-tree (3D models, Trinkets slot, Aged config keys); the LibZ tab above the panel is a separate W4 gap (no 26.2 LibZ build) |
 | Extra slots beside the player preview | **BackSlot** (back slot 41 + belt slot 42 only) and the right-hand column is **Trinkets**' own accessory grid | BackSlot back+belt slots, Trinkets Updated accessory slots | ✅ both already shipped (0.1.24/0.1.27). The old ❌ row was mis-attributed: BackSlot 1.2.15's `PlayerScreenHandlerMixin` only adds slots 41/42, so nothing weapon/bow-specific needs porting |
 | `Lv. N` label on the player preview | LevelZ `inventorySkillLevel` (posX 0 / posY 62, 0.6 scale, white) | `InventoryScreenButtonMixin` draws `Lv. <overall>` | ✅ 2026-09-26; overall level = min(30, sum/12) like LevelZ (was a raw sum, so it showed Lv. 360) |
@@ -400,9 +407,12 @@ shipped Time & Wind data reads 14, exactly like Aged.
 | Welcome screen on the first join | **Welcomescreen** + the `aged_welcome_screen` paxi datapack (title, three text blocks, the 256x256 pack image left of centre, `Start` at the top right) | `WelcomeScreen` (same layout and texts) | ✅ 0.1.30, with two deliberate differences: the image is the Hearthwind title art we own (Aged's `aged:textures/pack.png` is not redistributable) and there is no Discord button (Hearthwind has no invite to link) |
 
 **Screens** (details in `docs/AGED_UI_PARITY.md`): the panel chrome matches
-the reference captures as of 0.1.32 - every info panel is 200x236 with the
-20 px black tab band the LibZ tabs sit in, and the Jobs screen's rows and
-two-column card order are the measured ones. The Level screen has the
+the reference captures as of 0.1.33 - every info panel is 200x215 with the
+LibZ tabs floating on the 21 rows above it, and the Jobs screen's rows and
+two-column card order are the measured ones. (0.1.32 shipped a 200x236 panel
+with a "20 px black tab band" that a careful re-measurement of the captures
+showed to be the floating tab strip misread as a band; 0.1.33 restores the
+measured chrome pixel-for-pixel.) The Level screen has the
 attribute slide-out and the restriction rail (mining/crafting) opening
 `SkillRestrictionScreen` lists; SkillInfoScreen shows per-skill bonuses and
 per-level unlock icons; hub scroll/slider and the remaining bonus text are
@@ -424,8 +434,9 @@ Aged ships `aged:aged_guide_book` (Lavender, loaded through Paxi from
 `config/paxi/resourcepacks/aged_guide_book`): **12 categories, about 62
 entries** (start, character, hydration, nutrition, temperature, produce,
 storage, tools and weapons, armors, battle, archeology, ...) plus
-multiblock structure previews. Ours: `lavender:aged_guide_book`, 4
-categories, 9 entries.
+multiblock structure previews. Ours: `hearthwind:hearthwind_guide_book`
+(`validate_guidebook.py`: 11 categories, 48 entries), with a vanilla
+written-book fallback when Lavender is absent.
 
 Direction (team decision 2026-09-24):
 
@@ -551,8 +562,8 @@ five welcome-screen commands, and `WelcomeScreen` rebuilds the welcome
 screen that grants them); decide on the Comfort card; the Hearthwind
 guidebook (section 5.8). Then port the
 accessory stack (Trinkets, BackSlot + addon, Inmis + addon), because it
-defines the inventory silhouette. Screens: the panel chrome and the tab
-band now match the captures (done 0.1.32: 200x236 panels, banded LibZ tabs,
+defines the inventory silhouette. Screens: the panel chrome and the floating tab strip now match the captures
+(done 0.1.32, corrected 0.1.33: 200x215 panels, floating LibZ tabs,
 the Jobs screen's measured rows and multi-job summary); finish the
 Level-screen rail and SkillRestrictionScreen. Every item lands with a
 client-gametest screenshot next to the Aged reference.
