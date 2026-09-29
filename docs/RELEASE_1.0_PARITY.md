@@ -381,7 +381,7 @@ datapack.
 | RAY's 3D Ladders, RAY's 3D Rails, FancyFast Bushy Leaves | missing |
 | Shaderpacks: Complementary Unbound r5.3, Photon 1.0a (need Iris + Sodium) | missing |
 | `config/sodium-options.json`, `moreculling.toml`, `presencefootsteps`, `fbp`, `DistantHorizons.toml`, `cameraoverhaul.json`, `defaultoptions`, `emi.css`, `nameplate.json`, `lmft.json` | missing (come with the mods in 5.1/5.2) |
-| FancyMenu title screen + `resources/aged` art | intentional deviation: Hearthwind's own title screen |
+| FancyMenu title screen + `resources/aged` art | intentional deviation, and 0.1.40 corrected the reason: Hearthwind's own title screen (`HearthwindTitleScreenMixin`) draws the menu from art inside the client jar, because Aged's layout could only ever paint unresolvable `aged:` paths |
 
 ### 5.7 HUD and screen look and feel
 
@@ -440,14 +440,28 @@ per-level unlock icons; hub scroll/slider and the remaining bonus text are
 still open, and the Jobs screen still uses vanilla item icons where Aged has
 14x14 per-job textures. The EMI recipe sidebar arrives with the EMI port.
 
-**FancyMenu menus:** Aged's full FancyMenu configuration ships again
-(`config/fancymenu/**` incl. the title/sound/universal layouts and the
-`resources/aged/textures` menu art) so the main menu matches the capture;
-only the window title stays "Hearthwind". The harness stages the config
-(matching a fresh install) and the screens tour now captures the title
-screen first (`tour_title`). FancyMenu's one-time welcome popup still
-appears in a brand-new game dir; use `CGT_EXCLUDE_MODS=fancymenu` when a
-run needs popup-free screenshots.
+**FancyMenu menus:** Aged's FancyMenu configuration ships
+(`config/fancymenu/**`, incl. the sound and universal layouts), but **not**
+its title-screen layout. That layout pointed its background at
+`aged:textures/main_menu_background_with_aged.png` with a fallback on
+`aged:textures/main_menu_background.png`, and the only copy of those files in
+the pack was `overrides/resources/aged/textures/` - which a launcher drops
+into the instance as a plain `resources/` folder that the game never loads.
+Every `aged:` reference the layout made was therefore unresolvable, and
+FancyMenu painted the missing-texture checkerboard over the whole main menu
+("purple and black blocks" was the report). 0.1.40 deletes that layout and
+the dead 30 MB folder; Hearthwind's own title screen, drawn by
+`HearthwindTitleScreenMixin` out of `assets/hearthwind/textures/gui/title/`
+inside the client jar, now owns the menu, and the universal layout's
+background points at the same file. Two guards keep it that way:
+`tools/validate_menu_assets.py` fails the build if any FancyMenu
+`[source:location]` reference fails to resolve or if an `overrides/resources/`
+folder reappears, and the screens tour asserts the menu art resolves before
+capturing `tour_title`. **Do not re-add `fancymenu` to `CGT_EXCLUDE_MODS`** -
+excluding it is exactly how this shipped uncaught for eight releases, because
+the mod that draws the menu was not even loaded during testing. FancyMenu's
+one-time welcome popup appears in a brand-new game dir, which is the
+behaviour we want; the screens tour runs with it enabled.
 
 ### 5.8 The Hearthwind guidebook
 

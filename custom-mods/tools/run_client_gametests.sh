@@ -179,12 +179,22 @@ debug:
   tagsPerPage: 6
 EOF
 
-# Stage the pack's FancyMenu config (the real overrides) so the client sees
-# show_welcome_screen=false like a fresh user install; otherwise FancyMenu's
-# welcome popup covers the first tour screenshots.
+# Stage the pack's FancyMenu config (the real overrides) so the client runs with
+# exactly what a player gets. This must stay: FancyMenu is the mod that draws
+# the main menu, and the pack's layouts are the first thing to break the title
+# screen (they used to point at aged: textures that never resolved, painting the
+# magenta-and-black checkerboard). Excluding fancymenu from the suite - which
+# this script used to do - hid exactly that bug. Do not re-add it to
+# CGT_EXCLUDE_MODS; run_client_gametests_container.sh only excludes
+# DistantHorizons, whose LOD threads deadlock between test entrypoints.
 if [ -d "$REPO/conversion/overrides/config/fancymenu" ]; then
   cp -R "$REPO/conversion/overrides/config/fancymenu" "$WORK/config/"
 fi
+
+# Every [source:location] asset the staged layouts name must resolve, or the
+# menu paints the missing-texture checkerboard. Cheap, and it is the guard that
+# was missing when the background shipped broken.
+python3 "$REPO/custom-mods/tools/validate_menu_assets.py" || exit 1
 
 # Pre-agree the EULA for the gametest dedicated server. It runs with the
 # JVM's process cwd (NOT --gameDir), and owo-lib's Eula mixin falls back to

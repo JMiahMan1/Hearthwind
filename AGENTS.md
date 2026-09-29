@@ -410,5 +410,14 @@ nothing may remain in system temp dirs from this project.
 - `bash tools/run_gametests.sh` all green (add tests for new logic)
 - Boot reaches `Done`; our namespaces absent from parse-error greps
 - RCON spot checks: summon item by id, apply effects, loot spawn
+- Client suite run with FancyMenu LOADED (`CGT_EXCLUDE_MODS=DistantHorizons`
+  only). FancyMenu draws the main menu, so excluding it hides exactly the
+  class of bug where a GUI config points at a texture the game cannot
+  resolve - that is how the "purple and black blocks" menu shipped through
+  0.1.32-0.1.39 with every suite green. The container wrapper only excludes
+  DistantHorizons; do not add fancymenu back to the exclude list.
+- `python3 custom-mods/tools/validate_menu_assets.py` (run by the client
+  harness too) whenever a FancyMenu config or a `conversion/overrides/`
+  asset folder changes.
 - `ruff check tools/` for python tooling changes (install once via
   `sudo dnf install -y ruff`; not yet present on this host)

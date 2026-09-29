@@ -148,9 +148,11 @@ Eight optional professions (Miner, Farmer, Fisher, Warrior, Smither, Brewer, Bui
 
 ## Visual Inventory & UI Look & Feel
 
-- **Menus (Aged 3.1.2 parity)**: the pack ships Aged's FancyMenu layouts
-  and artwork for the title, sound and universal screens, with only the
-  window title changed to "Hearthwind".
+- **Menus (0.1.40)**: the main menu is drawn by Hearthwind itself, from art
+  inside the client jar: a full-screen cottage scene, left-aligned typography
+  buttons with per-button hover tints, and GitHub / Language / Accessibility
+  icons top right. The pack's FancyMenu layouts apply to the sound and
+  universal (options-style) screens, using the same Hearthwind art.
 - **Item drop beams (LootBeams parity)**: dropped items shine a small
   coloured beam - the colour comes from the item's rarity or a custom
   name, plain white items stay dark, enchanted drops sparkle, and a beam
@@ -177,10 +179,12 @@ Eight optional professions (Miner, Farmer, Fisher, Warrior, Smither, Brewer, Bui
   backpack is drawn on your back. Backpacks never hold other backpacks or
   shulker boxes, and upgrading one at a crafting table keeps everything
   inside. Trinkets-slot equipping (the Inmis Addon) is not in yet.
-- **Menus (Aged 3.1.2 parity)**: Aged's FancyMenu configuration ships
-  with the pack (custom title/sound/universal layouts and menu artwork);
-  only the window title reads "Hearthwind". The vanilla title screen is
-  replaced by the pack's layout, exactly as a player of Aged would see it.
+- **Menus (0.1.40)**: the title screen is Hearthwind's own, not a copy of
+  another pack's layout pointing at artwork that is not installed. Up to
+  0.1.39 the pack shipped a menu layout whose background could never resolve,
+  so the main menu drew as the magenta-and-black missing-texture checkerboard;
+  that is fixed and a test now fails the build if any menu art stops
+  resolving.
 - **Survival Guidebook (Aged progression guide parity)**:
   - Starter `/guide`, `/guidebook`, and first-join grants use the canonical
     `hearthwind:hearthwind_guide_book` when Lavender is loaded (11 categories,

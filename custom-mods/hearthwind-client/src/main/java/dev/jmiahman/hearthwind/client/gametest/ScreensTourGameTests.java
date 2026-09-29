@@ -22,6 +22,8 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.EquipmentSlot;
+import java.util.ArrayList;
+import java.util.List;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import org.lwjgl.glfw.GLFW;
@@ -51,6 +53,46 @@ public class ScreensTourGameTests implements FabricClientGameTest {
      * every hearthwind screen now extracts its widgets last; the pixels of
      * {@code 0023_tour_welcome.png} in the same run are the evidence.
      */
+    /**
+     * The main menu must paint Hearthwind's art, and that art must actually
+     * resolve. A path that does not resolve renders as the missing-texture
+     * checkerboard - magenta and black - which is exactly what players saw:
+     * the pack shipped a FancyMenu layout pointing at
+     * {@code aged:textures/main_menu_background.png}, and that file only ever
+     * reached the instance as {@code .minecraft/resources/aged/textures/}, a
+     * folder no game ever loads, so both the image and its fallback were
+     * missing. A screenshot alone did not catch it because the test client
+     * never applied the layout, so this asserts the resource directly.
+     */
+    private static void assertTitleScreenArtResolves(ClientGameTestContext context) {
+        context.runOnClient(client -> {
+            List<Identifier> art = new ArrayList<>();
+            // The full-screen background, and every button/icon the mixin
+            // paints: once as the sprite the atlas bakes, once as the plain
+            // texture where one exists.
+            art.add(Identifier.fromNamespaceAndPath("hearthwind",
+                    "textures/gui/title/main_menu_background.png"));
+            art.add(Identifier.fromNamespaceAndPath("hearthwind", "textures/gui/title/blank_button.png"));
+            for (String name : List.of("language", "language_hovered", "discord", "discord_hovered",
+                    "github", "github_hovered", "mannequin", "mannequin_hovered",
+                    "modrinth", "modrinth_hovered")) {
+                art.add(Identifier.fromNamespaceAndPath("hearthwind", "textures/gui/sprites/title/"
+                        + name + ".png"));
+                art.add(Identifier.fromNamespaceAndPath("hearthwind", "textures/gui/title/" + name + ".png"));
+            }
+            List<String> missing = new ArrayList<>();
+            for (Identifier id : art) {
+                if (client.getResourceManager().getResource(id).isEmpty()) {
+                    missing.add(id.toString());
+                }
+            }
+            if (!missing.isEmpty()) {
+                throw new AssertionError("the main menu art does not resolve, so it would draw as the "
+                        + "magenta-and-black missing-texture checkerboard: " + missing);
+            }
+        });
+    }
+
     private static void assertStartButtonReachable(ClientGameTestContext context) {
         context.runOnClient(client -> {
             if (!(client.gui.screen() instanceof WelcomeScreen screen)) {
@@ -84,6 +126,7 @@ public class ScreensTourGameTests implements FabricClientGameTest {
         // world - first-impression parity evidence for every run.
         context.waitForScreen(net.minecraft.client.gui.screens.TitleScreen.class);
         context.waitTicks(40);
+        assertTitleScreenArtResolves(context);
         context.takeScreenshot("tour_title");
 
         try (TestSingleplayerContext world = context.worldBuilder().create()) {
