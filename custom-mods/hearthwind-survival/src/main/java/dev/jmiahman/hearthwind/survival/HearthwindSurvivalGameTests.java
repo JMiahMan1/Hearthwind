@@ -2173,10 +2173,14 @@ public final class HearthwindSurvivalGameTests {
     @GameTest
     public void hydrationCorpusLoadsCataloguedItems(GameTestHelper helper) {
         helper.assertTrue(HydrationCorpus.hasCorpus(), "the hydration corpus must load from the world datapack");
-        helper.assertTrue(HydrationCorpus.itemCount() >= 10,
-                "expected at least 10 catalogued foods/drinks, got " + HydrationCorpus.itemCount());
-        helper.assertTrue(HydrationCorpus.tierCount() >= 5,
-                "expected at least 5 hydration tiers, got " + HydrationCorpus.tierCount());
+        // The datapack catalogues 115 ids across 12 tiers; 105 resolve in a real
+        // world. The 10 that do not belong to the lets-do food mods Aged ships
+        // and we have not ported, so a drop below 105 means we lost a food we
+        // do ship, and a rise above 105 means a mod id quietly started resolving.
+        helper.assertTrue(HydrationCorpus.itemCount() == 105,
+                "expected 105 of the 115 catalogued ids to resolve, got " + HydrationCorpus.itemCount());
+        helper.assertTrue(HydrationCorpus.tierCount() == 12,
+                "expected all 12 hydration tiers, got " + HydrationCorpus.tierCount());
         helper.succeed();
     }
 

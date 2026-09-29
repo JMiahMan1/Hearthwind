@@ -341,7 +341,7 @@ writes it in the Decision column of the tracker (section 8).
 | `fabric-seasons` | hearthwind-world | ✅ seasonLengthTicks 504000 with the day count derived from the live day length; bonemeal blocked out of season (isSeasonMessingBonemeal) since 0.1.18 |
 | `herdspanic` | hearthwind-world `HerdPanic` | DECISION: upstream HerdPanic now has a Fabric 26.3 build |
 | `jobsaddon` | hearthwind-jobs | ✅ 0.1.28: the Aged shape is live - 3 employed slots, 150-level cap, 24000t change cooldown, exponential `100 + 1.6*L` curve, 8 jobs with corpus ladders, and every earn path hooked (break, kill, craft, furnace/smoker/blast, fish, anvil, smithing, place, brew); open: campfire cooking has no player to credit, `jobCraftGating` (off by default on purpose) |
-| `levelz` | hearthwind-skills | 649 gates live; crafting/smithing/brewing gates loaded but not enforced; XP curve differs (Aged 25x1.6^n) |
+| `levelz` | hearthwind-skills | ✅ 0.1.35: 649 gates live and **enforced**, and the XP curve already matches. Crafting is blocked on the gated item/ingredient, smithing through `SmithingGateMixin`, brewing through `BrewingPotionSlotMixin`, and breaking through the `PlayerBlockBreakEvents.BEFORE` handler in `SkillGates`. The cost curve is `(int)(xpBaseCost + 1.6 * L^exponent)` with Aged's own `xpCostMultiplicator: 1.6`. (This row said "loaded but not enforced; XP curve differs" until 0.1.35 - both halves were stale.) |
 | `naturalist` | hearthwind-world (fauna port) | DECISION: upstream Naturalist now has a 26.2 Fabric build (2.0.5+26.2) |
 | `nutritionz` | hearthwind-survival | HearthWind 5-group diet replaces near-inert NutritionZ (intentional HW change) |
 | `partyaddon` | hearthwind-skills `party/` | verify vs partyaddon config |

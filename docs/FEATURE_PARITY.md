@@ -13,7 +13,7 @@ over (with reason)
 
 | Original mod | System | Corpus / config | Status | Notes / improvement |
 |---|---|---|---|---|
-| dehydration | Thirst | `data/dehydration`, `config/hearthwind_survival.json` | ✅ | Hydration attachment `dehydration:hydration`, sprint/effect drain, 10 HUD droplets (Aged's exact row, no flask icon - upstream has none), food hydration corpus (38 foods across 12 tiers), campfire purification (0.1.33) and the three Aged brewing mixes + `dehydration:hydration` Potion of Hydration (0.1.35) |
+| dehydration | Thirst | `data/dehydration`, `config/hearthwind_survival.json` | ✅ | Hydration attachment `dehydration:hydration`, sprint/effect drain, 10 HUD droplets (Aged's exact row, no flask icon - upstream has none), food hydration corpus (105 of 115 catalogued ids resolve, across 12 tiers), campfire purification (0.1.33) and the three Aged brewing mixes + `dehydration:hydration` Potion of Hydration (0.1.35) |
 | environmentz | Temperature | `data/environmentz`, same config | ✅ | Biome drift, season offsets, heat/cold blocks, shelter bonus (+50%), insulation items, vertical thermometer HUD |
 | nutritionz | Diet (5 groups) | `nutritionz:*` item tags, same config | ✅ | 5 nutrient groups (fruits, vegetables, grains, proteins, sugars), decay, deficiency debuffs, balanced bonus hearts, `NutrientsScreen` - a pixel-exact 176x142 rebuild of NutritionZ 1.0.11, opened by clicking the 9x9 button at the inventory's top right exactly like Aged (the `N` keybind is a Hearthwind addition) |
 | spoiledz | Spoilage | `spoiledz:perishable_items` + `non_spoiling_items`, same config | ✅ | Inventory & container food spoilage with hot-biome multiplier and non-spoiling exemptions |

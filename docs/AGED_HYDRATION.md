@@ -581,8 +581,9 @@ campfire and the kelp route.
 Legend: ✅ at parity · 🟡 deliberate deviation (reason in one clause) ·
 ❌ missing · ❌ unverified (say what could not be found).
 
-Summary: **✅ 63 · 🟡 28 · ❌ 11** over 102 rows, of which one ❌ row is
-`❌ unverified` (see its evidence cell).
+Summary: **✅ 64 · 🟡 28 · ❌ 10** over 102 rows. The last
+`❌ unverified` row was closed on 0.1.35: the hydration corpus resolves 105 of
+its 115 catalogued ids in a real world, and the gametest now pins that.
 
 ### 8.1 The campfire water loop
 
@@ -656,7 +657,7 @@ Summary: **✅ 63 · 🟡 28 · ❌ 11** over 102 rows, of which one ❌ row is
 | resolution order tag → template → fallback | template → fallback | ✅ | the six `dehydration:hydrating_*` tags ship empty and Aged never fills them, so the tag branch is inert; templates alone is equivalent |
 | `replace: true` clears the tier; lowest tier wins on duplicates | identical, iterating tiers in ascending order | ✅ | `HydrationCorpus.java:63-70,93-95`; test `hydrationCorpusTiersMatchCatalogue` |
 | Aged's `aged_items.json`: 12 tiers, 115 items, `replace: true` on all | shipped **byte-identical** in both the world datapack and the mod's bundled fallback | ✅ | `conversion/datapacks/hearthwind/data/dehydration/hydration_items/aged_items.json` == `.tmp/aged-3.1.2/.../aged_items.json`; 115 items over 12 tiers |
-| how many of the 115 ids resolve in a Hearthwind world | the gametest only asserts `itemCount() >= 10` and `tierCount() >= 5`; the true count is whatever the registry resolves and cannot be measured without booting the game | ❌ unverified | `HearthwindSurvivalGameTests.java:1885-1893`; `HydrationCorpus.java:97-103` skips unresolvable ids silently |
+| how many of the 115 ids resolve in a Hearthwind world | **105 of 115 resolve, across all 12 tiers**, measured off a real boot (the corpus logs `hydration: 105 catalogued items across 12 tiers`). The 10 that do not belong to the lets-do food mods Aged ships and we have not ported | ✅ measured 0.1.35 | `HearthwindSurvivalGameTests.hydrationCorpusLoadsCataloguedItems` now pins `itemCount() == 105` and `tierCount() == 12` instead of `>= 10`; `HydrationCorpus.java:97-103` skips unresolvable ids silently, which is why only a boot could settle it |
 | `thirst.useHydrationCorpus` toggles the corpus | `ThirstHelper.hydratePlayer` calls `HydrationCorpus.quench` **without** consulting the flag, so setting it to `false` still grants catalogued hydration | 🟡 the flag is only read by `HydrationCorpus.hydrateOnConsume`, which the drink path never calls | `HearthwindSurvivalConfig.java:106`; `ThirstHelper.java:45` |
 | HUD: 10 droplets 9×9 pitch 8 at `width/2 + 91`, `height − 49`, green while thirst is active, hidden in creative/spectator | same geometry and colours; the wobble cadence is scaled off thirst only (upstream uses its dehydration counter) | 🟡 deliberate simplification of the wobble | `ThirstHud.java:17-31` |
 
