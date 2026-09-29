@@ -581,9 +581,10 @@ campfire and the kelp route.
 Legend: ✅ at parity · 🟡 deliberate deviation (reason in one clause) ·
 ❌ missing · ❌ unverified (say what could not be found).
 
-Summary: **✅ 64 · 🟡 28 · ❌ 10** over 102 rows. The last
-`❌ unverified` row was closed on 0.1.35: the hydration corpus resolves 105 of
-its 115 catalogued ids in a real world, and the gametest now pins that.
+Summary: **✅ 65 · 🟡 28 · ❌ 9** over 102 rows. The last
+`❌ unverified` row was closed on 0.1.35 (the hydration corpus resolves 105 of
+its 115 catalogued ids in a real world, and the gametest now pins that), and
+the Alchemy 2 cauldron gates were loaded on 0.1.39.
 
 ### 8.1 The campfire water loop
 
@@ -708,7 +709,7 @@ its 115 catalogued ids in a real world, and the gametest now pins that.
 | campfire loot: silk touch returns the campfire, otherwise `minecraft:oak_log` ×1 with `survives_explosion` | migrated, with the 1.20.1 enchantment predicate rewritten to the 26.2 component map | ✅ | `conversion/datapacks/hearthwind/data/minecraft/loot_table/blocks/campfire.json` |
 | rain extinguishes a campfire with p = 1/60 per second (AdditionZ `campfire_rain_extinguish: 60`) | no rain-extinguishing code anywhere; AdditionZ is not ported | ❌ | `rg isRaining custom-mods/` finds no campfire path; no `additionz` in `conversion/curated/mods-manifest.json` |
 | Alchemy 2 gates **crafting** the copper and campfire cauldrons | data migrated and enforced (`levelz/crafting/alchemy_02.json` uses the `item` field, which the loader reads, and `CraftingGateMixin` clears the result) | ✅ | `conversion/datapacks/hearthwind/data/levelz/crafting/alchemy_02.json`; `SkillGates.java:127,181-193`; `CraftingGateMixin.java:31-49` |
-| Alchemy 2 gates **breaking/placing** both cauldrons (`levelz/block/*_custom_*.json`) | **not loaded**: those 55-of-71 files carry `"block": "minecraft:custom_block"` plus the real id in an `"object"` field; the loader only reads `block` and drops ids that do not resolve, and it never reads `object` | ❌ | `conversion/datapacks/hearthwind/data/levelz/block/alchemy_02_custom_{campfire,copper}_cauldron.json`; `SkillGates.java:125,181-193,229-236` |
+| Alchemy 2 gates **breaking/placing** both cauldrons (`levelz/block/*_custom_*.json`) | ✅ **0.1.39**: loaded. All 55 placeholder files gate their real block now, not just the two cauldrons - `SkillGates.loadCategory` falls back to the `object` field when the `block` id does not resolve, which is exactly when levelz used a placeholder. That lifted the block-use gate count from 16 to 68 in the full pack | ✅ 0.1.39 | `conversion/datapacks/hearthwind/data/levelz/block/alchemy_02_custom_{campfire,copper}_cauldron.json`; the fix is in `SkillGates.loadCategory`; `HearthwindSkillsGameTests.skillGatesLoadAndResolve` asserts all four vanilla objects by id (lodestone 18 agility, respawn anchor 25 agility, jukebox 10 luck, fletching table 10 archery) |
 | mining 9 gates breaking `dehydration:copper_cauldron` | loaded into the break gates and enforced by `PlayerBlockBreakEvents.BEFORE` | ✅ | `levelz/mining/09.json`; `SkillGates.java:124,358-369` |
 | smithing 28 gates `dehydration:netherite_leather_flask` | loaded and enforced | ✅ | `levelz/smithing/28.json`; `SmithingGateMixin` |
 | jobs: all three blocks are builder deliverables, the netherite flask is a smither reward | migrated | ✅ | `jobsaddon/builder/builder_job.json:177-178`; `jobsaddon/smither/smither_job.json:424` |

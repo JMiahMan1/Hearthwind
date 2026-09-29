@@ -324,8 +324,13 @@ public final class HearthwindSkillsGameTests {
         // because the corpus counts entries for mods we do not ship and those
         // are skipped by design.
         helper.assertTrue(counts[0] > 200, "mining break gates loaded: " + counts[0]);
-        // distinct ids after placeholder collapse: ~17 vanilla stations
-        helper.assertTrue(counts[1] >= 10 && counts[1] < 50,
+        // 71 levelz/block files, 55 of which gate a real block through the
+        // "object" field behind a "minecraft:custom_block" placeholder that
+        // does not exist here. Reading "object" is what makes them load: the
+        // four whose object is vanilla plus the 48 mod blocks the full test
+        // pack ships. The exact number moves with the pack, so this is a range
+        // and the four vanilla ones are asserted by id below.
+        helper.assertTrue(counts[1] >= 60 && counts[1] < 120,
                 "use gates loaded: " + counts[1]);
 
         // spot checks straight from the migrated corpus
@@ -342,6 +347,30 @@ public final class HearthwindSkillsGameTests {
                 net.minecraft.world.level.block.Blocks.FURNACE);
         helper.assertTrue(furnace != null && furnace.skill() == Skill.SMITHING
                 && furnace.level() == 3, "furnace use requires smithing 3");
+        // levelz gates 55 of its block files behind
+        // "block": "minecraft:custom_block" with the real block in "object".
+        // Four of those objects are vanilla, so they must be gated for real.
+        SkillGates.Gate lodestone = SkillGates.useGate(
+                net.minecraft.world.level.block.Blocks.LODESTONE);
+        helper.assertTrue(lodestone != null && lodestone.skill() == Skill.AGILITY
+                && lodestone.level() == 18,
+                "minecraft:lodestone comes from the object field and requires agility 18");
+        SkillGates.Gate anchor = SkillGates.useGate(
+                net.minecraft.world.level.block.Blocks.RESPAWN_ANCHOR);
+        helper.assertTrue(anchor != null && anchor.skill() == Skill.AGILITY
+                && anchor.level() == 25,
+                "minecraft:respawn_anchor comes from the object field and requires agility 25");
+        SkillGates.Gate jukebox = SkillGates.useGate(
+                net.minecraft.world.level.block.Blocks.JUKEBOX);
+        helper.assertTrue(jukebox != null && jukebox.skill() == Skill.LUCK
+                && jukebox.level() == 10,
+                "minecraft:jukebox comes from the object field and requires luck 10");
+        SkillGates.Gate fletching = SkillGates.useGate(
+                net.minecraft.world.level.block.Blocks.FLETCHING_TABLE);
+        helper.assertTrue(fletching != null && fletching.skill() == Skill.ARCHERY
+                && fletching.level() == 10,
+                "minecraft:fletching_table comes from the object field and requires archery 10");
+
         SkillGates.Gate ungated = SkillGates.useGate(
                 net.minecraft.world.level.block.Blocks.DIRT);
         helper.assertTrue(ungated == null, "dirt is not gated");

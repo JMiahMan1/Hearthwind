@@ -190,14 +190,32 @@ public final class SkillGates {
                         continue;
                     }
                     if (!resolves(idField, id)) {
+                        // levelz/block files for blocks that are not vanilla
+                        // carry "block": "minecraft:custom_block" plus an
+                        // "object" field naming the real block, because
+                        // levelz itself used a placeholder block to group them.
+                        // That placeholder does not exist here, so 55 of our
+                        // 71 block files were dropped wholesale - including
+                        // the four whose object is a vanilla block
+                        // (fletching table, jukebox, lodestone, respawn
+                        // anchor). The object field is present exactly when the
+                        // placeholder is, so use it as the fallback.
+                        if (idField.equals("block") && root.has("object")) {
+                            for (String real : readIds(root.get("object"))) {
+                                Identifier rid;
+                                try {
+                                    rid = Identifier.parse(real);
+                                } catch (Exception e) {
+                                    continue;
+                                }
+                                if (resolves(idField, rid)) {
+                                    added += put(target, rid, skill, level);
+                                }
+                            }
+                        }
                         continue; // not present in this world's registries
                     }
-                    Gate existing = target.get(id);
-                    // most permissive requirement wins on collisions
-                    if (existing == null || level < existing.level()) {
-                        target.put(id, new Gate(skill, level));
-                        added++;
-                    }
+                    added += put(target, id, skill, level);
                 }
             }
         } catch (Exception e) {
@@ -205,6 +223,20 @@ public final class SkillGates {
                     category, e.toString());
         }
         return added;
+    }
+
+    /**
+     * Records a gate, keeping the most permissive requirement when two files
+     * gate the same id, and reports whether anything was added.
+     */
+    private static int put(Map<Identifier, Gate> target, Identifier id, Skill skill,
+            int level) {
+        Gate existing = target.get(id);
+        if (existing != null && level >= existing.level()) {
+            return 0;
+        }
+        target.put(id, new Gate(skill, level));
+        return 1;
     }
 
     /** The id field is either a bare string or an array of strings. */
