@@ -354,6 +354,14 @@ PY
 
   # Extract overrides exactly like Prism does on import (config, datapacks,
   # resourcepacks, resources, ...). overrides/mods is handled above.
+  #
+  # Files the pack used to ship and no longer does are REMOVED. Without that,
+  # an instance created by an older release keeps every override it ever had:
+  # 0.1.40 deleted the title-screen layout whose background could never
+  # resolve, and an instance that still had it kept drawing the magenta-and-
+  # black checkerboard even though the pack was fixed. A launcher importing the
+  # pack fresh has no such leftovers, so pruning here is what makes an updated
+  # instance match a fresh one.
   if [ -d "$idir/minecraft" ]; then
     python3 - "$MRPACK_I" "$idir/minecraft" "$inst" <<'PY'
 import sys
@@ -363,7 +371,13 @@ from pathlib import Path
 mrpack, mc_dir, inst = sys.argv[1:4]
 mc = Path(mc_dir)
 changed = 0
+pruned = 0
 with zipfile.ZipFile(mrpack) as z:
+    shipped = {
+        n[len("overrides/"):]
+        for n in z.namelist()
+        if n.startswith("overrides/") and not n.endswith("/")
+    }
     for name in z.namelist():
         if not name.startswith("overrides/") or name.endswith("/"):
             continue
@@ -377,6 +391,39 @@ with zipfile.ZipFile(mrpack) as z:
         dest.parent.mkdir(parents=True, exist_ok=True)
         dest.write_bytes(data)
         changed += 1
+    # Prune override files that left the pack, but ONLY inside the roots the
+    # pack itself owns. A mod writes its own config on first run and that file
+    # is not an override - config/ is full of them, and deleting those resets a
+    # player's settings. So the pack-owned roots are taken from what the mrpack
+    # actually ships: config/<dir>/, resourcepacks/<pack>/, world/datapacks/<pack>/,
+    # resources/, shaderpacks/<pack>/. Everything else under config/ is left
+    # alone.
+    owned = set()
+    for rel in shipped:
+        parts = rel.split("/")
+        if parts[0] in ("resourcepacks", "shaderpacks", "datapacks") and len(parts) >= 2:
+            owned.add("/".join(parts[:2]))            # the pack's own folder
+        elif parts[0] in ("config", "resources", "world", "datapacks") and len(parts) >= 2:
+            owned.add("/".join(parts[:2]))            # e.g. config/fancymenu
+    for root_rel in sorted(owned):
+        root = mc / root_rel
+        if not root.is_dir():
+            continue
+        for path in sorted(root.rglob("*"), reverse=True):
+            if path.is_dir():
+                try:
+                    path.rmdir()          # only succeeds once empty
+                except OSError:
+                    pass
+                continue
+            rel = path.relative_to(mc).as_posix()
+            if rel in shipped:
+                continue
+            path.unlink()
+            pruned += 1
+            print(f"  {inst}: pruned stale override {rel}")
+if pruned:
+    print(f"  {inst}: pruned {pruned} stale override file(s) the pack no longer ships")
 print(f"  {inst}: overrides {changed} file(s) synced from the mrpack")
 PY
   fi
