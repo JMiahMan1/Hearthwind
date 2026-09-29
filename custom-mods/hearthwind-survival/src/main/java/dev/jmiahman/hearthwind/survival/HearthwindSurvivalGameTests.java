@@ -301,6 +301,129 @@ public final class HearthwindSurvivalGameTests {
     }
 
     /**
+     * Upstream {@code BrewingRecipeRegistryMixin} adds three mixes to the
+     * vanilla brewing map. Charcoal and kelp are not vanilla ingredients, so
+     * these never override a vanilla result; the ghast-tear mix upgrades a
+     * purified bottle into the pack's best thirst item. A mistyped holder or a
+     * missing registration would silently drop all three, so brew them for real
+     * through {@link net.minecraft.world.item.alchemy.PotionBrewing}.
+     */
+    @GameTest
+    public void hydrationBrewingMixesMatchAged(GameTestHelper helper) {
+        net.minecraft.world.item.alchemy.PotionBrewing brewing =
+                net.minecraft.world.item.alchemy.PotionBrewing.bootstrap(
+                        helper.getLevel().enabledFeatures());
+
+        helper.assertTrue(
+                brew(brewing, net.minecraft.world.item.alchemy.Potions.WATER, net.minecraft.world.item.Items.CHARCOAL)
+                        .equals(PurifiedWater.PURIFIED_POTION),
+                "water + charcoal must brew into dehydration:purified_water");
+        helper.assertTrue(
+                brew(brewing, net.minecraft.world.item.alchemy.Potions.WATER, net.minecraft.world.item.Items.KELP)
+                        .equals(PurifiedWater.PURIFIED_POTION),
+                "water + kelp must brew into dehydration:purified_water");
+        helper.assertTrue(
+                brew(brewing, PurifiedWater.PURIFIED_POTION, net.minecraft.world.item.Items.GHAST_TEAR)
+                        .equals(PurifiedWater.HYDRATION_POTION),
+                "purified water + ghast tear must brew into dehydration:hydration");
+
+        // A vanilla mix must still win where it is defined, and the hydration
+        // potion must actually carry the effect that makes it worth brewing.
+        helper.assertFalse(
+                brew(brewing, net.minecraft.world.item.alchemy.Potions.WATER, net.minecraft.world.item.Items.NETHER_WART)
+                        .equals(PurifiedWater.PURIFIED_POTION),
+                "water + nether wart must still brew into the awkward potion");
+        helper.assertTrue(PurifiedWater.HYDRATION_POTION.value().getEffects().stream()
+                        .anyMatch(e -> e.getEffect().is(HydrationMobEffect.HOLDER)),
+                "dehydration:hydration must carry the dehydration:hydration_effect");
+        helper.succeed();
+    }
+
+    /** Result holder of one brew, or a null-safe sentinel when nothing changed. */
+    private static net.minecraft.core.Holder<net.minecraft.world.item.alchemy.Potion> brew(
+            net.minecraft.world.item.alchemy.PotionBrewing brewing,
+            net.minecraft.core.Holder<net.minecraft.world.item.alchemy.Potion> from,
+            net.minecraft.world.item.Item ingredient) {
+        net.minecraft.world.item.ItemStack bottle = net.minecraft.world.item.alchemy.PotionContents
+                .createItemStack(net.minecraft.world.item.Items.POTION, from);
+        net.minecraft.world.item.ItemStack result = brewing.mix(new net.minecraft.world.item.ItemStack(ingredient), bottle);
+        return result.get(net.minecraft.core.component.DataComponents.POTION_CONTENTS).potion().orElse(null);
+    }
+
+    /**
+     * {@code HydrationEffect} grants {@code amplifier + 1} thirst once every
+     * {@code 50 >> amplifier} ticks, which is what makes a brewed dose worth
+     * roughly +18 thirst. Both halves of that rule are measured here: the
+     * cadence and the amount.
+     */
+    @GameTest
+    public void aHydrationDoseWorthsAboutEighteenThirst(GameTestHelper helper) {
+        // No mock player ticks inside a gametest: makeMockPlayer returns a bare
+        // Player that is never added to the level, and makeMockServerPlayerInLevel
+        // is dropped a tick after it joins. So the effect is driven through
+        // MobEffectInstance.tickServer - vanilla's own per-tick path, which is
+        // exactly the shouldApplyEffectTickThisTick + applyEffectTick pair the
+        // effect has to implement. This measures the cadence, not our wiring.
+        net.minecraft.server.level.ServerLevel level = helper.getLevel();
+
+        // Aged's rule is `50 >> amplifier` ticks per grant and `amp + 1` thirst
+        // per grant, so amplifier 0 is about 18 x +1 over a 900-tick dose and
+        // amplifier 1 is about 36 x +2.
+        int[] amp0 = countHydrationGrants(helper, level, 0);
+        helper.assertTrue(amp0[0] >= 17 && amp0[0] <= 19,
+                "a 900-tick dose at amplifier 0 fires once every 50 ticks, so about 18 grants (was "
+                        + amp0[0] + ")");
+        helper.assertTrue(amp0[1] == amp0[0],
+                "each grant is exactly +1 thirst at amplifier 0 (gave " + amp0[1] + " for "
+                        + amp0[0] + " grants)");
+
+        int[] amp1 = countHydrationGrants(helper, level, 1);
+        helper.assertTrue(amp1[0] >= 35 && amp1[0] <= 37,
+                "amplifier 1 halves the interval to 25 ticks, so about 36 grants (was "
+                        + amp1[0] + ")");
+        helper.assertTrue(amp1[1] == amp1[0] * 2,
+                "each grant is exactly +2 thirst at amplifier 1 (gave " + amp1[1] + " for "
+                        + amp1[0] + " grants)");
+        helper.succeed();
+    }
+
+    /**
+     * Ticks a full dose of the hydration effect on a player of its own and
+     * reports {@code {grants, total thirst granted}}. The thirst bar caps at 20,
+     * so it is emptied the moment it fills: otherwise an amplifier-1 dose
+     * (+2 a grant) would look like it stopped after 10 grants when it was
+     * simply out of room.
+     */
+    private static int[] countHydrationGrants(GameTestHelper helper,
+            net.minecraft.server.level.ServerLevel level, int amplifier) {
+        net.minecraft.world.entity.player.Player player =
+                helper.makeMockPlayer(net.minecraft.world.level.GameType.SURVIVAL);
+        HearthwindSurvivalThirst.setState(player, HearthwindSurvivalThirst.ThirstState.DEFAULT
+                .withLevel(0).withDehydration(0.0F));
+        var instance = new net.minecraft.world.effect.MobEffectInstance(HydrationMobEffect.HOLDER,
+                HydrationMobEffect.POTION_DURATION_TICKS, amplifier, false, false, true);
+        int grants = 0;
+        int total = 0;
+        for (int tick = 0; tick < HydrationMobEffect.POTION_DURATION_TICKS; tick++) {
+            int before = HearthwindSurvivalThirst.level(player);
+            instance.tickServer(level, player, () -> {});
+            int gained = HearthwindSurvivalThirst.level(player) - before;
+            if (gained > 0) {
+                grants++;
+                total += gained;
+            }
+            if (HearthwindSurvivalThirst.level(player) >= HearthwindSurvivalThirst.MAX_LEVEL) {
+                HearthwindSurvivalThirst.setState(player, HearthwindSurvivalThirst.ThirstState.DEFAULT
+                        .withLevel(0).withDehydration(0.0F));
+            }
+            if (instance.getDuration() <= 0) {
+                break;
+            }
+        }
+        return new int[] {grants, total};
+    }
+
+    /**
      * Dehydration's bamboo pump: four pumps purify a bucket, one purifies a
      * glass bottle, and a leather flask gains two units - after which the
      * pump rests for the configured cooldown.

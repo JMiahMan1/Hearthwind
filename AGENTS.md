@@ -84,7 +84,8 @@ How far CI can go:
 cd custom-mods && bash tools/run_gametests.sh [--keep-server]
 # -> builds all modules, boots a throwaway 26.2 server, runs every @GameTest,
 #    prints "gametests: N/M passed", exits nonzero on failure
-#    (257 server gametests green: survival + skills + jobs + primitive + world + smallships;
+#    (server gametests green: survival + skills + jobs + primitive + world + dungeonz
+#     + smallships;
 #    client gametests PASS: nutrients + screens tour + diet + mining gate arc + pack-server connect + biome temp)
 ```
 
@@ -352,7 +353,9 @@ not drive 1.0.0 work.
 ### Module status (shipped; parity gaps are in the plan section 5.3)
 
 - `hearthwind-survival`: thirst, temperature, 5-group diet, spoilage
-  (inventory + containers), downed/revive.
+  (inventory + containers), downed/revive, campfire water purification
+  (1000-tick boil, frozen on a dark fire) and the Potion of Hydration
+  brewing chain.
 - `hearthwind-skills`: LevelZ-parity skills, 649 corpus gates, procs,
   distance mob scaling, parties.
 - `hearthwind-jobs`: 8 jobs with corpus ladders, `/job` commands. Job

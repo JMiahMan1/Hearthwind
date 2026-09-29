@@ -19,6 +19,8 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.alchemy.Potions;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.fabricmc.fabric.api.registry.FabricPotionBrewingBuilder;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.state.BlockBehaviour;
@@ -44,6 +46,8 @@ public final class PurifiedWater {
     public static Item BUCKET;
     /** The {@code dehydration:purified_water} potion carried by boiled bottles. */
     public static Holder<Potion> PURIFIED_POTION;
+    /** The {@code dehydration:hydration} potion, the best thirst item in Aged. */
+    public static Holder<Potion> HYDRATION_POTION;
 
     private PurifiedWater() {}
 
@@ -110,7 +114,33 @@ public final class PurifiedWater {
                         .setId(itemKey())));
         PURIFIED_POTION = Registry.registerForHolder(BuiltInRegistries.POTION, id("purified_water"),
                 new Potion("purified_water"));
+        HYDRATION_POTION = Registry.registerForHolder(BuiltInRegistries.POTION, id("hydration"),
+                new Potion("hydration", new MobEffectInstance(HydrationMobEffect.HOLDER,
+                        HydrationMobEffect.POTION_DURATION_TICKS)));
         log.accept("purified water fluid/block/bucket/potion registered");
+    }
+
+    /**
+     * Upstream {@code BrewingRecipeRegistryMixin} adds exactly three mixes to
+     * the vanilla brewing map, all keyed on ingredients vanilla never uses, so
+     * nothing vanilla is overridden:
+     *
+     * <pre>
+     * water        + charcoal  -> purified water
+     * water        + kelp      -> purified water
+     * purified     + ghast tear-> hydration
+     * </pre>
+     *
+     * The reference injects at the tail of {@code registerDefaults}; 26.2 has a
+     * real Fabric hook for this ({@code FabricPotionBrewingBuilder.BUILD}), so
+     * the mixes go in with no mixin.
+     */
+    public static void registerBrewing() {
+        FabricPotionBrewingBuilder.BUILD.register(builder -> {
+            builder.registerPotionRecipe(Potions.WATER, Ingredient.of(Items.CHARCOAL), PURIFIED_POTION);
+            builder.registerPotionRecipe(Potions.WATER, Ingredient.of(Items.KELP), PURIFIED_POTION);
+            builder.registerPotionRecipe(PURIFIED_POTION, Ingredient.of(Items.GHAST_TEAR), HYDRATION_POTION);
+        });
     }
 
     /**

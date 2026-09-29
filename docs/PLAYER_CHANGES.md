@@ -45,6 +45,14 @@ contract of what the pack does. Grown from the Aged fork; server-side only.
   time is 1000 ticks (50s), the literal constant Aged's Dehydration 1.3.6
   passes to `addItem`; Aged has no chime, no particles and no hint message,
   they are Hearthwind additions.
+- **Potion of Hydration (0.1.35)**: you can now brew clean water instead of
+  boiling it. In a brewing stand, {gilt}water + charcoal{} or {gilt}water + kelp{}
+  gives a {gilt}bottle of purified water{}; dropping a {gilt}ghast tear{} into that
+  gives a {gilt}Potion of Hydration{}, the strongest thirst item in the pack -
+  one dose is worth roughly +18 thirst, delivered over 45 seconds rather than
+  at once. These are Aged's three Dehydration brewing recipes, which we were
+  missing; the ingredients are ones vanilla never uses, so no vanilla recipe
+  changes.
 
 ## Survival needs (replaces Dehydration + EnvironmentZ + NutritionZ)
 

@@ -32,3 +32,16 @@ Smelt a bucket of water to purify it.
 <recipe;dehydration:purified_water_bucket>
 
 Pour it out to make a pool you can drink from by hand without risk.
+
+;;;;;
+
+{rubric}Brewing it instead{}
+
+A brewing stand does the same job faster than a campfire.
+
+- Put a bottle of {gilt}water{} in and a {gilt}charcoal{} or a {gilt}kelp{} in the ingredient slot: {gilt}purified water{}.
+- Drop a {gilt}ghast tear{} into that purified bottle and you get a {gilt}Potion of Hydration{}.
+
+A Potion of Hydration is the strongest thirst item in Hearthwind. It fills you
+up over the next 45 seconds instead of all at once, so drink it before you set
+out rather than in the middle of a fight.

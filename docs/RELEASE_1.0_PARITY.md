@@ -134,10 +134,13 @@ Still open (do these first, section 6, W0):
     Dehydration 1.3.6 - the 1000-tick boil, the block-corner drop, the frozen
     progress on a dark fire, documented with the full audit in
     `docs/AGED_HYDRATION.md`), and the campfire fuel tag came across (the
-    sapling-to-sticks recipe was already in the pack). Still missing: the
+    sapling-to-sticks recipe was already in the pack). The three brewing
+    recipes and the `dehydration:hydration` potion shipped in 0.1.35
+    (`PurifiedWater.registerBrewing` + `HydrationMobEffect`, on Fabric's
+    `FabricPotionBrewingBuilder.BUILD` hook instead of the reference's mixin).
+    Still missing: the
     campfire cauldron, the copper rain
-    cauldron, the bamboo pump, the three brewing recipes and
-    `dehydration:hydration`. The audit's 28 deviations and 14 gaps are the
+    cauldron, the bamboo pump. The audit's 28 deviations and 14 gaps are the
     hydration workstream.
   - ~~The fallback written guidebook in `StarterKit` has wrong facts.~~ Fixed
     0.1.34: a claim-by-claim audit against the implementation (and against
@@ -583,24 +586,34 @@ guidebook (section 5.8). Then port the
 accessory stack (Trinkets, BackSlot + addon, Inmis + addon), because it
 defines the inventory silhouette. Screens: the panel chrome and the floating tab strip now match the captures
 (done 0.1.32, corrected 0.1.33: 200x215 panels, floating LibZ tabs,
-the Jobs screen's measured rows and multi-job summary); finish the
-Level-screen rail and SkillRestrictionScreen. Every item lands with a
-client-gametest screenshot next to the Aged reference.
+the Jobs screen's measured rows and multi-job summary). The Level screen's rail
+and `SkillRestrictionScreen` were already shipped and the tour screenshots
+(`tour_skills`, `tour_skills_attributes`, `tour_skill_restrictions_mining`,
+`tour_skill_restrictions_crafting`) prove it; that W1 line was stale and is
+retired on 0.1.35. What is still open on these screens is cosmetic: Aged's
+GPL sprite art for the skill/tab icons, the hub scroll slider, and the full
+per-level bonus text. Every item lands with a client-gametest screenshot next
+to the Aged reference.
 
 **W1b: Version drift review (section 5.9)** for shipped mods, gameplay-heavy first.
 
-**W2: Adopt the 30 mods with official 26.2 builds.**
-Batch by side: (a) server/both gameplay (`better-archeology`,
-`stoneworks`, `spawn-animations`, `sound`, `neruina`, `puzzles-lib` +
-`overflowing-bars`, `rsls`, `first-person-model`, `3dskinlayers`,
-`presence-footsteps`, `sound-physics-remastered`, `immediatelyfast`,
-`entityculling`, `badoptimizations`, `konkrete`, `shatterbyte-lib`);
-(b) client stack (`sodium`, `iris`, `fancymenu` + `melody`,
-`distanthorizons`, `cameraoverhaul`, `moreculling`, `smooth-swapping`,
-`smooth-scrolling-refurbished`, `blur-plus`, `default-options`,
-`advancements-fullscreen`, `advancements-search`). Boot-smoke each batch
-on the server and run the client gametests (a Sodium + Iris client is a
-real rendering change: re-check HUD/inventory screenshots).
+**W2: Adopt the mods with official 26.2 builds.** Audited against the built
+mrpacks on 0.1.35 - **this workstream is essentially done**, so the list below
+is history, not a queue. Shipping in the 0.1.34 client pack: `sodium`, `iris`,
+`fancymenu`, `melody`, `distanthorizons`, `cameraoverhaul`, `moreculling`,
+`smooth-swapping`, `smooth-scrolling`, `entityculling`, `immediatelyfast`,
+`badoptimizations`, `konkrete`, `overflowing-bars`, `rsls`,
+`sound-physics-remastered`, `default-options`, `entity-model-features`,
+`skinlayers3d` (3dskinlayers' new name), `presence-footsteps`,
+`spawn-animations`; in the server pack too: `stoneworks`, `neruina`,
+`puzzles` + `puzzles-lib`, `backslot`, `inmis`, `trinkets`. The rest of the
+original list was never an Aged mod at all (satin, indium, noisium, bobby,
+zoomify, satin-style perf mods) or has no 26.2 build to adopt
+(`tooltipfix` stops at 1.19; `better-archaeology`, `backslotaddon` and
+`inmisaddon` are not on Modrinth and stay in the 63-entry W4 allowlist).
+`first-person-model` and `3dskinlayers` are covered by name drift, not a
+missing jar. Re-run `python3 conversion/scripts/aged_parity_diff.py` before
+quoting any of this; it is the only source of truth here.
 
 **W3: Close parity gaps in the Hearthwind rebuilds (section 5.3).**
 Highest gameplay impact first: jobs curve, 3 concurrent jobs and switch

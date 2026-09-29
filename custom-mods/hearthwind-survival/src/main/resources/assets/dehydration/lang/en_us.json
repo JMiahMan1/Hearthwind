@@ -1,5 +1,7 @@
 {
   "effect.dehydration.thirst": "Dehydrated",
+  "effect.dehydration.hydration_effect": "Hydration",
+  "item.minecraft.potion.effect.hydration": "Potion of Hydration",
   "item.dehydration.leather_leather_flask": "Leather Leather Flask",
   "item.dehydration.iron_leather_flask": "Iron Leather Flask",
   "item.dehydration.golden_leather_flask": "Golden Leather Flask",

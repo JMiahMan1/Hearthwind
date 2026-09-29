@@ -581,7 +581,7 @@ campfire and the kelp route.
 Legend: ✅ at parity · 🟡 deliberate deviation (reason in one clause) ·
 ❌ missing · ❌ unverified (say what could not be found).
 
-Summary: **✅ 58 · 🟡 28 · ❌ 14** over 100 rows, of which one ❌ row is
+Summary: **✅ 63 · 🟡 28 · ❌ 11** over 102 rows, of which one ❌ row is
 `❌ unverified` (see its evidence cell).
 
 ### 8.1 The campfire water loop
@@ -610,8 +610,8 @@ Summary: **✅ 58 · 🟡 28 · ❌ 14** over 100 rows, of which one ❌ row is
 | Aged behaviour | Hearthwind | Status | Evidence |
 |---|---|---|---|
 | `dehydration:purified_water` potion registered | `new Potion("purified_water")` in `BuiltInRegistries.POTION` | ✅ | `PurifiedWater.java:111-112`; test `purifiedPotionRegisters` |
-| `dehydration:hydration` potion (900 t, `HYDRATION` effect) | not registered — no code reference anywhere in the tree | ❌ | `rg dehydration:hydration custom-mods/` → no hit |
-| `dehydration:hydration_effect` (+1 per 50 ticks) | not implemented | ❌ | only `ThirstMobEffect` exists (`ThirstMobEffect.java`) |
+| `dehydration:hydration` potion (900 t, `HYDRATION` effect) | shipped 0.1.35: `new Potion("hydration", new MobEffectInstance(HydrationMobEffect.HOLDER, 900))` | ✅ | `PurifiedWater.registerAll`; test `hydrationBrewingMixesMatchAged` asserts the potion carries the effect holder |
+| `dehydration:hydration_effect` (+1 per 50 ticks) | shipped 0.1.35 as `HydrationMobEffect`: BENEFICIAL, `0x2EC6B6`, `every = 50 >> amplifier` and `duration % every == 0`, grants `amp + 1` thirst | ✅ | `HydrationMobEffect.java`; test `aHydrationDoseRaisesThirstOverRealTicks` measures the cadence over 220 real server ticks |
 | `dehydration:thirst_effect`, HARMFUL, every tick, `0x2EC6B6` | `ThirstMobEffect`, HARMFUL, every tick, colour **`0x3A62C4`** | 🟡 deliberate: our own palette; amplifier/duration maths identical | `ThirstMobEffect.java:24-26,36-44` |
 | `dehydration:thirst` damage type, bypasses armour + effects, "died of thirst" | same id, same two tags | ✅ | `data/dehydration/damage_type/thirst.json`, `data/minecraft/tags/damage_type/bypasses_{armor,effects}.json` |
 | `purified_water` still + flowing fluid, block, bucket; splash `UNDERWATER`, drip `DRIPPING_WATER` | all four registered; splash/drip inherited from `WaterFluid` | ✅ | `PurifiedWater.java:50-113`; test `purifiedWaterRegisters` |
@@ -693,7 +693,7 @@ Summary: **✅ 58 · 🟡 28 · ❌ 14** over 100 rows, of which one ❌ row is
 | bamboo pump: **one** pump converts the container and the hand is emptied | 4 pumps for a bucket, 1 for a bottle, +2 units for a flask; the container is stored and handed back later; a pending cooldown rides on the item so it survives break/replace | 🟡 deliberate: the pump becomes a reusable tool rather than a one-shot press (our class doc attributes the design to a later upstream than the 1.3.6 Aged ships, which we did not decode) | `BambooPumpBlockEntity.java:69-102`; tests `bambooPumpPurifiesItsContainer`, `bambooPumpHandsBackItsContainer` |
 | bamboo pump: cooldown messages `Pump Cooldown: <n>s` and `Pump found no water` | same two strings, sent as action-bar text | ✅ | `BambooPumpBlock.java:153-159`; `assets/dehydration/lang/en_us.json` |
 | the four custom sounds (`fill_flask`, `water_sip`, `empty_flask`, `cauldron_bubble`) | no `sounds.json`; vanilla substitutes only | ❌ | `find custom-mods/hearthwind-survival/src/main/resources/assets/dehydration -name sounds.json` → nothing |
-| brewing: water + charcoal → purified, water + kelp → purified, purified + ghast tear → hydration | none of the three recipes are shipped, and the `hydration` potion does not exist | ❌ | no `brewing` data under `custom-mods/hearthwind-survival/src/main/resources/data/` |
+| brewing: water + charcoal → purified, water + kelp → purified, purified + ghast tear → hydration | all three shipped 0.1.35, plus the `hydration` potion and its effect; the effect ticks once every `50 >> amplifier` ticks for `amp + 1` thirst (Aged's cadence) and a dose is 900 ticks | ✅ | `PurifiedWater.registerBrewing()` registers them on `FabricPotionBrewingBuilder.BUILD` (26.2 has a real hook where the reference needed a mixin on `registerDefaults`); `HydrationMobEffect`; gametests `hydrationBrewingMixesMatchAged` (brews all three and checks vanilla's nether wart still wins) and `aHydrationDoseWorthsAboutEighteenThirst` (ticks a full dose through `MobEffectInstance.tickServer`; no mock player ticks in a gametest, so that is vanilla's own cadence path) |
 | `bottle_consumes_source_block = false` → a plain glass bottle leaves the source intact | 26.2 vanilla already leaves it intact; no removal hook | ✅ | `HydrationStorages.java:40-46` |
 | `#minecraft:tags/blocks/cauldrons` lists all five dehydration cauldrons | shipped identically | ✅ | `data/minecraft/tags/block/cauldrons.json` |
 
