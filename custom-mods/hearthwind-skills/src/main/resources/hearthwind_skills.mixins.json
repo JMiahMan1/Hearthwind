@@ -9,7 +9,8 @@
 		"ItemCombinerMenuAccessor",
 		"SkillProcDamageMixin",
 		"SkillProcTwinMixin",
-		"SmithingGateMixin"
+		"SmithingGateMixin",
+    "LivingBigScaleMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

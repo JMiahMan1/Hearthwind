@@ -224,6 +224,23 @@ Eight optional professions (Miner, Farmer, Fisher, Warrior, Smither, Brewer, Bui
     buttons. Invitations are not modelled by our party subsystem, so
     PartyAddon's invitation column is intentionally omitted.
 
+## The Wild (replaces RPGDifficulty)
+
+- **Monsters grow with distance**:
+  Past 300 blocks from world spawn, every 200 blocks farther out - and every 25
+  blocks deeper down or higher up - creatures gain more health, hit harder and
+  wear a thicker hide, up to 4x health, 3x damage and 2x armor. Young animals
+  are spared, and so is the Warden. Bosses (and the Ender Dragon) follow their
+  own, gentler curve and grow further for every player fighting them.
+- **No two monsters are the same**:
+  Roughly **1 monster in 3** is rolled up to 3% stronger or weaker than its
+  distance deserves, so a well-trodden route is never a solved problem.
+- **Two rare kinds of zombie** (rolls happen anywhere, even next to your base):
+  - **Lean and fast** (5% of zombies): 1.2x movement speed but 10 fewer max HP,
+    so it closes the gap and dies faster than a normal one.
+  - **Slow and towering** (10%): 0.7x speed, +10 max HP, +2 attack damage and
+    **1.3x the size** - you can see it coming before it reaches you.
+
 ## Biomes, Nether Exploration & Overworld Frontiers
 
 - **Gardens of the Dead (Nether Overhaul)**:

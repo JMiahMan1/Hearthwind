@@ -184,7 +184,15 @@ public final class HearthwindSkillsGameTests {
                 .filter(m -> m.is(MobScaling.MODIFIER_ID)).count();
         helper.assertTrue(after == before, "mob scaling must not stack, before=" + before + " after=" + after);
         if (after == 1) {
-            helper.assertTrue(inst.getValue() > base, "modifier raises max health");
+            // The 0.1.37 jitter rolls move the BASE value (0.1.37), so the
+            // modifier's own contribution is the only stable thing to assert.
+            double amount = inst.getModifiers().stream()
+                    .filter(m -> m.is(MobScaling.MODIFIER_ID))
+                    .mapToDouble(m -> m.amount())
+                    .sum();
+            helper.assertTrue(amount > 0.0,
+                    "the mob-scaling modifier must raise max health, base=" + base
+                            + " amount=" + amount + " value=" + inst.getValue());
         }
         helper.succeed();
     }
@@ -963,6 +971,115 @@ public final class HearthwindSkillsGameTests {
         } finally {
             p.reflectChance = reflect;
         }
+        helper.succeed();
+    }
+
+    /**
+     * rpgdifficulty 1.3.15's three per-mob rolls. Each is pinned to the
+     * reference arithmetic rather than to a plausible-looking number,
+     * because these are the only parts of mob scaling that a player notices
+     * without comparing stats: a zombie that is suddenly 30 HP and 1.3x wide
+     * has to be the big roll, not a distance step.
+     */
+    @GameTest
+    public void rpgdifficultyJitterRollsWithinTheConfiguredBand(GameTestHelper helper) {
+        SkillsConfig.get().mobScaling.allowRandomValues = true;
+        SkillsConfig.MobScaling cfg = SkillsConfig.get().mobScaling;
+        helper.assertTrue(cfg.randomChance == 30 && cfg.randomFactor == 3.0,
+                "Aged's rpgdifficulty.json5 ships randomChance 30 and randomFactor 3, got "
+                        + cfg.randomChance + " / " + cfg.randomFactor);
+        // A roll of 0 lands on (1 - factor) and a roll of 1 on (1 + factor):
+        // the band is the reference's, not ours.
+        double factor = cfg.randomFactor / 100.0;
+        helper.assertTrue(Math.abs(MobScaling.jitter(20.0, factor, 0.0) - 19.4) < 0.001,
+                "roll 0 of 20 HP is 19.4, got " + MobScaling.jitter(20.0, factor, 0.0));
+        helper.assertTrue(Math.abs(MobScaling.jitter(20.0, factor, 1.0) - 20.6) < 0.001,
+                "roll 1 of 20 HP is 20.6, got " + MobScaling.jitter(20.0, factor, 1.0));
+        helper.assertTrue(Math.abs(MobScaling.jitter(20.0, factor, 0.5) - 20.0) < 0.001,
+                "the middle of the band leaves the stat alone, got " + MobScaling.jitter(20.0, factor, 0.5));
+        helper.succeed();
+    }
+
+    /**
+     * The speed roll is consulted first and short-circuits the big one, so a
+     * zombie is never both. The thresholds are Aged's 5% and 10%.
+     */
+    @GameTest
+    public void rpgdifficultySpecialZombieRollsAreExclusiveAndExclusiveToNonBabies(GameTestHelper helper) {
+        SkillsConfig.MobScaling cfg = SkillsConfig.get().mobScaling;
+        helper.assertTrue(cfg.speedZombieChance == 5 && cfg.bigZombieChance == 10,
+                "Aged ships speedZombieChance 5 and bigZombieChance 10, got "
+                        + cfg.speedZombieChance + " / " + cfg.bigZombieChance);
+        helper.assertTrue(MobScaling.rollSpecialZombie(0.0f, 0.0f, cfg) == MobScaling.Special.SPEED,
+                "a 0 speed roll wins even when the big roll would also have hit");
+        helper.assertTrue(MobScaling.rollSpecialZombie(0.06f, 0.0f, cfg) == MobScaling.Special.BIG,
+                "6% misses the speed roll and takes the big one");
+        helper.assertTrue(MobScaling.rollSpecialZombie(0.06f, 0.11f, cfg) == MobScaling.Special.NONE,
+                "11% misses both, so the zombie is ordinary");
+        helper.assertTrue(MobScaling.rollSpecialZombie(0.049f, 0.99f, cfg) == MobScaling.Special.SPEED,
+                "just under 5% is a speed zombie");
+        helper.assertTrue(MobScaling.rollSpecialZombie(0.06f, 0.099f, cfg) == MobScaling.Special.BIG,
+                "just under 10% on the big roll, having missed speed, is a big zombie");
+        // Both comparisons are strict `<` in the reference, so a roll landing
+        // exactly on the threshold is not a special zombie.
+        helper.assertTrue(MobScaling.rollSpecialZombie(0.05f, 0.99f, cfg) == MobScaling.Special.NONE,
+                "exactly 5% is not under 5%, so no speed zombie");
+        helper.assertTrue(MobScaling.rollSpecialZombie(0.06f, 0.10f, cfg) == MobScaling.Special.NONE,
+                "exactly 10% is not under 10%, so no big zombie either");
+        helper.succeed();
+    }
+
+    /**
+     * A zombie that rolled big is taller, wider, and its eyes ride up with
+     * it - rpgdifficulty scales {@code getDimensions(pose)}, and a 26.x
+     * EntityDimensions record has to be rebuilt by hand because upstream's
+     * {@code scaled()} helper is gone.
+     */
+    @GameTest
+    public void rpgdifficultyBigZombieScalesItsHitbox(GameTestHelper helper) {
+        SkillsConfig.MobScaling cfg = SkillsConfig.get().mobScaling;
+        var ordinary = helper.spawn(net.minecraft.world.entity.EntityTypes.ZOMBIE,
+                new net.minecraft.core.BlockPos(1, 1, 1));
+        var big = helper.spawn(net.minecraft.world.entity.EntityTypes.ZOMBIE,
+                new net.minecraft.core.BlockPos(3, 1, 1));
+        var base = ordinary.getDimensions(net.minecraft.world.entity.Pose.STANDING);
+        big.setAttached(MobScaling.BIG_ZOMBIE, Boolean.TRUE);
+        var scaled = big.getDimensions(net.minecraft.world.entity.Pose.STANDING);
+        helper.assertTrue(Math.abs(scaled.width() - base.width() * (float) cfg.bigZombieSize) < 0.0001f,
+                "a big zombie is " + cfg.bigZombieSize + "x as wide (" + scaled.width() + " vs " + base.width() + ")");
+        helper.assertTrue(Math.abs(scaled.height() - base.height() * (float) cfg.bigZombieSize) < 0.0001f,
+                "a big zombie is " + cfg.bigZombieSize + "x as tall (" + scaled.height() + " vs " + base.height() + ")");
+        helper.assertTrue(scaled.eyeHeight() > base.eyeHeight(),
+                "the eye height must scale too, or a giant zombie looks at your chest");
+        ordinary.discard();
+        big.discard();
+        helper.succeed();
+    }
+
+    /**
+     * The rolls happen on every mob rpgdifficulty touches, including one that
+     * spawned on top of world spawn: upstream has no early return between the
+     * distance maths and the rolls. This is what makes a big zombie next to
+     * your base a real Aged memory, so it is pinned here.
+     */
+    @GameTest
+    public void rpgdifficultyRollsRunEvenWhereNoDistanceStepApplies(GameTestHelper helper) {
+        SkillsConfig.MobScaling cfg = SkillsConfig.get().mobScaling;
+        // Walk the reference's order out loud: the rolls are not gated on
+        // stepsFor() being positive, so the pure helper must be callable for a
+        // zero-step mob and the config must be the Aged one.
+        helper.assertTrue(MobScaling.stepsFor(0) == 0, "spawn is inside the grace distance");
+        helper.assertTrue(cfg.allowRandomValues, "Aged sets allowRandomValues true");
+        helper.assertTrue(cfg.allowSpecialZombie, "Aged sets allowSpecialZombie true");
+        helper.assertTrue(Math.abs(cfg.bigZombieSlownessFactor - 0.7) < 0.0001,
+                "Aged's bigZombieSlownessFactor is 0.7, got " + cfg.bigZombieSlownessFactor);
+        helper.assertTrue(Math.abs(cfg.speedZombieSpeedFactor - 1.2) < 0.0001,
+                "Aged's speedZombieSpeedFactor is 1.2, got " + cfg.speedZombieSpeedFactor);
+        helper.assertTrue(cfg.bigZombieBonusLifePoints == 10.0 && cfg.bigZombieBonusDamage == 2.0,
+                "Aged's big zombie gains 10 HP and 2 damage, got "
+                        + cfg.bigZombieBonusLifePoints + " / " + cfg.bigZombieBonusDamage);
+        helper.assertTrue(cfg.speedZombieMalusLifePoints == 10.0,
+                "Aged's speed zombie loses 10 HP, got " + cfg.speedZombieMalusLifePoints);
         helper.succeed();
     }
 }

@@ -147,6 +147,39 @@ public final class SkillsConfig {
         public double dynamicBossModificator = 0.3;
         /** How close a player must be to count as fighting the boss (rpgdifficulty: 128-block box). */
         public double dynamicBossRadius = 128.0;
+
+        /*
+         * The three rolls below run on EVERY scaled mob, not only the ones past
+         * a distance step: rpgdifficulty has no early return between the
+         * distance maths and them, so a zombie spawned next to spawn can still
+         * come out big. They are gated separately from the caps above because
+         * they are per-mob rolls, not multipliers.
+         */
+
+        /** Whether each mob's health and damage get a random jitter - rpgdifficulty: allowRandomValues. */
+        public boolean allowRandomValues = true;
+        /** Percent chance a mob is jittered - rpgdifficulty: randomChance 30. */
+        public int randomChance = 30;
+        /** Half-width of the jitter, as a percent of the stat - rpgdifficulty: randomFactor 3. */
+        public double randomFactor = 3.0;
+        /** Whether zombies can roll for the special variants - rpgdifficulty: allowSpecialZombie. */
+        public boolean allowSpecialZombie = true;
+        /** Percent chance a zombie is a fast, fragile one - rpgdifficulty: speedZombieChance 5. */
+        public int speedZombieChance = 5;
+        /** Movement speed multiplier for a fast zombie - rpgdifficulty: speedZombieSpeedFactor 1.2. */
+        public double speedZombieSpeedFactor = 1.2;
+        /** Max health subtracted from a fast zombie - rpgdifficulty: speedZombieMalusLifePoints 10. */
+        public double speedZombieMalusLifePoints = 10.0;
+        /** Percent chance a zombie is a slow, tanky, oversized one - rpgdifficulty: bigZombieChance 10. */
+        public int bigZombieChance = 10;
+        /** Movement speed multiplier for a big zombie - rpgdifficulty: bigZombieSlownessFactor 0.7. */
+        public double bigZombieSlownessFactor = 0.7;
+        /** Max health added to a big zombie - rpgdifficulty: bigZombieBonusLifePoints 10. */
+        public double bigZombieBonusLifePoints = 10.0;
+        /** Attack damage added to a big zombie - rpgdifficulty: bigZombieBonusDamage 2. */
+        public double bigZombieBonusDamage = 2.0;
+        /** Hitbox and model scale of a big zombie - rpgdifficulty: bigZombieSize 1.3. */
+        public double bigZombieSize = 1.3;
     }
 
     public static class Gates {

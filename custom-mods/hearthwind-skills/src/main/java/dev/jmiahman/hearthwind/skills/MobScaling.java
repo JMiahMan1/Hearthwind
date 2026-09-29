@@ -1,6 +1,11 @@
 package dev.jmiahman.hearthwind.skills;
 
+import com.mojang.serialization.Codec;
+import net.fabricmc.fabric.api.attachment.v1.AttachmentRegistry;
+import net.fabricmc.fabric.api.attachment.v1.AttachmentType;
 import net.minecraft.core.Holder;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
@@ -18,6 +23,7 @@ import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.monster.zombie.Zombie;
 import net.minecraft.world.level.Level;
 
 /**
@@ -53,6 +59,26 @@ public final class MobScaling {
      */
     public static final TagKey<EntityType<?>> BOSSES = TagKey.create(Registries.ENTITY_TYPE,
             Identifier.fromNamespaceAndPath("c", "bosses"));
+
+    /**
+     * Marks a zombie that rolled {@code bigZombieChance}, so its hitbox and
+     * model render oversized. rpgdifficulty keeps the same flag in a data
+     * tracker and scales {@code getDimensions}; a synced attachment is the
+     * 26.x equivalent, because the client has to agree on the size for the
+     * hitbox to match what is drawn.
+     */
+    public static final AttachmentType<Boolean> BIG_ZOMBIE =
+            AttachmentRegistry.<Boolean>builder()
+                    .initializer(() -> Boolean.FALSE)
+                    .persistent(Codec.BOOL)
+                    .syncWith(StreamCodec.of(ByteBufCodecs.BOOL, ByteBufCodecs.BOOL),
+                            (holder, value) -> true)
+                    .buildAndRegister(Identifier.fromNamespaceAndPath("hearthwind_skills", "big_zombie"));
+
+    /** Which special variant, if any, a zombie rolled. */
+    public enum Special {
+        NONE, SPEED, BIG
+    }
 
     private MobScaling() {}
 
@@ -165,6 +191,31 @@ public final class MobScaling {
             return;
         }
 
+        // rpgdifficulty rolls for jitter and for a special zombie AFTER the
+        // distance maths with no early return in between, so a mob spawned on
+        // top of world spawn still rolls. Keeping that order is what makes
+        // "I fought a big zombie right outside my base" a real Aged memory.
+        if (cfg.allowRandomValues && mob.getRandom().nextFloat() <= cfg.randomChance / 100.0F) {
+            double factor = cfg.randomFactor / 100.0;
+            jitter(mob, Attributes.MAX_HEALTH, factor, mob.getRandom().nextDouble());
+            jitter(mob, Attributes.ATTACK_DAMAGE, factor, mob.getRandom().nextDouble());
+        }
+        if (cfg.allowSpecialZombie && !(mob instanceof AgeableMob) && mob instanceof Zombie) {
+            // Speed is rolled first and short-circuits the big roll, so a
+            // zombie can never be both.
+            Special special = rollSpecialZombie(
+                    mob.getRandom().nextFloat(), mob.getRandom().nextFloat(), cfg);
+            if (special == Special.SPEED) {
+                addFlat(mob, Attributes.MAX_HEALTH, -cfg.speedZombieMalusLifePoints);
+                multiply(mob, Attributes.MOVEMENT_SPEED, cfg.speedZombieSpeedFactor);
+            } else if (special == Special.BIG) {
+                multiply(mob, Attributes.MOVEMENT_SPEED, cfg.bigZombieSlownessFactor);
+                addFlat(mob, Attributes.MAX_HEALTH, cfg.bigZombieBonusLifePoints);
+                addFlat(mob, Attributes.ATTACK_DAMAGE, cfg.bigZombieBonusDamage);
+                mob.setAttached(BIG_ZOMBIE, Boolean.TRUE);
+            }
+        }
+
         // 26.x world spawn lives in LevelData.RespawnData
         var spawn = level.getRespawnData().pos();
         double distance = Math.sqrt(mob.distanceToSqr(spawn.getX(), spawn.getY(), spawn.getZ()));
@@ -178,6 +229,67 @@ public final class MobScaling {
         applyFactor(mob, Attributes.MAX_HEALTH, factor, cfg.maxFactorHealth);
         applyFactor(mob, Attributes.ATTACK_DAMAGE, factor, cfg.maxFactorDamage);
         applyFactor(mob, Attributes.ARMOR, factor, cfg.maxFactorProtection);
+    }
+
+    /**
+     * rpgdifficulty's jitter: a stat is scaled into
+     * {@code 1 - factor + roll * factor * 2} for one roll in [0,1), so the
+     * result is a value between {@code 1 - factor} and {@code 1 + factor}
+     * around the stat it started from. Pure math; gametested.
+     */
+    public static double jitter(double value, double factor, double roll) {
+        return value * (1 - factor + roll * factor * 2);
+    }
+
+    /**
+     * Which special zombie a pair of rolls picks, and in which order. Pure
+     * math; gametested. The speed roll is checked first and the big roll is
+     * only consulted when it failed, so the two variants stay exclusive.
+     */
+    public static Special rollSpecialZombie(float speedRoll, float bigRoll, SkillsConfig.MobScaling cfg) {
+        if (speedRoll < cfg.speedZombieChance / 100.0F) {
+            return Special.SPEED;
+        }
+        if (bigRoll < cfg.bigZombieChance / 100.0F) {
+            return Special.BIG;
+        }
+        return Special.NONE;
+    }
+
+    /** Applies one jitter roll to an attribute, rounding the way upstream does. */
+    private static void jitter(Mob mob, Holder<Attribute> attribute, double factor, double roll) {
+        AttributeInstance instance = mob.getAttribute(attribute);
+        if (instance == null || instance.hasModifier(MODIFIER_ID)) {
+            return;
+        }
+        double base = instance.getBaseValue();
+        instance.setBaseValue(round(jitter(base, factor, roll), 2));
+        mob.setHealth(Math.min(mob.getHealth(), mob.getMaxHealth()));
+    }
+
+    /** Adds a flat amount to an attribute (the speed and big zombie bonuses). */
+    private static void addFlat(Mob mob, Holder<Attribute> attribute, double amount) {
+        AttributeInstance instance = mob.getAttribute(attribute);
+        if (instance != null) {
+            instance.setBaseValue(Math.max(1.0, round(instance.getBaseValue() + amount, 2)));
+        }
+    }
+
+    /**
+     * Multiplies an attribute. Movement speed has no cap in rpgdifficulty, so
+     * unlike {@link #applyFactor} this does not clamp.
+     */
+    private static void multiply(Mob mob, Holder<Attribute> attribute, double factor) {
+        AttributeInstance instance = mob.getAttribute(attribute);
+        if (instance != null) {
+            instance.setBaseValue(round(instance.getBaseValue() * factor, 3));
+        }
+    }
+
+    /** rpgdifficulty rounds health and damage to 2 decimals, speed to 3. */
+    private static double round(double value, int decimals) {
+        double scale = decimals == 2 ? 100.0 : 1000.0;
+        return Math.round(value * scale) / scale;
     }
 
     /**
