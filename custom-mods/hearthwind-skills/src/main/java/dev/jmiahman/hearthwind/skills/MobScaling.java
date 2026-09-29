@@ -24,7 +24,11 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.monster.zombie.Zombie;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * rpgdifficulty parity: mobs get stronger the farther they spawn from world
@@ -74,6 +78,20 @@ public final class MobScaling {
                     .syncWith(StreamCodec.of(ByteBufCodecs.BOOL, ByteBufCodecs.BOOL),
                             (holder, value) -> true)
                     .buildAndRegister(Identifier.fromNamespaceAndPath("hearthwind_skills", "big_zombie"));
+
+    /**
+     * The health factor this mob was actually scaled by, so the XP and loot
+     * hooks can reuse it. rpgdifficulty keeps the same number in a
+     * {@code MobHealthMultiplier} NBT tag and reads it back in
+     * {@code getXpToDropAddition} and {@code dropMoreLoot}; we write it as a
+     * persistent attachment, which is the 26.x equivalent and needs no
+     * mixin on the mob's own serializers.
+     */
+    public static final AttachmentType<Double> HEALTH_FACTOR =
+            AttachmentRegistry.<Double>builder()
+                    .initializer(() -> 1.0)
+                    .persistent(Codec.DOUBLE)
+                    .buildAndRegister(Identifier.fromNamespaceAndPath("hearthwind_skills", "health_factor"));
 
     /** Which special variant, if any, a zombie rolled. */
     public enum Special {
@@ -226,9 +244,60 @@ public final class MobScaling {
             return;
         }
         double factor = factorFor(distanceSteps, heightSteps);
+        // rpgdifficulty multiplies the general damage factor by
+        // creeperExplosionFactor after capping it (MobStrengthener:547), so the
+        // 10% lands on every mob's damage, not just creepers.
+        double damageFactor = Math.max(factor * cfg.creeperExplosionFactor, 1.0);
         applyFactor(mob, Attributes.MAX_HEALTH, factor, cfg.maxFactorHealth);
-        applyFactor(mob, Attributes.ATTACK_DAMAGE, factor, cfg.maxFactorDamage);
+        applyFactor(mob, Attributes.ATTACK_DAMAGE, damageFactor, cfg.maxFactorDamage);
         applyFactor(mob, Attributes.ARMOR, factor, cfg.maxFactorProtection);
+        // The XP and loot hooks read this back; the reference stores the same
+        // number in the mob's NBT so a reload keeps it.
+        mob.setAttached(HEALTH_FACTOR, cappedFactor(factor, cfg.maxFactorHealth));
+    }
+
+    /**
+     * rpgdifficulty's {@code getXpToDropAddition}: a tougher mob pays out more
+     * experience, scaled by the same health factor that grew it and capped at
+     * {@code maxXPFactor}. Pure math; gametested.
+     */
+    public static int xpToDrop(double healthFactor, int original, SkillsConfig.MobScaling cfg) {
+        if (!cfg.extraXp) {
+            return original;
+        }
+        return (int) (original * Math.min(healthFactor, cfg.maxXPFactor));
+    }
+
+    /**
+     * rpgdifficulty's {@code dropMoreLoot}: roll once against
+     * {@code healthFactor * moreLootChance} (capped) and, on a hit, drop
+     * extra stacks generated from the same table. {@code chanceForEachItem} is
+     * the per-stack skip chance, which is why the extra drop is roughly half
+     * the arithmetic size. Returns the stacks it decided to add, so the
+     * gametest can assert the counts without a world.
+     */
+    public static List<ItemStack> extraLootStacks(List<ItemStack> rolls, double healthFactor,
+            double dropRoll, java.util.Random random, SkillsConfig.MobScaling cfg) {
+        if (!cfg.dropMoreLoot || healthFactor <= 0.01) {
+            return List.of();
+        }
+        double dropChance = Math.min(healthFactor * cfg.moreLootChance, cfg.maxLootChance);
+        if (dropRoll > dropChance) {
+            return List.of();
+        }
+        List<ItemStack> extra = new ArrayList<>();
+        for (ItemStack stack : rolls) {
+            if (random.nextDouble() < cfg.chanceForEachItem) {
+                continue;
+            }
+            // Upstream calls ItemStack.increment, so the pile it drops is the
+            // rolled stack PLUS count * chance - not count * chance on its own.
+            int more = (int) (stack.getCount() * dropChance);
+            if (more > 0) {
+                extra.add(stack.copyWithCount(stack.getCount() + more));
+            }
+        }
+        return extra;
     }
 
     /**

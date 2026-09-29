@@ -122,6 +122,31 @@ public final class SkillsConfig {
         public double maxFactorDamage = 3.0;
         /** Armor multiplier cap - rpgdifficulty: maxFactorProtection 2.0. */
         public double maxFactorProtection = 2.0;
+        /**
+         * Every non-excluded mob's damage factor is multiplied by this, on top
+         * of the distance growth - rpgdifficulty: creeperExplosionFactor 1.1.
+         * The name is a leftover in upstream: the reference applies it to the
+         * general damage factor, not to creepers only, so a port that honours
+         * the name would quietly differ from Aged by 10% on all mob damage.
+         */
+        public double creeperExplosionFactor = 1.1;
+        /** Kill XP scales with the mob's health factor - rpgdifficulty: extraXp. */
+        public boolean extraXp = true;
+        /** Cap on that XP multiplier - rpgdifficulty: maxXPFactor 4.0. */
+        public double maxXPFactor = 4.0;
+        /** A dangerous mob may drop extra stacks - rpgdifficulty: dropMoreLoot. */
+        public boolean dropMoreLoot = true;
+        /** Extra-drop chance per point of health factor - rpgdifficulty: moreLootChance 0.02. */
+        public double moreLootChance = 0.02;
+        /** Cap on the extra-drop chance - rpgdifficulty: maxLootChance 2.0. */
+        public double maxLootChance = 2.0;
+        /**
+         * Chance an individual stack is skipped when the extra drop happens -
+         * rpgdifficulty: chanceForEachItem 0.5. This is the "how much of the
+         * extra loot" knob, and a 0.5 here means the extra drop is roughly half
+         * as big as the reference's arithmetic suggests.
+         */
+        public double chanceForEachItem = 0.5;
         /** Hard cap on total steps a mob can receive - rpgdifficulty: maxFactorHealth 4.0 (60 steps). */
         public int maxSteps = 60;
         /** No distance scaling outside the overworld - rpgdifficulty: excludeDistanceInOtherDimension. */

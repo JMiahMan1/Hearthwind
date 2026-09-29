@@ -2,7 +2,11 @@ package dev.jmiahman.hearthwind.skills;
 
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.fabricmc.fabric.api.gametest.v1.GameTest;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+
 import net.minecraft.world.entity.EntityTypes;
+import java.util.List;
 
 /**
  * Headless gametests for the skills module; run via
@@ -1080,6 +1084,99 @@ public final class HearthwindSkillsGameTests {
                         + cfg.bigZombieBonusLifePoints + " / " + cfg.bigZombieBonusDamage);
         helper.assertTrue(cfg.speedZombieMalusLifePoints == 10.0,
                 "Aged's speed zombie loses 10 HP, got " + cfg.speedZombieMalusLifePoints);
+        helper.succeed();
+    }
+
+    @GameTest
+    public void rpgdifficultyCreeperFactorAppliesToEveryMob(GameTestHelper helper) {
+        SkillsConfig.MobScaling cfg = SkillsConfig.get().mobScaling;
+        // rpgdifficulty:547 multiplies the general damage factor by
+        // creeperExplosionFactor after the maxFactorDamage cap, and there is no
+        // creeper type check anywhere in the reference. Honouring the config
+        // name instead of the code would cost 10% on all mob damage.
+        helper.assertTrue(Math.abs(cfg.creeperExplosionFactor - 1.1) < 0.0001,
+                "Aged's creeperExplosionFactor is 1.1, got " + cfg.creeperExplosionFactor);
+        double factor = 2.0;
+        double expected = Math.max(factor * cfg.creeperExplosionFactor, 1.0);
+        helper.assertTrue(Math.abs(expected - 2.2) < 0.0001,
+                "a 2.0 damage factor must become 2.2, got " + expected);
+        // The floor upstream applies keeps a shrinking factor from dropping below 1.
+        helper.assertTrue(Math.max(0.5 * cfg.creeperExplosionFactor, 1.0) == 1.0,
+                "a sub-1.0 damage factor must be floored at 1.0");
+        helper.succeed();
+    }
+
+    @GameTest
+    public void rpgdifficultyExtraXpScalesWithTheHealthFactorAndCaps(GameTestHelper helper) {
+        SkillsConfig.MobScaling cfg = SkillsConfig.get().mobScaling;
+        helper.assertTrue(cfg.extraXp, "Aged sets extraXp true");
+        helper.assertTrue(Math.abs(cfg.maxXPFactor - 4.0) < 0.0001,
+                "Aged's maxXPFactor is 4.0, got " + cfg.maxXPFactor);
+        // 20 XP at spawn (factor 1) is untouched.
+        helper.assertTrue(MobScaling.xpToDrop(1.0, 20, cfg) == 20,
+                "an unscaled mob pays vanilla XP");
+        // 20 XP on a 2x mob is 40.
+        helper.assertTrue(MobScaling.xpToDrop(2.0, 20, cfg) == 40,
+                "a 2x mob must pay double, got " + MobScaling.xpToDrop(2.0, 20, cfg));
+        // The cap bites at 4x, even though the health factor can reach 4.0 and
+        // the special-zombie bonuses can push the stored factor higher.
+        helper.assertTrue(MobScaling.xpToDrop(9.0, 20, cfg) == 80,
+                "XP must cap at maxXPFactor, got " + MobScaling.xpToDrop(9.0, 20, cfg));
+        // extraXp false is the upstream default, and it must pass through.
+        SkillsConfig.MobScaling off = new SkillsConfig.MobScaling();
+        off.extraXp = false;
+        helper.assertTrue(MobScaling.xpToDrop(4.0, 20, off) == 20,
+                "with extraXp off the reward must be vanilla");
+        helper.succeed();
+    }
+
+    @GameTest
+    public void rpgdifficultyExtraLootRollsOnceAndSkipsHalfTheStacks(GameTestHelper helper) {
+        SkillsConfig.MobScaling cfg = SkillsConfig.get().mobScaling;
+        helper.assertTrue(cfg.dropMoreLoot, "Aged sets dropMoreLoot true");
+        helper.assertTrue(Math.abs(cfg.moreLootChance - 0.02) < 0.0001,
+                "Aged's moreLootChance is 0.02, got " + cfg.moreLootChance);
+        helper.assertTrue(Math.abs(cfg.maxLootChance - 2.0) < 0.0001,
+                "Aged's maxLootChance is 2.0, got " + cfg.maxLootChance);
+        helper.assertTrue(Math.abs(cfg.chanceForEachItem - 0.5) < 0.0001,
+                "Aged's chanceForEachItem is 0.5, got " + cfg.chanceForEachItem);
+
+        List<ItemStack> rolls = List.of(new ItemStack(Items.ROTTEN_FLESH, 3));
+        // The per-stack skip fires when nextDouble() is BELOW chanceForEachItem,
+        // so 0.9 is the random that keeps a stack and 0.0 is the one that drops
+        // it. Getting these two the wrong way round fails the doubling case.
+        java.util.Random keep = new java.util.Random() {
+            @Override
+            public double nextDouble() {
+                return 0.9;
+            }
+        };
+        // A factor of 1.0 is below upstream's 0.01 gate only in the sense that
+        // the roll itself is what decides; 0.02 * 1.0 = 0.02, so a 0.0 roll hits.
+        helper.assertTrue(MobScaling.extraLootStacks(rolls, 1.0, 0.5, keep, cfg).isEmpty(),
+                "a 0.5 roll must miss a 0.02 chance");
+        // 50 * 0.02 = 1.0, and upstream increments by count * 1.0, so 3 becomes 6.
+        List<ItemStack> extra = MobScaling.extraLootStacks(rolls, 50.0, 0.01, keep, cfg);
+        helper.assertTrue(extra.size() == 1 && extra.get(0).getCount() == 6,
+                "a 1.0 chance must double the stack, got "
+                        + (extra.isEmpty() ? "nothing" : extra.get(0).getCount()));
+        // 200 * 0.02 = 4.0 but the cap is 2.0, so 3 becomes 3 + 6 = 9.
+        List<ItemStack> capped = MobScaling.extraLootStacks(rolls, 200.0, 0.01, keep, cfg);
+        helper.assertTrue(capped.size() == 1 && capped.get(0).getCount() == 9,
+                "maxLootChance must cap the pile at count * 3, got "
+                        + (capped.isEmpty() ? "nothing" : capped.get(0).getCount()));
+        // The per-stack skip is real: a roll below 0.5 drops that stack.
+        java.util.Random skip = new java.util.Random() {
+            @Override
+            public double nextDouble() {
+                return 0.0;
+            }
+        };
+        helper.assertTrue(MobScaling.extraLootStacks(rolls, 50.0, 0.01, skip, cfg).isEmpty(),
+                "chanceForEachItem must be able to skip every stack");
+        // A mob with no scaling must never drop extra loot.
+        helper.assertTrue(MobScaling.extraLootStacks(rolls, 0.0, 0.0, keep, cfg).isEmpty(),
+                "an unscaled mob must not roll extra loot");
         helper.succeed();
     }
 }

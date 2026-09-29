@@ -240,6 +240,12 @@ Eight optional professions (Miner, Farmer, Fisher, Warrior, Smither, Brewer, Bui
     so it closes the gap and dies faster than a normal one.
   - **Slow and towering** (10%): 0.7x speed, +10 max HP, +2 attack damage and
     **1.3x the size** - you can see it coming before it reaches you.
+- **The bigger ones pay out more (0.1.38)**: a monster that has been scaled up
+  is also a better reward. It drops proportionally more experience (up to 4x
+  the base) and has a small chance of dropping its loot table a second time,
+  with the second pile usually a bit larger. Every mob also does 10% more
+  damage growth per step of distance than it otherwise would, so a late-game
+  monster hits noticeably harder than a same-distance one used to.
 
 ## Biomes, Nether Exploration & Overworld Frontiers
 

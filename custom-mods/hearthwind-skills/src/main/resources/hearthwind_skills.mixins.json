@@ -9,7 +9,7 @@
 		"ItemCombinerMenuAccessor",
 		"SkillProcDamageMixin",
 		"SkillProcTwinMixin",
-		"SmithingGateMixin",
+		"SmithingGateMixin", "MobExtraXpMixin", "MobMoreLootMixin",
     "LivingBigScaleMixin"
 	],
 	"injectors": {
