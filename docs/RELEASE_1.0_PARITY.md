@@ -586,8 +586,28 @@ confirm. When we keep Aged's behaviour instead, list that too.
 3. Put a parity check in CI: diff Aged's index against the built mrpacks
    and fail on any Aged mod that is neither shipped, rebuilt, nor tracked
    in 5.2. This stops "we have parity" claims from drifting again.
-4. Port Aged's config overrides for mods we already ship (section 4 list),
-   migrating keys where the 26.2 version renamed them.
+4. ~~Port Aged's config overrides for mods we already ship (section 4 list),
+   migrating keys where the 26.2 version renamed them.~~ **Done 0.1.41.**
+   All 40 of Aged's config files were compared against ours key by key. The 24
+   that belong to mods we rebuilt already match exactly (audited against the
+   Java field initializers, which is what a fresh install writes - not the
+   generated JSON, which was stale), and the 16 for third-party mods are now
+   shipped verbatim: `adventurez`, `lootr`, `modmenu`, `moreculling`,
+   `sparsestructures`, `immersive_aircraft`, `immersive_armors`,
+   `sodium-options`, `smallships-common`, `DistantHorizons`. `backslot.json`
+   already carried Aged's five values. Four are deliberately not ported, with
+   reasons recorded in `conversion/overrides/config`: `cameraoverhaul` (the
+   26.2 config was restructured into sections, so Aged's keys no longer exist
+   and shipping them would be dead config), `logbegone` (26.2 has no external
+   config file at all), `couplings` (player progress, not a setting), and
+   `backslotaddon`/`jobsaddon` (those mods are not shipped).
+
+**Startup chat (0.1.41).** Joining a world used to bury the pack's own first
+instructions under two dozen mods announcing themselves, so the client's system
+chat is filtered for the first 30 seconds of a session: Hearthwind's own lines
+always pass, other players' chat is untouched, and the window closes itself so
+nothing is lost later. `StartupChatFilter` + a `ClientPacketListener.handleSystemChat`
+inject, pinned by `ChatFilterGameTests`.
 
 **W1: First-impression and HUD parity (what a player sees in the first 10 minutes).**
 Adopt Overflowing Bars; port Time & Wind and move seasons to tick length;

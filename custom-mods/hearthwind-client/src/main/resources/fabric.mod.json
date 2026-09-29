@@ -13,18 +13,19 @@
     "client": [
       "dev.jmiahman.hearthwind.client.HearthwindClient"
     ],
-  "fabric-client-gametest": [
-    "dev.jmiahman.hearthwind.client.gametest.AthenaCtmGameTests",
-    "dev.jmiahman.hearthwind.client.gametest.HearthwindClientGameTests",
-    "dev.jmiahman.hearthwind.client.gametest.ScreensTourGameTests",
-    "dev.jmiahman.hearthwind.client.gametest.DietGameTests",
-    "dev.jmiahman.hearthwind.client.gametest.MiningGameTests",
-    "dev.jmiahman.hearthwind.client.gametest.BiomeTempGameTests",
-    "dev.jmiahman.hearthwind.client.gametest.ShowcaseTourGameTests",
-    "dev.jmiahman.hearthwind.client.gametest.ItemNameGameTests",
-    "dev.jmiahman.hearthwind.client.gametest.GuideBookGameTests",
-    "dev.jmiahman.hearthwind.client.gametest.PackServerConnectGameTests"
-  ]
+    "fabric-client-gametest": [
+      "dev.jmiahman.hearthwind.client.gametest.AthenaCtmGameTests",
+      "dev.jmiahman.hearthwind.client.gametest.HearthwindClientGameTests",
+      "dev.jmiahman.hearthwind.client.gametest.ScreensTourGameTests",
+      "dev.jmiahman.hearthwind.client.gametest.ChatFilterGameTests",
+      "dev.jmiahman.hearthwind.client.gametest.DietGameTests",
+      "dev.jmiahman.hearthwind.client.gametest.MiningGameTests",
+      "dev.jmiahman.hearthwind.client.gametest.BiomeTempGameTests",
+      "dev.jmiahman.hearthwind.client.gametest.ShowcaseTourGameTests",
+      "dev.jmiahman.hearthwind.client.gametest.ItemNameGameTests",
+      "dev.jmiahman.hearthwind.client.gametest.GuideBookGameTests",
+      "dev.jmiahman.hearthwind.client.gametest.PackServerConnectGameTests"
+    ]
   },
   "depends": {
     "fabricloader": ">=0.19.5",

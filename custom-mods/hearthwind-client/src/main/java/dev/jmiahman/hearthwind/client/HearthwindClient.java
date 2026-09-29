@@ -1,5 +1,6 @@
 package dev.jmiahman.hearthwind.client;
 
+import dev.jmiahman.hearthwind.client.chat.StartupChatFilter;
 import dev.jmiahman.hearthwind.survival.DietSyncPayload;
 import dev.jmiahman.hearthwind.survival.JobSyncPayload;
 import dev.jmiahman.hearthwind.survival.SkillUpPayload;
@@ -181,9 +182,20 @@ public class HearthwindClient implements ClientModInitializer {
                         }
                     });
             net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents.DISCONNECT
-                    .register((handler, client) -> ClientWelcomeData.reset());
+                    .register((handler, client) -> {
+                        ClientWelcomeData.reset();
+                        StartupChatFilter.onLeaveWorld();
+                    });
+            // A fresh world is loud: ~two dozen mods announce themselves on join
+            // and bury the pack's own instructions. System chat from other mods
+            // is dropped for the first half minute; ours and player chat are not.
+            net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents.JOIN
+                    .register((handler, sender, client) -> StartupChatFilter.onJoinWorld());
             net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents.END_CLIENT_TICK
-                    .register(ClientWelcomeData::tick);
+                    .register(client -> {
+                        ClientWelcomeData.tick(client);
+                        StartupChatFilter.tick();
+                    });
             LOGGER.info("Hearthwind Client networking: receiver for welcome_screen");
         } catch (Exception e) {
             LOGGER.warn("Failed to register welcome screen receiver", e);

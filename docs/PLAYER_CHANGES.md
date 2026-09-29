@@ -146,6 +146,22 @@ Eight optional professions (Miner, Farmer, Fisher, Warrior, Smither, Brewer, Bui
 - **Winter Snow Layering**:
   - Gradual multi-layer snow accumulation during winter on ground and leaves.
 
+## Startup Chat
+
+- **Mod announcements are hidden (0.1.41)**: for the first 30 seconds after you
+  join a world, system chat lines from other mods are dropped so the pack's own
+  instructions - the guide book grant and your starter loadout - are not buried
+  under two dozen "mod loaded" messages. Hearthwind's own lines always show,
+  other players' chat is never touched, and the window closes itself so nothing
+  is lost later in the session.
+
+- **Aged's settings carry over (0.1.41)**: the pack ships the reference pack's
+  own config for the mods that are not ours (Adventurez, Lootr, ModMenu,
+  More Culling, Sparse Structures, Immersive Aircraft and Armors, Sodium,
+  Small Ships, Distant Horizons), so Distant Horizons renders at the same
+  detail, ModMenu replaces the Realms button, and Immersive Armor drops at the
+  same rate. Our rebuilt systems already used the reference values.
+
 ## Visual Inventory & UI Look & Feel
 
 - **Menus (0.1.40)**: the main menu is drawn by Hearthwind itself, from art

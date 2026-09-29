@@ -7,7 +7,8 @@
     "HearthwindTitleScreenMixin",
     "InventoryScreenButtonMixin",
     "LogoRendererMixin",
-    "FluidStateModelSetMixin"
+    "FluidStateModelSetMixin",
+    "ClientPacketListenerChatMixin"
   ],
   "injectors": {
     "defaultRequire": 1
