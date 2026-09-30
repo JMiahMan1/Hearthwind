@@ -575,6 +575,26 @@ confirm. When we keep Aged's behaviour instead, list that too.
 | Diet deficiency (NutritionZ 1.0.11) | low-nutrient lists reuse the positive values, and the code applies them as written, so a deficiency **gives** the bonus | negated to the penalties Aged's guidebook documents (-attack speed, -max health, ...); gametest `nutrientDeficiencyIsAPenalty` | **fixed, for review** |
 | Party XP bonus (PartyAddon 1.0.4) | the party screen advertises +5% per member and +50% for a full group; the code never applies either | matches the applied behaviour: orb XP pools at the leader and splits evenly, no bonus; gametest `partyOrbXpPoolsAtLeaderAndSplitsEvenly` | **kept as Aged, for review** (apply the bonus?) |
 
+### 5.11 Approved deviations from Aged
+
+**There are none.** The section exists so the count is stated rather than
+implied, and so adding one is a deliberate act.
+
+The FancyMenu first-run panel was investigated as a candidate deviation and
+turned out not to be one. It is a picture-in-picture window drawn over the main
+menu, and Aged's own `config/fancymenu/options.txt` suppresses it by shipping
+`modpack_mode = 'true'`: FancyMenu's `MixinGui` opens the panel only when
+`showWelcomeScreen && !modpackMode && screen instanceof TitleScreen`, so a pack
+in modpack mode is assumed to have greeted its players already. We ship the same
+file, so we are at parity. What made the panel visible in testing was
+FancyMenu regenerating its own config in a fresh game directory (writing
+`modpack_mode = false`), which is a test-environment artefact, not pack
+behaviour. `FirstRunMenuGuard` re-asserts the shipped values at runtime for that
+reason, and `ScreensTourGameTests` fails if `modpack_mode` is not on.
+
+**Parity is the default.** No deviation is permitted without asking the user
+first, and one that turns out not to be a deviation is not recorded as one.
+
 ## 6. Workstreams toward 1.0.0, in priority order
 
 **W0: Make the truth machine-checked (days, not weeks)**

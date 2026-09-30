@@ -15,6 +15,7 @@ import draylar.inmis.mixin.client.LivingEntityRendererInvoker;
 import net.fabricmc.fabric.api.client.gametest.v1.FabricClientGameTest;
 import net.fabricmc.fabric.api.client.gametest.v1.context.ClientGameTestContext;
 import net.fabricmc.fabric.api.client.gametest.v1.context.TestSingleplayerContext;
+import dev.jmiahman.hearthwind.client.ui.FirstRunMenuGuard;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
@@ -93,6 +94,102 @@ public class ScreensTourGameTests implements FabricClientGameTest {
         });
     }
 
+    /**
+     * Every welcome block must resolve to real text, not just exist as a key: an
+     * unresolvable key renders as its own dotted name, which is the exact "the
+     * screen is broken" symptom the button assertion exists for. This asks the
+     * screen for all of its text rather than the subset that fits, because on a
+     * 427x240 test window the layout gives blocks up from the end and the
+     * screenshot alone would not show whether the dropped ones are valid.
+     */
+    private static void assertWelcomeScreenShowsTheKeysAndLoadout(ClientGameTestContext context) {
+        context.runOnClient(client -> {
+            if (!(client.gui.screen() instanceof WelcomeScreen welcome)) {
+                throw new AssertionError("the welcome screen is not open, so its new blocks cannot be checked");
+            }
+            String joined = String.join(" ", welcome.debugAllText());
+            for (String needle : List.of("skills", "nutrition", "jobs", "party", "backpack")) {
+                if (!joined.contains(needle)) {
+                    throw new AssertionError("the keybind block is missing \"" + needle + "\"; the screen says: " + joined);
+                }
+            }
+            for (String needle : List.of("Survival Guidebook", "skill points", "campfire")) {
+                if (!joined.contains(needle)) {
+                    throw new AssertionError("the loadout block is missing \"" + needle + "\"; the screen says: " + joined);
+                }
+            }
+        });
+    }
+
+    /**
+     * The first-run menu guard closes FancyMenu's greeting and nothing else. Its
+     * decision is pure, so it is pinned here rather than inferred from a
+     * screenshot: FancyMenu's own screen is closed while no world is loaded and
+     * within the start-up window, a world-loaded screen is never closed, a later
+     * screen is left for the player who opened it, and our own screens are never
+     * touched.
+     */
+    private static void assertFirstRunMenuGuardDecidesCorrectly() {
+        String fancy = "de.keksuccino.fancymenu.customization.overlay.CustomizationOverlayUI";
+        if (!FirstRunMenuGuard.shouldClose(fancy, false, 10)) {
+            throw new AssertionError("the guard must close FancyMenu's first-run greeting on the main menu");
+        }
+        if (FirstRunMenuGuard.shouldClose(fancy, true, 10)) {
+            throw new AssertionError("the guard must never close a screen once a world is loaded");
+        }
+        if (FirstRunMenuGuard.shouldClose(fancy, false, FirstRunMenuGuard.WINDOW_TICKS)) {
+            throw new AssertionError("the guard must leave a FancyMenu screen the player opened later alone");
+        }
+        for (String ours : List.of("net.minecraft.client.gui.screens.TitleScreen",
+                "dev.jmiahman.hearthwind.client.WelcomeScreen",
+                "net.minecraft.client.gui.screens.PauseScreen")) {
+            if (FirstRunMenuGuard.shouldClose(ours, false, 10)) {
+                throw new AssertionError("the guard must never close a non-FancyMenu screen: " + ours);
+            }
+        }
+    }
+
+    /**
+     * FancyMenu's editor bar and first-run panel sit over the main menu, and it
+     * rewrites its own config on first launch, so the pack's options.txt asking
+     * for them off is not enough. The client turns them off at runtime; this
+     * proves it, because a screenshot can show a panel that is about to vanish
+     * and cannot show a boolean.
+     */
+    private static void assertFancyMenuEditorIsNotShown(ClientGameTestContext context) {
+        context.runOnClient(client -> {
+            // modpack_mode is the one that actually decides. FancyMenu's MixinGui
+            // opens the welcome panel when
+            //     showWelcomeScreen && !modpackMode && screen instanceof TitleScreen
+            // so modpack_mode = true suppresses it by design. It is the value the
+            // pack ships; a fresh game directory overwrites it to false, which is
+            // why the panel showed in every earlier screenshot of this test.
+            Boolean modpackMode = FirstRunMenuGuard.menuEditorOption("modpackMode");
+            if (modpackMode == null) {
+                throw new AssertionError("cannot read FancyMenu's modpackMode option, so the guard is not running: "
+                        + FirstRunMenuGuard.lastLookupError());
+            }
+            if (!modpackMode) {
+                throw new AssertionError("FancyMenu's modpack_mode is off, so it opens its first-run panel "
+                        + "over the main menu; the pack ships it true");
+            }
+            for (String option : new String[] {"showCustomizationOverlay", "showWelcomeScreen",
+                    "advancedCustomizationMode"}) {
+                Boolean value = FirstRunMenuGuard.menuEditorOption(option);
+                // null is NOT a pass: it means the reflection failed and the
+                // guard is not running. An earlier version of this test accepted
+                // null, so it went green while the panel kept opening.
+                if (value == null) {
+                    throw new AssertionError("cannot read FancyMenu's " + option
+                            + ", so the guard is not actually running");
+                }
+                if (value) {
+                    throw new AssertionError("FancyMenu's " + option + " is on, so its editor draws over the main menu");
+                }
+            }
+        });
+    }
+
     private static void assertStartButtonReachable(ClientGameTestContext context) {
         context.runOnClient(client -> {
             if (!(client.gui.screen() instanceof WelcomeScreen screen)) {
@@ -127,6 +224,7 @@ public class ScreensTourGameTests implements FabricClientGameTest {
         context.waitForScreen(net.minecraft.client.gui.screens.TitleScreen.class);
         context.waitTicks(40);
         assertTitleScreenArtResolves(context);
+        assertFancyMenuEditorIsNotShown(context);
         context.takeScreenshot("tour_title");
 
         try (TestSingleplayerContext world = context.worldBuilder().create()) {
@@ -148,6 +246,8 @@ public class ScreensTourGameTests implements FabricClientGameTest {
             context.waitFor(minecraft -> minecraft.gui.screen() instanceof WelcomeScreen, SLOW_TIMEOUT_TICKS);
             context.waitTicks(10);
             assertStartButtonReachable(context);
+            assertFirstRunMenuGuardDecidesCorrectly();
+            assertWelcomeScreenShowsTheKeysAndLoadout(context);
             context.takeScreenshot("tour_welcome");
             context.clickScreenButton("screen.hearthwind.welcome.start");
             context.waitFor(minecraft -> minecraft.gui.screen() == null, SLOW_TIMEOUT_TICKS);

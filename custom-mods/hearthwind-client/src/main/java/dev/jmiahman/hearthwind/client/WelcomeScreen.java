@@ -204,10 +204,16 @@ public class WelcomeScreen extends Screen {
                 ? Math.max(120, Math.min(TEXT_WRAP, this.width - 2 * MARGIN))
                 : Math.max(120, this.width - 2 * MARGIN);
 
+        // Ordered by how actionable each block is, because a window too short
+        // for all of them gives them up from the end: the guide and the first
+        // steps matter most, the pack's philosophy line least.
         List<FormattedCharSequence> guide = block("guide", wrap);
         List<FormattedCharSequence> first = block("first", wrap);
+        List<FormattedCharSequence> keys = block("keys", wrap);
+        List<FormattedCharSequence> loadout = block("loadout", wrap);
         List<FormattedCharSequence> pack = block("pack", wrap);
-        List<List<FormattedCharSequence>> blocks = new ArrayList<>(List.of(guide, first, pack));
+        List<List<FormattedCharSequence>> blocks =
+                new ArrayList<>(List.of(guide, first, keys, loadout, pack));
 
         // The button and its hint are reserved BEFORE anything else and are then
         // clamped into the window: a player must never be left without a way in,
@@ -263,6 +269,25 @@ public class WelcomeScreen extends Screen {
     }
 
     /**
+     * Every block's text, whether or not the window is tall enough to show it.
+     *
+     * <p>A test seam, and deliberately not {@link #layout()}'s fitted block list:
+     * on a short window the layout gives blocks up from the end, so asserting on
+     * what fit would only test the window size. What must never break is the
+     * translations - an unresolvable key renders as its own dotted name, which is
+     * a broken-looking screen that a correct layout screenshot hides.
+     */
+    public List<String> debugAllText() {
+        List<String> lines = new ArrayList<>();
+        lines.add(this.title.getString());
+        for (String key : List.of("guide", "first", "keys", "loadout", "pack")) {
+            lines.add(Component.translatable("screen.hearthwind.welcome.text." + key).getString());
+        }
+        lines.add(Component.translatable("screen.hearthwind.welcome.hint").getString());
+        return lines;
+    }
+
+    /**
      * Where the hint goes: under the button when there is room for it, otherwise
      * above it, so it is never drawn off the bottom edge.
      */
@@ -276,7 +301,7 @@ public class WelcomeScreen extends Screen {
         return Math.max(min, Math.min(value, Math.max(min, max)));
     }
 
-    /** One of the three Aged text blocks, pre-wrapped for this window. */
+    /** One of the welcome screen's text blocks, pre-wrapped for this window. */
     private List<FormattedCharSequence> block(String key, int wrap) {
         return this.font.split(Component.translatable("screen.hearthwind.welcome.text." + key), wrap);
     }

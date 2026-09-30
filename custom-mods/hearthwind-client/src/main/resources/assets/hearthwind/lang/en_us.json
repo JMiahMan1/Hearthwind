@@ -26,6 +26,8 @@
   "screen.hearthwind.welcome.start": "Start",
   "screen.hearthwind.welcome.text.guide": "Before you start your journey: the guide book is waiting in your hotbar, and the command /guide gets you a new one at any time.",
   "screen.hearthwind.welcome.text.first": "One of your first tasks is food and fresh water.\nAnother is picking up stones and flint from the ground - break them with your bare hand.\nTwo rocks make a crafting rock: place it, lay items on its grid, and strike it with another rock.",
+  "screen.hearthwind.welcome.text.keys": "§eK§r skills  §eN§r nutrition  §eJ§r jobs  §eP§r party\n§eB§r backpack  §eG§r back slot  §eH§r season options",
+  "screen.hearthwind.welcome.text.loadout": "§7Your hotbar starts with§r bread, apples, a campfire, a bottle of purified water and the §aSurvival Guidebook§r. You also begin with §22 skill points§r to spend.",
   "screen.hearthwind.welcome.text.pack": "Hearthwind is a slow pack. Learn the skills, take a job, and the Ages will open as you earn them.",
   "skill.hearthwind.farming": "Farming",
   "skill.hearthwind.mining": "Mining",

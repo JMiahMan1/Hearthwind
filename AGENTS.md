@@ -306,6 +306,23 @@ are both in scope.
   decision (port / adopt upstream / rebuild), recorded in the plan.
 - Small bug fixes are fine anytime. Mod ports and new systems follow the
   workstream order in the plan.
+- **PARITY IS THE DEFAULT. Never take a deviation from Aged unless the user has
+  approved that specific deviation.** If our behaviour differs from Aged's,
+  match Aged - do not "improve" it, do not drop a mod Aged ships, and do not
+  quietly pick the nicer option. When a deviation is genuinely wanted, ask
+  first, then record it in `docs/RELEASE_1.0_PARITY.md` with the reason, and say
+  so in `docs/PLAYER_CHANGES.md`. Every mod Aged ships stays in the pack; if its
+  behaviour is wrong for us, configure it, suppress it from our client, or
+  rebuild it in-tree - but the mod itself stays. **There are currently ZERO
+  approved deviations** (`docs/RELEASE_1.0_PARITY.md` section 5.11). The
+  FancyMenu first-run panel was investigated as one and is not: Aged's own
+  `options.txt` ships `modpack_mode = 'true'`, and FancyMenu's `MixinGui` opens
+  the welcome panel only when `showWelcomeScreen && !modpackMode && screen
+  instanceof TitleScreen`, so modpack mode suppresses it by design and we are
+  already at parity. The panel was only ever visible in our gametest, which
+  creates a fresh game directory where FancyMenu rewrites its own config to
+  `modpack_mode = false`; `FirstRunMenuGuard` re-asserts the shipped values every
+  tick and `ScreensTourGameTests` fails if `modpack_mode` is not on.
 - Do NOT start post-1.0 items (Ages enforcement beyond Aged's gates,
   Create/Mechanical Age, water motion, Terralith/Tectonic, dedupe audit,
   26.3 bump). They are parked in plan section 7.

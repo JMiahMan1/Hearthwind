@@ -1,6 +1,7 @@
 package dev.jmiahman.hearthwind.client;
 
 import dev.jmiahman.hearthwind.client.chat.StartupChatFilter;
+import dev.jmiahman.hearthwind.client.ui.FirstRunMenuGuard;
 import dev.jmiahman.hearthwind.survival.DietSyncPayload;
 import dev.jmiahman.hearthwind.survival.JobSyncPayload;
 import dev.jmiahman.hearthwind.survival.SkillUpPayload;
@@ -27,6 +28,16 @@ public class HearthwindClient implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
+        // FancyMenu paints its editor bar and first-run panel over the main menu
+        // regardless of the shipped options, because it rewrites its config on
+        // first launch. Turn them off here instead; see FirstRunMenuGuard.
+        try {
+            FirstRunMenuGuard.disableMenuEditorOptions();
+        } catch (RuntimeException ignored) {
+            // The pack's own options.txt already asks for this; the runtime
+            // override is belt-and-braces and must never break start-up.
+        }
+
         // Thirst sync from server -> ClientThirstData for HUD above hunger bar.
         try {
             ClientPlayNetworking.registerGlobalReceiver(ThirstSyncPayload.TYPE, (payload, context) -> {
@@ -195,6 +206,7 @@ public class HearthwindClient implements ClientModInitializer {
                     .register(client -> {
                         ClientWelcomeData.tick(client);
                         StartupChatFilter.tick();
+                        FirstRunMenuGuard.get().tick(client);
                     });
             LOGGER.info("Hearthwind Client networking: receiver for welcome_screen");
         } catch (Exception e) {
