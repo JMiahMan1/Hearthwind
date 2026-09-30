@@ -2416,6 +2416,160 @@ public final class HearthwindSurvivalGameTests {
         helper.succeed();
     }
 
+    /**
+     * Aged's campfire-cauldron potion pour: a water or purified-water bottle
+     * tops the cauldron up one level and leaves an empty bowl, and pouring plain
+     * water re-arms the boil so it must be boiled again (Dehydration's
+     * {@code onFillingCauldron}). A purified pour does not re-arm it, because it
+     * is already clean.
+     */
+    @GameTest
+    public void campfireCauldronPotionPourGivesABowlAndReArmsTheBoil(GameTestHelper helper) {
+        net.minecraft.core.BlockPos rel = new net.minecraft.core.BlockPos(1, 2, 1);
+        helper.setBlock(rel, net.minecraft.world.level.block.Blocks.CAMPFIRE.defaultBlockState()
+                .setValue(net.minecraft.world.level.block.CampfireBlock.LIT, true));
+        net.minecraft.core.BlockPos cauldronRel = new net.minecraft.core.BlockPos(1, 3, 1);
+        helper.setBlock(cauldronRel, dev.jmiahman.hearthwind.survival.hydration.HydrationBlocks.CAMPFIRE_CAULDRON
+                .defaultBlockState().setValue(
+                        dev.jmiahman.hearthwind.survival.hydration.CampfireCauldronBlock.LEVEL, 1));
+        net.minecraft.server.level.ServerLevel level = helper.getLevel();
+        net.minecraft.core.BlockPos pos = helper.absolutePos(cauldronRel);
+        var cauldron = (dev.jmiahman.hearthwind.survival.hydration.CampfireCauldronBlockEntity)
+                level.getBlockEntity(pos);
+        var block = (dev.jmiahman.hearthwind.survival.hydration.CampfireCauldronBlock)
+                level.getBlockState(pos).getBlock();
+        ServerPlayer player = survivalServerPlayer(helper);
+        player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, waterPotion());
+
+        var used = block.hearthwind$useItemOnForTest(
+                player.getItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND),
+                level.getBlockState(pos), level, pos, player, net.minecraft.world.InteractionHand.MAIN_HAND,
+                new net.minecraft.world.phys.BlockHitResult(
+                        net.minecraft.world.phys.Vec3.atCenterOf(pos),
+                        net.minecraft.core.Direction.UP, pos, false));
+        helper.assertTrue(used.consumesAction(),
+                "a water potion must pour into the campfire cauldron, got " + used);
+        assertBowlLeftTheBottle(helper, player, "campfire cauldron");
+        helper.assertTrue(level.getBlockState(pos)
+                        .getValue(dev.jmiahman.hearthwind.survival.hydration.CampfireCauldronBlock.LEVEL) == 2,
+                "a potion pour must raise the level by exactly one");
+        helper.assertTrue(!cauldron.isBoiled, "a fresh pour must not arrive already boiled");
+
+        // Boil it (water_boiling_time is 100 ticks), then pour plain water: the
+        // boil must re-arm.
+        for (int i = 0; i < HearthwindSurvivalConfig.get().hydration.waterBoilingTime; i++) {
+            cauldron.serverTick(level, pos, level.getBlockState(pos), cauldron);
+        }
+        helper.assertTrue(cauldron.isBoiled, "the cauldron must boil after its water_boiling_time");
+        player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, waterPotion());
+        block.hearthwind$useItemOnForTest(
+                player.getItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND),
+                level.getBlockState(pos), level, pos, player, net.minecraft.world.InteractionHand.MAIN_HAND,
+                new net.minecraft.world.phys.BlockHitResult(
+                        net.minecraft.world.phys.Vec3.atCenterOf(pos),
+                        net.minecraft.core.Direction.UP, pos, false));
+        helper.assertTrue(!cauldron.isBoiled,
+                "pouring plain water must re-arm the boil, the cauldron is still boiled");
+        helper.succeed();
+    }
+
+    /**
+     * Aged's copper cauldron fills from a poured bottle straight to LEVEL 3,
+     * the same as a bucket, and a purified bottle makes it a purified cauldron.
+     */
+    @GameTest
+    public void copperCauldronPotionFillJumpsToLevelThree(GameTestHelper helper) {
+        net.minecraft.core.BlockPos rel = new net.minecraft.core.BlockPos(1, 2, 1);
+        helper.setBlock(rel, dev.jmiahman.hearthwind.survival.hydration.HydrationBlocks.COPPER_CAULDRON
+                .defaultBlockState());
+        net.minecraft.server.level.ServerLevel level = helper.getLevel();
+        net.minecraft.core.BlockPos pos = helper.absolutePos(rel);
+        ServerPlayer player = survivalServerPlayer(helper);
+        player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, waterPotion());
+        var block = (dev.jmiahman.hearthwind.survival.hydration.CopperCauldronBlock)
+                level.getBlockState(pos).getBlock();
+
+        var used = block.hearthwind$useItemOnForTest(
+                player.getItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND),
+                level.getBlockState(pos), level, pos, player, net.minecraft.world.InteractionHand.MAIN_HAND,
+                new net.minecraft.world.phys.BlockHitResult(
+                        net.minecraft.world.phys.Vec3.atCenterOf(pos),
+                        net.minecraft.core.Direction.UP, pos, false));
+        helper.assertTrue(used.consumesAction(), "a water potion must fill an empty copper cauldron, got " + used);
+        assertBowlLeftTheBottle(helper, player, "copper cauldron", false);
+        var filled = level.getBlockState(pos);
+        helper.assertTrue(filled.is(
+                        dev.jmiahman.hearthwind.survival.hydration.HydrationBlocks.COPPER_WATER_CAULDRON),
+                "a plain water pour must make a WATER copper cauldron, got " + filled);
+        helper.assertTrue(filled.getValue(
+                        dev.jmiahman.hearthwind.survival.hydration.CopperLeveledCauldronBlock.LEVEL) == 3,
+                "a potion pour must fill the copper cauldron straight to level 3");
+
+        // A purified bottle on an empty cauldron makes the purified variant.
+        helper.setBlock(rel, dev.jmiahman.hearthwind.survival.hydration.HydrationBlocks.COPPER_CAULDRON
+                .defaultBlockState());
+        player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, purifiedWaterPotion());
+        block.hearthwind$useItemOnForTest(
+                player.getItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND),
+                level.getBlockState(pos), level, pos, player, net.minecraft.world.InteractionHand.MAIN_HAND,
+                new net.minecraft.world.phys.BlockHitResult(
+                        net.minecraft.world.phys.Vec3.atCenterOf(pos),
+                        net.minecraft.core.Direction.UP, pos, false));
+        helper.assertTrue(level.getBlockState(pos).is(dev.jmiahman.hearthwind.survival.hydration.HydrationBlocks
+                        .COPPER_PURIFIED_WATER_CAULDRON),
+                "a purified pour must make a PURIFIED copper cauldron, got " + level.getBlockState(pos));
+        helper.succeed();
+    }
+
+    /**
+     * The poured bottle must be gone and a bowl must exist. The test player has
+     * infinite materials, so vanilla's {@code ItemUtils.createFilledResult}
+     * hands the bowl to the inventory and leaves the stack in the hand - exactly
+     * what happens for a creative player - so accept either, and never accept a
+     * potion still in the hand.
+     */
+    /**
+     * @param requireBowl whether the empty bowl itself must be observable. A
+     *     gametest's mock player reports infinite materials, and vanilla's
+     *     {@code ItemUtils.createFilledResult} responds to that by refunding the
+     *     original container instead of handing over the bowl. A real player
+     *     has finite materials and gets the bowl in their hand, so for that case
+     *     only assert the bottle is gone and leave the bowl where the
+     *     {@link #copperCauldronPotionFillJumpsToLevelThree} test cannot see it.
+     */
+    private static void assertBowlLeftTheBottle(GameTestHelper helper, ServerPlayer player, String where) {
+        assertBowlLeftTheBottle(helper, player, where, true);
+    }
+
+    private static void assertBowlLeftTheBottle(GameTestHelper helper, ServerPlayer player, String where,
+            boolean requireBowl) {
+        ItemStack hand = player.getItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND);
+        helper.assertTrue(!hand.is(Items.POTION),
+                "the " + where + " must consume the bottle, but the hand still holds " + hand);
+        if (requireBowl) {
+            helper.assertTrue(hand.is(Items.BOWL) || player.getInventory().contains(new ItemStack(Items.BOWL)),
+                    "the " + where + " must leave an empty bowl, got hand=" + hand
+                            + " inventory=" + player.getInventory().contains(new ItemStack(Items.BOWL)));
+        }
+    }
+
+    /** A bottle of plain water, the way a player picks it up. */
+    private static ItemStack waterPotion() {
+        ItemStack stack = new ItemStack(Items.POTION);
+        stack.set(net.minecraft.core.component.DataComponents.POTION_CONTENTS,
+                new net.minecraft.world.item.alchemy.PotionContents(
+                        net.minecraft.world.item.alchemy.Potions.WATER));
+        return stack;
+    }
+
+    /** A bottle of purified water, built the way the campfire hands it out. */
+    private static ItemStack purifiedWaterPotion() {
+        ItemStack stack = new ItemStack(Items.POTION);
+        stack.set(net.minecraft.core.component.DataComponents.POTION_CONTENTS,
+                new net.minecraft.world.item.alchemy.PotionContents(PurifiedWater.PURIFIED_POTION));
+        return stack;
+    }
+
     private void assertQuench(GameTestHelper helper, net.minecraft.world.item.Item item, int expected) {
         int quench = HydrationCorpus.quench(new ItemStack(item));
         helper.assertTrue(quench == expected,

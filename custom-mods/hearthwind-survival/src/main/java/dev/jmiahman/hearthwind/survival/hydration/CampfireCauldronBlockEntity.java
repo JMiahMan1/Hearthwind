@@ -2,6 +2,9 @@ package dev.jmiahman.hearthwind.survival.hydration;
 
 import dev.jmiahman.hearthwind.survival.HearthwindSurvivalConfig;
 import net.minecraft.core.BlockPos;
+import net.minecraft.util.RandomSource;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.Packet;
@@ -68,7 +71,35 @@ public class CampfireCauldronBlockEntity extends BlockEntity {
                 this.ticker = 0;
                 this.setChanged();
             }
+            bubble(this.level, this.worldPosition);
         }
+    }
+
+    /**
+     * The boil makes noise. Dehydration 1.3.6 plays its own
+     * {@code cauldron_bubble} sound on a 1-in-12 display tick while the fire is
+     * burning and the cauldron holds water, at volume {@code 0.5 + random * 0.4}
+     * and pitch 1.0.
+     *
+     * <p>Two deliberate differences. We play vanilla's
+     * {@code BUBBLE_COLUMN_BUBBLE_POP} instead of Dehydration's own sound file,
+     * because this pack does not redistribute another pack's audio and the
+     * vanilla bubble pop is the same idea. And we play it from the server tick
+     * rather than the display tick, because 26.x's {@code animateTick} is
+     * client-only - the reference ran on both sides in 1.20.1, and from the
+     * server every player near the fire hears the boil instead of only the one
+     * looking at it.
+     */
+    private void bubble(Level level, BlockPos pos) {
+        // Level.random is protected, and serverTick is handed a plain Level, so
+        // the roll comes from the world's own public accessor.
+        RandomSource random = level.getRandom();
+        if (random.nextInt(12) != 0) {
+            return;
+        }
+        level.playSound(null, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5,
+                SoundEvents.BUBBLE_COLUMN_BUBBLE_POP, SoundSource.BLOCKS,
+                0.5F + random.nextFloat() * 0.4F, 1.0F);
     }
 
     /** Called when new (non-purified) water lands in the cauldron. */

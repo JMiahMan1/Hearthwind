@@ -64,17 +64,41 @@ public abstract class AbstractCopperCauldronBlock extends Block {
                 && entity.getBoundingBox().maxY > (double) pos.getY() + 0.25D;
     }
 
+    /**
+     * Test seam: {@link #useItemOn} is protected, and the hydration gametests
+     * live in another package. Reflection keeps the production signature
+     * protected rather than widening it for a test.
+     */
+    public InteractionResult hearthwind$useItemOnForTest(ItemStack stack, BlockState state, Level level,
+            BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
+        return useItemOn(stack, state, level, pos, player, hand, hitResult);
+    }
+
     @Override
     protected InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos,
             Player player, InteractionHand hand, BlockHitResult hitResult) {
+        ItemStack itemStack = player.getItemInHand(hand);
+        // A poured bottle bypasses the generic transfer API. It is not a fluid
+        // container to that API, but it does carry water, so the storage would
+        // otherwise swallow it, refund an empty container, and fill the cauldron
+        // one level at a time - where the reference fills it straight to the top
+        // and hands back a bowl. Only the potion is diverted here, so the
+        // bucket, bottle and flask rows keep going through the storage exactly
+        // as before.
+        if (itemStack.is(net.minecraft.world.item.Items.POTION)) {
+            CopperCauldronBehavior pour = this.behaviorMap.get(itemStack.getItem());
+            if (pour != null) {
+                return pour.interact(state, level, pos, player, hand, itemStack);
+            }
+        }
         Storage<FluidVariant> storage = FluidStorage.SIDED.find(level, pos,
                 hitResult.getDirection().getOpposite());
         if (storage != null && FluidStorageUtil.interactWithFluidStorage(storage, player, hand)) {
             return InteractionResult.SUCCESS;
         }
-        ItemStack itemStack = player.getItemInHand(hand);
         CopperCauldronBehavior behavior = this.behaviorMap.get(itemStack.getItem());
-        return behavior.interact(state, level, pos, player, hand, itemStack);
+        return behavior == null ? InteractionResult.PASS
+                : behavior.interact(state, level, pos, player, hand, itemStack);
     }
 
     @Override

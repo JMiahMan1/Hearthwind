@@ -581,7 +581,10 @@ campfire and the kelp route.
 Legend: ✅ at parity · 🟡 deliberate deviation (reason in one clause) ·
 ❌ missing · ❌ unverified (say what could not be found).
 
-Summary: **✅ 65 · 🟡 28 · ❌ 9** over 102 rows. The last
+Summary: **✅ 69 · 🟡 28 · ❌ 5** over 102 rows. 0.1.43 closed
+four more: the campfire cauldron's potion pour, the copper cauldron's one-step potion
+fill, the bubble sound while it boils, and the rule that a block placed above the
+cauldron removes it. The last
 `❌ unverified` row was closed on 0.1.35 (the hydration corpus resolves 105 of
 its 115 catalogued ids in a real world, and the gametest now pins that), and
 the Alchemy 2 cauldron gates were loaded on 0.1.39.
@@ -605,7 +608,7 @@ the Alchemy 2 cauldron gates were loaded on 0.1.39.
 | A bottle placed on a fire lit *with bark* after the campfire was placed unlit | same (Aged campfires also place unlit) | ✅ test replays the exact clicks: place dark, light with `earlystage:oak_bark`, then right-click the bottle | `aBarkLitCampfireBoilsOverRealServerTicks` |
 | Progress survives relight | `cookingProgress`/`cookingTime` are persisted NBT int arrays in 26.2 | ✅ | `CampfireBlockEntity.java:130-152` |
 | `water_boiling_time` is **never** used by the bottle path | only `CampfireCauldronBlockEntity` reads `hydration.waterBoilingTime` | ✅ | `CampfireCauldronBlockEntity.java:66` |
-| Placing a block destroys a `campfire_cauldron` above it | not implemented; `canSurvive` keeps the cauldron over any `#minecraft:campfires` block | ❌ | no mixin for `Block.onPlace`; `CampfireCauldronBlock.java:115-117` |
+| Placing a block destroys a `campfire_cauldron` above it | none - a block above the cauldron removes it | ✅ 0.1.43 | no mixin for `Block.onPlace`; `CampfireCauldronBlock.java:115-117` **Now:** `CampfireCauldronBlock.updateShape` returns air when a non-air block is placed directly above, matching Dehydration's `Block.onPlace`. 26.x spells that override with the 8-arg `BlockBehaviour.updateShape` signature. |
 
 ### 8.2 Items, blocks and fluids
 
@@ -679,7 +682,7 @@ the Alchemy 2 cauldron gates were loaded on 0.1.39.
 | copper cauldrons: LEVEL 1…3, fluid height `(6 + LEVEL×3)/16`, comparator = LEVEL | identical | ✅ | `CopperLeveledCauldronBlock.java:30,56-68,96-99` |
 | copper cauldrons: dripstone only for water + rain predicate; the empty one converts to purified with level event 1047 | identical | ✅ | `CopperLeveledCauldronBlock.java:60-63,106-112`; `CopperCauldronBlock.java:61-73` |
 | copper cauldrons: a burning entity inside decrements the level | identical via `InsideBlockEffectApplier` | ✅ | `CopperLeveledCauldronBlock.java:70-83,114-122` |
-| copper cauldron: `Items.POTION` fill jumps straight to LEVEL 3 with `ITEM_BUCKET_EMPTY` | no potion-fill row; powder snow and buckets are the only explicit behaviour-map entries | ❌ | `CopperCauldronBehavior.java:51-65` |
+| copper cauldron: `Items.POTION` fill jumps straight to LEVEL 3 with `ITEM_BUCKET_EMPTY` | none - a bottle now fills it in one step | ✅ 0.1.43 | `CopperCauldronBehavior.java:51-65` **Now:** `EMPTY_COPPER_CAULDRON_BEHAVIOR.put(Items.POTION, ...)` fills straight to LEVEL 3, leaves a bowl, plays `ITEM_BUCKET_EMPTY` and fires `FLUID_PLACE`. Covered by `copperCauldronPotionFillJumpsToLevelThree`. |
 | copper cauldron: glass bottle out drops the level by 1 and returns a dirty or purified bottle | handled by `CopperCauldronFluidStorage` + `BowlFluidStorage`/purified-bottle storage, one bottle per transfer | 🟡 implemented through the Fabric transfer API rather than a behaviour row; the level decrement and bottle contents match but the per-call sounds/game events do not | `HydrationStorages.java:40-48`; `CopperCauldronFluidStorage.java:88-107` |
 | copper cauldron: bucket round trip (`copperCauldronBucketRoundTrip`) | passes: a water bucket fills to LEVEL 3 and an empty bucket drains it back to empty | ✅ | test `copperCauldronBucketRoundTrip`; `CopperCauldronFluidStorage.java:54-86` |
 | campfire cauldron: only above `#minecraft:campfires`, LEVEL 0…4, comparator = LEVEL, not pathfindable | identical, plus a modelled stand/legs shape that spans the block below | 🟡 deliberate cosmetic addition | `CampfireCauldronBlock.java:57,65-72,109-117,150-170` |
@@ -687,9 +690,9 @@ the Alchemy 2 cauldron gates were loaded on 0.1.39.
 | campfire cauldron: `ticker` is not persisted, only `isBoiled` | identical | ✅ | `CampfireCauldronBlockEntity.java:38-42` |
 | campfire cauldron: fresh water re-arms `isBoiled = false; ticker = 0` | identical via `onFillingCauldron` from the storage's `onFinalCommit` | ✅ | `CampfireCauldronBlockEntity.java:74-79`; `CampfireCauldronFluidStorage.java:123-131` |
 | campfire cauldron: `Items.BUCKET` fills straight to LEVEL 4, `Items.WATER_BUCKET` empties straight to 0 | a bucket is 3 bottles, so it fills to LEVEL 3 of 4 and leaves LEVEL 1 behind when drained | 🟡 consequence of modelling the cauldron as 4 × `FluidConstants.BOTTLE` | `CampfireCauldronFluidStorage.java:21,82-88`; no bucket row in `CampfireCauldronBlock` |
-| campfire cauldron: pouring a potion gives a bowl, LEVEL+1, plain water re-arms the boil | no `Items.POTION` row; potions interact only through the transfer API, which does not return a bowl | ❌ | `CampfireCauldronBlock.java:120-130`; `HydrationStorages.java:40-48` |
+| campfire cauldron: pouring a potion gives a bowl, LEVEL+1, plain water re-arms the boil | none - pouring a bottle works | ✅ 0.1.43 | `CampfireCauldronBlock.java:120-130`; `HydrationStorages.java:40-48` **Now:** `CampfireCauldronBlock.pourPotion` gives LEVEL+1 and a bowl, and plain water calls `onFillingCauldron()` so it must boil again. Covered by `campfireCauldronPotionPourGivesABowlAndReArmsTheBoil`. |
 | campfire cauldron: rain fills it at 20 % **only** when sky-lit, biome ≥ 0.15 °C and not snowing | rain at 20 % with `isRainingAt`, no sky-light and no temperature test | 🟡 two of Aged's three conditions dropped | `CampfireCauldronBlock.java:137-148` |
-| campfire cauldron: `cauldron_bubble` sound every 1-in-12 random display tick | no `randomDisplayTick` override | ❌ | `CampfireCauldronBlock.java` has no `randomDisplayTick` |
+| campfire cauldron: `cauldron_bubble` sound every 1-in-12 random display tick | none - the cauldron bubbles while it boils | ✅ 0.1.43 | `CampfireCauldronBlock.java` has no `randomDisplayTick` **Now:** a 1-in-12 bubble pop, volume `0.5 + rand*0.4`, pitch 1.0, using vanilla's `BUBBLE_COLUMN_BUBBLE_POP` because this pack does not redistribute another pack's audio. It plays on the SERVER tick, not the reference's client-side `randomDisplayTick`, so everyone near the fire hears it rather than only the player looking at it - the one deliberate difference in this row. |
 | campfire cauldron recipe: stick + `minecraft:chain` + copper cauldron | remapped to `minecraft:iron_chain` for 26.2, pattern unchanged | ✅ | `data/dehydration/recipe/campfire_cauldron.json`; test `dehydrationRecipesLoad` |
 | bamboo pump: 1 slot, `pump_cooldown` 1200, `pump_requires_water` scan of 50 blocks above | `pumpCooldown = 1200`, `pumpRequiresWater = false`; the scan covers blocks 10…59 above instead of 0…49 | 🟡 scan window shifted, inert while the flag is off in both | `BambooPumpBlock.java:153-160,200-207`; `HearthwindSurvivalConfig.java:209-220` |
 | bamboo pump: **one** pump converts the container and the hand is emptied | 4 pumps for a bucket, 1 for a bottle, +2 units for a flask; the container is stored and handed back later; a pending cooldown rides on the item so it survives break/replace | 🟡 deliberate: the pump becomes a reusable tool rather than a one-shot press (our class doc attributes the design to a later upstream than the 1.3.6 Aged ships, which we did not decode) | `BambooPumpBlockEntity.java:69-102`; tests `bambooPumpPurifiesItsContainer`, `bambooPumpHandsBackItsContainer` |

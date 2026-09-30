@@ -3,20 +3,32 @@ package dev.jmiahman.hearthwind.survival.hydration;
 import com.mojang.serialization.MapCodec;
 
 import dev.jmiahman.hearthwind.survival.HearthwindSurvivalConfig;
+import dev.jmiahman.hearthwind.survival.PurifiedWater;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidStorage;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidStorageUtil;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
 import net.fabricmc.fabric.api.transfer.v1.storage.Storage;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.Holder;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.level.ScheduledTickAccess;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemUtils;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.alchemy.Potion;
+import net.minecraft.world.item.alchemy.PotionContents;
+import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
@@ -116,10 +128,34 @@ public class CampfireCauldronBlock extends BaseEntityBlock {
         return level.getBlockState(pos.below()).is(BlockTags.CAMPFIRES);
     }
 
+    /**
+     * Dehydration's {@code Block.onPlace} breaks a campfire cauldron when
+     * something is placed directly above it. Without this the cauldron would
+     * hang there with a block over its mouth, which reads as a bug: the water
+     * inside still boils, and the boil sound plays from inside a solid block.
+     */
+    @Override
+    protected BlockState updateShape(BlockState state, LevelReader level,
+            ScheduledTickAccess ticks, BlockPos pos, Direction directionToNeighbour, BlockPos neighbourPos,
+            BlockState neighbourState, RandomSource random) {
+        if (directionToNeighbour == Direction.UP && !neighbourState.isAir()) {
+            return net.minecraft.world.level.block.Blocks.AIR.defaultBlockState();
+        }
+        return super.updateShape(state, level, ticks, pos, directionToNeighbour, neighbourPos, neighbourState,
+                random);
+    }
+
     @Override
     protected InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos,
             Player player, InteractionHand hand, BlockHitResult hitResult) {
         if (!player.getItemInHand(hand).isEmpty()) {
+            // Aged's potion pour: a water or purified-water bottle tops the
+            // cauldron up one level and leaves an empty bowl, and pouring plain
+            // water re-arms the boil so it has to be boiled again. Dehydration
+            // plays the bucket-empty sound here, oddly, but we keep it.
+            if (pourPotion(state, level, pos, player, hand, stack)) {
+                return InteractionResult.SUCCESS;
+            }
             Storage<FluidVariant> storage = FluidStorage.SIDED.find(level, pos,
                     hitResult.getDirection().getOpposite());
             if (storage != null && FluidStorageUtil.interactWithFluidStorage(storage, player, hand)) {
@@ -127,6 +163,41 @@ public class CampfireCauldronBlock extends BaseEntityBlock {
             }
         }
         return InteractionResult.PASS;
+    }
+
+    /**
+     * @return true when the held stack was a water potion and the pour happened.
+     */
+    /**
+     * Test seam for {@link #useItemOn}, which is protected and reached from
+     * another package by the hydration gametests.
+     */
+    public InteractionResult hearthwind$useItemOnForTest(ItemStack stack, BlockState state, Level level,
+            BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
+        return useItemOn(stack, state, level, pos, player, hand, hitResult);
+    }
+
+    private boolean pourPotion(BlockState state, Level level, BlockPos pos, Player player,
+            InteractionHand hand, ItemStack stack) {
+        if (stack.getCount() != 1 || state.getValue(LEVEL) >= 4) {
+            return false;
+        }
+        PotionContents contents = stack.get(DataComponents.POTION_CONTENTS);
+        Holder<Potion> potion = contents == null ? null : contents.potion().orElse(null);
+        if (potion == null) {
+            return false;
+        }
+        boolean purified = potion.is(PurifiedWater.PURIFIED_POTION);
+        if (!purified && !potion.is(Potions.WATER)) {
+            return false;
+        }
+        player.setItemInHand(hand, ItemUtils.createFilledResult(stack, player, new ItemStack(Items.BOWL)));
+        setLevel(level, pos, state, state.getValue(LEVEL) + 1);
+        if (!purified && level.getBlockEntity(pos) instanceof CampfireCauldronBlockEntity entity) {
+            entity.onFillingCauldron();
+        }
+        level.playSound(null, pos, SoundEvents.BUCKET_EMPTY, SoundSource.BLOCKS, 1.0F, 1.0F);
+        return true;
     }
 
     public void setLevel(Level level, BlockPos pos, BlockState state, int fluidLevel) {
@@ -142,7 +213,7 @@ public class CampfireCauldronBlock extends BaseEntityBlock {
                 && level.getRandom().nextFloat()
                         < HearthwindSurvivalConfig.get().hydration.campfireRainFillChance
                 && state.getValue(LEVEL) < 4) {
-            this.setLevel(level, pos, state, state.getValue(LEVEL) + 1);
+            setLevel(level, pos, state, state.getValue(LEVEL) + 1);
             level.gameEvent(null, GameEvent.FLUID_PLACE, pos);
         }
     }
@@ -177,6 +248,7 @@ public class CampfireCauldronBlock extends BaseEntityBlock {
         BlockState below = level.getBlockState(pos.below());
         return below.getBlock() instanceof CampfireBlock && CampfireBlock.isLitCampfire(below);
     }
+
 
     public boolean isPurifiedWater(Level level, BlockPos pos) {
         return level.getBlockEntity(pos) instanceof CampfireCauldronBlockEntity entity

@@ -45,6 +45,16 @@ contract of what the pack does. Grown from the Aged fork; server-side only.
   time is 1000 ticks (50s), the literal constant Aged's Dehydration 1.3.6
   passes to `addItem`; Aged has no chime, no particles and no hint message,
   they are Hearthwind additions.
+- **Cauldrons, completed (0.1.43)**: a **campfire cauldron** (crafted from a
+  stick, an iron chain and a copper cauldron, placed on top of a campfire) now
+  takes a water or purified-water bottle: the bottle becomes an empty bowl, the
+  cauldron gains a level, and plain water means it has to boil again before the
+  bottle you draw is clean. A **copper cauldron** filled from a bottle jumps
+  straight to full in one pour rather than filling a level at a time, and a
+  block placed above a campfire cauldron removes it. It bubbles audibly while it
+  boils - that uses Minecraft's own bubble sound rather than Aged's custom one,
+  and it plays on the server tick, so everyone near the fire hears it instead of
+  only the player looking at it.
 - **Potion of Hydration (0.1.35)**: you can now brew clean water instead of
   boiling it. In a brewing stand, {gilt}water + charcoal{} or {gilt}water + kelp{}
   gives a {gilt}bottle of purified water{}; dropping a {gilt}ghast tear{} into that
