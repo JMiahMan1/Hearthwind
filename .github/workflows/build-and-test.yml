@@ -116,7 +116,21 @@ jobs:
               for chunk in "1000 1000" "-1000 -1000"; do
                 python3 "$RCON" 127.0.0.1 25575 agedtest --connect-wait 60 "forceload add $chunk"
               done
-              sleep 10
+              # forceload only QUEUES those chunks; generation is async, and a
+              # cold runner needs far longer than a warm host. A fixed sleep
+              # here made this job fail at random (a fresh chunk at 1000,1000
+              # was not generated yet, so the summon below silently
+              # discarded the item and the probe never asserted). Wait for the
+              # chunk to actually exist instead of guessing a duration.
+              for w in $(seq 1 30); do
+                if python3 "$RCON" 127.0.0.1 25575 agedtest --connect-wait 60 \
+                     "execute if loaded 1000 80 1000 run say CHUNK_READY" >/dev/null 2>&1 \
+                   && grep -q "CHUNK_READY" boot.log; then
+                  break
+                fi
+                sleep 4
+              done
+              sleep 4
               if grep -q "Feature order cycle" boot.log; then
                 echo "FAIL: feature order cycle during fresh worldgen"; tail -50 boot.log; exit 1
               fi
