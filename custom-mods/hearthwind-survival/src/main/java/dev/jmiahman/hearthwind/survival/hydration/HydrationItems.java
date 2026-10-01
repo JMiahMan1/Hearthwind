@@ -47,7 +47,9 @@ public final class HydrationItems {
         PURIFIED_WATER_BOWL = Registry.register(BuiltInRegistries.ITEM, id("purified_water_bowl"),
                 new WaterBowlItem(new Item.Properties().stacksTo(1)
                         .component(DataComponents.CONSUMABLE, BOWL_DRINK)
-                        .setId(key("purified_water_bowl")), false));
+                        // true, not false: Dehydration builds BOTH bowls with
+                        // hasThirstChance = true (ItemInit offsets 300 / 328).
+                        .setId(key("purified_water_bowl")), true));
         log.accept("dehydration water bowls registered (water_bowl, purified_water_bowl)");
     }
 }

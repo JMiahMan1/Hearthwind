@@ -357,9 +357,10 @@ public final class StarterKit {
         // Page 8: Downed & Revive
         pages.add(Filterable.passThrough(Component.literal(
                 "§0§lDOWNED & REVIVE§r\n\n" +
-                "With other players online, a killing blow downs you for 60 seconds instead -\n" +
+                "With other players online, a killing blow downs you instead of killing you,\n" +
                 "but a second killing blow while downed is fatal.\n\n" +
-                "Teammates can channel for 3 seconds to revive you back to 3 hearts.\n\n" +
+                "You stay down until an ally crouches and right-clicks you with an empty\n" +
+                "hand; that lights your Revive button, and one click lifts you at 1 heart.\n\n" +
                 "Stick together, build sturdy shelter, and master the Ages!\n\n" +
                 "§8Type §6/guide§8 anytime to get a new copy of this book.§r"
         )));

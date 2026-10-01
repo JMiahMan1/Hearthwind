@@ -315,8 +315,8 @@ level costs (a level is only lost when the buffer passes 4.0).
 | **dirty flask** (`purified_water == 2`) | 30 % (`<= 0.3`) | 1 | 200 (Aged) | 0.03 × 2 × 200 = 12.0 | **3.0** |
 | **impurified flask** (`== 1`) | 15 % (`<= 0.3 × 0.5`) | 0 | 200 | 0.03 × 1 × 200 = 6.0 | **1.5** |
 | **bad potion** (incl. plain water) | 85 % (`nextFloat() >= 0.15`) | 0 | 300 | 0.03 × 1 × 300 = 9.0 | **2.25** |
-| **water bowl** (either bowl) | 60 % (`nextFloat() >= 0.4`) | 2 | 300 / 2 = 150 | 0.03 × 3 × 150 = 13.5 | **3.375** |
-| **milk bucket** | 60 % (`nextFloat() >= 0.4`) | 2 | 300 / 2 = 150 | 13.5 | **3.375** |
+| **water bowl** (either bowl) | 60 % (`nextFloat() >= 0.4`) | 0 | 300 / 2 = 150 | 0.03 × 1 × 150 = 4.5 | **1.125** |
+| **milk bucket** | 60 % (`nextFloat() >= 0.4`) | 0 | 300 / 2 = 150 | 4.5 | **1.125** |
 
 Two comparison quirks that a faithful port must keep:
 
@@ -376,7 +376,7 @@ the only other source-removal hook; with the flag off a plain glass bottle
 ### 6.2 Bowls
 
 32-tick DRINK; `+` template tier (3) else `water_bowl_quench`; then the 40 %
-dirty roll at **amp 2** for `potion_bad_thirst_duration / 2` = 150 ticks —
+dirty roll at **amp 0** for `potion_bad_thirst_duration / 2` = 150 ticks —
 on **both** bowls, purified included, because `ItemInit` constructs them
 with `hasThirstChance = true`. Returns the residual stack for non-players and
 `ItemStack.EMPTY` for players, so a 1.3.6 bowl has **no craft remainder**: it
@@ -590,7 +590,7 @@ campfire and the kelp route.
 Legend: ✅ at parity · 🟡 deliberate deviation (reason in one clause) ·
 ❌ missing · ❌ unverified (say what could not be found).
 
-Summary: **✅ 70 · 🟡 28 · ❌ 4** over 102 rows. 0.1.45 closed the last of them
+Summary: **✅ 72 · 🟡 26 · ❌ 4** over 102 rows. 0.1.45 closed the last of them
 four more: the campfire cauldron's potion pour, the copper cauldron's one-step potion
 fill, the bubble sound while it boils, and the rule that a block placed above the
 cauldron removes it; 0.1.45 then ported rain extinguishing campfires, which is
@@ -602,6 +602,19 @@ sound events. The last
 `❌ unverified` row was closed on 0.1.35 (the hydration corpus resolves 105 of
 its 115 catalogued ids in a real world, and the gametest now pins that), and
 the Alchemy 2 cauldron gates were loaded on 0.1.39.
+
+**0.1.47 corrected three rows this audit had wrong**, all found by re-reading
+the bytecode rather than trusting the prose:
+
+- the water bowl and the milk bucket roll their thirst effect at **amp 0**,
+  not amp 2. The `iconst_2` in `WaterBowlItem` (offset 159) and
+  `MilkBucketItemMixin` (offset 151) is the `idiv` **divisor** for the
+  duration; the amplifier is the next instruction (`iconst_0` at offsets 161
+  and 153). So both were already at parity and the 🟡 rows were spurious.
+- the **purified** bowl does roll thirst in Aged - `ItemInit` constructs
+  `water_bowl` at offset 300 and `purified_water_bowl` at offset 328, both
+  with `iconst_1` for `hasThirstChance`. We had made ours safe; 0.1.47 makes
+  both bowls roll, which is what the reference does.
 
 ### 8.1 The campfire water loop
 
@@ -642,7 +655,7 @@ the Alchemy 2 cauldron gates were loaded on 0.1.39.
 | a purified bucket gives no thirst | gives no thirst (it is not a consumable at all) | ✅ | `ThirstHelper.hydratePlayer` has no bucket branch (`ThirstHelper.java:43-82`) |
 | `water_bowl` / `purified_water_bowl` registered in the `dehydration` namespace | yes, both `WaterBowlItem` with the 32-tick DRINK consumable | ✅ | `HydrationItems.java:43-50`; test `hydrationContentRegisters` |
 | **both** bowls roll 40 % thirst, including the purified one (`hasThirstChance = true` twice) | `water_bowl` rolls, `purified_water_bowl` never does (`false` passed) | 🟡 deliberate: the purified bowl is meant to be safe — this is report open question #5 | `HydrationItems.java:46,50`; test `dirtyWaterBowlRollsThirst` |
-| bowl thirst roll: `nextFloat() >= 0.4` → 60 %, **amp 2**, 150 t | same comparison, 150 t, but **amp 0** | 🟡 amplifier 0 costs 1.125 thirst instead of 3.375 | `WaterBowlItem.java:40-46` |
+| bowl thirst roll: `nextFloat() >= 0.4` → 60 %, **amp 0**, 150 t, on BOTH bowls | same comparison, same 150 t, same amp 0, and both bowls roll (0.1.47) | ✅ 0.1.47 | `hydration/WaterBowlItem.java:42-44`; `hydration/HydrationItems.java:44-51` |
 | drinking a 1.3.6 bowl consumes it and returns **nothing** (no craft remainder) | returns a plain `minecraft:bowl`, plus a `pour_*_water_bowl` shapeless recipe | 🟡 deliberate: a bowl is a reusable vessel in Hearthwind | `WaterBowlItem.java:47-50`; `data/dehydration/recipe/pour_water_bowl.json` |
 | 5 flasks, capacity 2…6, netherite `fireResistant`, `stacksTo(1)` | identical, ids in the `dehydration` namespace | ✅ | `FlaskItems.java:34-48`; test `flaskTiersHaveIncreasingCapacity` |
 | flask sip: `+4` thirst, `empty_flask` sound, `USE_CAULDRON` + `PLAYER_USE_ITEM` | `+4` (`cfg.quench`), vanilla `BOTTLE_EMPTY` at 0.8/0.9 only on the last sip | 🟡 sound timing: Aged plays it on **every** sip, we play it once when the flask empties | `FlaskItems.java:80,103-110` |
@@ -670,7 +683,7 @@ the Alchemy 2 cauldron gates were loaded on 0.1.39.
 | `potion_bad_thirst_chance` 0.15 → 85 % risk, `nextFloat() >= chance` | identical, amp 0, 300 t | ✅ | `ThirstHelper.java:47-58`; test `badPotionListMatchesAged` |
 | the 14-potion bad list incl. `Potions.WATER` | the same 14, verified by test; `dehydration:purified_water` is not bad | ✅ | `ThirstHelper.java:26-41`; test `badPotionListMatchesAged` |
 | `potion_thirst_quench` 2 fallback for uncatalogued potions | `thirst.potionThirstQuench = 2.0` fallback | ✅ | `ThirstHelper.java:56-58` |
-| `milk_thirst_quench` 8, `milk_thirst_chance` 0.4 (→ 60 %), 150 t, **amp 2** | quench 8 and chance 0.4 with the same `>=` comparison, but **amp 0** | 🟡 amplifier 0 costs 1.125 thirst instead of 3.375 | `ThirstHelper.java:59-66`; test `milkDrinkQuenchesEightAndRolls` |
+| `milk_thirst_quench` 8, `milk_thirst_chance` 0.4 (→ 60 %), 150 t, **amp 0** | quench 8, chance 0.4, the same `>=` comparison and the same amp 0 | ✅ | `ThirstHelper.java:60-62`; test `milkDrinkQuenchesEightAndRolls` |
 | `honey_quench` 1 fallback | identical | ✅ | `ThirstHelper.java:75-77` |
 | resolution order tag → template → fallback | template → fallback | ✅ | the six `dehydration:hydrating_*` tags ship empty and Aged never fills them, so the tag branch is inert; templates alone is equivalent |
 | `replace: true` clears the tier; lowest tier wins on duplicates | identical, iterating tiers in ascending order | ✅ | `HydrationCorpus.java:63-70,93-95`; test `hydrationCorpusTiersMatchCatalogue` |

@@ -24,6 +24,7 @@
       "dev.jmiahman.hearthwind.client.gametest.ShowcaseTourGameTests",
       "dev.jmiahman.hearthwind.client.gametest.ItemNameGameTests",
       "dev.jmiahman.hearthwind.client.gametest.GuideBookGameTests",
+      "dev.jmiahman.hearthwind.client.gametest.DownedOverlayGameTests",
       "dev.jmiahman.hearthwind.client.gametest.PackServerConnectGameTests"
     ]
   },

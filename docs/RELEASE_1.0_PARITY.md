@@ -615,6 +615,37 @@ one invented table:
   invented - smooth 0.8/1.2/1.2/0.3 patterns - and the tests that covered them
   were green against those inventions. They now assert the reference's own
   values, and one of them, tomato, does not peak where we said it did.
+- **Downed/revive was a rewrite, not a port.** Aged's `revive.json5` sets only
+  three of revive 1.0.7's fifteen keys, so the behaviour comes from the mod's
+  constructor defaults, which were read out of its bytecode rather than guessed.
+  Our rebuild had invented a 60-second bleedout that killed the player and
+  dropped their inventory, a 3-second revive channel, and a 6 HP revive. Aged
+  has **no bleedout at all** (`timer` defaults to `-1`, and the server tick
+  hook returns immediately at bytecode offset 27), revives on a **single
+  click** of the downed player's own button (an ally's crouch + empty hand only
+  arms it), and revives to **2 HP** with a 600-tick aftermath effect. The user
+  chose full parity, plus all three of the smaller details (crouch to arm,
+  death coordinates, the 0.3 deg/tick death-camera spin). The countdown UI is
+  gone with the timer it counted.
+- **The temperature manager was regressed to upstream defaults.** `docs/AGED_PARITY.md`
+  had recorded two "deliberate deviations" here; both were false, and they were
+  hiding a data bug. Our model already accumulates integer deltas against the
+  same band-quantised rows as `TemperatureAspects.tickPlayerEnvironment`, and
+  acclimatization was always applied - but commit `3ddfe4794` had replaced Aged's
+  world-datapack manager file with EnvironmentZ 2.0.8's stock one, so the values
+  actually being applied were `1600/-15` instead of Aged's `1680/-20`, the
+  thermometer icons turned at +-3 instead of +-2, and iced armour cost -5/-6/-3
+  instead of -4 everywhere. Restored in 0.1.47, hard-coded fallbacks included.
+- **The purified bowl was safer than Aged's.** Dehydration's `ItemInit`
+  constructs `water_bowl` at offset 300 and `purified_water_bowl` at offset 328,
+  both passing `hasThirstChance = true`, so a bowl of *purified* water still has
+  a 40% chance of leaving you Thirsty. We had made ours safe; it now rolls like
+  the dirty one.
+- **Three audit rows were wrong about the reference.** The water bowl and milk
+  bucket roll thirst at amplifier **0**, not 2 - the `iconst_2` in the bytecode
+  is the `idiv` divisor for the duration, and the amplifier is the following
+  `iconst_0`. Those two rows were already at parity; the 🟡 markers were
+  spurious and are gone.
 
 ## 6. Workstreams toward 1.0.0, in priority order
 

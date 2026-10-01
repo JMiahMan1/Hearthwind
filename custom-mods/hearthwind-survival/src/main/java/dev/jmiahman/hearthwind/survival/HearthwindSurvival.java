@@ -33,8 +33,10 @@ public class HearthwindSurvival implements ModInitializer {
 		PayloadTypeRegistry.clientboundPlay().register(TempSyncPayload.TYPE, TempSyncPayload.CODEC);
 		PayloadTypeRegistry.clientboundPlay().register(JobSyncPayload.TYPE, JobSyncPayload.CODEC);
 		PayloadTypeRegistry.clientboundPlay().register(dev.jmiahman.hearthwind.survival.revive.DownedSyncPayload.TYPE, dev.jmiahman.hearthwind.survival.revive.DownedSyncPayload.CODEC);
+		PayloadTypeRegistry.serverboundPlay().register(dev.jmiahman.hearthwind.survival.revive.DownedRevivePayload.TYPE, dev.jmiahman.hearthwind.survival.revive.DownedRevivePayload.CODEC);
 		ThirstMobEffect.register();
 		HydrationMobEffect.register();
+		dev.jmiahman.hearthwind.survival.revive.AftermathMobEffect.register();
 		EnvironmentzEffects.register();
 		HearthwindSurvivalThirst.registerTickLoop();
 		HearthwindSurvivalDiet.registerTickLoop();

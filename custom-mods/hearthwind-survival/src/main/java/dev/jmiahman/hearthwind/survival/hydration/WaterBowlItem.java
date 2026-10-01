@@ -21,7 +21,16 @@ import net.minecraft.world.level.Level;
  * fallback); a dirty water bowl additionally rolls the Aged thirst effect
  * at {@code water_bowl_thirst_chance}, using the exact upstream comparison
  * {@code nextFloat() >= chance} (so the effect lands when the roll is
- * greater-or-equal). The purified bowl never thirsts.
+ * greater-or-equal).
+ *
+ * <p>Both bowls roll it. Dehydration's {@code ItemInit} constructs
+ * {@code water_bowl} at bytecode offset 300 and
+ * {@code purified_water_bowl} at offset 328, and both push
+ * {@code iconst_1} into the {@code WaterBowlItem(Properties, boolean
+ * hasThirstChance)} constructor - so a bowl of PURIFIED water still has a
+ * 40% chance of leaving you Thirsty in Aged. We briefly made the purified
+ * bowl safe; that was our own idea, not the reference's, and it is reverted
+ * here (0.1.47).
  *
  * <p>Returns a plain bowl unless the drinker has infinite materials
  * (creative), exactly like upstream.

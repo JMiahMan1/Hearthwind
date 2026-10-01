@@ -113,8 +113,14 @@ public final class EnvironmentCorpus {
     private static int[] wetnessBands = {200, 180, 100, 1, -1};
     private static int[] protectionBands = {600, 600, 600, 600};
     private static float[] biomeTemperatures = {0.2F, 0.4F, 1.2F, 1.6F};
-    private static int[] thermometerBands = {-6, -3, 3, 6};
-    private static int[] acclimatizationBands = {180, -10, 1600, -15, -180, 10, -1600, 15};
+    // Aged 3.1.2 ships these two tables in its world datapack, and they are
+    // NOT EnvironmentZ 2.0.8's defaults: the thermometer icons turn at +-2
+    // rather than +-3, and the strong-acclimatization bands are +-1680/-20
+    // rather than +-1600/-15. These literals are the fallback for when the
+    // corpus file is missing, so they must carry the PACK's numbers, not the
+    // MOD's - that mistake is what commit 3ddfe4794 made in the data file.
+    private static int[] thermometerBands = {-6, -2, 2, 6};
+    private static int[] acclimatizationBands = {180, -10, 1680, -20, -180, 10, -1680, 20};
 
     private static final Map<Block, BlockTemp> BLOCKS = new HashMap<>();
     private static final Map<Fluid, BlockTemp> FLUIDS = new HashMap<>();
@@ -333,16 +339,16 @@ public final class EnvironmentCorpus {
             if (data.has("thermometer_temperature")) {
                 JsonObject obj = data.getAsJsonObject("thermometer_temperature");
                 thermometerBands = new int[]{
-                        intOf(obj, "very_cold", -6), intOf(obj, "cold", -3),
-                        intOf(obj, "hot", 3), intOf(obj, "very_hot", 6)};
+                        intOf(obj, "very_cold", -6), intOf(obj, "cold", -2),
+                        intOf(obj, "hot", 2), intOf(obj, "very_hot", 6)};
             }
             if (data.has("acclimatization")) {
                 JsonObject obj = data.getAsJsonObject("acclimatization");
                 acclimatizationBands = new int[]{
                         intOf(obj, "hot_body_temperature", 180), intOf(obj, "hot_body", -10),
-                        intOf(obj, "very_hot_body_temperature", 1600), intOf(obj, "very_hot_body", -15),
+                        intOf(obj, "very_hot_body_temperature", 1680), intOf(obj, "very_hot_body", -20),
                         intOf(obj, "cold_body_temperature", -180), intOf(obj, "cold_body", 10),
-                        intOf(obj, "very_cold_body_temperature", -1600), intOf(obj, "very_cold_body", 15)};
+                        intOf(obj, "very_cold_body_temperature", -1680), intOf(obj, "very_cold_body", 20)};
             }
             if (data.has("effect")) {
                 JsonObject effects = data.getAsJsonObject("effect");

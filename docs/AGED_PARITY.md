@@ -85,11 +85,11 @@ Legend: ✅ parity · 🟡 partial/different tuning · ❌ missing
 
 | System | Aged | Hearthwind | Status |
 |---|---|---|---|
-| Thirst | Dehydration: `hydrating_factor 2.0`, sip 0.5/300 t, dirty flask 0.3/200 t, potion 0.15, **115 hydration items in 12 tiers** (our corpus file is byte-identical in content to Aged's own `aged_items.json`: same 115 ids, same 12 tiers), water bottles **purify on a campfire** in 1000 ticks and drop at the block corner, a boil **freezes** when the fire goes out | `baseDrainPerSecond 0.025`, sip 0.5/300 t, flask quench 4.0, dirty 0.3/**600 t**, **105 of the 115 catalogued hydration items resolve, across 12 tiers**, campfire purification with the measured 1000-tick boil, a frozen (not decaying) boil, a chat hint on a dark fire and a chime+particles at the finish (0.1.33), and the three brewing mixes plus the `dehydration:hydration` Potion of Hydration with Aged's `50 >> amplifier` tick cadence (0.1.35) | 🟡 dirty duration differs; only 105 of the 115 catalogue resolve because the other 10 belong to the lets-do food mods Aged ships and we have not ported; the chime, particles and hint are Hearthwind additions Aged has no equivalent for. The full Dehydration 1.3.6 reverse-engineering + audit is `docs/AGED_HYDRATION.md` |
-| Temperature | EnvironmentZ: bands −6/−2/+2/+6, acclimatization ±10/±20, **104 heating blocks, 203 cooling**, biome/day/night/armor/wet/height modifiers | corpus-driven: block/item heat + dimension rows (day/night, armor, soaked, wett, shadow, height, sweat) on top of a continuous biome base | 🟡 parity on sources; two deliberate deviations (below) |
+| Thirst | Dehydration: `hydrating_factor 2.0`, sip 0.5/300 t, dirty flask 0.3/200 t, potion 0.15, **115 hydration items in 12 tiers** (our corpus file is byte-identical in content to Aged's own `aged_items.json`: same 115 ids, same 12 tiers), water bottles **purify on a campfire** in 1000 ticks and drop at the block corner, a boil **freezes** when the fire goes out | `baseDrainPerSecond 0.025`, sip 0.5/300 t, flask quench 4.0, dirty 0.3/**200 t** (a stale doc claimed 600; 0.1.47), **105 of the 115 catalogued hydration items resolve, across 12 tiers**, campfire purification with the measured 1000-tick boil, a frozen (not decaying) boil, a chat hint on a dark fire and a chime+particles at the finish (0.1.33), and the three brewing mixes plus the `dehydration:hydration` Potion of Hydration with Aged's `50 >> amplifier` tick cadence (0.1.35) | 🟡 the **purified** bowl is the one live difference (Aged builds both bowls with `hasThirstChance = true`; 0.1.47 makes ours match); only 105 of the 115 catalogue resolve because the other 10 belong to the lets-do food mods Aged ships and we have not ported; the chime, particles and hint are Hearthwind additions Aged has no equivalent for. The full Dehydration 1.3.6 reverse-engineering + audit is `docs/AGED_HYDRATION.md` |
+| Temperature | EnvironmentZ: bands −6/−2/+2/+6, acclimatization ±10/±20, **104 heating blocks, 203 cooling**, biome/day/night/armor/wet/height modifiers | corpus-driven: block/item heat + dimension rows (day/night, armor, soaked, wett, shadow, height, sweat) accumulated as **integer deltas every 11 ticks**, exactly as EnvironmentZ does | ✅ 0.1.47: parity on sources AND on the model. Aged's own numbers (0.1.47) |
 | Diet | NutritionZ is nearly inert (2 item ids); "diet" = food variety | 5 nutrient groups, decay 0.02/s, deficiency debuffs, balanced bonus hearts | ✅ superset (intentional) |
 | Spoilage | `seasonSpoilage 8`, 69 non-spoiling (alcohol/tea) | interval 200, chance 0.002, hot ×2, **container spoilage**, non-spoiling tag | ✅ superset |
-| Downed/revive | Revive 1.0.7 (`config/revive.json5`) | 60 s bleedout, 3 s channel, revive at 6 HP | 🟡 rebuilt; verify tuning against Aged's revive.json5 |
+| Downed/revive | Revive 1.0.7 (`config/revive.json5` sets only 3 of 15 keys): **no bleedout** (`timer` defaults to −1), revive is one click on the downed player's own death screen (an ally's crouch + empty hand only ARMS it), revive to **2 HP**, a 600-tick aftermath effect, death coordinates always shown, camera spins 0.3°/tick | **the same**, as of 0.1.47: no timer at all, crouch + non-potion item arms the button, one click revives at 2 HP with `revive:aftermath` 600 t, coordinates on the overlay, camera spin at 0.3°/tick | ✅ 0.1.47 |
 | First ten minutes | WelcomeScreen: a welcome screen on the first join whose **Start** button runs `/item replace entity @s hotbar.0/.1/.4/.7/.8` = bread x4, apples x4, the guide book, a `purified_water` potion, a campfire | same screen, same texts, same five commands in the same hotbar slots (0.1.30) | ✅ 0.1.30, two deliberate differences: our own title art instead of Aged's `aged:textures/pack.png`, and the granted potion is our `dehydration:purified_water`; 0.1.33 samples the pack art with a 3x oversample so it is smooth at any window size and clamps the Start button inside the window |
 
 ### Progression
@@ -184,11 +184,20 @@ in-game HUD is not FancyMenu. Our HUD is therefore the right architecture.
    match. (An earlier note here claimed a `roomHeatFactor`; neither Aged nor
    Hearthwind has one.) Chipped-compat entries (~97% of
     the corpus) are skipped since Chipped is now ported but not yet in the pack.
-   Two **deliberate deviations**, recorded here so they are choices and not
-   accidents: our body temperature drifts toward a continuous biome target
-   (Aged accumulates integer deltas against band-quantised rows), and the
-   corpus acclimatization values (thresholds 180/1680) live on that integer
-   scale, so they are loaded and exposed but not applied.
+   **Both "deliberate deviations" previously recorded here were false**, and
+   they hid a real bug. Re-read against `TemperatureAspects.tickPlayerEnvironment`
+   in 0.1.47: our model already accumulates integer deltas against the same
+   band-quantised rows (`HearthwindSurvivalTemperature.calculate` sums an
+   `int calc` and applies `applyCutoff(old.body() + calc, code)` every 11
+   ticks), and acclimatization was always applied (`acceptanceAdjustment` into
+   `calc`, plus the `* 2` strong push inside `applyCutoff`, both pinned by
+   gametests). What was actually wrong was the DATA: commit `3ddfe4794` had
+   replaced Aged's manager file with EnvironmentZ 2.0.8's upstream defaults,
+   so the applied numbers were `1600/-15/-1600/15` instead of Aged's
+   `1680/-20/-1680/20`, the thermometer icons turned at ±3 instead of ±2, and
+   the iced-armor row was −5/−6/−3 instead of −4 everywhere. All restored in
+   0.1.47, with the hard-coded fallbacks in `EnvironmentCorpus` and
+   `ClientTempData` corrected to match.
 4. **~~Dehydration hydration-items loader~~ DONE** (hearthwind-survival) —
    `HydrationCorpus` reads `data/dehydration/hydration_items/*.json`; every
    catalogued food or drink now restores its tier in hydration points on

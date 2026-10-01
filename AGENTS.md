@@ -370,9 +370,13 @@ not drive 1.0.0 work.
 ### Module status (shipped; parity gaps are in the plan section 5.3)
 
 - `hearthwind-survival`: thirst, temperature, 5-group diet, spoilage
-  (inventory + containers), downed/revive, campfire water purification
-  (1000-tick boil, frozen on a dark fire) and the Potion of Hydration
-  brewing chain.
+  (inventory + containers), campfire water purification (1000-tick boil,
+  frozen on a dark fire) and the Potion of Hydration brewing chain.
+  Downed/revive is a port of revive 1.0.7 at full parity (0.1.47): **no
+  bleedout timer** (Aged's `timer` is -1), crouch + non-potion hand ARMS the
+  Revive button, one click revives at **2 HP** with a 600-tick
+  `revive:aftermath`. The temperature corpus carries **Aged's** manager
+  numbers, not EnvironmentZ's upstream defaults.
 - `hearthwind-skills`: LevelZ-parity skills, 649 corpus gates, procs,
   distance mob scaling, parties.
 - `hearthwind-jobs`: 8 jobs with corpus ladders, `/job` commands. Job

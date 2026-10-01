@@ -8,7 +8,9 @@
     "InventoryScreenButtonMixin",
     "LogoRendererMixin",
     "FluidStateModelSetMixin",
-    "ClientPacketListenerChatMixin"
+    "ClientPacketListenerChatMixin",
+    "MouseHandlerDownedReviveMixin",
+    "CameraDownedSpinMixin"
   ],
   "injectors": {
     "defaultRequire": 1

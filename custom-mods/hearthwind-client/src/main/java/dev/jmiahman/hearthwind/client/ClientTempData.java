@@ -24,9 +24,13 @@ public final class ClientTempData {
     public static final int WETNESS_MAX = 200;
     public static final int WETNESS_SOAKED = 180;
 
+    // Aged's world datapack turns the thermometer icon at +-2 (its
+    // thermometer_temperature table), not EnvironmentZ 2.0.8's upstream +-3.
+    // The server pushes its own corpus bands in the normal path; these
+    // constants are the client-side fallback and must agree with the pack.
     public static final int THERMOMETER_VERY_COLD = -6;
-    public static final int THERMOMETER_COLD = -3;
-    public static final int THERMOMETER_HOT = 3;
+    public static final int THERMOMETER_COLD = -2;
+    public static final int THERMOMETER_HOT = 2;
     public static final int THERMOMETER_VERY_HOT = 6;
 
     private static int bodyTemperature = 0;

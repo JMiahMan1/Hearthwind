@@ -1745,7 +1745,7 @@ public final class HearthwindSurvivalGameTests {
     }
 
     @GameTest
-    public void downedPlayerCanBeRevivedByChanneling(GameTestHelper helper) {
+    public void reviveNeedsAnAllyToArmItThenOneClick(GameTestHelper helper) {
         var downed = helper.makeMockServerPlayerInLevel();
         var reviver = helper.makeMockServerPlayerInLevel();
         downed.setGameMode(net.minecraft.world.level.GameType.SURVIVAL);
@@ -1753,17 +1753,77 @@ public final class HearthwindSurvivalGameTests {
         downed.getAbilities().instabuild = false;
         reviver.getAbilities().instabuild = false;
 
-        // Down the player
         dev.jmiahman.hearthwind.survival.revive.ReviveManager.onFatalDamage(
                 downed, downed.level().damageSources().generic());
         helper.assertTrue(dev.jmiahman.hearthwind.survival.revive.DownedState.isDowned(downed), "Downed state active");
+        helper.assertTrue(!dev.jmiahman.hearthwind.survival.revive.DownedState.isArmed(downed),
+                "a downed player starts unarmed - the reference's canRevive is false until an ally interacts");
 
-        // Complete revive
-        dev.jmiahman.hearthwind.survival.revive.ReviveManager.completeRevive(downed, reviver);
+        // revive 1.0.7 gates the arming on allowReviveWithHand && isSneaking()
+        // (PlayerEntityMixin.method_5664 offsets 59-72). Not crouching fails.
+        var uncouched = dev.jmiahman.hearthwind.survival.revive.ReviveManager.onInteract(
+                reviver, downed, net.minecraft.world.InteractionHand.MAIN_HAND);
+        helper.assertTrue(uncouched == net.minecraft.world.InteractionResult.PASS,
+                "an ally who is not crouching must not be able to arm the revive");
+        helper.assertTrue(!dev.jmiahman.hearthwind.survival.revive.DownedState.isArmed(downed),
+                "still unarmed after a non-crouching interaction");
+
+        // A potion in hand is rejected: the reference compares the held
+        // stack's potion against Potions.EMPTY (offsets 34-40).
+        reviver.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, new ItemStack(Items.DIRT));
+        reviver.setShiftKeyDown(true);
+        helper.assertTrue(dev.jmiahman.hearthwind.survival.revive.ReviveManager.onInteract(
+                        reviver, downed, net.minecraft.world.InteractionHand.MAIN_HAND)
+                        == net.minecraft.world.InteractionResult.SUCCESS_SERVER,
+                "a crouching ally arms the revive (non-potion item: the reference only rejects potions)");
+        helper.assertTrue(dev.jmiahman.hearthwind.survival.revive.DownedState.isArmed(downed),
+                "the downed player's Revive button is now live");
+        reviver.getInventory().clearContent();
+
+        // Self-revive is a single click, and there is no channel to hold.
+        dev.jmiahman.hearthwind.survival.revive.ReviveManager.onSelfRevive(downed);
 
         helper.assertTrue(!dev.jmiahman.hearthwind.survival.revive.DownedState.isDowned(downed),
-                "Player must no longer be downed after revival");
-        helper.assertTrue(downed.getHealth() >= 6.0f, "Revived player must have at least 6 HP");
+                "one click must complete the revive - Aged has no channel and no progress bar");
+        helper.assertTrue(downed.getHealth() == dev.jmiahman.hearthwind.survival.revive.ReviveManager.REVIVE_HEALTH,
+                "revived to ReviveConfig.reviveHealthPoints, got " + downed.getHealth());
+        var aftermath = downed.getEffect(
+                dev.jmiahman.hearthwind.survival.revive.AftermathMobEffect.HOLDER);
+        helper.assertTrue(aftermath != null
+                        && aftermath.getDuration() == dev.jmiahman.hearthwind.survival.revive.AftermathMobEffect.DURATION_TICKS,
+                "the reference applies a 600-tick aftermath effect on revive");
+        helper.succeed();
+    }
+
+    @GameTest
+    public void downedPlayerNeverBleedsOut(GameTestHelper helper) {
+        var downed = helper.makeMockServerPlayerInLevel();
+        downed.setGameMode(net.minecraft.world.level.GameType.SURVIVAL);
+        downed.getAbilities().instabuild = false;
+
+        dev.jmiahman.hearthwind.survival.revive.ReviveManager.onFatalDamage(
+                downed, downed.level().damageSources().generic());
+        helper.assertTrue(dev.jmiahman.hearthwind.survival.revive.DownedState.isDowned(downed),
+                "Downed state active");
+
+        // revive 1.0.7's timer defaults to -1 and Aged does not set it, so the
+        // server tick hook returns at bytecode offset 27 and a downed player
+        // never dies of a bleedout. We used to run 1200 ticks and drop their
+        // inventory; tickPlayer must now be a no-op forever.
+        for (int i = 0; i < 500; i++) {
+            dev.jmiahman.hearthwind.survival.revive.ReviveManager.tickPlayer(downed);
+        }
+        helper.assertTrue(dev.jmiahman.hearthwind.survival.revive.DownedState.isDowned(downed),
+                "a downed player must stay downed indefinitely - Aged has no bleedout timer");
+        // NOT `isAlive()`: makeMockServerPlayerInLevel() hands back a player the
+        // server drops a tick after it joins, so isRemoved() is already true
+        // and isAlive() says nothing about our code. Health and the downed
+        // flag are the real guarantee - a bleedout kill would have run
+        // player.kill(), which clears the flag.
+        helper.assertTrue(downed.getHealth() == dev.jmiahman.hearthwind.survival.revive.ReviveManager.DOWNED_HEALTH,
+                "the downed player keeps their 1 heart across the whole wait, got " + downed.getHealth());
+        helper.assertTrue(!dev.jmiahman.hearthwind.survival.revive.DownedState.isArmed(downed),
+                "time alone never arms the revive");
         helper.succeed();
     }
 
@@ -1771,10 +1831,17 @@ public final class HearthwindSurvivalGameTests {
     public void downedSyncPayloadRoundTrips(GameTestHelper helper) {
         var buf = net.minecraft.network.RegistryFriendlyByteBuf.decorator(
                 helper.getLevel().registryAccess()).apply(io.netty.buffer.Unpooled.buffer());
-        var sent = new dev.jmiahman.hearthwind.survival.revive.DownedSyncPayload(true, 45, 80);
+        var sent = new dev.jmiahman.hearthwind.survival.revive.DownedSyncPayload(true, true, -118, 64, 302);
         dev.jmiahman.hearthwind.survival.revive.DownedSyncPayload.CODEC.encode(buf, sent);
         var got = dev.jmiahman.hearthwind.survival.revive.DownedSyncPayload.CODEC.decode(buf);
         helper.assertTrue(got.equals(sent), "DownedSyncPayload must round-trip correctly");
+
+        var buf2 = net.minecraft.network.RegistryFriendlyByteBuf.decorator(
+                helper.getLevel().registryAccess()).apply(io.netty.buffer.Unpooled.buffer());
+        var revive = new dev.jmiahman.hearthwind.survival.revive.DownedRevivePayload(false);
+        dev.jmiahman.hearthwind.survival.revive.DownedRevivePayload.CODEC.encode(buf2, revive);
+        helper.assertTrue(dev.jmiahman.hearthwind.survival.revive.DownedRevivePayload.CODEC.decode(buf2).equals(revive),
+                "DownedRevivePayload must round-trip correctly");
         helper.succeed();
     }
 
@@ -1907,11 +1974,11 @@ public final class HearthwindSurvivalGameTests {
         helper.assertTrue(overworld.shadow(2) == -1, "shadow must be -1");
         helper.assertTrue(overworld.soaked(2) == -6 && overworld.wett(2) == -3,
                 "soaked must be -6 and wett -3");
-        helper.assertTrue(overworld.sweat(0) == -2 && overworld.sweat(1) == -3,
-                "sweat must be -2 (hot) / -3 (very hot)");
+        helper.assertTrue(overworld.sweat(0) == -1 && overworld.sweat(1) == -2,
+                "sweat must be -1 (hot) / -2 (very hot) - Aged's values, not EnvironmentZ's -2/-3");
         helper.assertTrue(overworld.armor(2) == 1 && overworld.insulatedArmor(2) == 3
-                && overworld.icedArmor(2) == -5,
-                "armor rows must be +1 / +3 insulated / -5 iced");
+                && overworld.icedArmor(2) == -4,
+                "armor rows must be +1 / +3 insulated / -4 iced (Aged's value)");
         helper.assertTrue(overworld.hasHeight() && overworld.heightAt(200) == -2
                 && overworld.heightAt(64) == 0 && overworld.heightAt(10) == 1
                 && overworld.heightAt(-5) == 2,
@@ -1919,15 +1986,16 @@ public final class HearthwindSurvivalGameTests {
         helper.assertTrue(overworld.acclimatization() == EnvironmentCorpus.NO_DIMENSION_ACCLIMATIZATION,
                 "overworld uses the global acclimatization table");
         int[] bands = EnvironmentCorpus.thermometerBands();
-        helper.assertTrue(bands[0] == -6 && bands[1] == -3 && bands[2] == 3 && bands[3] == 6,
-                "thermometer bands must be -6/-3/3/6");
+        helper.assertTrue(bands[0] == -6 && bands[1] == -2 && bands[2] == 2 && bands[3] == 6,
+                "thermometer bands must be -6/-2/2/6 (Aged's table; upstream EnvironmentZ uses +-3)");
         int[] acclimatization = EnvironmentCorpus.acclimatizationBands();
         helper.assertTrue(acclimatization.length == 8 && acclimatization[0] == 180
-                && acclimatization[1] == -10 && acclimatization[2] == 1600
-                && acclimatization[3] == -15 && acclimatization[4] == -180
-                && acclimatization[5] == 10 && acclimatization[6] == -1600
-                && acclimatization[7] == 15,
-                "acclimatization table must be 180/-10, 1600/-15, -180/+10, -1600/+15");
+                && acclimatization[1] == -10 && acclimatization[2] == 1680
+                && acclimatization[3] == -20 && acclimatization[4] == -180
+                && acclimatization[5] == 10 && acclimatization[6] == -1680
+                && acclimatization[7] == 20,
+                "acclimatization table must be 180/-10, 1680/-20, -180/+10, -1680/+20 "
+                        + "- Aged's values, not EnvironmentZ's 1600/-15");
         EnvironmentCorpus.DimensionTable nether = EnvironmentCorpus.dimension(
                 net.minecraft.resources.Identifier.fromNamespaceAndPath("minecraft", "the_nether"));
         helper.assertTrue(nether != null && nether.basic() && nether.standard(2) == 5
@@ -1937,6 +2005,10 @@ public final class HearthwindSurvivalGameTests {
                 net.minecraft.resources.Identifier.fromNamespaceAndPath("minecraft", "the_end"));
         helper.assertTrue(end != null && end.basic() && end.standard(2) == -5,
                 "end must be a basic -5 dimension");
+        // Basic dimensions normalise their scalar across every band, so band 2
+        // (normal) reads the scalar straight back. Aged ships -4 for both.
+        helper.assertTrue(nether.icedArmor(2) == -4 && end.icedArmor(2) == -4,
+                "nether and end iced_armor must both be -4 (Aged); EnvironmentZ ships -6 and -3");
         helper.succeed();
     }
 
@@ -1977,10 +2049,13 @@ public final class HearthwindSurvivalGameTests {
                 "body above +180 in a normal biome must acclimatize -10");
         helper.assertTrue(HearthwindSurvivalTemperature.acceptanceAdjustment(overworld, 2, -200) == 10,
                 "body below -180 in a normal biome must acclimatize +10");
-        helper.assertTrue(HearthwindSurvivalTemperature.acceptanceAdjustment(overworld, 1, -1700) == 15,
-                "very cold biomes push a very cold body +15");
-        helper.assertTrue(HearthwindSurvivalTemperature.acceptanceAdjustment(overworld, 3, 1700) == -15,
-                "hot biomes push an overheating body -15");
+        // The strong-acclimatization numbers are Aged's (+/-20 at the -/+1680
+        // bands), not EnvironmentZ 2.0.8's upstream (+/-15 at +/-1600). The
+        // corpus table was carrying the upstream values until 0.1.47.
+        helper.assertTrue(HearthwindSurvivalTemperature.acceptanceAdjustment(overworld, 1, -1700) == 20,
+                "very cold biomes push a very cold body +20 (Aged's acclimatization)");
+        helper.assertTrue(HearthwindSurvivalTemperature.acceptanceAdjustment(overworld, 3, 1700) == -20,
+                "hot biomes push an overheating body -20 (Aged's acclimatization)");
         helper.succeed();
     }
 
@@ -2060,8 +2135,8 @@ public final class HearthwindSurvivalGameTests {
                 net.minecraft.core.component.DataComponents.CUSTOM_DATA, iced,
                 tag -> tag.putInt("iced", 2));
         player.setItemSlot(net.minecraft.world.entity.EquipmentSlot.CHEST, iced);
-        helper.assertTrue(HearthwindSurvivalTemperature.armorTemperature(player, overworld, 2) == -5,
-                "iced armor must add the -5 iced_armor row");
+        helper.assertTrue(HearthwindSurvivalTemperature.armorTemperature(player, overworld, 2) == -4,
+                "iced armor must add the -4 iced_armor row (Aged); upstream EnvironmentZ uses -5");
         net.minecraft.world.item.component.CustomData data =
                 iced.get(net.minecraft.core.component.DataComponents.CUSTOM_DATA);
         helper.assertTrue(data != null && data.copyTag().getInt("iced").orElse(0) == 1,
@@ -2303,12 +2378,18 @@ public final class HearthwindSurvivalGameTests {
                     "thirst duration must be half the bad-potion duration, got " + effect.getDuration());
             helper.assertTrue(effect.getAmplifier() == 0, "thirst amplifier must be 0");
 
+            // The PURIFIED bowl rolls too. Dehydration's ItemInit builds both
+            // bowls with hasThirstChance = true (offsets 300 and 328), so
+            // drinking purified water from a bowl can still leave you Thirsty
+            // in Aged. This assertion previously pinned the opposite - our own
+            // idea, not the reference's.
             player.removeEffect(ThirstMobEffect.HOLDER);
             dev.jmiahman.hearthwind.survival.hydration.HydrationItems.PURIFIED_WATER_BOWL.finishUsingItem(
                     new ItemStack(dev.jmiahman.hearthwind.survival.hydration.HydrationItems.PURIFIED_WATER_BOWL),
                     helper.getLevel(), player);
-            helper.assertTrue(!player.hasEffect(ThirstMobEffect.HOLDER),
-                    "purified water bowl must never inflict thirst");
+            helper.assertTrue(player.hasEffect(ThirstMobEffect.HOLDER),
+                    "the purified bowl must roll thirst exactly like the dirty one (Aged builds both "
+                            + "with hasThirstChance = true)");
         } finally {
             cfg.waterBowlThirstChance = saved;
         }

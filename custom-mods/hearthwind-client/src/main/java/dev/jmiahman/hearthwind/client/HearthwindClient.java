@@ -175,7 +175,8 @@ public class HearthwindClient implements ClientModInitializer {
         // Downed sync from server -> DownedHud
         try {
             ClientPlayNetworking.registerGlobalReceiver(dev.jmiahman.hearthwind.survival.revive.DownedSyncPayload.TYPE, (payload, context) -> {
-                context.client().execute(() -> DownedHud.update(payload.isDowned(), payload.remainingSeconds(), payload.reviveProgressPercent()));
+                context.client().execute(() -> DownedHud.update(payload.isDowned(), payload.armed(),
+                        payload.x(), payload.y(), payload.z()));
             });
             LOGGER.info("Hearthwind Client networking: receiver for downed_sync");
         } catch (Exception e) {
