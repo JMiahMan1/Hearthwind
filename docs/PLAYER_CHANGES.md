@@ -38,6 +38,19 @@ contract of what the pack does. Grown from the Aged fork; server-side only.
   icon is the backpack itself, and clicking it opens it. Aged shows both.
   (Nothing about the tab art changed: Aged's is GPL, so ours stays vanilla
   items that match the capture's silhouettes.)
+- **Animals take far longer to grow up (0.1.45)**: a newborn calf, sheep or
+  pig is a baby for three and a half hours of play time, not the vanilla twenty
+  minutes, so breeding a herd is a project rather than an afternoon. You can
+  still speed it up with golden dandelions and a bed, exactly as before.
+- **Rain puts out campfires, slowly**: after a minute of continuous rain the
+  fire starts failing, and it goes out roughly two minutes in. That is Aged's
+  schedule exactly - the first sixty checks only wet the wood - and the wet
+  count is remembered, so a fire you relight in the rain starts over.
+- **Spawners wear out**: a monster spawner gives up after twenty waves and
+  throws electric sparks while it is resting, then starts again ten minutes
+  later. Aged breaks the block at the limit; we do not, because that half is
+  destructive and irreversible.
+- **Villages stop summoning iron golems at eight**, matching Aged's cap.
 - **Ages advance via advancements**: the `hearthwind:age/age0..5` chain is awarded automatically when its criteria are met (Age 0 starts with rock+flint in inventory; each later Age builds on the previous milestone). Age 5 (Mechanical) also requires **smithing skill 20 + builder job level 3** before the advancement can complete - smith on an anvil or a smithing table and place the building blocks the builder counts, then craft a rail (`PlayerAdvancementTracker`). `/job age` remains a debug override.
 - **Beginner death forgiveness**: your first `beginnerDeathCount` lethal deaths (default 3, `config/hearthwind_primitive.json`) keep your inventory. The counter **resets when you finish eating food** or **sleep in a bed**. After the budget is spent, deaths drop items normally.
 - **Wooden shield (earlystage)**: off-hand wooden shield with vanilla-style `BLOCKS_ATTACKS` (90% reduction, 3 damage threshold, durability cost). Axes (and other disable-blocking attackers) put it on a **100-tick** disable cooldown.

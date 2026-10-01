@@ -590,10 +590,15 @@ campfire and the kelp route.
 Legend: ✅ at parity · 🟡 deliberate deviation (reason in one clause) ·
 ❌ missing · ❌ unverified (say what could not be found).
 
-Summary: **✅ 69 · 🟡 28 · ❌ 5** over 102 rows. 0.1.43 closed
+Summary: **✅ 70 · 🟡 28 · ❌ 4** over 102 rows. 0.1.45 closed the last of them
 four more: the campfire cauldron's potion pour, the copper cauldron's one-step potion
 fill, the bubble sound while it boils, and the rule that a block placed above the
-cauldron removes it. The last
+cauldron removes it; 0.1.45 then ported rain extinguishing campfires, which is
+AdditionZ's job rather than Dehydration's, so the whole port queue's most
+survival-critical key is closed. Four ❌ rows remain, none of them hydration
+behaviour: purified water displacing vanilla water when it flows in, the purified
+bucket filling a vanilla cauldron, thirst droplet tooltips, and the four custom
+sound events. The last
 `❌ unverified` row was closed on 0.1.35 (the hydration corpus resolves 105 of
 its 115 catalogued ids in a real world, and the gametest now pins that), and
 the Alchemy 2 cauldron gates were loaded on 0.1.39.
@@ -719,7 +724,7 @@ the Alchemy 2 cauldron gates were loaded on 0.1.39.
 | `aged:campfire_ingredient` = `#minecraft:coals` + `#earlystage:bark_items` | migrated; the earlystage tag is `required: false` | ✅ | `conversion/datapacks/hearthwind/data/aged/tags/item/campfire_ingredient.json` |
 | `aged:recipe/sticks_from_shapeless_sapling` - any `#minecraft:saplings` -> 2 `minecraft:stick` (shapeless, group "sticks") | **already shipped** - the 0.1.33 audit first logged this as missing, but the recipe has been in the pack since `e497a3027`; 0.1.33 only added the missing trailing newline to the file | ✅ (pre-existing) | `conversion/datapacks/hearthwind/data/aged/recipe/sticks_from_shapeless_sapling.json` |
 | campfire loot: silk touch returns the campfire, otherwise `minecraft:oak_log` ×1 with `survives_explosion` | migrated, with the 1.20.1 enchantment predicate rewritten to the 26.2 component map | ✅ | `conversion/datapacks/hearthwind/data/minecraft/loot_table/blocks/campfire.json` |
-| rain extinguishes a campfire: 1/60 per second, but only from the 61st sample, and the counter keeps its credit across a dry spell (AdditionZ `campfire_rain_extinguish: 60`) | no rain-extinguishing code anywhere; AdditionZ is not ported | ❌ | `rg isRaining custom-mods/` finds no campfire path; no `additionz` in `conversion/curated/mods-manifest.json` |
+| rain extinguishes a campfire: 1/60 per second, but only from the 61st sample, and the counter keeps its credit across a dry spell (AdditionZ `campfire_rain_extinguish: 60`) | ported 0.1.45: the rain counter lives on the campfire block entity as NBT `"RainBurnTime"` and is sampled once a second while the sky is lit | ✅ 0.1.45 | `CampfireRainMixin` on `CampfireBlockEntity` injects at the HEAD of `cookTick` (the lit server ticker in 26.x - `litServerTick` no longer exists) and the HEAD of `cooldownTick`, which our own HEAD-cancellable freeze-boil would otherwise hide a TAIL inject behind; the counter resets on the unlit tick, matching the reference. `AdditionZParity.rainSample(rainBurnTime, limit, roll)` holds the whole rule as a pure function, and `additionZRainOnlyPutsAOutAfterTheFirstSixtySamples` pins it |
 | Alchemy 2 gates **crafting** the copper and campfire cauldrons | data migrated and enforced (`levelz/crafting/alchemy_02.json` uses the `item` field, which the loader reads, and `CraftingGateMixin` clears the result) | ✅ | `conversion/datapacks/hearthwind/data/levelz/crafting/alchemy_02.json`; `SkillGates.java:127,181-193`; `CraftingGateMixin.java:31-49` |
 | Alchemy 2 gates **breaking/placing** both cauldrons (`levelz/block/*_custom_*.json`) | ✅ **0.1.39**: loaded. All 55 placeholder files gate their real block now, not just the two cauldrons - `SkillGates.loadCategory` falls back to the `object` field when the `block` id does not resolve, which is exactly when levelz used a placeholder. That lifted the block-use gate count from 16 to 68 in the full pack | ✅ 0.1.39 | `conversion/datapacks/hearthwind/data/levelz/block/alchemy_02_custom_{campfire,copper}_cauldron.json`; the fix is in `SkillGates.loadCategory`; `HearthwindSkillsGameTests.skillGatesLoadAndResolve` asserts all four vanilla objects by id (lodestone 18 agility, respawn anchor 25 agility, jukebox 10 luck, fletching table 10 archery) |
 | mining 9 gates breaking `dehydration:copper_cauldron` | loaded into the break gates and enforced by `PlayerBlockBreakEvents.BEFORE` | ✅ | `levelz/mining/09.json`; `SkillGates.java:124,358-369` |

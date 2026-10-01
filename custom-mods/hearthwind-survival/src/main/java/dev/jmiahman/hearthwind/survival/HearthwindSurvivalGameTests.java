@@ -2696,4 +2696,114 @@ public final class HearthwindSurvivalGameTests {
                 "answering the payload must grant the loadout at once");
         helper.succeed();
     }
+
+    /**
+     * AdditionZ's baby timer: every animal starts at -252 000, which is 3.5
+     * real hours, and it is the single biggest gameplay change in that mod.
+     */
+    @GameTest
+    public void additionZAnimalsStayBabiesForThreeAndAHalfHours(GameTestHelper helper) {
+        helper.assertTrue(HearthwindSurvivalConfig.get().additionZ.babyToAdultTime == -252000,
+                "Aged baby_to_adult_time is -252000 ticks");
+        net.minecraft.world.entity.AgeableMob sheep = (net.minecraft.world.entity.AgeableMob) helper.spawn(
+                net.minecraft.world.entity.EntityTypes.SHEEP, new net.minecraft.core.BlockPos(1, 1, 1));
+        // A freshly spawned animal is an adult in vanilla too: finalizeSpawn only
+        // sets the baby age when the spawn group asks for a baby and a random roll
+        // agrees. setBaby() is the deterministic path through the constant we
+        // patched, and it is what breeding and golden-dandelion baby food use.
+        helper.assertTrue(sheep.getAge() == 0, "a freshly spawned sheep is an adult, got "
+                + sheep.getAge());
+        sheep.setBaby(true);
+        helper.assertTrue(sheep.getAge() == -252000,
+                "setBaby(true) must use AdditionZ's -252000, got "
+                        + ((net.minecraft.world.entity.AgeableMob) sheep).getAge());
+        helper.succeed();
+    }
+
+    /**
+     * The rain timer is a PAIR of conditions, which is why the reference takes
+     * 61 seconds and not 60, and averages 121: the first sixty samples only
+     * count, and every sample after that rolls 1-in-60.
+     */
+    @GameTest
+    public void additionZRainOnlyPutsAOutAfterTheFirstSixtySamples(GameTestHelper helper) {
+        int limit = 60;
+        int t = 0;
+        for (int i = 0; i < limit; i++) {
+            int next = dev.jmiahman.hearthwind.survival.additionz.AdditionZParity.rainSample(t, limit, 0);
+            helper.assertTrue(next == i + 1, "sample " + i + " must only count, got " + next);
+            t = next;
+        }
+        helper.assertTrue(dev.jmiahman.hearthwind.survival.additionz.AdditionZParity
+                        .rainSample(t, limit, 0) == -1,
+                "the 61st sample can be the one that puts the fire out");
+        helper.assertTrue(dev.jmiahman.hearthwind.survival.additionz.AdditionZParity
+                        .rainSample(t, limit, 5) == t + 1,
+                "a sample that does not roll zero keeps counting");
+        helper.assertTrue(dev.jmiahman.hearthwind.survival.additionz.AdditionZParity
+                        .rainSample(9, 0, 0) == 9,
+                "a limit of zero disables the rule entirely, so the counter never moves");
+        helper.assertTrue(dev.jmiahman.hearthwind.survival.additionz.AdditionZParity.isRainSampleTick(0),
+                "game time 0 is a sample tick");
+        helper.assertTrue(dev.jmiahman.hearthwind.survival.additionz.AdditionZParity.isRainSampleTick(120),
+                "every multiple of 20 is a sample tick");
+        helper.assertTrue(!dev.jmiahman.hearthwind.survival.additionz.AdditionZParity.isRainSampleTick(121),
+                "121 is not a sample tick");
+        helper.succeed();
+    }
+
+    /** A spawner counts what it produced, gives up at 20, and forgets after 12 000 ticks. */
+    @GameTest
+    public void additionZSpawnerGivesUpAtTwentyAndForgetsAfterTenMinutes(GameTestHelper helper) {
+        var cfg = HearthwindSurvivalConfig.get().additionZ;
+        helper.assertTrue(cfg.maxSpawnerCount == 20 && cfg.spawnerTickDeactivation == 12000,
+                "Aged caps a spawner at 20 and deactivates for 12000 ticks");
+        helper.assertTrue(dev.jmiahman.hearthwind.survival.additionz.AdditionZParity
+                        .spawnerExhausted(19, 20) == false,
+                "19 mobs is not the cap");
+        helper.assertTrue(dev.jmiahman.hearthwind.survival.additionz.AdditionZParity
+                        .spawnerExhausted(20, 20),
+                "20 mobs is the cap");
+        helper.assertTrue(dev.jmiahman.hearthwind.survival.additionz.AdditionZParity
+                        .spawnerTick(20, 100, 12000, 20) == -1,
+                "a spawner at the cap deactivates");
+        helper.assertTrue(dev.jmiahman.hearthwind.survival.additionz.AdditionZParity
+                        .spawnerTick(5, 0, 12000, 20) == 0,
+                "the count is forgotten once the deactivation window expires");
+        helper.assertTrue(dev.jmiahman.hearthwind.survival.additionz.AdditionZParity
+                        .countNewlySpawned(3, 7) == 4,
+                "the mobs that appeared this tick are the difference");
+        helper.succeed();
+    }
+
+    /** Eight iron golems from one village is the ceiling the reference enforces. */
+    @GameTest
+    public void additionZVillagersStopAtEightIronGolems(GameTestHelper helper) {
+        int cap = HearthwindSurvivalConfig.get().additionZ.maxIronGolemSpawn;
+        helper.assertTrue(cap == 8, "Aged max_iron_golem_villager_spawn is 8, got " + cap);
+        for (int i = 0; i < 9; i++) {
+            // Keep all nine inside the area the check looks at: a 3x3 block
+            // around (2, 1, 2), well within the 8-block inflate.
+            helper.spawn(net.minecraft.world.entity.EntityTypes.IRON_GOLEM,
+                    new net.minecraft.core.BlockPos(2 + i % 3, 1, 2 + i / 3));
+        }
+        // spawn() takes structure-local coordinates, the level query takes
+        // world ones, so the check has to be told where the structure actually
+        // is. Getting this wrong silently compares a village at the origin
+        // against golems a thousand blocks away.
+        net.minecraft.core.BlockPos village =
+                helper.absolutePos(new net.minecraft.core.BlockPos(2, 1, 2));
+        helper.assertTrue(dev.jmiahman.hearthwind.survival.additionz.AdditionZParity
+                        .golemCount(helper.getLevel(), village) == 9,
+                "the check must find the nine golems it just spawned, found "
+                        + dev.jmiahman.hearthwind.survival.additionz.AdditionZParity
+                                .golemCount(helper.getLevel(), village));
+        helper.assertTrue(dev.jmiahman.hearthwind.survival.additionz.AdditionZParity
+                        .golemCapReached(helper.getLevel(), village, 8),
+                "nine golems standing where the village is must reach the cap of 8");
+        helper.assertTrue(!dev.jmiahman.hearthwind.survival.additionz.AdditionZParity
+                        .golemCapReached(helper.getLevel(), village, 10),
+                "nine golems are below a cap of ten, so the check is at the limit, not above it");
+        helper.succeed();
+    }
 }

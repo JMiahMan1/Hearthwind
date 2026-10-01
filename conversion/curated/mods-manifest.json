@@ -220,6 +220,14 @@
    "group": "aged-primitive"
   },
   {
+   "file": "additionz",
+   "slug": "additionz",
+   "project_id": "QeSwHM7w",
+   "action": "rebuild",
+   "note": "Port of the parts of AdditionZ that change how a world behaves, with Aged's own additionz.json5 values: animals stay babies for 252000 ticks (3.5 real hours), rain puts a campfire out after the first sixty one-second samples, phantoms need 144000 ticks since rest, a spawner gives up after twenty mobs and forgets ten minutes later, and villagers stop at eight iron golems. The reference's five no-op keys are deliberately not reproduced; villager_gender is left out because 26.2 has no VillagerBreedTask.",
+   "realized_by": "hearthwind-survival"
+  },
+  {
    "file": "inmis",
    "slug": "inmis",
    "project_id": "I0UYcPa0",

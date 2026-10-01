@@ -3,14 +3,19 @@
 	"package": "dev.jmiahman.hearthwind.survival.mixin",
 	"compatibilityLevel": "JAVA_25",
 	"mixins": [
+		"AgeableMobBabyMixin",
 		"AnvilMenuTemperatureMixin",
 		"CampfireBlockEntityAccessor",
 		"CampfireBlockEntityMixin",
 		"CampfireBlockMixin",
+		"CampfireRainMixin",
 		"ConsumableConsumeMixin",
 		"FoodDataTickMixin",
+		"PhantomSpawnerMixin",
 		"PlayerExhaustionMixin",
-		"PlayerSleepMixin"
+		"PlayerSleepMixin",
+		"SpawnerCapMixin",
+		"VillagerGolemCapMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

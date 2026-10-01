@@ -25,6 +25,7 @@ public final class HearthwindSurvivalConfig {
     public final Spoilage spoilage = new Spoilage();
     public final Sobriety sobriety = new Sobriety();
     public final Hydration hydration = new Hydration();
+    public final AdditionZ additionZ = new AdditionZ();
 
     /**
      * Bare-hand cupping (sneak + empty hand + hold right-click on water),
@@ -218,6 +219,56 @@ public final class HearthwindSurvivalConfig {
          * see water in the ten-to-sixty blocks above it.
          */
         public boolean pumpRequiresWater = false;
+    }
+
+    /**
+     * The slice of AdditionZ that changes how the world behaves. Every value
+     * here is the one in the reference pack's {@code additionz.json5}; the
+     * reference's other twelve keys are no-ops or dead config on 26.2 and are
+     * deliberately not reproduced (see docs/AGED_HYDRATION.md and
+     * docs/RELEASE_1.0_PARITY.md section 5.2).
+     */
+    public static class AdditionZ {
+        /**
+         * Ticks an animal stays a baby. The reference patches
+         * {@code AgeableMob.getBabyStartAge} from -24000 to -252000, so every
+         * animal takes 3.5 real hours to grow up instead of two minutes. This
+         * is the single biggest change in the whole mod.
+         */
+        public int babyToAdultTime = -252000;
+        /**
+         * Campfire rain extinguish: the number of once-a-second samples a lit,
+         * sky-lit campfire burns through in rain before it goes out. Read as a
+         * pair - the counter only increments while it is at or below this value,
+         * and a sample at the limit has a 1-in-N chance of extinguishing - so
+         * the earliest fire dies on the 61st second and the average is about
+         * 121 s. Zero disables it, as it does upstream.
+         */
+        public int campfireRainExtinguish = 60;
+        /**
+         * Ticks a player must be awake before phantoms can spawn on them. The
+         * reference patches the {@code 72000} in PhantomSpawner's
+         * {@code random.nextInt(timeSinceRest) >= 72000} test to this, doubling
+         * the time before the first phantom of a session.
+         */
+        public int phantomTickTime = 144000;
+        /**
+         * Iron golems a village may have before the villagers stop calling for
+         * more. The reference keeps an NBT counter; on 26.2 there is no cap at
+         * all, so this counts the golems around the caller instead.
+         */
+        public int maxIronGolemSpawn = 8;
+        /**
+         * Mobs one spawner may produce before it deactivates. The reference
+         * breaks the block at this count; we deactivate it instead, which is the
+         * half of that behaviour that is not destructive.
+         */
+        public int maxSpawnerCount = 20;
+        /**
+         * Ticks after which an exhausted spawner forgets its count and starts
+         * working again. Aged: 12000, i.e. ten minutes.
+         */
+        public int spawnerTickDeactivation = 12000;
     }
 
     /** Family-friendly brewing: alcohol becomes juice / NA medieval drinks. */
