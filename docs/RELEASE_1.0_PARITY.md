@@ -599,6 +599,23 @@ reason, and `ScreensTourGameTests` fails if `modpack_mode` is not on.
 **Parity is the default.** No deviation is permitted without asking the user
 first, and one that turns out not to be a deviation is not recorded as one.
 
+**Functional parity pass (0.1.46 onward).** The user set the order explicitly:
+functional mechanics parity first, polish only after it is exhausted. Each
+remaining mechanic was measured against the reference pack's own config and
+datapack rather than assumed, and the first pass found two real divergences and
+one invented table:
+
+- **Steel** was three iron and one coal smelted for 600 ticks for half an
+  experience point. The reference is two iron and two coal over 5200 ticks for
+  six experience, so the pack's mid-game metal was eight times too cheap. The
+  recipe now matches, and `steelBlastingMatchesTheReferenceCost` pins all four
+  numbers.
+- **Per-crop season rates**: all 62 of the reference's per-crop files are now
+  ported verbatim (47 copied, 15 already identical). Twenty of ours were
+  invented - smooth 0.8/1.2/1.2/0.3 patterns - and the tests that covered them
+  were green against those inventions. They now assert the reference's own
+  values, and one of them, tomato, does not peak where we said it did.
+
 ## 6. Workstreams toward 1.0.0, in priority order
 
 **W0: Make the truth machine-checked (days, not weeks)**

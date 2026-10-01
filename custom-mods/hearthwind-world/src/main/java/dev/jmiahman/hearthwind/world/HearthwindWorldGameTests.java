@@ -243,17 +243,24 @@ public final class HearthwindWorldGameTests {
     @GameTest
     public void letsdoCropsObeySeasons(GameTestHelper helper) {
         SeasonCrops.load(helper.getLevel().getServer().getResourceManager());
+        // These are the reference pack's own per-crop numbers, not ours: tomato
+        // peaks in the fall at 1.5 and grapes peak high in summer, not in the
+        // harvest season. Before the table was ported this test was pinning
+        // smooth invented values (summer 1.5 for both), which is exactly the
+        // kind of drift the audit was for.
         var tomato = BuiltInRegistries.BLOCK.getValue(Identifier.fromNamespaceAndPath("farm_and_charm", "tomato_crop"));
         helper.assertTrue(SeasonCrops.multiplier(tomato, Season.WINTER) == 0.0,
                 "frost-tender tomato must not grow in winter");
-        helper.assertTrue(SeasonCrops.multiplier(tomato, Season.SUMMER) == 1.5,
-                "tomato must peak in summer");
+        helper.assertTrue(SeasonCrops.multiplier(tomato, Season.AUTUMN) == 1.5,
+                "the reference has tomato peaking in the fall, got "
+                        + SeasonCrops.multiplier(tomato, Season.AUTUMN));
         var oats = BuiltInRegistries.BLOCK.getValue(Identifier.fromNamespaceAndPath("farm_and_charm", "oat_crop"));
         helper.assertTrue(SeasonCrops.multiplier(oats, Season.WINTER) > 0.0,
                 "hardy oats must still grow (slowly) in winter");
         var grapes = BuiltInRegistries.BLOCK.getValue(Identifier.fromNamespaceAndPath("vinery", "red_grape_bush"));
-        helper.assertTrue(SeasonCrops.multiplier(grapes, Season.AUTUMN) == 1.5,
-                "grapes must peak in fall harvest season");
+        helper.assertTrue(SeasonCrops.multiplier(grapes, Season.SUMMER) == 1.5,
+                "the reference has grapes peaking in summer, got "
+                        + SeasonCrops.multiplier(grapes, Season.SUMMER));
         helper.succeed();
     }
 
@@ -375,6 +382,33 @@ public final class HearthwindWorldGameTests {
                 helper.absolutePos(waterPos), net.minecraft.util.RandomSource.create());
         helper.assertTrue(!underStone, "Fish must not spawn under solid stone roof");
 
+        helper.succeed();
+    }
+
+    /**
+     * Per-crop season rates come from the reference's own datapack, not from
+     * one shared scalar: the reference ships 62 files under
+     * {@code data/<ns>/seasons/crop/} and wheat, for instance, is
+     * {@code {spring 0.5, summer 1.5, fall 1.0, winter 0.0}} - it does not grow
+     * at all in winter. The four config multipliers are only the fallback for
+     * a crop with no file. This pins the loaded values for wheat so the table
+     * cannot quietly regress to the generic numbers.
+     */
+    @GameTest
+    public void perCropSeasonRatesComeFromTheReferenceTable(GameTestHelper helper) {
+        // 26.2 dropped the _CROPS suffix: the crop block is plain Blocks.WHEAT.
+        net.minecraft.world.level.block.Block wheat =
+                net.minecraft.world.level.block.Blocks.WHEAT;
+        helper.assertTrue(dev.jmiahman.hearthwind.world.SeasonCrops.count() > 0,
+                "the per-crop season table must load from the world datapack");
+        double summer = dev.jmiahman.hearthwind.world.SeasonCrops.multiplier(wheat,
+                dev.jmiahman.hearthwind.world.Season.SUMMER);
+        double winter = dev.jmiahman.hearthwind.world.SeasonCrops.multiplier(wheat,
+                dev.jmiahman.hearthwind.world.Season.WINTER);
+        helper.assertTrue(Math.abs(summer - 1.5) < 0.0001,
+                "the reference grows wheat at 1.5x in summer, we have " + summer);
+        helper.assertTrue(Math.abs(winter) < 0.0001,
+                "the reference grows wheat not at all in winter, we have " + winter);
         helper.succeed();
     }
 }

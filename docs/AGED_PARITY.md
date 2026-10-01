@@ -66,7 +66,7 @@ Remaining ids flagged as "unused by vanilla 26.2" (`random_chance_with_looting`,
 | `tiered` (affixes/reforge) | 199 | ✅ | hearthwind-primitive `TierRegistry` | **ACTIVE — done** |
 | `earlystage/sieve_drops` | 1 | ✅ | primitive `SieveBlock` | ACTIVE (byte-equal to Aged) |
 | `levelz` (skill gates) | 400 | ✅ | **hearthwind-skills `SkillGates`** | **ACTIVE — 649 gates live** |
-| `minecraft/seasons/crop` | 15 | ✅ | hearthwind-world `SeasonCrops` | **ACTIVE — 15 crops, per-season** |
+| `<ns>/seasons/crop` | 62 (15 minecraft, 24 natures_spirit, 10 vinery, 7 farm_and_charm, 4 herbalbrews, 1 meadow, 1 brewery) | ✅ | hearthwind-world `SeasonCrops` | **ACTIVE — all 62 ported verbatim 0.1.46**; the four config scalars are only a fallback for a crop with no file |
 | `environmentz` (temp model) | 9 | ✅ | survival `EnvironmentCorpus` | **ACTIVE — 17 blocks / 3 items / 3 tables** |
 | `dehydration/hydration_items` | 1 | ✅ | survival `HydrationCorpus` | **ACTIVE — 35 items / 12 tiers** |
 | `jobsaddon` (job ladders + restricted) | 14 | ✅ | jobs `JobCorpus` | **ACTIVE — 8 ladders, 103 restricted** |
@@ -100,7 +100,7 @@ Legend: ✅ parity · 🟡 partial/different tuning · ❌ missing
 | Jobs | 8 jobs, max level 150, 100×1.6ⁿ, 3 jobs at once, 24000t (20 min) switch cooldown, **per-level content ladders (miner→iron 7/diamond 20, smither→steel 8, builder 533 blocks)**, 103 restricted recipes | 8 jobs, 100 pts/level, Age gating, `/job` commands, **8 ladders read from the corpus (XP = content tier)**, curve + 3 slots + cooldown (0.1.28) | 🟡 0.1.28: only campfire cooking pays nothing (no player in the tick) |
 | Affixes | Tiered: 199 files, rarities 50/35/15/8/3/0 | **same 199 files + reforge** | ✅ |
 | Mob scaling | RPGDifficulty: distance 300/200, caps hp 4×/dmg 3×/prot 2×/speed 1.8×, special zombies, boss scaling | grace 300, step 200, one factor on hp/dmg/armor with caps 4×/3×/2×, warden+dragon excluded, steps overworld-only, adult livestock scale, boss path 0.05/step + 0.3 per nearby player (cap 3×) | ✅ 0.1.37: caps/exclusions/boss live (0.1.29) plus the 30% ±3% health/damage jitter, the 5% speed zombie (-10 HP, ×1.2 speed) and the 10% big zombie (×0.7 speed, +10 HP, +2 damage, 1.3× hitbox and model), all rolled in rpgdifficulty's order and with no early return, so a mob spawned next to spawn still rolls. Upstream never applies its 1.8× speed cap and neither do we. ✅ 0.1.38 adds the payout keys: `extraXp` (drops × the health factor, capped at 4×), `dropMoreLoot` (one roll against factor × 0.02 capped at 2.0; on a hit the table is generated again, half the stacks are skipped, the rest incremented), and `creeperExplosionFactor` 1.1 — a **naming trap upstream**, which multiplies the *general* damage factor and never checks for a creeper, so every mob gets 10% more damage growth than the name suggests |
-| Primitive | earlystage: rock/flint, crafting rock (2 hits/80 wear), beginner deaths 3, sieve, **steel = 2 iron + 2 coal @5200 t** | same hits/wear/deaths, sieve drops byte-equal, steel = **1 iron + 2 coal** | 🟡 steel recipe ratio differs |
+| Primitive | earlystage: rock/flint, crafting rock (2 hits/80 wear), beginner deaths 3, sieve, **steel = 2 iron + 2 coal @5200 t, 6 xp** | same hits/wear/deaths, sieve drops byte-equal, steel = **2 iron + 2 coal @5200 t, 6 xp** (0.1.46) | ✅ 0.1.46: ours was 3 iron + 1 coal @600 t, 0.5 xp - eight times cheaper and a twelfth of the experience |
 | Recipe removal | 95 recipes removed (all ore smelting, all cooked food, flint_and_steel, steel blasting) | **95 active**: 73 ore/tech removals plus 21 cooking removals; Candlelight stoves and cooking stations provide the food path | ✅ |
 | SmitherZ gems, FleshZ tanning, VoidZ boss respawn, AdditionZ (mob aging/phantoms/spawners) | present | **partly present** | ✅ 0.1.45: the five keys that change gameplay now ship - animals stay babies 3.5 hours, rain puts campfires out on Aged's ~121 s schedule, phantoms need 144 000 ticks, villagers cap iron golems at 8, spawners give up after 20 waves and forget after 10 minutes. Five keys were no-ops on 26.2 and are deliberately skipped; `villager_gender` is not done (26.2 has no `VillagerBreedTask`) |
 
@@ -108,7 +108,7 @@ Legend: ✅ parity · 🟡 partial/different tuning · ❌ missing
 
 | System | Aged | Hearthwind | Status |
 |---|---|---|---|
-| Seasons | 21 days, temp + snow melt, **per-crop multipliers** (wheat 0.5/1.5/1.0/**0.0**), no underground growth, no winter breeding | 21 days, temp offsets + one per-season multiplier (0.4–1.2) | 🟡 **per-crop table unused** |
+| Seasons | 21 days, temp + snow melt, **per-crop multipliers** (wheat 0.5/1.5/1.0/**0.0**), no underground growth, no winter breeding | 21 days, temp offsets + the full per-crop table (0.1.46; the 20 values we had invented in the mod namespaces are now the reference's own) | ✅ 0.1.46 |
 | Ambience/sound | AmbientEnvironment, DripSounds, PresenceFootsteps, Sounds, Sound Physics, ImmersiveThunder, Euphonium | none | ❌ (big "feel" gap) |
 
 ---

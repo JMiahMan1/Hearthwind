@@ -853,10 +853,13 @@ public final class HearthwindPrimitiveGameTests {
         helper.setBlock(pos, net.minecraft.world.level.block.Blocks.BLAST_FURNACE);
         var be = helper.getBlockEntity(pos,
                 net.minecraft.world.level.block.entity.BlastFurnaceBlockEntity.class);
-        be.setItem(0, new ItemStack(net.minecraft.world.item.Items.IRON_INGOT, 3));
+        // Two iron and two coal, smelted for over 5200 ticks: the reference
+        // cost. This test used three iron, one coal and 700 ticks, which is the
+        // cheaper recipe the audit found and 0.1.46 replaced.
+        be.setItem(0, new ItemStack(net.minecraft.world.item.Items.IRON_INGOT, 2));
         be.setItem(1, new ItemStack(net.minecraft.world.item.Items.COAL, 8));
-        be.setItem(3, new ItemStack(net.minecraft.world.item.Items.COAL, 1));
-        runFurnaceTicks(helper, be, 700);
+        be.setItem(3, new ItemStack(net.minecraft.world.item.Items.COAL, 2));
+        runFurnaceTicks(helper, be, 5300);
         helper.assertTrue(be.getItem(2).is(HearthwindPrimitiveItems.STEEL_INGOT),
                 "steel ingot must be produced, got " + be.getItem(2));
         helper.assertTrue(be.getItem(0).isEmpty(), "iron ingot must be consumed");
@@ -1225,6 +1228,34 @@ public final class HearthwindPrimitiveGameTests {
         // removal list (upstream deleted a different id for the same purpose).
         helperAssert(hasRecipe(helper, "earlystage:steel_ingot_from_blasting"),
                 "our steel blasting recipe must survive the removals");
+        helper.succeed();
+    }
+
+    /**
+     * Steel is the pack's mid-game metal, so its cost is pinned here rather
+     * than left to a data file. The reference blasts TWO iron ingots with TWO
+     * coal for one steel ingot over 5200 ticks and 6 experience points; we had
+     * three iron and one coal over 600 ticks for half a point, which made the
+     * whole progression eight times too cheap.
+     */
+    @GameTest
+    public void steelBlastingMatchesTheReferenceCost(GameTestHelper helper) {
+        var recipe = helper.getLevel().recipeAccess()
+                .byKey(ResourceKey.create(Registries.RECIPE,
+                        net.minecraft.resources.Identifier.parse("earlystage:steel_ingot_from_blasting")))
+                .orElseThrow(() -> new AssertionError("the steel blasting recipe must exist"))
+                .value();
+        helperAssert(recipe instanceof dev.jmiahman.hearthwind.primitive.extra.ExtraBlastingRecipe,
+                "steel must use the two-ingredient blasting recipe, got " + recipe.getClass().getName());
+        var steel = (dev.jmiahman.hearthwind.primitive.extra.ExtraBlastingRecipe) recipe;
+        helperAssert(steel.inputCount() == 2,
+                "the reference blasts two iron ingots, we have " + steel.inputCount());
+        helperAssert(steel.extraCount() == 2,
+                "the reference adds two coal, we have " + steel.extraCount());
+        helperAssert(steel.cookingTime() == 5200,
+                "the reference smelts for 5200 ticks, we have " + steel.cookingTime());
+        helperAssert(Math.abs(steel.experience() - 6.0f) < 0.0001f,
+                "the reference yields 6 experience, we have " + steel.experience());
         helper.succeed();
     }
 

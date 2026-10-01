@@ -135,6 +135,19 @@ Eight optional professions (Miner, Farmer, Fisher, Warrior, Smither, Brewer, Bui
 
 ## Flora, Crops, Agriculture & Wildlife (Complete Aged Parity)
 
+- **Steel costs what it costs (0.1.46)**: a steel ingot is **two iron ingots
+  and two coal**, smelted for **5200 ticks** (4 minutes 20 seconds) for **6
+  experience**. Before this it was three iron and one coal over 30 seconds for
+  half a point, which made the mid-game metal trivial. The two changes you will
+  notice most are the furnace time and the coal.
+
+- **Every crop follows the reference calendar (0.1.46)**: the pack now uses the
+  real per-crop season table instead of four generic numbers, so **wheat does
+  not grow at all in winter** (0.0), tomato peaks in the **fall** rather than
+  summer, grapes peak in high **summer**, hardy oats still grow slowly in
+  winter (0.1) while frost-tender crops stop dead, and each of the 62 crops has
+  its own spring/summer/fall/winter rate.
+
 - **Wild Crops & Farming (Let's Do Family, `letsdo-*`)**:
   - **Farm & Charm**: 13 wild crops (carrots, potatoes, beetroots, lettuce, onions, tomatoes, corn, strawberries, barley, oat, emmer, nettle, ribwort) scatter across Overworld biomes via biome-tag worldgen. **Density buff**: every patch uses `rarity_filter` 8 (≈4× denser than upstream letsdo) and the spawn tags cover all vanilla forest/taiga/plains-family biomes plus ~20 optional Terralith forest/valley IDs. Features only generate in **newly explored chunks** — already-visited terrain keeps its old density. Harvesting yields seeds and produce for flour, dough, oatmeal, ribs, and soup. Crafting stations (Silo, Roaster, Butter Churn, Plow, Supply Cart).
   - **Vinery**: Grape varieties (Red, White, Taiga, Savanna, Jungle) and seeds for wine making. Fermentation Barrels, Grapevine Pots, Apple Press, and Dark Cherry wood.
