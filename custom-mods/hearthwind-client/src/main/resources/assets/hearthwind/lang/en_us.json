@@ -22,6 +22,7 @@
   "screen.hearthwind.skills.title": "%s Skills",
   "screen.hearthwind.jobs.title": "%s Jobs",
   "screen.hearthwind.party.title": "%s Party",
+  "screen.hearthwind.backpack": "Backpack",
   "screen.hearthwind.welcome": "Welcome to Hearthwind!",
   "screen.hearthwind.welcome.start": "Start",
   "screen.hearthwind.welcome.text.guide": "Before you start your journey: the guide book is waiting in your hotbar, and the command /guide gets you a new one at any time.",

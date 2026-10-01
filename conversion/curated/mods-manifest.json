@@ -378,7 +378,7 @@
    "slug": "libz",
    "project_id": "yUBXc3AH",
    "action": "port",
-   "reason": "MIT library for the z-series mods. Upstream has no 26.2 build, so the mod itself is a W4 port-queue gap (plan 5.2) and is NOT shipped. What we do ship is the clean-room `TabStrip` reimplementation of LibZ's DrawTabHelper geometry (24x27/25/21 tabs, 25 px pitch) in hearthwind-client, plus the 200x236 banded panel chrome measured off the Aged captures (0.1.32).",
+   "reason": "MIT library for the z-series mods. Upstream has no 26.2 build, so the mod itself is a W4 port-queue gap (plan 5.2) and is NOT shipped. What we do ship is the clean-room `TabStrip` reimplementation of LibZ's DrawTabHelper geometry (24x27/25/21 tabs, 25 px pitch) in hearthwind-client, plus the panel chrome measured off the Aged captures: a 200x215 panel with the strip floating on the 21 rows above it (re-measured 0.1.33 - the 200x236 'band' shipped in 0.1.32 was the strip misread).",
    "note": "Clean-room layout reimplementation shipped in-tree; the mod itself still needs a port"
   },
   {

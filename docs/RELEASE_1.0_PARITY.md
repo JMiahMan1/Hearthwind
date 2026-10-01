@@ -341,7 +341,7 @@ writes it in the Decision column of the tracker (section 8).
 | `fabric-seasons` | hearthwind-world | ✅ seasonLengthTicks 504000 with the day count derived from the live day length; bonemeal blocked out of season (isSeasonMessingBonemeal) since 0.1.18 |
 | `herdspanic` | hearthwind-world `HerdPanic` | DECISION: upstream HerdPanic now has a Fabric 26.3 build |
 | `jobsaddon` | hearthwind-jobs | ✅ 0.1.28: the Aged shape is live - 3 employed slots, 150-level cap, 24000t change cooldown, exponential `100 + 1.6*L` curve, 8 jobs with corpus ladders, and every earn path hooked (break, kill, craft, furnace/smoker/blast, fish, anvil, smithing, place, brew); open: campfire cooking has no player to credit, `jobCraftGating` (off by default on purpose) |
-| `levelz` | hearthwind-skills | ✅ 0.1.35: 649 gates live and **enforced**, and the XP curve already matches. Crafting is blocked on the gated item/ingredient, smithing through `SmithingGateMixin`, brewing through `BrewingPotionSlotMixin`, and breaking through the `PlayerBlockBreakEvents.BEFORE` handler in `SkillGates`. The cost curve is `(int)(xpBaseCost + 1.6 * L^exponent)` with Aged's own `xpCostMultiplicator: 1.6`. (This row said "loaded but not enforced; XP curve differs" until 0.1.35 - both halves were stale.) **0.1.39**: 55 of the 71 `levelz/block` files gate their real block through an `object` field behind a `minecraft:custom_block` placeholder that does not exist here, so the loader was dropping all of them; it now falls back to `object` and block-use gates went 16 -> 68 in the full pack |
+| `levelz` | hearthwind-skills | ✅ 0.1.35: 649 gates live and **enforced**, and the XP curve already matches. Crafting is blocked on the gated item/ingredient, smithing through `SmithingGateMixin`, brewing through `BrewingPotionSlotMixin`, and breaking through the `PlayerBlockBreakEvents.BEFORE` handler in `SkillGates`. The cost curve is `(int)(xpBaseCost + 1.6 * L^exponent)` with Aged's own `xpCostMultiplicator: 1.6`. (This row said "loaded but not enforced; XP curve differs" until 0.1.35 - both halves were stale.) **0.1.39**: 55 of the 71 `levelz/block` files gate their real block through an `object` field behind a `minecraft:custom_block` placeholder that does not exist here, so the loader was dropping all of them; it now falls back to `object` and block-use gates went 16 -> 68 in the full pack. **0.1.44**: that fallback was still gated to the `block` category, so the same placeholder hid 39 item gates - including Alchemy 15's teleport potion and scroll, which point at AdditionZ ids we do not have and so still drop correctly. The condition is now simply "the file has an `object` field"; `entity` uses it 10 times and `mining`/`crafting`/`smithing`/`brewing` never do, so there is nothing to exclude. Covered by a test on a vanilla object (a brush at Luck 8) so it cannot pass on a mod we may never ship |
 | `naturalist` | hearthwind-world (fauna port) | DECISION: upstream Naturalist now has a 26.2 Fabric build (2.0.5+26.2) |
 | `nutritionz` | hearthwind-survival | HearthWind 5-group diet replaces near-inert NutritionZ (intentional HW change) |
 | `partyaddon` | hearthwind-skills `party/` | verify vs partyaddon config |
@@ -406,8 +406,12 @@ gametest captures `.tmp/shots/cgt/0022_tour_inventory.png` and
 | Particles, camera, first-person body | FBP, Particular, Camera Overhaul, First-person Model, 3D Skin Layers, Spawn Animations, ImmersiveThunder | none | ❌ (5.1 / 5.2) |
 | Hydration / temperature stat panel | none (NutritionZ 1.0.11 has **only** a diet panel; Dehydration 1.3.6 and EnvironmentZ 2.0.8 ship **no** screen class and register **no** keybind - their jars contain zero `KeyBinding` references) | none | 🟢 decided 0.1.34: **hide it.** Our own `SurvivalInfoScreen` (a "Hydration Level 12.4 / 20.0" card) had no Aged counterpart and no way to open it, so it was deleted rather than bound. Aged shows thirst as the droplet row above the hunger bar and temperature as the mannequin + thermometer, which we already match |
 
-**Season day count.** Aged runs 504000-tick seasons with Time & Wind's
-36000-tick days; SeasonHUD divides the season length by the live day length,
+**Season day count.** A cycle is 24000 + 12000 = 36000 ticks wide, because
+Time & Wind runs the 24000-tick day counter at 0.5x (24000 real ticks) and the
+12000-tick night at 1.0x (12000 real ticks) - that sum, not any single config
+number, is where 36000 comes from. SeasonHUD only *consumes* it:
+`day_length: 36000` in its own toml is a display setting, and SeasonHUD divides
+the season length by the live day length,
 which reads 14 days with Aged's shipped config (the reference capture shows
 `/18`, likely a different config at capture time - the tick length is what is
 certain: 504000 ticks, about 7 real hours). Hearthwind stores
@@ -419,8 +423,8 @@ shipped Time & Wind data reads 14, exactly like Aged.
 
 | Element | Aged | Hearthwind | Status |
 |---|---|---|---|
-| LibZ tabs floating above the panel (bag, sword, axe, figure) | LibZ | `TabStrip` (bundle, iron sword, iron axe, armor stand) | ✅ placement (0.1.32, re-measured 0.1.33): every Aged capture floats the strip on the 21 rows above the 200x215 panel, the selected tab only taller so it merges into the panel edge, which is what `TabStrip.draw`/`clicked` do and what `ScreensTourGameTests` asserts; 🟡 the art is a legal stand-in for GPL tab art, silhouettes match the capture |
-| Left accessory column (5 slots) | **Trinkets** + **BackSlot**/addon + **Inmis** | Trinkets Updated fork (data-driven slots), BackSlot back+belt slots (G / Shift+G, HUD + avatar rendering) with the BackSlot Addon shield/sword/lantern renders, Inmis backpacks (B, chest slot, on-back) with the Addon's 3D backpack models and Trinkets-slot support | ✅ 0.1.27: ports done 0.1.24 (Trinkets, Inmis, BackSlot + Addon) and the Inmis Addon rebuilt in-tree (3D models, Trinkets slot, Aged config keys); the LibZ tab above the panel is a separate W4 gap (no 26.2 LibZ build) |
+| LibZ tabs floating above the panel (bag, sword, axe, figure) | LibZ | `TabStrip` (bundle, iron sword, iron axe, armor stand) | ✅ placement (0.1.32, re-measured 0.1.33): every Aged capture floats the strip on the 21 rows above the 200x215 panel, the selected tab only taller so it merges into the panel edge, which is what `TabStrip.draw`/`clicked` do and what `ScreensTourGameTests` asserts; 🟡 the art is a legal stand-in for GPL tab art, silhouettes match the capture. **0.1.44**, after executing LibZ 1.0.3's own `DrawTabHelper`/`TabRegistry` against stub classes and measuring `Inventory.png` at exactly 6.000x: the sheet is byte-identical to `libz:textures/gui/icons.png` (sha256 equal) and the geometry, pitch, icon offset and unselected hit rects all match, so **the rebuild is kept and the mod is not ported** - nothing consumes its registration API (every LibZ-dependent mod in the pack is already ours or unported) and two of its mixin targets no longer exist on 26.2. Three gaps closed in passing: a **5th tab for a non-empty equipped backpack** (its icon is the backpack itself, which Aged shows too), **tooltip titles now the reference's own translatable text** (Crafting / Skills / Jobs / Party / Backpack, replacing our literals with `[K]`-style key hints), and the unselected **first** tab's hit box corrected from 25 rows to LibZ's 21 |
+| Left accessory column (5 slots) | **Trinkets** + **BackSlot**/addon + **Inmis** | Trinkets Updated fork (data-driven slots), BackSlot back+belt slots (G / Shift+G, HUD + avatar rendering) with the BackSlot Addon shield/sword/lantern renders, Inmis backpacks (B, chest slot, on-back) with the Addon's 3D backpack models and Trinkets-slot support | ✅ 0.1.27: ports done 0.1.24 (Trinkets, Inmis, BackSlot + Addon) and the Inmis Addon rebuilt in-tree (3D models, Trinkets slot, Aged config keys); the LibZ tab strip is our own clean-room `TabStrip` (no 26.2 LibZ build exists; see 5.7) |
 | Extra slots beside the player preview | **BackSlot** (back slot 41 + belt slot 42 only) and the right-hand column is **Trinkets**' own accessory grid | BackSlot back+belt slots, Trinkets Updated accessory slots | ✅ both already shipped (0.1.24/0.1.27). The old ❌ row was mis-attributed: BackSlot 1.2.15's `PlayerScreenHandlerMixin` only adds slots 41/42, so nothing weapon/bow-specific needs porting |
 | `Lv. N` label on the player preview | LevelZ `inventorySkillLevel` (posX 0 / posY 62, 0.6 scale, white) | `InventoryScreenButtonMixin` draws `Lv. <overall>` | ✅ 2026-09-26; overall level = min(30, sum/12) like LevelZ (was a raw sum, so it showed Lv. 360) |
 | Guidebook in the starter hotbar | Lavender `aged_guide_book` | rendered as missing texture; the vendored jar lacked the book entirely | ✅ fixed 2026-09-24 (item definition + refreshed vendored jar); re-verify with client gametests |
@@ -685,15 +689,45 @@ creeperExplosionFactor); steel ratio (done 0.1.19:
 parity); seasonal bonemeal (done 0.1.18). Every fix lands with a gametest
 pinned to Aged's value.
 
-**W4: Port queue (section 5.2).** Suggested order: tier A (4), then
-gameplay-content mods in tier B/C (medievalweapons, smitherz, additionz,
-voidz, travelerz, inmis + inmisaddon, backslot + addon, trinkets,
-antique-atlas + surveyor, another-furniture, bento-box, connectiblechains,
-niftycarts, villager-transportation, smarter-farmers, villagertradefix,
-fishing-real, treechop, hearths, immersive-snow, grass-overhaul, lootbeams,
-nameplate, particular, time-wind, the EMI family), then
-client-only feel mods, then perf/fix libraries. Each is a per-mod team
-decision; record it before starting. (`welcomescreen` left the queue in
+**W4: Port queue (section 5.2), rewritten 0.1.44.** The old order had
+drifted: it still listed `inmis`, `backslot` and `trinkets` (all shipped) plus
+`bento-box`, `lootbeams` and `villagertradefix`, which are not in the queue at
+all. Current state, measured against the Modrinth API on 2026-09-30: the queue
+holds **62 entries and every one is a port - not one has a 26.2 Fabric build**,
+so there is nothing left to adopt from the W2 list. Three were already finished
+and had simply never been dropped from the allowlist (`inmis` shipped,
+`backslotaddon` rebuilt in-tree, `Dungeon Now Loading` ported as `dungeonz`),
+and `time-and-wind-ct` joined them when the audit proved the port already
+exists.
+
+Suggested order:
+
+1. **AdditionZ** - the largest single gameplay change in the queue for one
+   line: `baby_to_adult_time` makes every animal a baby for 3.5 real hours.
+   Then campfire rain extinguish, phantom tick time, the spawner cap and the
+   iron-golem cap. Study in `docs/AGED_HYDRATION.md` and
+   `.tmp/azstudy/ADDITIONZ-STUDY.md`.
+2. **Tier A (4)**: `fbp-renewed`, `fishing-real`, `moonlight`, `surveyor` -
+   all Fabric 26.1.x, no 26.2 build.
+3. **Gameplay content**: `medievalweapons`, `smitherz`, `voidz`, `travelerz`,
+   `antique-atlas` + `surveyor`, `another-furniture`, `connectiblechains`,
+   `niftycarts`, `villager-transportation`, `smarterfarmers`,
+   `fishing-real`, `treechop`, `hearths`, `immersive-snow`,
+   `immersive-thunder`, `immersive-ui`, `grass-overhaul`, `nameplate`,
+   `particular`, `creeperoverhaul`, `endermanoverhaul`, `spirder-caves`,
+   `sushi_bar`, `astrocraft`, `amarite`, `DEUF`, `dawner`/`voidz` family.
+4. **Client-only feel**: `tooltipfix`, `seamless-loading-screen`,
+   `Shut Up GL Error`, `borderless-mining`, `DripSounds`,
+   `Dungeon Now Loading`, `loadmyresources`, `modelfix`,
+   `GeckoLibIrisCompat`, `translucencyfix`, `libz` (**keep the rebuild** -
+   0.1.44 verified it pixel-parity and found no consumer for its API).
+5. **Libraries and addons that are dead weight alone**: `library-fabric`,
+   `euphonium`, `bbb`, `Nimble`, `indium`, `noisium-fabric`,
+   `modernfix-fabric`, `lmft`, the whole EMI family, `extendeddrawersaddon`,
+   `inmisaddon`, `backslotaddon`.
+
+Each is a per-mod team decision; record it before starting. Re-run
+`python3 conversion/scripts/aged_parity_diff.py` before quoting any of this. (`welcomescreen` left the queue in
 0.1.30: rebuilt in-tree as the welcome screen plus the five starter-loadout
 commands.)
 

@@ -374,6 +374,18 @@ public final class HearthwindSkillsGameTests {
         SkillGates.Gate ungated = SkillGates.useGate(
                 net.minecraft.world.level.block.Blocks.DIRT);
         helper.assertTrue(ungated == null, "dirt is not gated");
+
+        // The same placeholder convention appears in the item corpus: 39 of our
+        // 106 item files hide the real item behind "minecraft:custom_item" in an
+        // "object" field (and 10 of 23 entity files do the same). Before the
+        // fallback was generalised past blocks, every one of those was dropped
+        // silently. The brush is the one whose object is vanilla, so it is the
+        // one we can assert without depending on mods we may not ship.
+        SkillGates.Gate brush = SkillGates.itemGate(
+                new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.BRUSH));
+        helper.assertTrue(brush != null && brush.skill() == Skill.LUCK
+                && brush.level() == 8,
+                "minecraft:brush comes from the object field and requires luck 8, got " + brush);
         helper.succeed();
     }
 
@@ -1075,6 +1087,11 @@ public final class HearthwindSkillsGameTests {
                 new net.minecraft.core.BlockPos(1, 1, 1));
         var big = helper.spawn(net.minecraft.world.entity.EntityTypes.ZOMBIE,
                 new net.minecraft.core.BlockPos(3, 1, 1));
+        // Pin the reference mob to NOT big before reading it. Since the 10%
+        // special roll shipped, a plain spawn is a big zombie one time in ten,
+        // and when that happened both sides read 0.78 and the comparison
+        // below failed with two apparently equal numbers in the message.
+        ordinary.setAttached(MobScaling.BIG_ZOMBIE, Boolean.FALSE);
         var base = ordinary.getDimensions(net.minecraft.world.entity.Pose.STANDING);
         big.setAttached(MobScaling.BIG_ZOMBIE, Boolean.TRUE);
         var scaled = big.getDimensions(net.minecraft.world.entity.Pose.STANDING);

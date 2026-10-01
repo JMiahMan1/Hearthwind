@@ -420,6 +420,32 @@ public class ScreensTourGameTests implements FabricClientGameTest {
                 if (TabStrip.clicked(left + 4, top + 5, left, top, TabStrip.Tab.JOBS) != null) {
                     throw new AssertionError("a click inside the panel must not hit a tab");
                 }
+                // LibZ hit-tests every UNSELECTED tab as 21 rows, even the
+                // first, which is drawn 25 tall. Ours used to take 25 and so
+                // swallowed the top 4 rows of the panel underneath.
+                if (TabStrip.clicked(left + 4, top + 3, left, top, TabStrip.Tab.JOBS) != null) {
+                    throw new AssertionError("an unselected first tab must not reach into the panel");
+                }
+                // The reference's hover titles are translatable screen names,
+                // not literals with key hints glued on.
+                for (TabStrip.Tab tab : TabStrip.Tab.values()) {
+                    String title = tab.title().getString();
+                    if (title.isEmpty() || title.contains("[") || title.contains("]")) {
+                        throw new AssertionError("tab title should be a plain screen name, got: " + title);
+                    }
+                }
+                if (!TabStrip.Tab.INVENTORY.title().getString().equals("Crafting")) {
+                    throw new AssertionError("the first tab is Crafting in the reference, got: "
+                            + TabStrip.Tab.INVENTORY.title().getString());
+                }
+                // No backpack equipped in the tour, so the conditional fifth
+                // tab must not be drawn and must not be clickable.
+                if (TabStrip.backpackTab(minecraft) != null) {
+                    throw new AssertionError("the backpack tab needs an equipped backpack");
+                }
+                if (TabStrip.visibleTabs(minecraft).length != TabStrip.Tab.values().length - 1) {
+                    throw new AssertionError("without a backpack the strip is four tabs wide");
+                }
                 if (HearthwindPanelScreen.PANEL_W != 200 || HearthwindPanelScreen.PANEL_H != 215) {
                     throw new AssertionError("the Aged panel is 200x215, not "
                             + HearthwindPanelScreen.PANEL_W + "x" + HearthwindPanelScreen.PANEL_H);

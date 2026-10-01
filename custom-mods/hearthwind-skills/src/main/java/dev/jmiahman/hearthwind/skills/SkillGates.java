@@ -190,17 +190,22 @@ public final class SkillGates {
                         continue;
                     }
                     if (!resolves(idField, id)) {
-                        // levelz/block files for blocks that are not vanilla
-                        // carry "block": "minecraft:custom_block" plus an
-                        // "object" field naming the real block, because
-                        // levelz itself used a placeholder block to group them.
-                        // That placeholder does not exist here, so 55 of our
-                        // 71 block files were dropped wholesale - including
-                        // the four whose object is a vanilla block
-                        // (fletching table, jukebox, lodestone, respawn
-                        // anchor). The object field is present exactly when the
-                        // placeholder is, so use it as the fallback.
-                        if (idField.equals("block") && root.has("object")) {
+                        // levelz groups some gates behind a placeholder id and
+                        // puts the real one in an "object" field. For blocks
+                        // that placeholder is "minecraft:custom_block", which
+                        // does not exist here, so all 55 of our 71 block files
+                        // were dropped wholesale - including the four whose
+                        // object is a vanilla block (fletching table,
+                        // jukebox, lodestone, respawn anchor). The same
+                        // convention appears in 39 of our 106 item files (the
+                        // Alchemy 15 teleport potion and scroll are two of
+                        // them) and 10 of our 23 entity files, so the fallback
+                        // keys off the field being present rather than the
+                        // category: mining, crafting, smithing and brewing
+                        // never carry one. The object field is present
+                        // exactly when the placeholder is, so the fallback is
+                        // unambiguous.
+                        if (root.has("object")) {
                             for (String real : readIds(root.get("object"))) {
                                 Identifier rid;
                                 try {
