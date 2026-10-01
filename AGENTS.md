@@ -290,6 +290,21 @@ python3 ../custom-mods/tools/rcon.py 127.0.0.1 25575 agedtest "summon item ~ ~ ~
   --failed` clears it (seen once with 8 jobs tests, once with 3 dungeonz
   tests, once with 9 jobs + 3 primitive tree-felling tests; all pass on
   rerun).
+- A `boot-smoke` failure reading
+  `Failed to load datapacks, can't proceed with server load` +
+  `Caused by: java.lang.NullPointerException: Cannot read field "left"
+  because "r" is null` inside
+  `ResourceManagerRegistryLoadTask.lambda$load$2` /
+  `ParallelMapTransform$Container.applyOperation` is a PARALLEL REGISTRY-LOAD
+  RACE, not a broken datapack: a genuinely malformed JSON file reports
+  `Couldn't parse data file` instead. It has killed `boot-smoke` (and, in
+  the same run, the `client-gametest` 1200 s timeout) with no code change
+  in sight - `gh run rerun <id> --failed` cleared it. Confirm locally
+  before rerunning: boot `conversion/build/dist/server` (42s on a warm
+  host) and replay CI's four probes - `Done (`, no `Feature order
+  cycle`, no `Error upgrading chunk`, `PROBE_ITEM_OK`, `PROBE_COG_OK`.
+  A local boot that reaches `Done` with every probe green means the
+  failure was the runner, not the pack.
 
 ## 1.0.0 focus: Aged parity FIRST (read docs/RELEASE_1.0_PARITY.md)
 
