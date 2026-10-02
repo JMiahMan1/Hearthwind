@@ -17,6 +17,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.Difficulty;
 import dev.jmiahman.hearthwind.survival.hydration.DehydrationSounds;
 
 /**
@@ -1619,12 +1620,52 @@ public final class HearthwindSurvivalGameTests {
 
     @GameTest
     public void thirstSyncPayloadRoundTrip(GameTestHelper helper) {
-        var buf = bufFor(helper);
-        ThirstSyncPayload sent = new ThirstSyncPayload(12.3f);
-        ThirstSyncPayload.CODEC.encode(buf, sent);
-        ThirstSyncPayload got = ThirstSyncPayload.CODEC.decode(buf);
-        helper.assertTrue(got.equals(sent), "thirst payload must round-trip: " + got);
-        helper.assertTrue(!buf.isReadable(), "thirst codec must be symmetric (no leftover bytes)");
+        for (boolean buffered : new boolean[] {false, true}) {
+            var buf = bufFor(helper);
+            ThirstSyncPayload sent = new ThirstSyncPayload(12.3f, buffered);
+            ThirstSyncPayload.CODEC.encode(buf, sent);
+            ThirstSyncPayload got = ThirstSyncPayload.CODEC.decode(buf);
+            helper.assertTrue(got.equals(sent),
+                    "thirst payload must round-trip with buffered=" + buffered + ": " + got);
+            helper.assertTrue(!buf.isReadable(),
+                    "thirst codec must be symmetric (no leftover bytes) with buffered=" + buffered);
+        }
+        helper.succeed();
+    }
+
+    /**
+     * The reference's thirst-damage gate, read out of
+     * {@code ThirstManager.update} offsets 76-124 and pinned here because we had
+     * it recorded backwards. The bytecode is
+     * {@code health > 10 || difficulty == HARD || (health > 1 && NORMAL)} - the
+     * same shape we implement, so this is a guard against a well-meaning
+     * "fix" that would invert it.
+     */
+    @GameTest
+    public void thirstDamageGateMatchesTheReference(GameTestHelper helper) {
+        helper.assertTrue(HearthwindSurvivalThirst.BUFFER_THRESHOLD == 4.0F,
+                "the reference burns 4.0 of buffer per tick and bobs the HUD above 4.0, we have "
+                        + HearthwindSurvivalThirst.BUFFER_THRESHOLD);
+        // Every branch of health > 10 || HARD || (health > 1 && NORMAL).
+        helper.assertTrue(!HearthwindSurvivalThirst.shouldDamage(10.0F, Difficulty.PEACEFUL),
+                "at exactly 10 HP on peaceful nothing damages - the first test is strict >");
+        helper.assertTrue(HearthwindSurvivalThirst.shouldDamage(10.1F, Difficulty.EASY),
+                "just above 10 HP the FIRST term fires on any difficulty, easy included");
+        helper.assertTrue(!HearthwindSurvivalThirst.shouldDamage(10.0F, Difficulty.EASY),
+                "at exactly 10 HP on easy nothing fires - every term is strict");
+        helper.assertTrue(HearthwindSurvivalThirst.shouldDamage(20.0F, Difficulty.EASY),
+                "the reference damages at full health on EASY (the first term, health > 10)");
+        helper.assertTrue(!HearthwindSurvivalThirst.shouldDamage(0.5F, Difficulty.EASY),
+                "on EASY the thirst damage stops at 10 HP - which is the quirk, and why the "
+                        + "gate looks inverted at a glance");
+        helper.assertTrue(HearthwindSurvivalThirst.shouldDamage(1.5F, Difficulty.HARD),
+                "HARD damages at any health, including 1.5");
+        helper.assertTrue(HearthwindSurvivalThirst.shouldDamage(1.0F, Difficulty.HARD),
+                "HARD damages at exactly 1 HP");
+        helper.assertTrue(!HearthwindSurvivalThirst.shouldDamage(1.0F, Difficulty.NORMAL),
+                "NORMAL needs health > 1");
+        helper.assertTrue(HearthwindSurvivalThirst.shouldDamage(1.01F, Difficulty.NORMAL),
+                "NORMAL damages just above 1 HP");
         helper.succeed();
     }
 
@@ -2526,6 +2567,74 @@ public final class HearthwindSurvivalGameTests {
         helper.succeed();
     }
 
+
+    /**
+     * The reference's bucket pair on the campfire cauldron, from
+     * {@code CampfireCauldronBlock#method_9534} offsets 53-136 and 137-271.
+     * A water bucket does NOT count as three bottles: it fills the cauldron
+     * straight to LEVEL 4 from any level below it and hands back an EMPTY
+     * bucket, and an empty bucket against a full cauldron drains it to 0 and
+     * hands back a water bucket.
+     */
+    @GameTest
+    public void campfireCauldronBucketFillsToFourAndDrainsBack(GameTestHelper helper) {
+        helper.setBlock(new net.minecraft.core.BlockPos(1, 2, 1),
+                net.minecraft.world.level.block.Blocks.CAMPFIRE.defaultBlockState()
+                        .setValue(net.minecraft.world.level.block.CampfireBlock.LIT, true));
+        net.minecraft.core.BlockPos cauldronRel = new net.minecraft.core.BlockPos(1, 3, 1);
+        helper.setBlock(cauldronRel,
+                dev.jmiahman.hearthwind.survival.hydration.HydrationBlocks.CAMPFIRE_CAULDRON
+                        .defaultBlockState().setValue(
+                                dev.jmiahman.hearthwind.survival.hydration.CampfireCauldronBlock.LEVEL, 1));
+        net.minecraft.server.level.ServerLevel level = helper.getLevel();
+        net.minecraft.core.BlockPos pos = helper.absolutePos(cauldronRel);
+        var cauldron = (dev.jmiahman.hearthwind.survival.hydration.CampfireCauldronBlockEntity)
+                level.getBlockEntity(pos);
+        var block = (dev.jmiahman.hearthwind.survival.hydration.CampfireCauldronBlock)
+                level.getBlockState(pos).getBlock();
+        ServerPlayer player = survivalServerPlayer(helper);
+        var hand = net.minecraft.world.InteractionHand.MAIN_HAND;
+
+        // Boil the level-1 water first, so the fill can be seen to re-arm it.
+        for (int i = 0; i < HearthwindSurvivalConfig.get().hydration.waterBoilingTime; i++) {
+            cauldron.serverTick(level, pos, level.getBlockState(pos), cauldron);
+        }
+        helper.assertTrue(cauldron.isBoiled, "the level-1 water must have boiled");
+
+        player.setItemInHand(hand, new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.WATER_BUCKET));
+        var used = block.hearthwind$useItemOnForTest(player.getItemInHand(hand), level.getBlockState(pos),
+                level, pos, player, hand,
+                new net.minecraft.world.phys.BlockHitResult(
+                        net.minecraft.world.phys.Vec3.atCenterOf(pos),
+                        net.minecraft.core.Direction.UP, pos, false));
+        helper.assertTrue(used.consumesAction(),
+                "a water bucket must fill the campfire cauldron, got " + used);
+        helper.assertTrue(player.getItemInHand(hand).is(net.minecraft.world.item.Items.BUCKET),
+                "filling must leave an EMPTY bucket in hand, got " + player.getItemInHand(hand));
+        helper.assertTrue(level.getBlockState(pos).getValue(
+                        dev.jmiahman.hearthwind.survival.hydration.CampfireCauldronBlock.LEVEL) == 4,
+                "a water bucket fills the reference cauldron straight to LEVEL 4, we have "
+                        + level.getBlockState(pos).getValue(
+                                dev.jmiahman.hearthwind.survival.hydration.CampfireCauldronBlock.LEVEL));
+        helper.assertTrue(!cauldron.isBoiled,
+                "a bucket fill must re-arm the boil, the cauldron is still boiled");
+
+        // And the reverse: an empty bucket against a full cauldron.
+        player.setItemInHand(hand, new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.BUCKET));
+        block.hearthwind$useItemOnForTest(player.getItemInHand(hand), level.getBlockState(pos),
+                level, pos, player, hand,
+                new net.minecraft.world.phys.BlockHitResult(
+                        net.minecraft.world.phys.Vec3.atCenterOf(pos),
+                        net.minecraft.core.Direction.UP, pos, false));
+        helper.assertTrue(player.getItemInHand(hand).is(net.minecraft.world.item.Items.WATER_BUCKET),
+                "draining must hand back a WATER bucket, got " + player.getItemInHand(hand));
+        helper.assertTrue(level.getBlockState(pos).getValue(
+                        dev.jmiahman.hearthwind.survival.hydration.CampfireCauldronBlock.LEVEL) == 0,
+                "draining must empty the cauldron to LEVEL 0, we have "
+                        + level.getBlockState(pos).getValue(
+                                dev.jmiahman.hearthwind.survival.hydration.CampfireCauldronBlock.LEVEL));
+        helper.succeed();
+    }
     /**
      * Aged's campfire-cauldron potion pour: a water or purified-water bottle
      * tops the cauldron up one level and leaves an empty bowl, and pouring plain

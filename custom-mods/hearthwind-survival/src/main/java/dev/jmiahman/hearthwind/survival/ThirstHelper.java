@@ -42,7 +42,12 @@ public final class ThirstHelper {
 
     public static void hydratePlayer(ServerPlayer player, ItemStack stack) {
         HearthwindSurvivalConfig cfg = HearthwindSurvivalConfig.get();
-        int quench = HydrationCorpus.quench(stack);
+        // The corpus is the only source of tiered values; with it switched off
+        // every source falls back to its own scalar below, which is exactly what
+        // the reference does when use_hydration_corpus is false. It used to be
+        // read by HydrationCorpus.hydrateOnConsume only, which nothing calls,
+        // so the flag did nothing at all.
+        int quench = cfg.thirst.useHydrationCorpus ? HydrationCorpus.quench(stack) : 0;
 
         if (stack.is(Items.POTION)) {
             PotionContents contents = stack.get(DataComponents.POTION_CONTENTS);

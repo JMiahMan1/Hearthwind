@@ -20,9 +20,11 @@ import net.minecraft.world.entity.LivingEntity;
  *   y = height - 49.
  * - Droplet N: empty background; full when 2N+1 < thirst; half when
  *   equal; murky-green set while the dehydration:thirst effect is active.
- * - Wobble: random y jitter on a thirst-scaled period (upstream uses its
- *   internal dehydration counter for the faster cadence; we scale the
- *   cadence off thirst only).
+ * - Wobble: a random -1..+1 y nudge, on droplet i's own period -
+ *   `i * 3 + 1` ticks while the server's dehydration buffer is at or above
+ *   4.0, `i * 8 + 3` while it is below. The buffer predicate rides out on
+ *   the thirst sync payload. Upstream additionally drains 4.0 off that
+ *   buffer inside the render call, which is deliberately not reproduced.
  * - Ice overlay: full/half droplets tinted by freezing scale while the
  *   player has frozen ticks, like upstream's frozen sprite.
  * - Hidden while riding a living vehicle (vanilla draws its hearts in the
@@ -98,9 +100,23 @@ public final class ThirstHud implements HudElement {
         boolean freezing = mc.player.getTicksFrozen() > 0 && freezeScale > 0.01f;
         int frozenTint = ((int) (freezeScale * 255f) << 24) | 0xB8E8FF;
 
+        // The bob cadence is the reference's (ThirstHudRender.renderThirstHud
+        // offsets 269-358): it is keyed on the DROPLET INDEX i, not the thirst
+        // level, and the two cadences are chosen by whether the server's
+        // dehydration buffer is at or above 4.0 - `i * 3 + 1` when it is, and
+        // `i * 8 + 3` when it is not, with a -1..+1 nudge. We used to key it on
+        // the thirst level and OR the two together, so every droplet with the
+        // same level moved in lockstep.
+        //
+        // The reference also SUBTRACTS 4.0 from that buffer on each bob, from
+        // inside the render call. That is not reproduced here: it would let the
+        // render thread quietly eat the player's thirst, and the client has no
+        // authority over that value.
+        boolean buffered = ClientThirstData.isBuffered();
         for (int i = 0; i < 10; i++) {
             int y = top;
-            if (ticks % (thirst * 3 + 1) == 0 || ticks % (thirst * 8 + 3) == 0) {
+            int cadence = buffered ? i * 3 + 1 : i * 8 + 3;
+            if (ticks % cadence == 0) {
                 y = top + (RANDOM.nextInt(3) - 1);
             }
             int x = left - i * 8 - 9;

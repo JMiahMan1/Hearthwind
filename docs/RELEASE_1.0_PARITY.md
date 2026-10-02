@@ -646,12 +646,53 @@ one invented table:
   is the `idiv` divisor for the duration, and the amplifier is the following
   `iconst_0`. Those two rows were already at parity; the 🟡 markers were
   spurious and are gone.
+- **Six more hydration rows, and one of them was never a gap (0.1.51).** The
+  audit is now **✅ 99 · 🟡 3 · ❌ 1 over 103 rows**. The three 🟡 that remain are
+  two *not reproducible on 26.2* (the reference's single shared campfire
+  `cookTime`, which 26.2 replaces with per-slot `cookingProgress[]` arrays, and
+  the `pour_<tier>_leather_flask` reset recipes, which vanilla's recipe manager
+  simplifies away because the result is the ingredient) plus the purified
+  bucket's purely cosmetic client-side `LARGE_SMOKE` burst.
+  - **The thirst-damage gate was already correct and our docs said the
+    opposite.** `ThirstManager.update` offsets 76-124 are
+    `health > 10 -> damage`, else `difficulty == HARD -> damage`, else
+    `health > 1 && NORMAL -> damage`. The audit had recorded it as
+    `(hp <= 10 && !PEACEFUL) || (hp > 1 && NORMAL)` and called ours "a
+    deliberate rewrite of the upstream quirk ... the reverse". We now match the
+    reference, and it is a pure `HearthwindSurvivalThirst.shouldDamage(health,
+    difficulty)` so `thirstDamageGateMatchesTheReference` pins all seven
+    branches - including that on EASY the damage stops at 10 HP, which is the
+    quirk that made the gate look inverted at a glance.
+  - **A water bucket is not three bottles.** `CampfireCauldronBlock#method_9534`
+    offsets 53-136/137-271 pair a water bucket (below LEVEL 4 -> empty bucket
+    back, boil re-armed, filled straight to 4, `ITEM_BUCKET_EMPTY` 1.0/1.0) with
+    an empty bucket (at LEVEL 4 -> water bucket back, LEVEL 0,
+    `ITEM_BUCKET_FILL` 1.0/1.0, shrinking one per bucket). We modelled the
+    cauldron as 4 x `FluidConstants.BOTTLE`, so a bucket reached LEVEL 3 and
+    left LEVEL 1 behind when drained. `pourBucket` runs ahead of the transfer
+    path so a bucket never reaches it.
+  - **`thirst.useHydrationCorpus` now does something.** It was only read by
+    `HydrationCorpus.hydrateOnConsume`, which nothing calls, so turning it off
+    still granted catalogued hydration.
+  - **The droplet bob is the reference's.** Droplet *i* nudges -1..+1 every
+    `i*3+1` ticks while the dehydration buffer is at or above 4.0 and every
+    `i*8+3` while it is below (`ThirstHudRender.renderThirstHud` offsets
+    269-358). We keyed the cadence off the thirst **level** and OR'd both
+    periods, so every droplet moved in lockstep. The `buffered >= 4.0`
+    predicate now rides out on the thirst sync payload as one bit. Upstream's
+    `dehydration -= 4.0` **inside the render call is deliberately not
+    reproduced**: it would let the render thread eat the player's thirst.
+  - **Two rows were already closed by 0.1.50** - the flask sip plays
+    `empty_flask` on *every* sip, and the bare-hand sip uses the real
+    `dehydration:water_sip` - and both rows' text was stale, so they are
+    corrected rather than re-implemented.
 - **Dehydration sounds (0.1.50).** All four of Dehydration's own sound events
   ship, at the reference's ids, with its nine `.ogg` files and its
   `sounds.json` copied verbatim (GPL-3.0 - the same terms the project already
   ships its textures under, with an `ATTRIBUTION.md` row). That closes the
-  last ❌ in `docs/AGED_HYDRATION.md`, which is now **✅ 93 · 🟡 9 · ❌ 1 over
-  103 rows**, the one left being the `thirst_preview` droplet tooltips. Until
+  last ❌ in `docs/AGED_HYDRATION.md`, which stood at **✅ 93 · 🟡 9 ·
+  ❌ 1 over 103 rows** at that release (0.1.51 closed six more), the one left
+  being the `thirst_preview` droplet tooltips. Until
   this release every one of those five moments played a *vanilla* substitute -
   `BOTTLE_FILL` to fill a flask, `BOTTLE_EMPTY` to drink one (and only on the
   sip that emptied it, so a part-full flask drank in silence),

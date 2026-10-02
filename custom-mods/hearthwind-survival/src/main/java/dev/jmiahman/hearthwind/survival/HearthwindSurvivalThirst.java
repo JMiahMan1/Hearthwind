@@ -85,8 +85,29 @@ public final class HearthwindSurvivalThirst {
                             net.minecraft.resources.Identifier.fromNamespaceAndPath(
                                     "dehydration", "thirst_state"));
 
-    // Last level sent per player so the HUD only receives real changes.
-    private static final Map<UUID, Integer> lastSentLevel = new ConcurrentHashMap<>();
+    // Last state sent per player so the HUD only receives real changes. The key
+    // packs the level with the buffer predicate into one int, so the bob's
+    // cadence switches are picked up without shipping the buffer every tick.
+    private static final Map<UUID, Integer> lastSentKey = new ConcurrentHashMap<>();
+
+    /** The reference's cadence switch: a buffer of 4.0 or more bobs faster. */
+    public static final float BUFFER_THRESHOLD = 4.0F;
+
+    /**
+     * The thirst-damage gate, verbatim from the reference's
+     * {@code ThirstManager.update} offsets 76-124:
+     * {@code health > 10 || difficulty == HARD || (health > 1 && NORMAL)}.
+     *
+     * <p>Our docs claimed this was a deliberate rewrite of an upstream quirk
+     * and had the two backwards; the bytecode is this shape and this shape is
+     * what we already did. It is pulled out as a pure function purely so a
+     * gametest can pin all four branches without a ticking player.
+     */
+    public static boolean shouldDamage(float health, Difficulty difficulty) {
+        return health > 10.0F
+                || difficulty == Difficulty.HARD
+                || (health > 1.0F && difficulty == Difficulty.NORMAL);
+    }
 
     private HearthwindSurvivalThirst() {}
 
@@ -191,9 +212,7 @@ public final class HearthwindSurvivalThirst {
         if (level <= 0) {
             timer++;
             if (timer >= DAMAGE_INTERVAL_TICKS) {
-                if (player.getHealth() > 10.0F
-                        || difficulty == Difficulty.HARD
-                        || (player.getHealth() > 1.0F && difficulty == Difficulty.NORMAL)) {
+                if (shouldDamage(player.getHealth(), difficulty)) {
                     if (player.level() instanceof ServerLevel serverLevel) {
                         player.hurtServer(serverLevel,
                                 player.damageSources().source(THIRST),
@@ -208,22 +227,24 @@ public final class HearthwindSurvivalThirst {
         return new ThirstState(level, dehydration, timer, s.hasThirst());
     }
 
-    /** Skips the payload unless the rendered level actually changed. */
+    /** Skips the payload unless the level or the buffer predicate changed. */
     private static void syncToClient(ServerPlayer player, int currentLevel, boolean force) {
         UUID id = player.getUUID();
-        Integer previous = lastSentLevel.get(id);
-        if (!force && previous != null && previous == currentLevel) {
+        boolean buffered = state(player).dehydration() >= BUFFER_THRESHOLD;
+        int key = currentLevel * 2 + (buffered ? 1 : 0);
+        Integer previous = lastSentKey.get(id);
+        if (!force && previous != null && previous == key) {
             return;
         }
-        lastSentLevel.put(id, currentLevel);
+        lastSentKey.put(id, key);
         try {
-            ServerPlayNetworking.send(player, new ThirstSyncPayload((float) currentLevel));
+            ServerPlayNetworking.send(player, new ThirstSyncPayload((float) currentLevel, buffered));
         } catch (Exception ignored) {
             // Client without hearthwind-client will just ignore.
         }
     }
 
     public static void forget(ServerPlayer player) {
-        lastSentLevel.remove(player.getUUID());
+        lastSentKey.remove(player.getUUID());
     }
 }

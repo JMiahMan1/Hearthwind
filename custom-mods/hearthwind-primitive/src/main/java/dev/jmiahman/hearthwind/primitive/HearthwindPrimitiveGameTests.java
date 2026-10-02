@@ -1259,6 +1259,68 @@ public final class HearthwindPrimitiveGameTests {
         helper.succeed();
     }
 
+    /**
+     * The reference crumbles any sapling into two sticks, which is how a fresh
+     * player gets their first crafting rock fuel before they have a tree worth
+     * felling. Pinned here because a broken data file is invisible: the recipe
+     * simply is not in the book, and nothing else in the suite notices.
+     */
+    @GameTest
+    public void everySaplingInTheTagCrumblesIntoTwoSticks(GameTestHelper helper) {
+        var recipe = helper.getLevel().recipeAccess()
+                .byKey(ResourceKey.create(Registries.RECIPE,
+                        net.minecraft.resources.Identifier.parse(
+                                "aged:sticks_from_shapeless_sapling")))
+                .orElseThrow(() -> new AssertionError(
+                        "the sapling-to-sticks recipe must load; check the log for "
+                                + "'Couldn't parse data file' naming aged:recipe/"
+                                + "sticks_from_shapeless_sapling.json"))
+                .value();
+        helperAssert(recipe instanceof net.minecraft.world.item.crafting.ShapelessRecipe,
+                "it must be a shapeless one-ingredient recipe, got " + recipe.getClass().getName());
+
+        var crafting = (net.minecraft.world.item.crafting.Recipe<net.minecraft.world.item.crafting.CraftingInput>) recipe;
+        // Every item the tag actually holds is checked, rather than a hand-picked
+        // few: the tag is vanilla's 11 plus whatever the modded sapling mods add
+        // themselves (Vinery 2, Meadow 3, Nature's Spirit 21), so a fixed list
+        // would silently stop covering new saplings.
+        var tag = net.minecraft.tags.ItemTags.SAPLINGS;
+        var registered = net.minecraft.core.registries.BuiltInRegistries.ITEM;
+        int checked = 0;
+        for (var item : registered.getTagOrEmpty(tag)) {
+            var input = net.minecraft.world.item.crafting.CraftingInput.of(1, 1,
+                    java.util.List.of(new ItemStack(item)));
+            if (!crafting.matches(input, helper.getLevel())) {
+                throw new AssertionError(item + " is in #minecraft:saplings but the recipe "
+                        + "does not match it");
+            }
+            ItemStack result = crafting.assemble(input);
+            if (!result.is(Items.STICK) || result.getCount() != 2) {
+                throw new AssertionError(item + " is in #minecraft:saplings but yielded " + result
+                        + "; the reference gives TWO sticks");
+            }
+            checked++;
+        }
+        helperAssert(checked >= 13,
+                "the pack must register at least vanilla's 11 saplings plus Vinery's 2, got "
+                        + checked);
+        // The three families are what a player actually plants, so pin them by
+        // name as well - a tag that silently loses one mod's whole set would
+        // still pass a bare count.
+        for (String sapling : new String[] {
+                "minecraft:oak_sapling",
+                "minecraft:mangrove_propagule",
+                "vinery:dark_cherry_sapling",
+                "meadow:pine_sapling",
+                "natures_spirit:cedar_sapling"}) {
+            helperAssert(registered.getOptional(
+                            net.minecraft.resources.Identifier.parse(sapling))
+                            .map(i -> i.builtInRegistryHolder().is(tag)).orElse(false),
+                    sapling + " must be in #minecraft:saplings so it crumbles into sticks");
+        }
+        helper.succeed();
+    }
+
     @GameTest
     public void foodCookingRemovedByDefault(GameTestHelper helper) {
         // Cooking stations are shipped, so cooking removals are enabled by default.

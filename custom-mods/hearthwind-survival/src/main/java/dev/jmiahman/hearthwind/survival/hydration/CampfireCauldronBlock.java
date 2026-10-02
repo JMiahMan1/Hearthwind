@@ -155,6 +155,9 @@ public class CampfireCauldronBlock extends BaseEntityBlock {
             if (pourPotion(state, level, pos, player, hand, stack)) {
                 return InteractionResult.SUCCESS;
             }
+            if (pourBucket(state, level, pos, player, hand, stack)) {
+                return InteractionResult.SUCCESS;
+            }
             Storage<FluidVariant> storage = FluidStorage.SIDED.find(level, pos,
                     hitResult.getDirection().getOpposite());
             if (storage != null && FluidStorageUtil.interactWithFluidStorage(storage, player, hand)) {
@@ -162,6 +165,58 @@ public class CampfireCauldronBlock extends BaseEntityBlock {
             }
         }
         return InteractionResult.PASS;
+    }
+
+    /**
+     * The reference's bucket pair, read out of {@code CampfireCauldronBlock#method_9534}
+     * at offsets 53-136 and 137-271.
+     *
+     * <p>It is NOT the "a bucket is three bottles" model we used to assume. A
+     * WATER BUCKET held against a cauldron below LEVEL 4 is swapped for an
+     * empty BUCKET, re-arms the boil and fills it straight to LEVEL 4 in one
+     * go, whatever level it was at. Symmetrically, an empty BUCKET held against
+     * a full LEVEL 4 cauldron is consumed and hands back a WATER BUCKET as the
+     * cauldron drops to 0.
+     *
+     * <p>Both rows run before the fluid-transfer path, so a bucket never
+     * reaches the transfer API and is never counted as three bottles.
+     *
+     * @return true when the held stack was a bucket and the pour happened.
+     */
+    private boolean pourBucket(BlockState state, Level level, BlockPos pos, Player player,
+            InteractionHand hand, ItemStack stack) {
+        int current = state.getValue(LEVEL);
+        boolean filling = stack.is(Items.WATER_BUCKET) && current < 4;
+        boolean draining = stack.is(Items.BUCKET) && current == 4;
+        if (!filling && !draining) {
+            return false;
+        }
+        if (!level.isClientSide()) {
+            if (filling) {
+                // Offsets 74-126: refund an empty bucket, re-arm, fill to 4,
+                // then ITEM_BUCKET_EMPTY at 1.0/1.0 on BLOCKS.
+                if (!player.getAbilities().instabuild) {
+                    player.setItemInHand(hand, new ItemStack(Items.BUCKET));
+                }
+                if (level.getBlockEntity(pos) instanceof CampfireCauldronBlockEntity entity) {
+                    entity.onFillingCauldron();
+                }
+                setLevel(level, pos, state, 4);
+                level.playSound(null, pos, SoundEvents.BUCKET_EMPTY, SoundSource.BLOCKS, 1.0F, 1.0F);
+            } else {
+                // Offsets 158-260: shrink, hand back a water bucket, drop to 0,
+                // then ITEM_BUCKET_FILL at 1.0/1.0 on BLOCKS.
+                stack.shrink(1);
+                if (stack.isEmpty()) {
+                    player.setItemInHand(hand, new ItemStack(Items.WATER_BUCKET));
+                } else if (!player.getInventory().add(stack)) {
+                    player.drop(stack, false);
+                }
+                setLevel(level, pos, state, 0);
+                level.playSound(null, pos, SoundEvents.BUCKET_FILL, SoundSource.BLOCKS, 1.0F, 1.0F);
+            }
+        }
+        return true;
     }
 
     /**

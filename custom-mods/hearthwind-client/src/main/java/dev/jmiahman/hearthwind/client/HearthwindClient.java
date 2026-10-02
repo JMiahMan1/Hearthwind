@@ -41,7 +41,10 @@ public class HearthwindClient implements ClientModInitializer {
         // Thirst sync from server -> ClientThirstData for HUD above hunger bar.
         try {
             ClientPlayNetworking.registerGlobalReceiver(ThirstSyncPayload.TYPE, (payload, context) -> {
-                context.client().execute(() -> ClientThirstData.setHydration(payload.hydration()));
+                context.client().execute(() -> {
+                    ClientThirstData.setHydration(payload.hydration());
+                    ClientThirstData.setBuffered(payload.buffered());
+                });
             });
             LOGGER.info("Hearthwind Client networking: receiver for {}", ThirstSyncPayload.TYPE.id());
         } catch (Exception e) {

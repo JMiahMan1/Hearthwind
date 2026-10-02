@@ -88,6 +88,17 @@ contract of what the pack does. Grown from the Aged fork; server-side only.
   blocks of a still source and looking at it. We used to also let you sip
   through a waterlogged block, off a cauldron, or while standing in the water.
   That matches Aged, where those sips simply do not land.
+- **A water bucket fills the campfire cauldron in one go (0.1.51)**: hold a
+  water bucket against a campfire cauldron and you get an **empty** bucket back
+  and the cauldron is full, whatever level it was at - and filling it always
+  means the water has to be boiled again. An empty bucket against a full
+  cauldron drains it back to empty and gives you the water bucket. Before this
+  we treated a bucket as three bottles, so it only ever reached three quarters
+  and left a level behind when you drained it.
+- **The thirst droplets bob on their own rhythm (0.1.51)**: each droplet now
+  bobs on its own period - fast while you have been moving, slow when you have
+  not - instead of every droplet moving in the same tick. Purely visual; the
+  numbers on the bar do not change.
 - **Purified water flows (0.1.48)**: two things Aged's purified water could do
   that ours could not. It now **displaces vanilla water** - pour or let it run
   into a pool of normal water and you get purified water instead of the flow

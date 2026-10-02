@@ -591,7 +591,7 @@ campfire and the kelp route.
 Legend: ✅ at parity · 🟡 deliberate deviation (reason in one clause) ·
 ❌ missing · ❌ unverified (say what could not be found).
 
-Summary: **✅ 93 · 🟡 9 · ❌ 1** over 103 rows. **0.1.49 closed 17 more rows**: a
+Summary: **✅ 99 · 🟡 3 · ❌ 1** over 103 rows. **0.1.49 closed 17 more rows**: a
 river fill is DIRTY (we had it exactly backwards), the flask fill needs a 20-tick hold
 and destroys the source, the flask tooltip reads `Fill Level n/cap` with the
 reference's colour-coded lines, the sip raycast is the reference's fixed 1.5 blocks with
@@ -606,10 +606,26 @@ the block corner with no chime, no steam and no unlit-fire hint. Two rows are ma
 readings this file carried for years were wrong, the sip pitch being a division
 (`0.9 + random/5.0`, so 0.9–1.1, not a five-fold wobble) and the cauldron bubble being
 louder than documented (`0.8 + random*0.5`, not `0.5 + random*0.4`).
-The nine 🟡 left are the purified bucket's particle/sound/recursion extras, the
-`useHydrationCorpus` flag, the HUD wobble cadence, the thirst-damage difficulty gate and
-the cauldron bucket fill; the one ❌ left is `thirst_preview`, the droplet tooltips that
-show how much an item quenches. Earlier releases closed the rest of the ❌ column: 0.1.43
+**0.1.51 closed six more rows**, and one of them turned out to be a false claim rather
+than a gap: the thirst-damage gate was **already the reference's**
+(`hp > 10 || HARD || (hp > 1 && NORMAL)`, confirmed against `ThirstManager.update`
+offsets 76-124) and this file had it recorded as inverted, so it is now a pure
+`shouldDamage(health, difficulty)` with every branch pinned. Also closed: the flask sip
+plays `empty_flask` on **every** sip, `thirst.useHydrationCorpus` now actually gates the
+corpus, the HUD droplet bob uses the reference's per-droplet cadence with the
+`buffered >= 4.0` predicate riding out on the sync payload, the bare-hand sip uses the
+real `dehydration:water_sip`, and the campfire cauldron's bucket pair is a
+water-bucket-in/empty-bucket-out fill straight to LEVEL 4 and its exact reverse - **not**
+"a bucket is three bottles".
+
+Three 🟡 are left: two are marked **not reproducible on 26.2** (the shared campfire
+counter and the flask reset recipes, both for the same structural reason - 26.2 gives
+each slot its own arrays and vanilla's recipe manager simplifies away a one-ingredient
+recipe whose result is its own ingredient), and one is the purified bucket's cosmetic
+extras (client-side `LARGE_SMOKE` burst and the randomised fill pitch - note the
+reference's EMPTYING sound is fixed 1.0/1.0; it is the FILL pitch that is randomised,
+which this file also had backwards). The one ❌ left is `thirst_preview`, the droplet
+tooltips that show how much an item quenches. Earlier releases closed the rest of the ❌ column: 0.1.43
 the campfire cauldron's potion pour, the copper cauldron's one-step potion fill, the
 bubble sound while it boils, and the rule that a block placed above the cauldron removes
 it; 0.1.45 then ported rain extinguishing campfires, which is AdditionZ's job rather than
@@ -674,7 +690,7 @@ the bytecode rather than trusting the prose:
 | bowl thirst roll: `nextFloat() >= 0.4` → 60 %, **amp 0**, 150 t, on BOTH bowls | same comparison, same 150 t, same amp 0, and both bowls roll (0.1.47) | ✅ 0.1.47 | `hydration/WaterBowlItem.java:42-44`; `hydration/HydrationItems.java:44-51` |
 | drinking a 1.3.6 bowl consumes it and returns **nothing** (no craft remainder) | returns a plain `minecraft:bowl`, plus a `pour_*_water_bowl` shapeless recipe | ✅ 0.1.49: returns `ItemStack.EMPTY` for a player, and our `pour_*_water_bowl` recipes are removed | `hydration/WaterBowlItem.finishUsingItem`; test `waterBowlDrinkQuenchesThree` |
 | 5 flasks, capacity 2…6, netherite `fireResistant`, `stacksTo(1)` | identical, ids in the `dehydration` namespace | ✅ | `FlaskItems.java:34-48`; test `flaskTiersHaveIncreasingCapacity` |
-| flask sip: `+4` thirst, `empty_flask` sound, `USE_CAULDRON` + `PLAYER_USE_ITEM` | `+4` (`cfg.quench`), vanilla `BOTTLE_EMPTY` at 0.8/0.9 only on the last sip | 🟡 sound timing: Aged plays it on **every** sip, we play it once when the flask empties | `FlaskItems.java:80,103-110` |
+| flask sip: `+4` thirst, `empty_flask` sound, `USE_CAULDRON` + `PLAYER_USE_ITEM` | `+4` (`cfg.quench`), `dehydration:empty_flask` on NEUTRAL at 1.0/1.0 on **every** sip | ✅ 0.1.50: the sound now fires on every sip, not only when the flask empties. `USE_CAULDRON` / `PLAYER_USE_ITEM` are the mod's own stats and have no player-visible effect, so nothing is granted | `LeatherFlaskItem.java`; bytecode `LeatherFlask#finishUsing` offset 117 (unconditional) |
 | flask dirty roll: `==2` → `<= 0.3` amp 1, `==1` → `<= 0.15` amp 0, 200 t | identical, with the same `<=` direction; creative is exempt | ✅ | `FlaskItems.java:84-102`; test `flaskDrinkDecrementsFillAndAddsHydration` |
 | flask fill from open water: hold 20 ticks, write dirty, play `fill_flask`, **destroy the source**, `IS_RIVER` forces dirty | fills instantly (no hold timer), **does not destroy the source**, no custom sound | ✅ 0.1.49: 20-tick hold, the source block is destroyed, any `FluidTags.WATER` source fills (purified included) | `LeatherFlaskItem.tryWaterInteraction` + `FILL_HOLD_TICKS`; test `flaskFillNeedsTheReferenceHold` |
 | flask fill from a vanilla water cauldron: one unit per use, always dirty; sneak pours one back | identical | ✅ | `LeatherFlaskItem.java:162-183`; test `flaskCauldronFillIsDirtyAndOneUnit` |
@@ -690,7 +706,7 @@ the bytecode rather than trusting the prose:
 |---|---|---|---|
 | `thirstLevel` 0…20, `dehydration` 0…40, 4.0 exhaustion per level, strictly `> 4.0` | identical, clamps included, on a persistent `dehydration:thirst_state` attachment | ✅ | `HearthwindSurvivalThirst.java:40-42,54-72,178-209`; test `thirstOnlyDrainsThroughExhaustion` |
 | `hydrating_factor` 2.0 in Aged; exhaustion charges `exhaustion / 2.0` | `thirst.hydratingFactor = 2.0`, injected after `FoodData.addExhaustion` so creative is exempt | ✅ | `HearthwindSurvivalConfig.java:89`; `PlayerExhaustionMixin.java:22-37` |
-| thirst damage 1.0 every 90 ticks at level 0, gated on `(hp <= 10 && !PEACEFUL) \|\| (hp > 1 && NORMAL)` | 1.0 every 90 ticks, gated on `hp > 10 \|\| HARD \|\| (hp > 1 && NORMAL)` | 🟡 deliberate rewrite of the upstream quirk: it damages on HARD at any health and on EASY/PEACEFUL only while **healthy** (upstream is the reverse) | `HearthwindSurvivalThirst.java:191-207`; test `thirstDamageMatchesUpstreamTiming` (NORMAL only) |
+| thirst damage 1.0 every 90 ticks at level 0, gated on `hp > 10 \|\| HARD \|\| (hp > 1 && NORMAL)` | 1.0 every 90 ticks, gated on exactly that | ✅ 0.1.51 **the row was wrong about the reference**: `ThirstManager.update` offsets 76-124 are `health > 10 → damage`, `difficulty == HARD → damage`, else `health > 1 && NORMAL → damage`. Our code already matched it; the old row claimed the gate was inverted and called ours a deliberate rewrite. The gate is now a pure `HearthwindSurvivalThirst.shouldDamage(health, difficulty)` so `thirstDamageGateMatchesTheReference` can pin all seven branches | `HearthwindSurvivalThirst.java:106-112`; `Difficulty` field names `field_5801` PEACEFUL, `field_5802` NORMAL, `field_5807` HARD |
 | Peaceful never drains the level | identical | ✅ | `HearthwindSurvivalThirst.java:186-190` |
 | Peaceful + `naturalRegeneration` → **+1 thirst every 10 ticks**, and a second `update()` on that path | identical, including the double update; gated on `tickCount % 10` (upstream `Entity.age % 10`) | ✅ | `HearthwindSurvivalThirst.java:166-172`; test `peacefulRegeneratesThirst` |
 | `special_effects` off in Aged → HASTE at 2 and MINING_FATIGUE II at 0 are inert | never implemented, so equally inert | ✅ | `HearthwindSurvivalThirst.java:178-209` has no effect branch |
@@ -705,8 +721,8 @@ the bytecode rather than trusting the prose:
 | `replace: true` clears the tier; lowest tier wins on duplicates | identical, iterating tiers in ascending order | ✅ | `HydrationCorpus.java:63-70,93-95`; test `hydrationCorpusTiersMatchCatalogue` |
 | Aged's `aged_items.json`: 12 tiers, 115 items, `replace: true` on all | shipped **byte-identical** in both the world datapack and the mod's bundled fallback | ✅ | `conversion/datapacks/hearthwind/data/dehydration/hydration_items/aged_items.json` == `.tmp/aged-3.1.2/.../aged_items.json`; 115 items over 12 tiers |
 | how many of the 115 ids resolve in a Hearthwind world | **105 of 115 resolve, across all 12 tiers**, measured off a real boot (the corpus logs `hydration: 105 catalogued items across 12 tiers`). The 10 that do not belong to the lets-do food mods Aged ships and we have not ported | ✅ measured 0.1.35 | `HearthwindSurvivalGameTests.hydrationCorpusLoadsCataloguedItems` now pins `itemCount() == 105` and `tierCount() == 12` instead of `>= 10`; `HydrationCorpus.java:97-103` skips unresolvable ids silently, which is why only a boot could settle it |
-| `thirst.useHydrationCorpus` toggles the corpus | `ThirstHelper.hydratePlayer` calls `HydrationCorpus.quench` **without** consulting the flag, so setting it to `false` still grants catalogued hydration | 🟡 the flag is only read by `HydrationCorpus.hydrateOnConsume`, which the drink path never calls | `HearthwindSurvivalConfig.java:106`; `ThirstHelper.java:45` |
-| HUD: 10 droplets 9×9 pitch 8 at `width/2 + 91`, `height − 49`, green while thirst is active, hidden in creative/spectator | same geometry and colours; the wobble cadence is scaled off thirst only (upstream uses its dehydration counter) | 🟡 deliberate simplification of the wobble | `ThirstHud.java:17-31` |
+| `thirst.useHydrationCorpus` toggles the corpus | `ThirstHelper.hydratePlayer` now reads it: with it off, `quench` starts at 0 and every source falls back to its own scalar (`potion_thirst_quench`, `milk_thirst_quench`, ...) | ✅ 0.1.51 - the flag only reached `HydrationCorpus.hydrateOnConsume`, which nothing called, so it did nothing at all | `ThirstHelper.java:45-51` |
+| HUD: 10 droplets 9×9 pitch 8 at `width/2 + 91`, `height − 49`, green while thirst is active, hidden in creative/spectator | same geometry and colours; the bob is now the reference's: droplet **i** nudges -1..+1 every `i*3+1` ticks while the dehydration buffer is ≥ 4.0 and every `i*8+3` while it is below, and the `buffered >= 4.0` predicate rides out on the thirst sync payload | ✅ 0.1.51 - we keyed the cadence off the thirst LEVEL and OR'd both periods, so every droplet moved in lockstep. Upstream's `dehydration -= 4.0` **inside the render call is deliberately not reproduced**: it would let the render thread eat the player's thirst | `ThirstHud.java:99-115`; bytecode `ThirstHudRender.renderThirstHud` offsets 269-358 |
 
 ### 8.4 Sipping, vessels and containers
 
@@ -719,7 +735,7 @@ the bytecode rather than trusting the prose:
 | `+water_souce_quench` = **+1** | `Math.max(1, cfg.waterSourceQuench)` = 1 | ✅ | `BareHandDrinkHandler.java:133` |
 | sip roll `<= water_sip_thirst_chance` = 0.5, amp 1, 300 t, halved in `IS_RIVER` | identical, `chance = 0` when the fluid is in `dehydration:purified_water` | ✅ | `BareHandDrinkHandler.java:138-148`; test `purifiedSipNeverThirsts` |
 | the source block is consumed | identical (un-waterlog, else `Blocks.AIR`), gated on `consumeStillSource` | ✅ | `BareHandDrinkHandler.java:150-157` |
-| sounds: `ENTITY_GENERIC_DRINK` every 3rd tick at 0.5, then `dehydration:water_sip` at 1.0 | vanilla `GENERIC_DRINK` at 0.5 every 3rd tick, and `GENERIC_DRINK` at 0.9 on completion | 🟡 one of the four custom sounds is replaced by a vanilla one | `BareHandDrinkHandler.java:78-82,159-161` |
+| sounds: `ENTITY_GENERIC_DRINK` every 3rd tick at 0.5, then `dehydration:water_sip` at 1.0 on PLAYERS | vanilla `GENERIC_DRINK` at 0.5 every 3rd tick (kept), and `dehydration:water_sip` at 1.0 on completion | ✅ 0.1.50. The row also had the pitch wrong for years: the reference is `0.9 + rand.nextFloat() / 5.0`, an **fdiv**, so 0.9-1.1 - not "1.0 + random × 5.0" | `BareHandDrinkHandler.java`; bytecode `EventInit` offset 571 |
 | sneak + `Items.BOWL` at a **still** source → `water_bowl` / `purified_water_bowl`, source consumed, `ITEM_BUCKET_FILL` | identical, registered on both the item and block use events, source consumed, `BUCKET_FILL` at 1.0/1.0 | ✅ | `HydrationBowlHandler.java:45-82`; test `bowlFillsFromStillWaterAndPurifiedTag` |
 | copper cauldrons: rain 10 % / snow 15 % from empty, straight to purified LEVEL 1 | identical, plus `FLUID_PLACE` | ✅ | `CopperCauldronBlock.java:37-59`; `HearthwindSurvivalConfig.java:203-206` |
 | copper cauldrons: LEVEL 1…3, fluid height `(6 + LEVEL×3)/16`, comparator = LEVEL | identical | ✅ | `CopperLeveledCauldronBlock.java:30,56-68,96-99` |
@@ -732,7 +748,7 @@ the bytecode rather than trusting the prose:
 | campfire cauldron: `water_boiling_time` 100 t, timer freezes when the fire goes out | identical (`hydration.waterBoilingTime = 100`), no decrement branch | ✅ | `CampfireCauldronBlockEntity.java:54-72`; test `campfireCauldronBoilsAtAgedSpeed` |
 | campfire cauldron: `ticker` is not persisted, only `isBoiled` | identical | ✅ | `CampfireCauldronBlockEntity.java:38-42` |
 | campfire cauldron: fresh water re-arms `isBoiled = false; ticker = 0` | identical via `onFillingCauldron` from the storage's `onFinalCommit` | ✅ | `CampfireCauldronBlockEntity.java:74-79`; `CampfireCauldronFluidStorage.java:123-131` |
-| campfire cauldron: `Items.BUCKET` fills straight to LEVEL 4, `Items.WATER_BUCKET` empties straight to 0 | a bucket is 3 bottles, so it fills to LEVEL 3 of 4 and leaves LEVEL 1 behind when drained | 🟡 consequence of modelling the cauldron as 4 × `FluidConstants.BOTTLE` | `CampfireCauldronFluidStorage.java:21,82-88`; no bucket row in `CampfireCauldronBlock` |
+| campfire cauldron: a **water bucket** held against any LEVEL < 4 hands back an EMPTY bucket, re-arms the boil and fills straight to LEVEL 4; an **empty bucket** against a full LEVEL 4 hands back a water bucket and drops it to 0 | `CampfireCauldronBlock.pourBucket` does both, ahead of the fluid-transfer path | ✅ 0.1.51 - a bucket is NOT three bottles here. Both rows are gated on `!isClient`, the fill plays `ITEM_BUCKET_EMPTY` 1.0/1.0 and the drain `ITEM_BUCKET_FILL` 1.0/1.0, and a stack of buckets shrinks one rather than being swapped whole | `CampfireCauldronBlock.java`; bytecode `CampfireCauldronBlock#method_9534` offsets 53-136 and 137-271; test `campfireCauldronBucketFillsToFourAndDrainsBack` |
 | campfire cauldron: pouring a potion gives a bowl, LEVEL+1, plain water re-arms the boil | none - pouring a bottle works | ✅ 0.1.43 | `CampfireCauldronBlock.java:120-130`; `HydrationStorages.java:40-48` **Now:** `CampfireCauldronBlock.pourPotion` gives LEVEL+1 and a bowl, and plain water calls `onFillingCauldron()` so it must boil again. Covered by `campfireCauldronPotionPourGivesABowlAndReArmsTheBoil`. |
 | campfire cauldron: rain fills it at 20 % **only** when sky-lit, biome ≥ 0.15 °C and not snowing | rain at 20 % with `isRainingAt`, no sky-light and no temperature test | ✅ 0.1.49: rain also needs `canSeeSky` and a biome at 0.15 °C or warmer | `hydration/CampfireCauldronBlock.handlePrecipitation` |
 | campfire cauldron: `cauldron_bubble` sound every 1-in-12 random display tick | none - the cauldron bubbles while it boils | ✅ 0.1.43 | `CampfireCauldronBlock.java` has no `randomDisplayTick` **Now:** a 1-in-12 bubble pop, volume `0.5 + rand*0.4`, pitch 1.0, using vanilla's `BUBBLE_COLUMN_BUBBLE_POP` because this pack does not redistribute another pack's audio. It plays on the SERVER tick, not the reference's client-side `randomDisplayTick`, so everyone near the fire hears it rather than only the player looking at it - the one deliberate difference in this row. |
