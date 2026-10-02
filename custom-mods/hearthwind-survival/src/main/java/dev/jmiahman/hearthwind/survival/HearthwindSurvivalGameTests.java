@@ -19,6 +19,8 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.Difficulty;
 import dev.jmiahman.hearthwind.survival.hydration.DehydrationSounds;
+import dev.jmiahman.hearthwind.survival.hydration.ThirstPreview;
+import net.minecraft.world.item.Item;
 
 /**
  * Headless gametests, run with the fabric-api gametest harness:
@@ -3310,6 +3312,240 @@ public final class HearthwindSurvivalGameTests {
             }
         } catch (java.io.IOException e) {
             throw new AssertionError("could not read assets/dehydration/sounds.json", e);
+        }
+        helper.succeed();
+    }
+
+    /**
+     * Reference {@code thirst_preview}: the droplet row under an item's
+     * tooltip. This closes the last missing row of the Dehydration audit, so
+     * the arithmetic is pinned rather than eyeballed.
+     */
+    @GameTest
+    public void thirstPreviewArithmeticMatchesTheReference(GameTestHelper helper) {
+        // The reference's own expression: quench * 9 / 2 plus a 9px half
+        // droplet when the quench is odd.
+        // Integer division runs BEFORE the odd check, so the reference's own
+        // expression is not ceil(quench/2)*9: a single droplet reports 13px of
+        // width while drawing 9px of art. Transcribed, not tidied.
+        helper.assertTrue(ThirstPreview.widthFor(1) == 13, "one droplet reports 13 wide, got "
+                + ThirstPreview.widthFor(1));
+        helper.assertTrue(ThirstPreview.widthFor(2) == 9, "two droplets share one cell, got "
+                + ThirstPreview.widthFor(2));
+        helper.assertTrue(ThirstPreview.widthFor(3) == 22, "three droplets report 22 wide, got "
+                + ThirstPreview.widthFor(3));
+        helper.assertTrue(ThirstPreview.widthFor(4) == 18, "four droplets are 18 wide, got "
+                + ThirstPreview.widthFor(4));
+        helper.assertTrue(ThirstPreview.widthFor(16) == 72, "the leather flask's capacity row is 72 wide, got "
+                + ThirstPreview.widthFor(16));
+        helper.assertTrue(ThirstPreview.HEIGHT == 11, "the row is a hardcoded 11 tall, got "
+                + ThirstPreview.HEIGHT);
+        // The sheet has four qualities at u = quality * 18, half droplet + 9,
+        // and the art always sits on v = 9 (the reference never uses v = 18).
+        helper.assertTrue(ThirstPreview.fullU(0) == 0 && ThirstPreview.fullU(3) == 54,
+                "qualities are 18 apart");
+        helper.assertTrue(ThirstPreview.halfU(2) == 45, "the half droplet sits 9 right of its pair");
+        helper.assertTrue(ThirstPreview.ICON_V == 9, "droplets are always drawn on v = 9");
+        helper.succeed();
+    }
+
+    /**
+     * Reference {@code LeatherFlask#getTooltipData}. The middle case is the
+     * one a player meets most: a flask that HAS been filled but is empty right
+     * now shows <b>no</b> droplets at all, not a zero row.
+     */
+    @GameTest
+    public void thirstPreviewOnAFlaskMatchesTheReference(GameTestHelper helper) {
+        int perSip = HearthwindSurvivalConfig.get().flask.quench;
+
+        // Never filled: the capacity preview, drawn at quality 2 (dirty red).
+        java.util.Optional<ThirstPreview> never = ThirstPreview.forFlask(
+                new ItemStack(FlaskItems.LEATHER_FLASK), 2, perSip);
+        helper.assertTrue(never.isPresent(), "an unfilled flask previews its capacity");
+        helper.assertTrue(never.get().quench() == 2 * 2 * perSip,
+                "a leather flask previews 2 * capacity * quench = 16, got " + never.get().quench());
+        helper.assertTrue(never.get().quality() == FlaskData.DIRTY,
+                "the capacity preview is drawn at quality 2, got " + never.get().quality());
+
+        // Filled and emptied: nothing at all.
+        ItemStack emptied = new ItemStack(FlaskItems.LEATHER_FLASK);
+        emptied.set(FlaskItems.FLASK_DATA, new FlaskData(0, FlaskData.DIRTY));
+        helper.assertTrue(ThirstPreview.forFlask(emptied, 2, perSip).isEmpty(),
+                "a flask with a fill level of 0 shows no preview");
+
+        // Filled and full. The two numbers are INDEPENDENT: the reference
+        // hands the constructor (nbt purified_water, nbt leather_flask *
+        // flask_thirst_quench), so the purity picks the droplet ART and the
+        // fill level picks the COUNT. Multiplying them would make purified
+        // water preview nothing, since its purity field is 0.
+        ItemStack full = new ItemStack(FlaskItems.LEATHER_FLASK);
+        full.set(FlaskItems.FLASK_DATA, new FlaskData(2, FlaskData.DIRTY));
+        java.util.Optional<ThirstPreview> dirty = ThirstPreview.forFlask(full, 2, perSip);
+        helper.assertTrue(dirty.isPresent(), "a full flask previews what it holds");
+        helper.assertTrue(dirty.get().quench() == 2 * perSip,
+                "a full leather flask previews fill_level * quench = 8, got " + dirty.get().quench());
+        helper.assertTrue(dirty.get().quality() == FlaskData.DIRTY,
+                "dirty water is drawn at quality 2, got " + dirty.get().quality());
+
+        // One unit of PURIFIED water: the count is still one sip - the purity
+        // field must not be multiplied into it.
+        ItemStack sip = new ItemStack(FlaskItems.LEATHER_FLASK);
+        sip.set(FlaskItems.FLASK_DATA, new FlaskData(1, FlaskData.PURIFIED));
+        ThirstPreview pure = ThirstPreview.forFlask(sip, 2, perSip).orElseThrow();
+        helper.assertTrue(pure.quench() == perSip,
+                "one unit of purified water previews one sip of " + perSip + ", got " + pure.quench());
+        helper.assertTrue(pure.quality() == FlaskData.PURIFIED,
+                "purified water is drawn at quality 0, got " + pure.quality());
+        helper.succeed();
+    }
+
+    /**
+     * Reference {@code PotionItemMixin#getTooltipData}: splash and lingering
+     * are refused outright, and a bad potion is drawn at quality 2.
+     */
+    @GameTest
+    public void thirstPreviewOnAPotionMatchesTheReference(GameTestHelper helper) {
+        int fallback = (int) Math.round(HearthwindSurvivalConfig.get().thirst.potionThirstQuench);
+
+        // Plain water is one of the 14 "bad potions", so quality 2.
+        java.util.Optional<ThirstPreview> water = ThirstPreview.forPotion(waterPotion(), 0, fallback, false);
+        helper.assertTrue(water.isPresent(), "a plain potion previews");
+        helper.assertTrue(water.get().quench() == fallback,
+                "an uncatalogued potion falls back to potion_thirst_quench = " + fallback
+                        + ", got " + water.get().quench());
+        helper.assertTrue(water.get().quality() == 2,
+                "plain water is a bad potion so it is drawn at quality 2, got " + water.get().quality());
+
+        // A good potion is drawn at quality 0.
+        ItemStack healing = new ItemStack(Items.POTION);
+        healing.set(net.minecraft.core.component.DataComponents.POTION_CONTENTS,
+                new net.minecraft.world.item.alchemy.PotionContents(
+                        net.minecraft.world.item.alchemy.Potions.HEALING));
+        java.util.Optional<ThirstPreview> good = ThirstPreview.forPotion(healing, 0, fallback, false);
+        helper.assertTrue(good.isPresent(), "a healing potion still previews its quench");
+        helper.assertTrue(good.get().quality() == 0,
+                "a beneficial potion is drawn at quality 0, got " + good.get().quality());
+
+        // Splash and lingering are skipped by the reference (ThrowablePotionItem).
+        helper.assertTrue(ThirstPreview.forPotion(waterPotion(), 0, fallback, true).isEmpty(),
+                "a splash potion shows no preview");
+        helper.assertTrue(ThirstPreview.isThrowable(new ItemStack(Items.SPLASH_POTION)),
+                "splash potions are throwable");
+        helper.assertTrue(ThirstPreview.isThrowable(new ItemStack(Items.LINGERING_POTION)),
+                "lingering potions are throwable");
+        helper.assertTrue(!ThirstPreview.isThrowable(waterPotion()),
+                "the plain potion is not throwable");
+
+        // The corpus overrides the fallback, exactly as the reference's scan does.
+        helper.assertTrue(ThirstPreview.forPotion(healing, 7, fallback, false).orElseThrow().quench() == 7,
+                "a catalogued potion previews its tier, not the fallback");
+        helper.succeed();
+    }
+
+    /**
+     * Reference {@code ItemMixin#getTooltipDataMixin}: the tag ladder runs
+     * first and the hydration corpus <b>overrides</b> it. All six tags ship
+     * empty, so the tag branch is exercised here directly.
+     */
+    @GameTest
+    public void thirstPreviewOnFoodsUsesTheTagLadderThenTheCorpus(GameTestHelper helper) {
+        ThirstPreview.TagQuench none = ThirstPreview.TagQuench.NONE;
+
+        // Nothing at all: no preview.
+        helper.assertTrue(ThirstPreview.forItem(new ItemStack(Items.STONE), none, 0).isEmpty(),
+                "an item that quenches nothing shows no droplets");
+
+        // The corpus alone is enough.
+        ThirstPreview apple = ThirstPreview.forItem(new ItemStack(Items.APPLE), none, 4)
+                .orElseThrow();
+        helper.assertTrue(apple.quench() == 4, "an apple previews its catalogued tier, got " + apple.quench());
+        helper.assertTrue(apple.quality() == 0, "food is always drawn at quality 0, got " + apple.quality());
+
+        // The corpus overrides a tag value - the reference scans after the tags.
+        ThirstPreview.TagQuench stew = new ThirstPreview.TagQuench(3, 0, 0, 0, 0, 0);
+        helper.assertTrue(ThirstPreview.forItem(new ItemStack(Items.APPLE), stew, 9).orElseThrow().quench() == 9,
+                "a catalogued tier beats the tag value");
+        helper.assertTrue(ThirstPreview.forItem(new ItemStack(Items.APPLE), stew, 0).orElseThrow().quench() == 3,
+                "with no corpus entry the stew tag wins");
+
+        // The ladder order: stew, then food, then drinks, then the stronger tags.
+        ThirstPreview.TagQuench ladder = new ThirstPreview.TagQuench(3, 1, 2, 6, 2, 4);
+        helper.assertTrue(ThirstPreview.forItem(new ItemStack(Items.APPLE), ladder, 0).orElseThrow().quench() == 3,
+                "hydrating_stew is consulted first");
+        helper.assertTrue(ThirstPreview.forItem(new ItemStack(Items.APPLE),
+                new ThirstPreview.TagQuench(0, 1, 2, 6, 2, 4), 0).orElseThrow().quench() == 1,
+                "then hydrating_food");
+        helper.assertTrue(ThirstPreview.forItem(new ItemStack(Items.APPLE),
+                new ThirstPreview.TagQuench(0, 0, 2, 6, 2, 4), 0).orElseThrow().quench() == 2,
+                "then hydrating_drinks");
+        helper.assertTrue(ThirstPreview.forItem(new ItemStack(Items.APPLE),
+                new ThirstPreview.TagQuench(0, 0, 0, 6, 2, 4), 0).orElseThrow().quench() == 6,
+                "then stronger_hydrating_stew");
+        helper.assertTrue(ThirstPreview.forItem(new ItemStack(Items.APPLE),
+                new ThirstPreview.TagQuench(0, 0, 0, 0, 2, 4), 0).orElseThrow().quench() == 2,
+                "then stronger_hydrating_food");
+        helper.assertTrue(ThirstPreview.forItem(new ItemStack(Items.APPLE),
+                new ThirstPreview.TagQuench(0, 0, 0, 0, 0, 4), 0).orElseThrow().quench() == 4,
+                "then stronger_hydrating_drinks");
+        helper.succeed();
+    }
+
+    /**
+     * The six tag files ship, and they ship EMPTY - which is what the
+     * reference jar and Aged's own pack both carry. A datapack that fails to
+     * parse them would silently drop the tag, so this asserts the tag resolves
+     * (even to nothing) rather than that the file exists.
+     */
+    @GameTest
+    public void theHydratingTagsResolveAndAreEmptyLikeTheReference(GameTestHelper helper) {
+        for (String path : new String[] {"hydrating_stew", "hydrating_food", "hydrating_drinks",
+                "stronger_hydrating_stew", "stronger_hydrating_food", "stronger_hydrating_drinks"}) {
+            net.minecraft.tags.TagKey<Item> tag = net.minecraft.tags.TagKey.create(
+                    net.minecraft.core.registries.Registries.ITEM,
+                    net.minecraft.resources.Identifier.fromNamespaceAndPath("dehydration", path));
+            java.util.Optional<net.minecraft.core.HolderSet.Named<Item>> members =
+                    BuiltInRegistries.ITEM.get(tag);
+            helper.assertTrue(members.isPresent(),
+                    "dehydration:" + path + " must resolve - the tooltip reads it on every hover");
+            int size = 0;
+            for (net.minecraft.core.Holder<Item> ignored : members.get()) {
+                size++;
+            }
+            helper.assertTrue(size == 0,
+                    "dehydration:" + path + " is empty in the reference and in Aged, got "
+                            + size + " entries");
+        }
+        helper.assertTrue(HearthwindSurvivalConfig.get().thirst.thirstPreview,
+                "thirst_preview defaults on, as it does upstream and in Aged");
+        helper.assertTrue(HearthwindSurvivalConfig.get().thirst.stewThirstQuench == 3
+                && HearthwindSurvivalConfig.get().thirst.foodThirstQuench == 1
+                && HearthwindSurvivalConfig.get().thirst.drinksThirstQuench == 2
+                && HearthwindSurvivalConfig.get().thirst.strongerStewThirstQuench == 6
+                && HearthwindSurvivalConfig.get().thirst.strongerFoodThirstQuench == 2
+                && HearthwindSurvivalConfig.get().thirst.strongerDrinksThirstQuench == 4,
+                "the six tag-ladder quenches match the reference defaults");
+        helper.succeed();
+    }
+
+    /**
+     * The droplet sheet ships, because the tooltip is a silent no-op without
+     * it: the component resolves a texture the client then cannot load.
+     */
+    @GameTest
+    public void theThirstDropletSheetShipsInOurJar(GameTestHelper helper) {
+        try (java.io.InputStream in = ThirstPreview.class.getClassLoader()
+                .getResourceAsStream("assets/dehydration/textures/gui/thirst.png")) {
+            helper.assertTrue(in != null,
+                    "assets/dehydration/textures/gui/thirst.png must ship in the jar");
+            assert in != null;
+            byte[] bytes = in.readAllBytes();
+            helper.assertTrue(bytes.length > 100,
+                    "the droplet sheet must be a real png, not a " + bytes.length + "-byte stub");
+            helper.assertTrue(bytes.length > 8 && (bytes[0] & 0xFF) == 0x89 && bytes[1] == 'P'
+                    && bytes[2] == 'N' && bytes[3] == 'G',
+                    "the droplet sheet must be a png, not something else entirely");
+        } catch (java.io.IOException e) {
+            throw new AssertionError("could not read the droplet sheet", e);
         }
         helper.succeed();
     }

@@ -647,12 +647,47 @@ one invented table:
   `iconst_0`. Those two rows were already at parity; the 🟡 markers were
   spurious and are gone.
 - **Six more hydration rows, and one of them was never a gap (0.1.51).** The
-  audit is now **✅ 99 · 🟡 3 · ❌ 1 over 103 rows**. The three 🟡 that remain are
-  two *not reproducible on 26.2* (the reference's single shared campfire
-  `cookTime`, which 26.2 replaces with per-slot `cookingProgress[]` arrays, and
-  the `pour_<tier>_leather_flask` reset recipes, which vanilla's recipe manager
-  simplifies away because the result is the ingredient) plus the purified
-  bucket's purely cosmetic client-side `LARGE_SMOKE` burst.
+  audit stood at **✅ 99 · 🟡 3 · ❌ 1 over 103 rows** at that release. The three
+  🟡 that remain are two *not reproducible on 26.2* (the reference's single
+  shared campfire `cookTime`, which 26.2 replaces with per-slot
+  `cookingProgress[]` arrays, and the `pour_<tier>_leather_flask` reset recipes,
+  which vanilla's recipe manager simplifies away because the result is the
+  ingredient) plus the purified bucket's purely cosmetic client-side
+  `LARGE_SMOKE` burst.
+- **The thirst droplets now tell you how much an item quenches (0.1.52).**
+  `thirst_preview` was the last ❌ anywhere in the hydration audit and it is now
+  ported, so that audit is **✅ 100 · 🟡 3 · ❌ 0 over 103 rows** - nothing is
+  missing any more. Dehydration's own 256x256 droplet sheet ships verbatim
+  (four qualities at `u = quality * 18`, art always on `v = 9`), the row is the
+  reference's hardcoded 11 pixels tall and `quench * 9 / 2 + (odd ? 9 : 0)` wide,
+  and all four of its resolution sites behave as they do in Aged:
+    - a flask that **has** been filled but is empty right now shows **nothing**,
+      which is the reference's `getInt("leather_flask") == 0` branch and the
+      case a player meets most;
+    - one that has **never** been filled previews its whole capacity at
+      quality 2 (`2 * (addition + 2) * flask_thirst_quench`, so 16 for a
+      leather flask);
+    - a held flask previews `fill_level * flask_thirst_quench` droplets drawn
+      in the water's **own quality** - the reference's constructor is
+      `(quality, thirstQuench)` and hands it the two numbers independently, so
+      multiplying them together (which an earlier draft here did) would make
+      purified water preview nothing at all, since its purity field is 0;
+    - the row's width is the reference's `quench * 9 / 2 + (odd ? 9 : 0)` with
+      **integer division first**, so one droplet reports 13 px while drawing
+      9. That is transcribed, not tidied into `ceil(quench / 2) * 9`;
+    - food, stew and drink previews come from the six-tag ladder with the
+      hydration corpus **overriding** it, and **splash and lingering potions are
+      refused outright** because the reference tests
+      `instanceof ThrowablePotionItem`; a bad potion is drawn at quality 2 so
+      the risk is visible before drinking.
+  26.2 builds the whole tooltip on the client - `Item#getTooltipImage` takes no
+  player, unlike 1.20.1's server-side hook - so the hydration corpus now
+  travels to the client on join (`hearthwind_survival:hydration_corpus`) rather
+  than being duplicated as a second corpus file that could drift. Two mixins
+  make it work: vanilla's `ClientTooltipComponent.create` is a hardcoded switch
+  whose default arm **throws** on an unknown component, and the preview has to
+  attach to the one `Item#getTooltipImage` hook that both of the reference's
+  separate `Item` and `PotionItem` mixins land on in 26.2.
   - **The thirst-damage gate was already correct and our docs said the
     opposite.** `ThirstManager.update` offsets 76-124 are
     `health > 10 -> damage`, else `difficulty == HARD -> damage`, else

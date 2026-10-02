@@ -112,6 +112,26 @@ public final class HearthwindSurvivalConfig {
          * by a potion that is not in the hydration corpus.
          */
         public double potionThirstQuench = 2.0;
+        /**
+         * Upstream {@code thirst_preview}: draw the droplet row under the
+         * tooltip of anything that quenches thirst. Aged leaves the key unset
+         * so the upstream default (true) applies, and the reference gates all
+         * four of its tooltip sites on it.
+         */
+        public boolean thirstPreview = true;
+        /**
+         * The six tag-ladder values the reference reads before it falls back
+         * to the hydration corpus, in its own order: hydrating_stew,
+         * hydrating_food, hydrating_drinks, then the three "stronger" tags.
+         * They are only consulted for items no corpus tier claims, so they
+         * never override a catalogued value.
+         */
+        public int stewThirstQuench = 3;
+        public int foodThirstQuench = 1;
+        public int drinksThirstQuench = 2;
+        public int strongerStewThirstQuench = 6;
+        public int strongerFoodThirstQuench = 2;
+        public int strongerDrinksThirstQuench = 4;
     }
 
     /**

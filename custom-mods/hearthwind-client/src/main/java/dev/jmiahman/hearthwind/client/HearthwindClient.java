@@ -69,6 +69,14 @@ public class HearthwindClient implements ClientModInitializer {
                     dev.jmiahman.hearthwind.survival.NutritionItemMapPayload.TYPE, (payload, context) -> {
                         context.client().execute(() -> ClientNutritionData.setItemMap(payload.entries()));
                     });
+            // Reference thirst_preview: the tooltip that draws the droplet row
+            // is built client-side in 26.2, so the hydration corpus has to come
+            // across rather than be re-read from the world datapack.
+            ClientPlayNetworking.registerGlobalReceiver(
+                    dev.jmiahman.hearthwind.survival.HydrationCorpusPayload.TYPE, (payload, context) -> {
+                        context.client().execute(() -> dev.jmiahman.hearthwind.survival.hydration
+                                .ClientHydration.setCorpus(payload.entries()));
+                    });
             ClientPlayNetworking.registerGlobalReceiver(
                     dev.jmiahman.hearthwind.survival.NutritionEffectsPayload.TYPE, (payload, context) -> {
                         context.client().execute(

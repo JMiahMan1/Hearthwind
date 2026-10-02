@@ -1,6 +1,7 @@
 package dev.jmiahman.hearthwind.survival;
 
 import dev.jmiahman.hearthwind.survival.hydration.DehydrationSounds;
+import dev.jmiahman.hearthwind.survival.hydration.ThirstPreview;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
@@ -17,6 +18,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.component.Consumable;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
@@ -272,5 +274,25 @@ public final class LeatherFlaskItem extends Item {
             case FlaskData.DIRTY -> lines.accept(Component.literal("\u00a72Dirty Water"));
             default -> lines.accept(Component.literal("\u00a73Impurified Water"));
         }
+    }
+
+    /**
+     * Reference {@code LeatherFlask#getTooltipImage}. A flask that has been
+     * filled but is empty right now shows NO droplets at all - that is the
+     * reference's own {@code getInt("leather_flask") == 0 -> Optional.empty()}
+     * branch and it is the one case a player sees most often.
+     *
+     * <p>An override means {@code Item#getTooltipImage} is never reached for
+     * this item, so the corpus mixin cannot double up on it.
+     */
+    @Override
+    public java.util.Optional<TooltipComponent> getTooltipImage(
+            ItemStack stack) {
+        HearthwindSurvivalConfig cfg = HearthwindSurvivalConfig.get();
+        if (!cfg.thirst.thirstPreview) {
+            return java.util.Optional.empty();
+        }
+        return ThirstPreview.forFlask(stack, this.capacity, cfg.flask.quench)
+                .map(preview -> (TooltipComponent) preview);
     }
 }

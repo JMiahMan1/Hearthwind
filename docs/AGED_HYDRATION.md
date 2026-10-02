@@ -591,7 +591,7 @@ campfire and the kelp route.
 Legend: ✅ at parity · 🟡 deliberate deviation (reason in one clause) ·
 ❌ missing · ❌ unverified (say what could not be found).
 
-Summary: **✅ 99 · 🟡 3 · ❌ 1** over 103 rows. **0.1.49 closed 17 more rows**: a
+Summary: **✅ 100 · 🟡 3 · ❌ 0** over 103 rows. **0.1.49 closed 17 more rows**: a
 river fill is DIRTY (we had it exactly backwards), the flask fill needs a 20-tick hold
 and destroys the source, the flask tooltip reads `Fill Level n/cap` with the
 reference's colour-coded lines, the sip raycast is the reference's fixed 1.5 blocks with
@@ -624,8 +624,19 @@ each slot its own arrays and vanilla's recipe manager simplifies away a one-ingr
 recipe whose result is its own ingredient), and one is the purified bucket's cosmetic
 extras (client-side `LARGE_SMOKE` burst and the randomised fill pitch - note the
 reference's EMPTYING sound is fixed 1.0/1.0; it is the FILL pitch that is randomised,
-which this file also had backwards). The one ❌ left is `thirst_preview`, the droplet
-tooltips that show how much an item quenches. Earlier releases closed the rest of the ❌ column: 0.1.43
+which this file also had backwards). **0.1.52 closed the last ❌ and the last named gap
+in this file**: `thirst_preview`, the droplet row that shows how much an item quenches,
+now ships with Dehydration's own 256x256 sheet and the reference's arithmetic - an 11px
+row, `quench*9/2 + (odd ? 9 : 0)` wide, four droplet qualities at `u = quality*18` with
+the art always on `v = 9`. All four of its resolution sites are ported: a flask that has
+been filled but is empty shows **nothing at all** (not a zero row), one that has never
+been filled previews its whole capacity at quality 2, food and drink previews come from
+the tag ladder with the hydration corpus **overriding** it, and splash and lingering
+potions are refused outright while a bad potion is drawn at quality 2 so the risk is
+visible before drinking. 26.2 builds the entire tooltip on the client
+(`Item#getTooltipImage` takes no player, unlike 1.20.1's server-side hook), so the
+hydration corpus now travels to the client on join rather than being duplicated as a
+second corpus file. Earlier releases closed the rest of the ❌ column: 0.1.43
 the campfire cauldron's potion pour, the copper cauldron's one-step potion fill, the
 bubble sound while it boils, and the rule that a block placed above the cauldron removes
 it; 0.1.45 then ported rain extinguishing campfires, which is AdditionZ's job rather than
@@ -697,7 +708,7 @@ the bytecode rather than trusting the prose:
 | `IS_RIVER` fill forces **dirty** (`level = 2, purified = false`) | `IS_RIVER` fill forces **purified** (quality 0); non-river open water is dirty | ✅ 0.1.49: a river fill is DIRTY, not purified - our old code had it exactly backwards | `LeatherFlaskItem.openWaterQuality`; test `flaskOpenWaterQualityMatchesAged` |
 | flask fill accepts any `FluidTags.WATER`, i.e. purified water too | requires `Fluids.WATER` exactly, so purified water will not fill a flask | ✅ 0.1.49: `fluid.is(FluidTags.WATER)`, so purified water fills a flask | `LeatherFlaskItem.tryWaterInteraction` |
 | flask tooltip `Fill Level n/cap` + colour-coded Dirty/Impurified/Purified | `Uses: n/cap` + grey `Purified/Dirty/Impurified water`, hard-coded English | ✅ 0.1.49: `Fill Level n/cap` (or `Fill Capacity n` when empty) plus the reference's colour-coded `Dirty/Dirty Water` lines | `LeatherFlaskItem.appendHoverText`; test `flaskTooltipMatchesTheReference` |
-| `thirst_preview` droplet tooltips on flasks, bowls, potions, foods | no `getTooltipData` override anywhere in the tree | ❌ | `rg "getTooltipData\|droplet" custom-mods/` → only HUD droplet art |
+| `thirst_preview` droplet tooltips on flasks, bowls, potions, foods | ✅ 0.1.52: the droplet row ships with the reference's own sheet (`dehydration:textures/gui/thirst.png`, 4 droplet qualities at `u = quality*18`, art always on `v = 9`), a hardcoded 11px row, and the reference's own width `quench*9/2 + (odd ? 9 : 0)` | ✅ | `ThirstPreview` (width/fullU/halfU/ICON_V, the three resolution sites) + `LeatherFlaskItem.getTooltipImage` (override) + `ItemTooltipPreviewMixin` on `Item#getTooltipImage` (potion branch first) + `ClientTooltipComponentCreateMixin` (vanilla's `create` switch THROWS on an unknown component) + `HydrationCorpusPayload` |
 | `pour_<tier>_leather_flask` shapeless reset recipes (5) | not shipped; emptying is a sneak-use instead | 🟡 **not reproducible on 26.2** - a one-ingredient recipe whose result is its own ingredient is simplified away by vanilla's recipe manager, so the reset trick cannot be a recipe here. The reference's OTHER way to empty a flask (sneak-use) is implemented and is what a player has. | `data/dehydration/recipe/` has no `pour_*_leather_flask` |
 
 ### 8.3 Thirst maths

@@ -3,6 +3,7 @@ package dev.jmiahman.hearthwind.survival;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -165,6 +166,21 @@ public final class HydrationCorpus {
         HearthwindSurvivalThirst.addThirst(player, tier);
         int after = HearthwindSurvivalThirst.level(player);
         return after - before;
+    }
+
+    /**
+     * Item id to hydration points, for the client. 26.2 draws the whole
+     * tooltip client-side and the corpus is a world datapack file the client
+     * cannot read, so the server ships its own copy rather than a second
+     * corpus file. Sorted by id so two clients see the same bytes.
+     */
+    public static synchronized List<HydrationCorpusPayload.Entry> snapshot() {
+        List<HydrationCorpusPayload.Entry> out = new ArrayList<>(BY_ITEM.size());
+        for (Map.Entry<Item, Integer> e : BY_ITEM.entrySet()) {
+            out.add(new HydrationCorpusPayload.Entry(BuiltInRegistries.ITEM.getKey(e.getKey()), e.getValue()));
+        }
+        out.sort(Comparator.comparing(HydrationCorpusPayload.Entry::item));
+        return out;
     }
 
     public static List<String> summary() {

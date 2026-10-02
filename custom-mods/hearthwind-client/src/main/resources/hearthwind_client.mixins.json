@@ -4,14 +4,16 @@
   "compatibilityLevel": "JAVA_25",
   "client": [
     "AbstractContainerScreenClickMixin",
+    "CameraDownedSpinMixin",
+    "ClientPacketListenerChatMixin",
+    "ClientTooltipComponentCreateMixin",
+    "DedicatedServerBootWindowMixin",
+    "FluidStateModelSetMixin",
     "HearthwindTitleScreenMixin",
     "InventoryScreenButtonMixin",
+    "ItemTooltipPreviewMixin",
     "LogoRendererMixin",
-    "FluidStateModelSetMixin",
-    "ClientPacketListenerChatMixin",
-    "MouseHandlerDownedReviveMixin",
-    "CameraDownedSpinMixin",
-    "DedicatedServerBootWindowMixin"
+    "MouseHandlerDownedReviveMixin"
   ],
   "injectors": {
     "defaultRequire": 1

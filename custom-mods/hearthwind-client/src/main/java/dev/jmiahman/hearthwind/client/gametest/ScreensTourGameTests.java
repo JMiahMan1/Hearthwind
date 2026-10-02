@@ -16,6 +16,8 @@ import net.fabricmc.fabric.api.client.gametest.v1.FabricClientGameTest;
 import net.fabricmc.fabric.api.client.gametest.v1.context.ClientGameTestContext;
 import net.fabricmc.fabric.api.client.gametest.v1.context.TestSingleplayerContext;
 import dev.jmiahman.hearthwind.client.ui.FirstRunMenuGuard;
+import dev.jmiahman.hearthwind.survival.hydration.ThirstPreview;
+import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
@@ -217,6 +219,73 @@ public class ScreensTourGameTests implements FabricClientGameTest {
         });
     }
 
+    /**
+     * The thirst droplet preview, asserted rather than photographed.
+     *
+     * <p>26.2 builds item tooltips entirely on the client, so this is the only
+     * place the resolution can actually be checked end to end: it runs the real
+     * {@code ItemStack#getTooltipImage} on the client and inspects what comes
+     * back. The player's starter apples are the probe - an apple is catalogued
+     * at hydration 4, so the preview must be a 4-droplet row.
+     *
+     * <p>Geometry, not a screenshot, because a screenshot of a tooltip is easy
+     * to get right by accident (the "invisible Start button" release) and easy
+     * to get wrong without noticing (a downed overlay that never drew at all).
+     */
+    private static void assertThirstPreviewReachesTheTooltip(ClientGameTestContext context) {
+        context.runOnClient(client -> {
+            if (client.player == null) {
+                throw new AssertionError("no player, so no inventory to read a preview from");
+            }
+            if (dev.jmiahman.hearthwind.survival.hydration.ClientHydration.size() == 0) {
+                throw new AssertionError("the hydration corpus never reached the client - the thirst "
+                        + "preview would silently be empty for every food");
+            }
+            var apple = net.minecraft.world.item.Items.APPLE;
+            int corpus =
+                    dev.jmiahman.hearthwind.survival.hydration.ClientHydration
+                            .quench(new net.minecraft.world.item.ItemStack(apple));
+            if (corpus <= 0) {
+                throw new AssertionError("an apple is not catalogued on the client, corpus="
+                        + corpus);
+            }
+            var preview = new net.minecraft.world.item.ItemStack(apple).getTooltipImage();
+            if (preview.isEmpty()) {
+                throw new AssertionError("hovering an apple produces no thirst preview; "
+                        + "thirstPreview=" + dev.jmiahman.hearthwind.survival.HearthwindSurvivalConfig
+                                .get().thirst.thirstPreview);
+            }
+            if (!(preview.get() instanceof dev.jmiahman.hearthwind.survival.hydration.ThirstPreview p)) {
+                throw new AssertionError("an apple's tooltip image is a "
+                        + preview.get().getClass().getName() + ", not a ThirstPreview");
+            }
+            if (p.quench() != corpus) {
+                throw new AssertionError("the tooltip promises " + p.quench()
+                        + " thirst but the corpus says " + corpus);
+            }
+            int width = ThirstPreview.widthFor(p.quench());
+            var component = ClientTooltipComponent.create(preview.get());
+            int fontWidth = component.getWidth(client.font);
+            int height = component.getHeight(client.font);
+            if (fontWidth != width) {
+                throw new AssertionError("the rendered row is " + fontWidth
+                        + " wide but the reference's arithmetic says " + width);
+            }
+            if (height != ThirstPreview.HEIGHT) {
+                throw new AssertionError("the row is " + height
+                        + " tall but the reference hardcodes " + ThirstPreview.HEIGHT);
+            }
+            // A splash potion is refused outright by the reference, and this is
+            // the assertion that would catch a hook that matched everything.
+            var splash = new net.minecraft.world.item.ItemStack(
+                    net.minecraft.world.item.Items.SPLASH_POTION);
+            if (!splash.getTooltipImage().isEmpty()) {
+                throw new AssertionError("a splash potion must show no thirst preview, got "
+                        + splash.getTooltipImage().get());
+            }
+        });
+    }
+
     @Override
     public void runTest(ClientGameTestContext context) {
         // Capture the Aged/FancyMenu title-screen layout before entering a
@@ -248,6 +317,7 @@ public class ScreensTourGameTests implements FabricClientGameTest {
             assertStartButtonReachable(context);
             assertFirstRunMenuGuardDecidesCorrectly();
             assertWelcomeScreenShowsTheKeysAndLoadout(context);
+            assertThirstPreviewReachesTheTooltip(context);
             context.takeScreenshot("tour_welcome");
             context.clickScreenButton("screen.hearthwind.welcome.start");
             context.waitFor(minecraft -> minecraft.gui.screen() == null, SLOW_TIMEOUT_TICKS);

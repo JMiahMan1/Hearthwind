@@ -30,6 +30,7 @@ public class HearthwindSurvival implements ModInitializer {
 		PayloadTypeRegistry.clientboundPlay().register(DietSyncPayload.TYPE, DietSyncPayload.CODEC);
 		PayloadTypeRegistry.clientboundPlay().register(NutritionItemMapPayload.TYPE, NutritionItemMapPayload.CODEC);
 		PayloadTypeRegistry.clientboundPlay().register(NutritionEffectsPayload.TYPE, NutritionEffectsPayload.CODEC);
+		PayloadTypeRegistry.clientboundPlay().register(HydrationCorpusPayload.TYPE, HydrationCorpusPayload.CODEC);
 		PayloadTypeRegistry.clientboundPlay().register(TempSyncPayload.TYPE, TempSyncPayload.CODEC);
 		PayloadTypeRegistry.clientboundPlay().register(JobSyncPayload.TYPE, JobSyncPayload.CODEC);
 		PayloadTypeRegistry.clientboundPlay().register(dev.jmiahman.hearthwind.survival.revive.DownedSyncPayload.TYPE, dev.jmiahman.hearthwind.survival.revive.DownedSyncPayload.CODEC);
@@ -143,6 +144,10 @@ public class HearthwindSurvival implements ModInitializer {
 			net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking.send(
 					player, new NutritionEffectsPayload(
 							NutritionEffects.positiveKeys(), NutritionEffects.negativeKeys()));
+			// Reference thirst_preview: the tooltip that draws the droplet row
+			// is built client-side in 26.2, so the corpus has to travel.
+			net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking.send(
+					player, new HydrationCorpusPayload(HydrationCorpus.snapshot()));
 		} catch (Exception e) {
 			// ignore sync failures
 		}
