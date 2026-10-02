@@ -1327,12 +1327,17 @@ public final class HearthwindPrimitiveGameTests {
     private static void auditShadowClass(GameTestHelper helper, String module, String mixinName,
             byte[] mixinBytes) throws Exception {
         String[] target = { null };
+        boolean[] pseudo = { false };
         java.util.List<String> shadowFields = new java.util.ArrayList<>();
         java.util.List<String> shadowMethods = new java.util.ArrayList<>();
         java.util.List<String> injectionSelectors = new java.util.ArrayList<>();
         new ClassReader(mixinBytes).accept(new ClassVisitor(Opcodes.ASM9) {
             @Override
             public AnnotationVisitor visitAnnotation(String desc, boolean visible) {
+                if ("Lorg/spongepowered/asm/mixin/Pseudo;".equals(desc)) {
+                    pseudo[0] = true;
+                    return null;
+                }
                 if (!"Lorg/spongepowered/asm/mixin/Mixin;".equals(desc)) {
                     return null;
                 }
@@ -1441,6 +1446,18 @@ public final class HearthwindPrimitiveGameTests {
         helper.assertTrue(target[0] != null,
                 module + ":" + mixinName + " has no resolvable @Mixin target");
         byte[] targetBytes = classBytes(target[0]);
+        if (targetBytes == null) {
+            // A target that is genuinely absent from the classpath is exactly
+            // what @Pseudo is for - that is how a mixin against a test-only
+            // dependency (DedicatedServerBootWindowMixin, which targets
+            // fabric-client-gametest-api-v1) survives a real install that does
+            // not ship that jar. Anything else with a missing target WILL
+            // crash the game the first time the mixin loads, so fail it here.
+            helper.assertTrue(pseudo[0], module + ":" + mixinName + " targets "
+                    + target[0] + " which is not on this classpath, but it is not @Pseudo"
+                    + " - a mixin whose target can be missing must be @Pseudo");
+            return;
+        }
         for (String selector : injectionSelectors) {
             String name = selector.contains("(") ? selector.substring(0, selector.indexOf('(')) : selector;
             if (name.isEmpty() || name.indexOf('*') >= 0 || name.indexOf('?') >= 0) {
@@ -1548,6 +1565,12 @@ public final class HearthwindPrimitiveGameTests {
      * CLIENT classes do not exist in a dedicated-server jar, so they are
      * read from the loom merged jar (path supplied by run_gametests.sh).
      */
+    /**
+     * Class bytes for a mixin target, or null when the class genuinely is not
+     * on this classpath. A null is legitimate for a {@code @Pseudo} mixin whose
+     * target lives in a dependency that only exists in the test pack (see
+     * {@link #auditShadowClass}), so it is returned rather than asserted.
+     */
     private static byte[] classBytes(String internalName) throws Exception {
         String path = internalName + ".class";
         var in = net.minecraft.world.level.Level.class.getClassLoader().getResourceAsStream(path);
@@ -1561,7 +1584,9 @@ public final class HearthwindPrimitiveGameTests {
                 "client target " + internalName + " needs -Dhearthwind.mergedJar (run_gametests.sh sets it)");
         try (java.util.zip.ZipFile zip = new java.util.zip.ZipFile(merged)) {
             java.util.zip.ZipEntry entry = zip.getEntry(path);
-            helperAssert(entry != null, "merged jar lacks " + path);
+            if (entry == null) {
+                return null;
+            }
             try (var zin = zip.getInputStream(entry)) {
                 return zin.readAllBytes();
             }
