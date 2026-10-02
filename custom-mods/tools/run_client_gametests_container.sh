@@ -35,6 +35,7 @@ docker run --rm \
   -e CGT_XMS="${CGT_XMS:-1G}" \
   -e CGT_MODID_FILTER="${CGT_MODID_FILTER:-}" \
   -e CGT_EXCLUDE_MODS="${CGT_EXCLUDE_MODS:-}" \
+  -e CGT_TIMEOUT="${CGT_TIMEOUT:-1800}" \
   -e GRADLE_USER_HOME=/work/gradle-home \
   -e "CGT_ARGS=$*" \
   hearthwind-client-gametest \

@@ -520,7 +520,8 @@ water at the same level instead of destroy/fill. Tag wiring:
 water for sipping, bowl filling, flasks and vanilla bucket logic**.
 `CauldronBehaviorMixin` adds `purified_water_bucket → FILL_WITH_WATER` to
 the vanilla cauldron map, so a purified bucket fills a **vanilla** cauldron
-into `minecraft:water_cauldron`. Fluid-API storage registers
+into `minecraft:water_cauldron` (ported 0.1.48 as a row on
+`CauldronInteractions.EMPTY`). Fluid-API storage registers
 `81000` mB in both directions.
 
 **A purified bucket gives no thirst at all** — it is not a
@@ -590,14 +591,16 @@ campfire and the kelp route.
 Legend: ✅ at parity · 🟡 deliberate deviation (reason in one clause) ·
 ❌ missing · ❌ unverified (say what could not be found).
 
-Summary: **✅ 72 · 🟡 26 · ❌ 4** over 102 rows. 0.1.45 closed the last of them
+Summary: **✅ 74 · 🟡 26 · ❌ 2** over 102 rows (0.1.48 closed the last two
+functional rows - purified water displacing vanilla water as it flows, and the purified
+bucket filling a vanilla cauldron; the two left are polish: thirst droplet tooltips and
+the four custom sound events). 0.1.45 closed the last of them
 four more: the campfire cauldron's potion pour, the copper cauldron's one-step potion
 fill, the bubble sound while it boils, and the rule that a block placed above the
 cauldron removes it; 0.1.45 then ported rain extinguishing campfires, which is
 AdditionZ's job rather than Dehydration's, so the whole port queue's most
 survival-critical key is closed. Four ❌ rows remain, none of them hydration
-behaviour: purified water displacing vanilla water when it flows in, the purified
-bucket filling a vanilla cauldron, thirst droplet tooltips, and the four custom
+behaviour: thirst droplet tooltips and the four custom
 sound events. The last
 `❌ unverified` row was closed on 0.1.35 (the hydration corpus resolves 105 of
 its 115 catalogued ids in a real world, and the gametest now pins that), and
@@ -648,10 +651,10 @@ the bytecode rather than trusting the prose:
 | `dehydration:thirst` damage type, bypasses armour + effects, "died of thirst" | same id, same two tags | ✅ | `data/dehydration/damage_type/thirst.json`, `data/minecraft/tags/damage_type/bypasses_{armor,effects}.json` |
 | `purified_water` still + flowing fluid, block, bucket; splash `UNDERWATER`, drip `DRIPPING_WATER` | all four registered; splash/drip inherited from `WaterFluid` | ✅ | `PurifiedWater.java:50-113`; test `purifiedWaterRegisters` |
 | purified water in `minecraft:tags/fluids/water` | shipped | ✅ | `data/minecraft/tags/fluid/water.json` |
-| purified water replaces vanilla water when flowing in (`WaterFluid.flow` override) | no such mixin; 26.2 `canBeReplacedWith` refuses anything in `FluidTags.WATER`, so the two fluids neither displace nor overwrite each other | ❌ | no entry in `hearthwind_survival.mixins.json`; `WaterFluid.java:117-119` |
+| purified water replaces vanilla water when flowing in (`WaterFluidMixin.spreadTo` override) | ported 0.1.48, but it needed THREE fixes, not one: (a) `WaterFluid#canBeReplacedWith` is `DOWN && !other.is(FluidTags.WATER)` and purified water IS in that tag, so `WaterFluidPurifiedMixin` makes vanilla water accept it (the reference's `matchesTypeMixin`); (b) `StillFluid.spreadTo` writes the cell directly; (c) **26.2's `WaterFluid#createLegacyBlock` hardcodes `Blocks.WATER`**, so our fluid had been writing VANILLA water into the world all along and purified water could never exist as a block - pouring a purified bucket handed you normal water | ✅ 0.1.48 | `PurifiedWater.StillFluid.{createLegacyBlock,spreadTo}` + `mixin/WaterFluidPurifiedMixin`; test `purifiedWaterDisplacesVanillaWaterWhenItFlowsIn` pins both reference contracts |
 | purified bucket: 8 `LARGE_SMOKE` particles, randomised empty sound, recursion into the block below, `maxDamage(BUCKET)+1` | plain vanilla `BucketItem` with `craftRemainder(Items.BUCKET)`; no particles, no recursion, no `maxDamage` | 🟡 deliberate simplification; the recursion is what filled a copper-cauldron chain | `PurifiedWater.java:108-110` |
 | purified water bucket recipe: smelting a water bucket, 1.0 exp, 600 t | identical, and asserted to parse | ✅ | `data/dehydration/recipe/purified_water_bucket.json`; test `purifiedBucketSmeltingRecipeParses` |
-| purified bucket fills a **vanilla** cauldron (`FILL_WITH_WATER`) | not implemented; no `CauldronBehaviors` hook | ❌ | `HydrationStorages.java:32-60` |
+| purified bucket fills a **vanilla** cauldron (`FILL_WITH_WATER`) | ported 0.1.48: our row on `CauldronInteractions.EMPTY`, reached through a `CauldronInteraction.Dispatcher#put` invoker (26.2 made `put` package-private) | ✅ 0.1.48 | `PurifiedWater.registerCauldron()` + `mixin/CauldronDispatcherAccessor`; test `purifiedBucketFillsAVanillaCauldron` drives the real `useItemOn` |
 | a purified bucket gives no thirst | gives no thirst (it is not a consumable at all) | ✅ | `ThirstHelper.hydratePlayer` has no bucket branch (`ThirstHelper.java:43-82`) |
 | `water_bowl` / `purified_water_bowl` registered in the `dehydration` namespace | yes, both `WaterBowlItem` with the 32-tick DRINK consumable | ✅ | `HydrationItems.java:43-50`; test `hydrationContentRegisters` |
 | **both** bowls roll 40 % thirst, including the purified one (`hasThirstChance = true` twice) | `water_bowl` rolls, `purified_water_bowl` never does (`false` passed) | 🟡 deliberate: the purified bowl is meant to be safe — this is report open question #5 | `HydrationItems.java:46,50`; test `dirtyWaterBowlRollsThirst` |

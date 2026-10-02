@@ -74,6 +74,18 @@ contract of what the pack does. Grown from the Aged fork; server-side only.
   boils - that uses Minecraft's own bubble sound rather than Aged's custom one,
   and it plays on the server tick, so everyone near the fire hears it instead of
   only the player looking at it.
+- **Purified water flows (0.1.48)**: two things Aged's purified water could do
+  that ours could not. It now **displaces vanilla water** - pour or let it run
+  into a pool of normal water and you get purified water instead of the flow
+  stopping dead at the first normal cell, which is what happened before. And the
+  **purified bucket fills a normal cauldron** to the brim, exactly like a water
+  bucket, and comes back as a water bucket. (Aged's own guide admits it never
+  found a use for a purified bucket; this is the use.)
+  **One thing this uncovered:** pouring a purified bucket used to give you
+  *normal* water. Minecraft's own `WaterFluid` writes `minecraft:water`
+  whenever a water-like fluid places itself, and ours had inherited that, so
+  purified water could not physically exist in the world. Fixed in 0.1.48 -
+  so if you have a purified bucket from an older install, it is finally real.
 - **Potion of Hydration (0.1.35)**: you can now brew clean water instead of
   boiling it. In a brewing stand, {gilt}water + charcoal{} or {gilt}water + kelp{}
   gives a {gilt}bottle of purified water{}; dropping a {gilt}ghast tear{} into that
@@ -243,6 +255,10 @@ Eight optional professions (Miner, Farmer, Fisher, Warrior, Smither, Brewer, Bui
   so the main menu drew as the magenta-and-black missing-texture checkerboard;
   that is fixed and a test now fails the build if any menu art stops
   resolving.
+- **Main menu links (0.1.48)**: the Modrinth and Discord buttons are gone.
+  They pointed at another pack's pages, and Hearthwind has no pages of its own
+  to point at. The accessibility, language and GitHub icons stay - GitHub
+  leads to this project's own repository.
 - **Survival Guidebook (Aged progression guide parity)**:
   - Starter `/guide`, `/guidebook`, and first-join grants use the canonical
     `hearthwind:hearthwind_guide_book` when Lavender is loaded (11 categories,

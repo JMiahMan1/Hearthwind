@@ -2,6 +2,8 @@
 # jar. They used to point at another pack's textures, which only ever existed
 # in a resources/ folder the game never loads, so the menu painted as the
 # magenta-and-black missing-texture checkerboard.
+# The Modrinth and Discord buttons were removed on request: they pointed at
+# another pack's pages, and this pack has no pages of its own to point at.
 type = fancymenu_layout
 
 layout-meta {
@@ -36,77 +38,6 @@ scroll_list_customization {
   show_scroll_list_header_footer_preview_in_editor = false
   repeat_scroll_list_header_texture = false
   repeat_scroll_list_footer_texture = false
-}
-
-element {
-  button_element_executable_block_identifier = 50b17583-a289-4592-81ee-d33bd6be6a4e-1721067933960
-  [executable_action_instance:9c715759-4b41-4bf0-9094-405d2c943902-1721235017428][action_type:openlink] = https://modrinth.com/modpack/aged
-  [executable_block:50b17583-a289-4592-81ee-d33bd6be6a4e-1721067933960][type:generic] = [executables:9c715759-4b41-4bf0-9094-405d2c943902-1721235017428;]
-  backgroundnormal = [source:location]hearthwind:textures/gui/title/modrinth.png
-  backgroundhovered = [source:location]hearthwind:textures/gui/title/modrinth_hovered.png
-  restartbackgroundanimations = true
-  loopbackgroundanimations = true
-  nine_slice_custom_background = false
-  nine_slice_border_x = 5
-  nine_slice_border_y = 5
-  description = Modrinth
-  label = 
-  navigatable = true
-  element_type = custom_button
-  instance_identifier = ae791085-8c31-4f85-90bd-9484a5bbcf20-1721067933960
-  appearance_delay = no_delay
-  appearance_delay_seconds = 1.0
-  fade_in = false
-  fade_in_speed = 1.0
-  anchor_point = mid-centered
-  advanced_posx = {"placeholder":"calc","values":{"expression":"{"placeholder":"guiwidth"}-100","decimal":"true"}}
-  advanced_posy = 20
-  advanced_width = 20
-  x = 0
-  y = 0
-  width = 50
-  height = 20
-  stretch_x = false
-  stretch_y = false
-  stay_on_screen = true
-  element_loading_requirement_container_identifier = ea604c13-d4e4-41ea-811a-01f3885667ff-1721067933960
-  [loading_requirement_container_meta:ea604c13-d4e4-41ea-811a-01f3885667ff-1721067933960] = [groups:][instances:]
-}
-
-element {
-  button_element_executable_block_identifier = cd4d9379-a231-4845-bcaa-41a301c88532-1721068021961
-  [executable_action_instance:b632cf90-0953-4ea4-81ba-f6dcbe2f9138-1721235069940][action_type:openlink] = https://discord.gg/2peBqWRwVp
-  [executable_block:cd4d9379-a231-4845-bcaa-41a301c88532-1721068021961][type:generic] = [executables:b632cf90-0953-4ea4-81ba-f6dcbe2f9138-1721235069940;]
-  backgroundnormal = [source:location]hearthwind:textures/gui/title/discord.png
-  backgroundhovered = [source:location]hearthwind:textures/gui/title/discord_hovered.png
-  restartbackgroundanimations = true
-  loopbackgroundanimations = true
-  nine_slice_custom_background = false
-  nine_slice_border_x = 5
-  nine_slice_border_y = 5
-  description = Discord
-  label = 
-  navigatable = true
-  element_type = custom_button
-  instance_identifier = 01466cfb-b1e7-4972-8d27-99bd587d6923-1721068021961
-  appearance_delay = no_delay
-  appearance_delay_seconds = 1.0
-  fade_in = false
-  fade_in_speed = 1.0
-  anchor_point = mid-centered
-  advanced_posx = {"placeholder":"calc","values":{"expression":"{"placeholder":"guiwidth"}-130","decimal":"true"}}
-  advanced_posy = 20
-  advanced_width = 20
-  advanced_height = 20
-  x = 0
-  y = 0
-  width = 50
-  height = 50
-  stretch_x = false
-  stretch_y = false
-  stay_on_screen = true
-  element_loading_requirement_container_identifier = 22491dbb-7503-4473-a137-2cc38a28aed6-1721068021961
-  [loading_requirement_container_meta:22491dbb-7503-4473-a137-2cc38a28aed6-1721068021961] = [groups:][instances:]
 }
 
 vanilla_button {

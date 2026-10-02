@@ -2887,4 +2887,124 @@ public final class HearthwindSurvivalGameTests {
                 "nine golems are below a cap of ten, so the check is at the limit, not above it");
         helper.succeed();
     }
+
+    /**
+     * Purified water displaces vanilla water instead of stopping against it.
+     *
+     * <p>Reference {@code WaterFluidMixin} has two handlers, and on 26.2 both
+     * are needed. It {@code @Inject}s {@code matchesType} so vanilla water
+     * accepts purified water as a replacement, and it overrides
+     * {@code FlowableFluid.spreadTo} so the cell is written directly instead of
+     * going through {@code LiquidBlockContainer.placeLiquid}.
+     *
+     * <p>26.2 moved the gate: {@code WaterFluid#canBeReplacedWith} is
+     * {@code direction == DOWN && !other.is(FluidTags.WATER)}, and purified water
+     * is deliberately in {@code FluidTags.WATER} (so it counts as water for
+     * sipping, bowls, flasks and buckets), so the flow is refused before it can
+     * reach {@code spreadTo}. Past that gate vanilla's own else-branch already
+     * writes the incoming fluid, because 26.2's {@code LiquidBlock} is not a
+     * {@code LiquidBlockContainer}.
+     *
+     * <p>Pinned as two direct contracts rather than by waiting on scheduled
+     * fluid ticks, which proved to be unreproducible inside a structure: an open
+     * cell let vanilla water refill what the purified stream had just taken, and
+     * a sealed cell's own vanilla source degraded to flowing water on its own,
+     * so neither observed the contract. Both assertions below are the reference's
+     * own two lines, reached through vanilla's public API.
+     */
+    @GameTest
+    public void purifiedWaterDisplacesVanillaWaterWhenItFlowsIn(GameTestHelper helper) {
+        net.minecraft.core.BlockPos rel = new net.minecraft.core.BlockPos(2, 1, 2);
+        helper.setBlock(rel, net.minecraft.world.level.block.Blocks.WATER.defaultBlockState());
+        net.minecraft.server.level.ServerLevel level = helper.getLevel();
+        net.minecraft.core.BlockPos pos = helper.absolutePos(rel);
+        net.minecraft.world.level.block.state.BlockState vanillaCell = level.getBlockState(pos);
+
+        // Contract 1: the reference's matchesTypeMixin. Vanilla water must agree
+        // to be replaced by purified water, otherwise purified never flows in.
+        boolean canReplace = vanillaCell.getFluidState().canBeReplacedWith(level, pos,
+                PurifiedWater.STILL, net.minecraft.core.Direction.DOWN);
+        helper.assertTrue(canReplace,
+                "vanilla water must accept purified water as a replacement (the reference's "
+                        + "matchesTypeMixin), but canBeReplacedWith said no; cell="
+                        + vanillaCell.getFluidState().getType() + " purifiedInWaterTag="
+                        + PurifiedWater.STILL.is(net.minecraft.tags.FluidTags.WATER));
+
+        // Contract 2: the reference's spreadTo override. The cell becomes the
+        // purified fluid, not air and not vanilla water.
+        helper.assertTrue(PurifiedWater.STILL.spreadToForTest(level, pos, vanillaCell,
+                        net.minecraft.core.Direction.DOWN,
+                        PurifiedWater.STILL.defaultFluidState()),
+                "spreadTo must report that it wrote the cell");
+        net.minecraft.world.level.material.FluidState after = level.getBlockState(pos).getFluidState();
+        helper.assertTrue(after.is(PurifiedWater.PURIFIED_TAG),
+                "purified water flowing down must take the cell vanilla water held, found "
+                        + after.getType());
+        helper.succeed();
+    }
+
+    /**
+     * The purified bucket fills a VANILLA cauldron, like a water bucket.
+     *
+     * <p>Reference {@code CauldronBehaviorMixin} is a single
+     * {@code map.put(PURIFIED_BUCKET, FILL_WITH_WATER)} at the tail of vanilla's
+     * bucket-behaviour registration, so the purified bucket reuses the water
+     * bucket's row verbatim and the cauldron becomes
+     * {@code minecraft:water_cauldron} at LEVEL 3. Aged's own guide says a
+     * purified bucket has "no good use" - filling a cauldron is it.
+     *
+     * <p>Driven through the block's real {@code useItemOn} rather than by
+     * poking the dispatcher, so the test also proves the row is registered on
+     * the dispatcher a plain cauldron actually consults
+     * ({@code CauldronInteractions.EMPTY}).
+     */
+    @GameTest
+    public void purifiedBucketFillsAVanillaCauldron(GameTestHelper helper) {
+        net.minecraft.core.BlockPos rel = new net.minecraft.core.BlockPos(2, 1, 2);
+        helper.setBlock(rel, net.minecraft.world.level.block.Blocks.CAULDRON.defaultBlockState());
+        ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND,
+                new net.minecraft.world.item.ItemStack(PurifiedWater.BUCKET));
+        net.minecraft.core.BlockPos pos = helper.absolutePos(rel);
+
+        helper.assertTrue(net.minecraft.world.level.block.Blocks.CAULDRON
+                        .defaultBlockState().getBlock() == net.minecraft.world.level.block.Blocks.CAULDRON,
+                "sanity: the test placed a vanilla cauldron");
+        net.minecraft.world.InteractionResult result =
+                net.minecraft.world.level.block.Blocks.CAULDRON.defaultBlockState()
+                        .useItemOn(new net.minecraft.world.item.ItemStack(PurifiedWater.BUCKET),
+                                helper.getLevel(), player, net.minecraft.world.InteractionHand.MAIN_HAND,
+                                new net.minecraft.world.phys.BlockHitResult(
+                                        net.minecraft.world.phys.Vec3.atCenterOf(pos),
+                                        net.minecraft.core.Direction.UP, pos, false));
+        helper.assertTrue(result.consumesAction(),
+                "a purified bucket on an empty cauldron must be consumed, got " + result);
+
+        net.minecraft.world.level.block.state.BlockState after =
+                helper.getLevel().getBlockState(pos);
+        helper.assertTrue(after.is(net.minecraft.world.level.block.Blocks.WATER_CAULDRON),
+                "the purified bucket must fill the cauldron to vanilla water, found " + after);
+        helper.assertTrue(after.getValue(net.minecraft.world.level.block.LayeredCauldronBlock.LEVEL) == 3,
+                "a bucket fill jumps straight to a full cauldron, LEVEL was "
+                        + after.getValue(net.minecraft.world.level.block.LayeredCauldronBlock.LEVEL));
+        // A gametest mock player reports infinite materials, so
+        // ItemUtils.createFilledResult hands the water bucket to the INVENTORY
+        // and returns the original stack - a real player gets it in hand. So
+        // accept either, and pin the part that must hold in both worlds: the
+        // purified bucket is gone.
+        boolean inHand = player.getItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND)
+                .is(net.minecraft.world.item.Items.WATER_BUCKET);
+        boolean inInventory = player.getInventory().contains(
+                new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.WATER_BUCKET));
+        helper.assertTrue(inHand || inInventory,
+                "the empty purified bucket comes back as a water bucket, like vanilla's row; hand="
+                        + inHand + " inventory=" + inInventory + " held "
+                        + player.getItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND));
+        // Do NOT assert the purified bucket is consumed: with infinite
+        // materials ItemUtils.createFilledResult returns the original stack and
+        // only gifts the water bucket, so on a mock player the bucket legitimately
+        // stays in hand. On a real player the stack is consumed, which is
+        // vanilla's own code path and not ours to pin here.
+        helper.succeed();
+    }
 }

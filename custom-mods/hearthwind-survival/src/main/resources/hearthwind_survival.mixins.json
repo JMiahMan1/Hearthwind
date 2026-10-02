@@ -5,6 +5,7 @@
 	"mixins": [
 		"AgeableMobBabyMixin",
 		"AnvilMenuTemperatureMixin",
+		"CauldronDispatcherAccessor",
 		"CampfireBlockEntityAccessor",
 		"CampfireBlockEntityMixin",
 		"CampfireBlockMixin",
@@ -15,7 +16,8 @@
 		"PlayerExhaustionMixin",
 		"PlayerSleepMixin",
 		"SpawnerCapMixin",
-		"VillagerGolemCapMixin"
+		"VillagerGolemCapMixin",
+		"WaterFluidPurifiedMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

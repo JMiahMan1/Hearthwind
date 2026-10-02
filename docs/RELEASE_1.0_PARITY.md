@@ -646,6 +646,47 @@ one invented table:
   is the `idiv` divisor for the duration, and the amplifier is the following
   `iconst_0`. Those two rows were already at parity; the 🟡 markers were
   spurious and are gone.
+- **The last two functional water rows are ported (0.1.48).** Both were read out
+  of Dehydration's mixins rather than assumed. `WaterFluidMixin` overrides
+  `FlowableFluid.spreadTo` so that purified water writes the cell it flows into
+  directly, skipping `LiquidBlockContainer.placeLiquid` - which re-checks
+  `canBeReplacedWith` and refuses liquid-into-liquid, so without the override a
+  purified stream simply halts on the first vanilla water it meets. 26.2 hands
+  `spreadTo` the new `FluidState` and already ends in
+  `setBlock(pos, target.createLegacyBlock(), 3)`, so that part is one line.
+  Two more were needed, and the first two attempts at this row were wrong
+  because of them:
+  - **`WaterFluid#canBeReplacedWith`** is `direction == DOWN &&
+    !other.is(FluidTags.WATER)`, and purified water is deliberately in
+    `FluidTags.WATER` (so it counts as water for sipping, bowls, flasks and
+    buckets). The flow is therefore refused *before* `spreadTo` is ever
+    reached. This is the reference's other handler - its `matchesTypeMixin` -
+    which 26.2 relocated into this method, so
+    `WaterFluidPurifiedMixin` reinstates it.
+  - **`WaterFluid#createLegacyBlock` hardcodes `Blocks.WATER`.** Our fluid
+    extends `WaterFluid`, so it inherited that, and every time purified water
+    placed itself in the world it wrote *vanilla* water. Purified water could
+    not physically exist as a block, and pouring a purified bucket handed the
+    player normal water. The reference's `PurifiedWaterFluid#method_15790`
+    overrides exactly this; that override was the missing piece, and it is why
+    the displacement test kept reporting vanilla water in the cell.
+  `CauldronBehaviorMixin` is a single
+  `map.put(PURIFIED_BUCKET, FILL_WITH_WATER)` at the tail of vanilla's
+  bucket-behaviour registration, so the purified bucket reuses the water
+  bucket's row verbatim and fills a **vanilla** cauldron. 26.2 renamed that map
+  to `CauldronInteraction.Dispatcher`, split it by what the cauldron holds, and
+  made `put` package-private, so the row goes on `CauldronInteractions.EMPTY`
+  (the dispatcher a plain cauldron consults) through a one-method invoker
+  mixin. Both are gametested against real server ticks and the real
+  `useItemOn` path respectively.
+
+With those two closed, every **functional** row in the Dehydration audit is
+ported. The two rows still marked ❌ are polish, not mechanics: thirst droplet
+tooltips and the four custom sound events (we use vanilla substitutes). The
+functional-parity work therefore moves on to AdditionZ's `villager_gender` -
+which needs the user's approval, because 26.2 has no `VillagerBreedTask` and
+opposite-sex breeding without the female-villager texture swap is itself a
+deviation - and then the 61-mod port queue.
 
 ## 6. Workstreams toward 1.0.0, in priority order
 

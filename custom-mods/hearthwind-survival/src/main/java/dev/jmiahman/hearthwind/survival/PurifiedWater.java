@@ -4,24 +4,33 @@ import java.util.function.Consumer;
 
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
+import net.minecraft.core.cauldron.CauldronInteractions;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.stats.Stats;
 import net.minecraft.tags.TagKey;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.ItemUtils;
 import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.fabricmc.fabric.api.registry.FabricPotionBrewingBuilder;
+import dev.jmiahman.hearthwind.survival.mixin.CauldronDispatcherAccessor;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.LayeredCauldronBlock;
 import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.StateDefinition;
@@ -52,6 +61,73 @@ public final class PurifiedWater {
     private PurifiedWater() {}
 
     public static class StillFluid extends net.minecraft.world.level.material.WaterFluid {
+        /**
+         * Purified water displaces whatever is in the cell it flows into,
+         * including vanilla water.
+         *
+         * <p>Reference {@code WaterFluidMixin} overrides
+         * {@code FlowableFluid.spreadTo} (26.2: {@code FlowingFluid}) and, when
+         * the spreading fluid is in {@code TagInit.PURIFIED_WATER}, replaces the
+         * whole vanilla body with a plain
+         * {@code level.setBlock(pos, <purified state>.createLegacyBlock(), 3)}.
+         *
+         * <p>The vanilla body is
+         * {@code if (block instanceof LiquidBlockContainer) container.placeLiquid(...)
+         * else { destroy if not air; setBlock }}, and
+         * {@code LiquidBlock.placeLiquid} re-checks
+         * {@code canBeReplacedWith} - which refuses liquid-into-liquid. So
+         * without this override purified water can never take a cell vanilla
+         * water already holds: the flow simply stops. The override also skips
+         * {@code beforeDestroyingBlock}, which is a no-op for water anyway.
+         *
+         * <p>26.2 already hands us the new {@code FluidState} to place, and its
+         * own last line is exactly {@code setBlock(pos, target.createLegacyBlock(), 3)},
+         * so the reference collapses to that one call - no mixin needed, because
+         * our fluid already extends 26.2's {@code WaterFluid}.
+         */
+        /**
+         * Purified water has to place ITS OWN block, not vanilla water's.
+         *
+         * <p>26.2's {@code WaterFluid#createLegacyBlock} is
+         * {@code Blocks.WATER.defaultBlockState().setValue(LEVEL, getLegacyLevel(state))}
+         * - hardcoded to {@code minecraft:water}. So without this override a
+         * purified fluid state written anywhere in the world became VANILLA
+         * water, which is why pouring a purified bucket used to hand you normal
+         * water and why the displacement test kept seeing vanilla in the cell.
+         *
+         * <p>Reference {@code PurifiedWaterFluid#method_15790} (createLegacyBlock)
+         * is exactly this: {@code BlockInit.PURIFIED_WATER.defaultBlockState()
+         * .setValue(FluidState.LEVEL, getLegacyLevel(state))}. It is the piece
+         * that makes the fluid a real second fluid rather than a water clone, and
+         * the reason {@code spreadTo} below can write a purified cell at all.
+         */
+        @Override
+        public net.minecraft.world.level.block.state.BlockState createLegacyBlock(FluidState fluidState) {
+            return BLOCK.defaultBlockState().setValue(LiquidBlock.LEVEL, getLegacyLevel(fluidState));
+        }
+
+        /**
+         * Test seam: {@code spreadTo} is protected, and the gametests live in
+         * another package. Returns true so a caller can tell the write happened.
+         */
+        public boolean spreadToForTest(net.minecraft.world.level.LevelAccessor level,
+                net.minecraft.core.BlockPos pos,
+                net.minecraft.world.level.block.state.BlockState state,
+                net.minecraft.core.Direction direction,
+                FluidState target) {
+            spreadTo(level, pos, state, direction, target);
+            return true;
+        }
+
+        @Override
+        protected void spreadTo(net.minecraft.world.level.LevelAccessor level,
+                net.minecraft.core.BlockPos pos,
+                net.minecraft.world.level.block.state.BlockState state,
+                net.minecraft.core.Direction direction,
+                FluidState target) {
+            level.setBlock(pos, target.createLegacyBlock(), 3);
+        }
+
         @Override
         public Fluid getFlowing() {
             return FLOWING;
@@ -143,6 +219,46 @@ public final class PurifiedWater {
         });
     }
 
+    /**
+     * The purified bucket fills a VANILLA cauldron, exactly like a water bucket.
+     *
+     * <p>Reference {@code CauldronBehaviorMixin} is a one-liner injected at the
+     * tail of {@code CauldronBehaviors.registerBucketBehavior(Map)}:
+     * {@code map.put(ItemInit.PURIFIED_BUCKET, CauldronBehaviors.FILL_WITH_WATER)}
+     * - the purified bucket reuses vanilla's water-bucket row verbatim, so the
+     * cauldron ends up as {@code minecraft:water_cauldron} at LEVEL 3. (Aged's
+     * guide even says a purified bucket has "no good use" - the cauldron is it.)
+     *
+     * <p>26.2 renamed the map to
+     * {@code CauldronInteraction.Dispatcher} and split it by what the cauldron
+     * currently holds: {@code CauldronBlock} passes {@link
+     * net.minecraft.core.cauldron.CauldronInteractions#EMPTY} to its super and
+     * {@code AbstractCauldronBlock.useItemOn} dispatches through it, so our row
+     * goes on {@code EMPTY} - the same slot vanilla's
+     * {@code addDefaultInteractions} puts {@code Items.WATER_BUCKET} in.
+     * Vanilla's own handler ({@code fillWaterInteraction}) is private, so this
+     * mirrors it: refund a water bucket, fill to LEVEL 3, BUCKET_EMPTY sound.
+     *
+     * <p>Registered on server start rather than in {@code registerAll} because
+     * {@code CauldronInteractions} is bootstrapped during Minecraft's own
+     * bootstrap; {@code addDefaultInteractions} only ever {@code put}s and never
+     * clears, so our row survives whatever order the two run in.
+     */
+    public static void registerCauldron() {
+        ((CauldronDispatcherAccessor) (Object) CauldronInteractions.EMPTY).hearthwind$put(BUCKET,
+                (state, level, pos, player, hand, itemInHand) -> {
+            if (!level.isClientSide()) {
+                player.setItemInHand(hand, ItemUtils.createFilledResult(itemInHand, player,
+                        new ItemStack(Items.WATER_BUCKET)));
+                player.awardStat(Stats.USE_CAULDRON);
+                player.awardStat(Stats.ITEM_USED.get(itemInHand.getItem()));
+                level.setBlockAndUpdate(pos, Blocks.WATER_CAULDRON.defaultBlockState()
+                        .setValue(LayeredCauldronBlock.LEVEL, 3));
+                level.playSound(null, pos, SoundEvents.BUCKET_EMPTY, SoundSource.BLOCKS, 1.0F, 1.0F);
+            }
+            return InteractionResult.SUCCESS;
+                });
+    }
     /**
      * Reference Dehydration {@code PotionItemMixin}: a "bad" potion rolls
      * {@code nextFloat() >= potion_bad_thirst_chance} (Aged 0.15 = 85%

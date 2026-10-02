@@ -122,6 +122,18 @@ cd custom-mods && bash tools/run_client_gametests_docker.sh
 #    waitFor* TIMEOUTS ARE TICKS (20/s) - use minutes, not seconds.
 #    PackServerConnectGameTests MUST be the LAST client entrypoint: closing
 #    its dedicated server exits the JVM (code 0), silently skipping later tests.
+#    That entrypoint boots a REAL dedicated server INSIDE the client JVM, and
+#    fabric gives it a hardcoded 10-second boot window
+#    (DedicatedServerImplUtil#start -> serverFuture.get(10, SECONDS), not a
+#    property). 150+ mods cannot boot in 10s, so it failed on every slow host
+#    while CI passed. Our mixin raises the literal to 420s (see
+#    DedicatedServerBootWindowMixin - @Pseudo + a string target, because
+#    fabric-client-gametest-api-v1 is only in the TEST pack). The same test
+#    also needs max-tick-time=-1 (fabric's server shares the client's JVM and
+#    the client's texture-atlas uploads trip the vanilla server watchdog),
+#    a settle between boot attempts, and a halt of the server fabric leaks
+#    when the window expires. And CGT_TIMEOUT only reaches the suite when the
+#    CONTAINER wrapper forwards it - exporting it on the host does nothing.
 ```
 
 Gotchas learned the hard way:
@@ -391,7 +403,18 @@ not drive 1.0.0 work.
   bleedout timer** (Aged's `timer` is -1), crouch + non-potion hand ARMS the
   Revive button, one click revives at **2 HP** with a 600-tick
   `revive:aftermath`. The temperature corpus carries **Aged's** manager
-  numbers, not EnvironmentZ's upstream defaults.
+  numbers, not EnvironmentZ's upstream defaults. Purified water is a real
+  fluid: it displaces vanilla water as it flows (the reference's
+  `WaterFluidMixin.spreadTo`, ported as a plain override because our fluid
+  already extends 26.2 `WaterFluid` and 26.2's signature already receives the
+  new `FluidState`), and the purified bucket fills a vanilla cauldron to
+  LEVEL 3 - the reference's `CauldronBehaviorMixin`, which on 26.2 needs an
+  invoker mixin because `CauldronInteraction.Dispatcher#put` is
+  package-private. Both fluid behaviours needed a line that is easy to miss:
+  26.2's `WaterFluid#canBeReplacedWith` refuses any fluid in
+  `FluidTags.WATER` (which purified water is in) and
+  `WaterFluid#createLegacyBlock` hardcodes `Blocks.WATER`, so a fluid that
+  merely extends `WaterFluid` writes VANILLA water. Both are overridden.
 - `hearthwind-skills`: LevelZ-parity skills, 649 corpus gates, procs,
   distance mob scaling, parties.
 - `hearthwind-jobs`: 8 jobs with corpus ladders, `/job` commands. Job

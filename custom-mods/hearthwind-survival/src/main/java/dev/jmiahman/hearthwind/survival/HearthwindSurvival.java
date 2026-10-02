@@ -49,8 +49,11 @@ public class HearthwindSurvival implements ModInitializer {
 		BareHandDrinkHandler.register();
 		CommandRegistrationCallback.EVENT.register((dispatcher, ctx, sel) -> HearthwindDebugCommand.register(dispatcher));
 		ServerLifecycleEvents.SERVER_STARTING.register(server -> {
-			EnvironmentCorpus.load(server.getResourceManager());
-			for (String line : EnvironmentCorpus.summary()) {
+			// Reference CauldronBehaviorMixin: the purified bucket fills a vanilla
+			// cauldron like a water bucket. On server start, because vanilla's own
+			// cauldron rows are registered during Minecraft's bootstrap.
+			PurifiedWater.registerCauldron();
+			EnvironmentCorpus.load(server.getResourceManager());			for (String line : EnvironmentCorpus.summary()) {
 				LOGGER.info(line);
 			}
 			HydrationCorpus.load(server.getResourceManager());

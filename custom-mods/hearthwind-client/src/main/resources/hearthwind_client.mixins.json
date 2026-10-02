@@ -10,7 +10,8 @@
     "FluidStateModelSetMixin",
     "ClientPacketListenerChatMixin",
     "MouseHandlerDownedReviveMixin",
-    "CameraDownedSpinMixin"
+    "CameraDownedSpinMixin",
+    "DedicatedServerBootWindowMixin"
   ],
   "injectors": {
     "defaultRequire": 1
