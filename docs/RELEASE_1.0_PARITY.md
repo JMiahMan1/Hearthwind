@@ -646,6 +646,51 @@ one invented table:
   is the `idiv` divisor for the duration, and the amplifier is the following
   `iconst_0`. Those two rows were already at parity; the 🟡 markers were
   spurious and are gone.
+- **Dehydration mechanics parity pass (0.1.49).** Seventeen more rows of
+  `docs/AGED_HYDRATION.md` moved from 🟡 to ✅, and two were marked *not
+  reproducible on 26.2* with the reason. The audit is now **✅ 92 · 🟡 9 ·
+  ❌ 2 over 103 rows**. The changes a player can feel:
+  - **A river fill is DIRTY.** We had it exactly backwards - the test called
+    `flaskOpenWaterQualityMatchesAged` asserted "river water fills a fresh
+    flask as purified" while being the reference's opposite. The reference's
+    branch is `level = 2, purified = false`, i.e. a river is the dirtiest
+    water in the pack.
+  - **Filling from open water needs a 20-tick hold and consumes the source**,
+    and accepts any `FluidTags.WATER` source, so purified water fills a flask.
+  - **The flask tooltip is the reference's**: `Fill Level n/cap` (or
+    `Fill Capacity n` empty) plus colour-coded `Dirty/Dirty Water` lines.
+  - **The bare-hand sip is the reference's `raycast(1.5, 0.0, 1.0)`** with
+    none of the four fallbacks we had added (water above the hit, waterlogged
+    blocks, a full water cauldron, and the player's own block so a submerged
+    player could sip). Each fallback let you drink where the reference cannot.
+  - **The thirst effect icon is `0x2EC6B6`**, the reference's own colour, and
+    `nether_factor` is 1.3 (we had 2.0).
+  - **Drinking a water bowl consumes it and returns nothing.** We handed back
+    a plain `minecraft:bowl` and shipped two shapeless recipes for it; both are
+    removed.
+  - **The campfire cauldron's rain also needs sky-light and a biome at 0.15 °C
+    or warmer**, and its voxel shape is vanilla's full cube again - the stand
+    with legs reaching 15 blocks down was our own art idea.
+  - **The bamboo pump converts in one press** (a bucket used to need four), a
+    pumped flask keeps its fill level and becomes purified instead of gaining
+    two units, the `pump_requires_water` scan covers blocks 0…49 above (it was
+    10…59), and the cooldown rides on the block entity only - we had invented
+    an item-NBT copy so it survived breaking the pump.
+  - **The boil pops at the raw block corner** with 1.20.1 `ItemScatterer`
+    physics (26.2 dropped that class, so `CampfirePurification.spawnAtCorner`
+    mirrors its body), **with no completion chime, no steam and no particle**
+    and **no unlit-fire chat hint**. All four were Hearthwind additions from
+    0.1.33; under the parity rule they are gone.
+  - **Not reproducible on 26.2, with the reason recorded:** the reference's
+    single shared campfire `cookTime` (26.2 gives every slot its own progress
+    and time arrays) and the `pour_<tier>_leather_flask` reset recipes (vanilla
+    simplifies away a one-ingredient recipe whose result is its own
+    ingredient). The reference's *other* way to empty a flask - sneak-use - is
+    implemented and is what players have.
+  - Three tests were corrected because they had been green against our own
+    invented data, the third time that has happened: the river-fill test
+    asserted the inverted value, the pump test asserted four pumps for a
+    bucket, and the bowl test asserted a bowl came back.
 - **The last two functional water rows are ported (0.1.48).** Both were read out
   of Dehydration's mixins rather than assumed. `WaterFluidMixin` overrides
   `FlowableFluid.spreadTo` so that purified water writes the cell it flows into

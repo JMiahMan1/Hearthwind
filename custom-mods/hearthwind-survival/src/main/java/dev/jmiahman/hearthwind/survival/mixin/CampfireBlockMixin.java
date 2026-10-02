@@ -40,11 +40,10 @@ public abstract class CampfireBlockMixin {
         if (level instanceof ServerLevel serverLevel
                 && CampfirePurification.placeWaterBottle(serverLevel, player, campfire, itemStack)) {
             player.awardStat(Stats.INTERACT_WITH_CAMPFIRE);
-            // The reference mod accepts the bottle on a cold fire and says
-            // nothing, so a player waits forever. Keep the rule, add the news.
-            if (!CampfirePurification.isLit(state) && player instanceof net.minecraft.server.level.ServerPlayer serverPlayer) {
-                CampfirePurification.warnAboutUnlitFire(serverPlayer);
-            }
+            // No lit check and no warning: CampfireBlockMixin in the reference
+            // accepts the bottle on a cold fire and says nothing (the boil
+            // only completes in litServerTick). We added a chat hint in 0.1.33;
+            // under the parity rule it is gone again (0.1.49).
             cir.setReturnValue(InteractionResult.SUCCESS_SERVER);
         } else {
             cir.setReturnValue(InteractionResult.CONSUME);

@@ -61,6 +61,21 @@ public final class BareHandDrinkHandler {
         if (water == null) {
             return InteractionResult.PASS;
         }
+        return trySipAt(player, level, water);
+    }
+
+    /**
+     * The sip itself, with the source position already resolved.
+     *
+     * <p>{@link #findWater} is the only part of this that needs the player to
+     * be able to raycast, and a gametest mock player cannot: its eye stays at
+     * the world origin and {@code pick} misses even with a water source
+     * directly below it (measured - the diagnostic in
+     * bareHandHoldCompletesSipAndConsumesSource prints eye=(0.0, 1.62, 0.0)
+     * with the source at (0, 0, 0)). So the tests call this with a position
+     * and the reach stays pinned by {@link #SIP_REACH} instead.
+     */
+    public static InteractionResult trySipAt(Player player, Level level, BlockPos water) {
 
         if (HearthwindSurvivalThirst.level(player) >= HearthwindSurvivalThirst.MAX_LEVEL) {
             return InteractionResult.PASS;
@@ -92,41 +107,35 @@ public final class BareHandDrinkHandler {
         return InteractionResult.SUCCESS;
     }
 
-    /** Fluid-including eye raycast + proximity check; returns the water position or null. */
+    /**
+     * The reference's sip target: {@code player.raycast(1.5, 0.0, 1.0)} - a
+     * fixed 1.5-block reach, no hits, fluids included - and then ONE test: the
+     * hit block's fluid must be in {@code FluidTags.WATER}.
+     *
+     * <p>We added four fallbacks (water above the hit, waterlogged blocks, a
+     * full water cauldron, and the player's own block so a submerged player can
+     * sip) to make the sip reachable in more situations. None of them exist in
+     * Dehydration 1.3.6 and each one lets you drink where the reference cannot
+     * (0.1.49).
+     */
     public static BlockPos findWater(Player player, Level level) {
-        HitResult ray = player.pick(player.blockInteractionRange(), 0.0f, true);
-        if (ray != null && ray.getType() == HitResult.Type.BLOCK) {
-            BlockPos pos = ((BlockHitResult) ray).getBlockPos();
-            if (level.getFluidState(pos).is(FluidTags.WATER) || level.getBlockState(pos).is(Blocks.WATER)) {
-                return pos;
-            }
-            // Check if block above or clicked block is water / waterlogged / water cauldron
-            if (level.getFluidState(pos.above()).is(FluidTags.WATER) || level.getBlockState(pos.above()).is(Blocks.WATER)) {
-                return pos.above();
-            }
-            BlockState state = level.getBlockState(pos);
-            if (state.hasProperty(BlockStateProperties.WATERLOGGED) && state.getValue(BlockStateProperties.WATERLOGGED)) {
-                return pos;
-            }
-            if (state.is(Blocks.WATER_CAULDRON) && state.getValue(net.minecraft.world.level.block.LayeredCauldronBlock.LEVEL) > 0) {
-                return pos;
-            }
+        // withFluids = FALSE, deliberately. The reference raycasts
+        // (1.5, 0.0, 1.0), but 26.2 moved fluid handling: LiquidBlock is no
+        // longer a LiquidBlockContainer, so Entity.pick's withLiquids branch
+        // does not report a water block at all - measured, the eye directly
+        // above a source returns a miss. A water source is still a full block
+        // for Level.clip, so a block raycast finds it and the FluidTags.WATER
+        // test below is the reference's own check.
+        HitResult ray = player.pick(SIP_REACH, 0.0F, false);
+        if (ray == null || ray.getType() != HitResult.Type.BLOCK) {
+            return null;
         }
-
-        // Fallback for players standing INSIDE a source block: the fluid
-        // raycast can miss when the eye is submerged, and upstream
-        // players can sip while swimming face-down in water.
-        BlockPos own = player.blockPosition();
-        FluidState ownFluid = level.getFluidState(own);
-        if (ownFluid.is(FluidTags.WATER) && ownFluid.isSource()) {
-            return own;
-        }
-        BlockState ownState = level.getBlockState(own);
-        if (ownState.hasProperty(BlockStateProperties.WATERLOGGED) && ownState.getValue(BlockStateProperties.WATERLOGGED)) {
-            return own;
-        }
-        return null;
+        BlockPos pos = ((BlockHitResult) ray).getBlockPos();
+        return level.getFluidState(pos).is(FluidTags.WATER) ? pos : null;
     }
+
+    /** The reference's fixed sip reach, in blocks (0.1.49). */
+    public static final double SIP_REACH = 1.5;
 
     private static void completeSip(ServerPlayer sp, ServerLevel level, BlockPos pos, boolean still) {
         HearthwindSurvivalConfig.BareHand cfg = HearthwindSurvivalConfig.get().bareHand;

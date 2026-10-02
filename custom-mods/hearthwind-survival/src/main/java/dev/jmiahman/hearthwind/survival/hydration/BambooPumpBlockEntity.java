@@ -1,5 +1,6 @@
 package dev.jmiahman.hearthwind.survival.hydration;
 
+import dev.jmiahman.hearthwind.survival.FlaskData;
 import dev.jmiahman.hearthwind.survival.FlaskItems;
 import dev.jmiahman.hearthwind.survival.HearthwindSurvivalConfig;
 import dev.jmiahman.hearthwind.survival.LeatherFlaskItem;
@@ -77,7 +78,9 @@ public class BambooPumpBlockEntity extends BlockEntity implements Container {
         if (!bucket && !bottle && !flask) {
             return;
         }
-        if (bucket && this.pumpCount <= 3) {
+        // ONE pump converts, for every container the reference accepts. A
+        // bucket used to need four (0.1.49).
+        if (this.pumpCount <= 0) {
             return;
         }
         if (this.level != null && this.level.isClientSide()) {
@@ -91,9 +94,12 @@ public class BambooPumpBlockEntity extends BlockEntity implements Container {
             potion.set(DataComponents.POTION_CONTENTS, new PotionContents(purified));
             this.inventory.set(0, potion);
         } else {
+            // "a purified-water-filled copy of the container": the flask keeps
+            // whatever fill level it had and its contents become purified. We
+            // used to add two units as well, which the reference never does.
             var data = stack.get(FlaskItems.FLASK_DATA);
             if (data != null) {
-                this.inventory.set(0, FlaskItems.setFill(stack, data.fillLevel() + 2, data.qualityLevel()));
+                this.inventory.set(0, FlaskItems.setFill(stack, data.fillLevel(), FlaskData.PURIFIED));
             }
         }
         this.pumpCount = 0;

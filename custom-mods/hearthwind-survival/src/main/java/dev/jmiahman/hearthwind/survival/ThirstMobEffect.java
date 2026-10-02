@@ -22,7 +22,9 @@ public final class ThirstMobEffect extends MobEffect {
     public static Holder<MobEffect> HOLDER;
 
     public ThirstMobEffect() {
-        super(MobEffectCategory.HARMFUL, 0x3A62C4);
+        // 0x2EC6B6 is the reference's own icon colour (EffectInit.<clinit>
+        // `ldc 3062757`), not a house pick. 0.1.49.
+        super(MobEffectCategory.HARMFUL, 0x2EC6B6);
     }
 
     public static void register() {

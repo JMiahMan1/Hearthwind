@@ -54,6 +54,16 @@ public final class HydrationBowlHandler {
         if (pos == null) {
             return InteractionResult.PASS;
         }
+        return fillBowlAt(player, level, hand, pos);
+    }
+
+    /**
+     * The bowl fill itself, with the source already resolved. Same test seam
+     * and same reason as {@code BareHandDrinkHandler.trySipAt}: a gametest mock
+     * player cannot raycast.
+     */
+    public static InteractionResult fillBowlAt(Player player, Level level, InteractionHand hand, BlockPos pos) {
+        ItemStack stack = player.getItemInHand(hand);
         FluidState fluid = level.getFluidState(pos);
         boolean purified = fluid.is(PurifiedWater.PURIFIED_TAG);
         if (!level.mayInteract(player, pos) || !(fluid.is(FluidTags.WATER) || purified)) {

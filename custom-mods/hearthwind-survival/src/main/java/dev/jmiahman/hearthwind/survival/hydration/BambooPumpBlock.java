@@ -197,43 +197,24 @@ public class BambooPumpBlock extends BaseEntityBlock implements SimpleWaterlogge
         return false;
     }
 
+    /**
+     * The reference scans {@code pos.add(0, i, 0)} for i = 0…49 - blocks
+     * 0 through 49 straight up, counting the pump's own block - not blocks 10
+     * to 59 like we did (0.1.49).
+     */
     private static boolean hasWaterAbove(Level level, BlockPos pos) {
         for (int i = 0; i < 50; i++) {
-            if (level.getFluidState(pos.above(10 + i)).is(FluidTags.WATER)) {
+            if (level.getFluidState(pos.above(i)).is(FluidTags.WATER)) {
                 return true;
             }
         }
         return false;
     }
 
-    @Override
-    public void setPlacedBy(Level level, BlockPos pos, BlockState state, @Nullable LivingEntity by,
-            ItemStack itemStack) {
-        super.setPlacedBy(level, pos, state, by, itemStack);
-        if (itemStack.has(DataComponents.CUSTOM_DATA)
-                && level.getBlockEntity(pos) instanceof BambooPumpBlockEntity pump) {
-            int cooldown = itemStack.get(DataComponents.CUSTOM_DATA).copyTag().getInt(COOLDOWN_TAG).orElse(0);
-            if (cooldown > 0) {
-                pump.setCooldown(cooldown);
-            }
-        }
-    }
-
-    @Override
-    protected List<ItemStack> getDrops(BlockState state, LootParams.Builder params) {
-        List<ItemStack> drops = super.getDrops(state, params);
-        if (drops != null && params.getOptionalParameter(LootContextParams.BLOCK_ENTITY)
-                instanceof BambooPumpBlockEntity pump && pump.getCooldown() > 0) {
-            for (ItemStack drop : drops) {
-                if (drop.is(HydrationBlocks.BAMBOO_PUMP.asItem())) {
-                    CompoundTag tag = new CompoundTag();
-                    tag.putInt(COOLDOWN_TAG, pump.getCooldown());
-                    drop.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
-                }
-            }
-        }
-        return drops;
-    }
+    // The reference keeps pump_cooldown on the block entity alone. We used to
+    // ride a pending cooldown on the item NBT so it survived breaking and
+    // replacing the pump; that is our own invention and the reference loses the
+    // rest with the block, so it goes (0.1.49).
 
     @Override
     public ItemStack getCloneItemStack(LevelReader level, BlockPos pos, BlockState state, boolean includeData) {

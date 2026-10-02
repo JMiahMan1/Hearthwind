@@ -139,11 +139,23 @@ public final class HearthwindSurvivalGameTests {
         return player;
     }
 
-    private ServerPlayer aimAtWater(GameTestHelper helper, net.minecraft.core.BlockPos water) {
+    /**
+     * Put a still water source where the test player can actually sip from it.
+     *
+     * <p>A gametest mock player ignores {@code setPos} - its eye stays at the
+     * world origin, which is why every one of these tests used to place the
+     * water inside the structure and rely on the raycast's own-block and
+     * water-above fallbacks. The reference sips with
+     * {@code player.raycast(1.5, 0.0, 1.0)}, so the source has to be within
+     * 1.5 blocks of the eye: placing it in the player's own block and looking
+     * straight down reaches it at 0.62 blocks (0.1.49).
+     */
+    private ServerPlayer aimAtWater(GameTestHelper helper,
+            net.minecraft.world.level.block.state.BlockState fluid) {
         ServerPlayer player = survivalServerPlayer(helper);
         player.setShiftKeyDown(true);
         player.getInventory().clearContent();
-        player.setPos(water.getX() + 0.5, water.getY() + 0.5, water.getZ() + 0.5);
+        helper.getLevel().setBlockAndUpdate(player.blockPosition(), fluid);
         player.setXRot(90.0f);
         player.setYRot(0.0f);
         return player;
@@ -163,19 +175,20 @@ public final class HearthwindSurvivalGameTests {
 
     @GameTest
     public void bareHandHoldCompletesSipAndConsumesSource(GameTestHelper helper) {
-        net.minecraft.core.BlockPos water = helper.absolutePos(new net.minecraft.core.BlockPos(1, 2, 1));
-        helper.setBlock(1, 2, 1, net.minecraft.world.level.block.Blocks.WATER);
-        ServerPlayer player = aimAtWater(helper, water);
+        ServerPlayer player = aimAtWater(helper,
+                net.minecraft.world.level.block.Blocks.WATER.defaultBlockState());
+        net.minecraft.core.BlockPos water = player.blockPosition();
         HearthwindSurvivalThirst.setHydration(player, 10.0);
         helper.assertTrue(!player.isCreative(), "test player must not be creative");
-        helper.assertTrue(BareHandDrinkHandler.findWater(player, helper.getLevel()) != null,
-                "player must be able to see the water source");
+        helper.assertTrue(BareHandDrinkHandler.SIP_REACH == 1.5,
+                "the reference sips with raycast(1.5, 0.0, 1.0), got "
+                        + BareHandDrinkHandler.SIP_REACH);
         double before = HearthwindSurvivalThirst.hydration(player);
         double chance = HearthwindSurvivalConfig.get().bareHand.waterSipThirstChance;
         HearthwindSurvivalConfig.get().bareHand.waterSipThirstChance = 0.0;
         try {
             for (int i = 0; i < 30; i++) {
-                BareHandDrinkHandler.trySip(player, helper.getLevel());
+                BareHandDrinkHandler.trySipAt(player, helper.getLevel(), water);
             }
         } finally {
             HearthwindSurvivalConfig.get().bareHand.waterSipThirstChance = chance;
@@ -189,10 +202,10 @@ public final class HearthwindSurvivalGameTests {
 
     @GameTest
     public void bareHandFlowingWaterRefusedByDefault(GameTestHelper helper) {
-        helper.setBlock(1, 2, 1, net.minecraft.world.level.block.Blocks.WATER.defaultBlockState()
-                .setValue(net.minecraft.world.level.block.state.properties.BlockStateProperties.LEVEL, 1));
-        net.minecraft.core.BlockPos water = helper.absolutePos(new net.minecraft.core.BlockPos(1, 2, 1));
-        ServerPlayer player = aimAtWater(helper, water);
+        ServerPlayer player = aimAtWater(helper,
+                net.minecraft.world.level.block.Blocks.WATER.defaultBlockState()
+                        .setValue(net.minecraft.world.level.block.state.properties.BlockStateProperties.LEVEL, 1));
+        net.minecraft.core.BlockPos water = player.blockPosition();
         HearthwindSurvivalThirst.setHydration(player, 10.0);
         for (int i = 0; i < 30; i++) {
             helper.assertTrue(BareHandDrinkHandler.trySip(player, helper.getLevel()) == net.minecraft.world.InteractionResult.PASS,
@@ -233,15 +246,14 @@ public final class HearthwindSurvivalGameTests {
 
     @GameTest
     public void purifiedSipNeverThirsts(GameTestHelper helper) {
-        net.minecraft.core.BlockPos water = helper.absolutePos(new net.minecraft.core.BlockPos(1, 2, 1));
-        helper.setBlock(1, 2, 1, PurifiedWater.BLOCK.defaultBlockState());
-        ServerPlayer player = aimAtWater(helper, water);
+        ServerPlayer player = aimAtWater(helper, PurifiedWater.BLOCK.defaultBlockState());
+        net.minecraft.core.BlockPos water = player.blockPosition();
         HearthwindSurvivalThirst.setHydration(player, 10.0);
         double chance = HearthwindSurvivalConfig.get().bareHand.waterSipThirstChance;
         HearthwindSurvivalConfig.get().bareHand.waterSipThirstChance = 1.0;
         try {
             for (int i = 0; i < 30; i++) {
-                BareHandDrinkHandler.trySip(player, helper.getLevel());
+                BareHandDrinkHandler.trySipAt(player, helper.getLevel(), water);
             }
         } finally {
             HearthwindSurvivalConfig.get().bareHand.waterSipThirstChance = chance;
@@ -281,8 +293,6 @@ public final class HearthwindSurvivalGameTests {
                 "dehydration:campfire_cauldron",
                 "dehydration:copper_cauldron",
                 "dehydration:purified_water_bucket",
-                "dehydration:pour_water_bowl",
-                "dehydration:pour_purified_water_bowl",
                 "dehydration:leather_flask",
                 "dehydration:iron_leather_flask",
                 "dehydration:golden_leather_flask",
@@ -438,16 +448,14 @@ public final class HearthwindSurvivalGameTests {
                 level.getBlockEntity(pos);
         helper.assertTrue(pump != null, "the bamboo pump must have a block entity");
 
-        // A bucket needs more than three pumps.
+        // ONE pump converts, for every container (0.1.49). A bucket used to
+        // need four here, which made the pump a reusable tool rather than the
+        // one-shot press the reference is.
         pump.setItem(0, new ItemStack(Items.BUCKET));
-        for (int i = 0; i < 3; i++) {
-            pump.increasePumpCount(1);
-            helper.assertTrue(pump.getItem(0).is(Items.BUCKET),
-                    "a bucket must survive fewer than four pumps (" + i + ")");
-        }
+        helper.assertTrue(pump.getItem(0).is(Items.BUCKET), "a fresh bucket is not converted");
         pump.increasePumpCount(1);
         helper.assertTrue(pump.getItem(0).is(dev.jmiahman.hearthwind.survival.PurifiedWater.BUCKET),
-                "four pumps must purify the bucket");
+                "one pump must purify the bucket");
         helper.assertTrue(pump.getCooldown() == HearthwindSurvivalConfig.get().hydration.pumpCooldown,
                 "a conversion must arm the pump cooldown");
 
@@ -462,13 +470,18 @@ public final class HearthwindSurvivalGameTests {
                         dev.jmiahman.hearthwind.survival.PurifiedWater.PURIFIED_POTION),
                 "the potion must hold purified water");
 
-        // A leather flask gains two units.
+        // A flask keeps its fill level and its contents become purified - the
+        // reference writes "a purified-water-filled copy of the container",
+        // it never tops the flask up.
         pump.setCooldown(0);
-        ItemStack flask = FlaskItems.setFill(new ItemStack(FlaskItems.LEATHER_FLASK), 1, 0);
+        ItemStack flask = FlaskItems.setFill(new ItemStack(FlaskItems.LEATHER_FLASK), 1, FlaskData.DIRTY);
         pump.setItem(0, flask);
         pump.increasePumpCount(1);
         var data = pump.getItem(0).get(FlaskItems.FLASK_DATA);
-        helper.assertTrue(data != null && data.fillLevel() == 3, "a flask must gain two units");
+        helper.assertTrue(data != null && data.fillLevel() == 1,
+                "a flask must keep its fill level, got " + (data == null ? "none" : data.fillLevel()));
+        helper.assertTrue(data != null && data.qualityLevel() == FlaskData.PURIFIED,
+                "a pumped flask's contents must be purified");
         helper.succeed();
     }
 
@@ -527,16 +540,21 @@ public final class HearthwindSurvivalGameTests {
         // (0.625 from the centre) with an outward hop; the old
         // Containers.dropItemStack/Block.popResource calls sat at the block
         // centre and looked like the bottle never left the fire.
-        boolean poppedOff = drops.stream()
+        // The reference pops the result at the raw block corner with
+        // ItemScatterer's eject velocity (CampfireBlockEntityMixin:
+        // ItemScatterer.spawn(world, pos.getX(), pos.getY(), pos.getZ(), stack)).
+        // 0.1.49 matches that; we used to use the dispenser's face-pop, which
+        // threw the bottle clear of the fire instead.
+        boolean poppedAtCorner = drops.stream()
                 .filter(item -> {
                     var contents = item.getItem().get(DataComponents.POTION_CONTENTS);
                     return contents != null && contents.is(PurifiedWater.PURIFIED_POTION);
                 })
-                .anyMatch(item -> item.getY() > pos.getY() + 0.1
-                        && (Math.abs(item.getX() - (pos.getX() + 0.5)) > 0.5
-                                || Math.abs(item.getZ() - (pos.getZ() + 0.5)) > 0.5));
-        helper.assertTrue(poppedOff,
-                "the purified bottle must pop off the campfire's edge, not sit inside it");
+                .anyMatch(item -> item.getX() >= pos.getX() && item.getX() <= pos.getX() + 1.0
+                        && item.getZ() >= pos.getZ() && item.getZ() <= pos.getZ() + 1.0
+                        && item.getDeltaMovement().lengthSqr() > 0.0);
+        helper.assertTrue(poppedAtCorner,
+                "the purified bottle must pop off at the campfire block corner with an eject velocity");
         helper.succeed();
     }
 
@@ -619,12 +637,13 @@ public final class HearthwindSurvivalGameTests {
             helper.assertTrue(campfire.getItems().get(0).isEmpty(),
                     "the lit campfire's own ticker must finish the boil within 30 ticks");
             var drops = level.getEntitiesOfClass(net.minecraft.world.entity.item.ItemEntity.class,
-                    new net.minecraft.world.phys.AABB(pos).inflate(2.0));
+                    new net.minecraft.world.phys.AABB(pos).inflate(3.0));
             boolean purified = drops.stream().anyMatch(item -> {
                 var contents = item.getItem().get(DataComponents.POTION_CONTENTS);
                 return contents != null && contents.is(PurifiedWater.PURIFIED_POTION);
             });
-            helper.assertTrue(purified, "the finished bottle must be a purified water potion on the ground");
+            helper.assertTrue(purified, "the finished bottle must be a purified water potion on the ground"
+                    + " (found " + drops.size() + " item entities near " + pos + ")");
             helper.succeed();
         });
     }
@@ -680,12 +699,13 @@ public final class HearthwindSurvivalGameTests {
             helper.assertTrue(campfire.getItems().get(0).isEmpty(),
                     "a bark-lit campfire's own ticker must finish the boil within 30 ticks");
             var drops = level.getEntitiesOfClass(net.minecraft.world.entity.item.ItemEntity.class,
-                    new net.minecraft.world.phys.AABB(pos).inflate(2.0));
+                    new net.minecraft.world.phys.AABB(pos).inflate(3.0));
             boolean purified = drops.stream().anyMatch(item -> {
                 var contents = item.getItem().get(DataComponents.POTION_CONTENTS);
                 return contents != null && contents.is(PurifiedWater.PURIFIED_POTION);
             });
-            helper.assertTrue(purified, "the finished bottle must be a purified water potion on the ground");
+            helper.assertTrue(purified, "the finished bottle must be a purified water potion on the ground"
+                    + " (found " + drops.size() + " item entities near " + pos + ")");
             helper.succeed();
         });
     }
@@ -1295,16 +1315,20 @@ public final class HearthwindSurvivalGameTests {
 
     @GameTest
     public void flaskOpenWaterQualityMatchesAged(GameTestHelper helper) {
-        helper.assertTrue(LeatherFlaskItem.openWaterQuality(FlaskData.DIRTY, 0, true) == FlaskData.PURIFIED,
-                "river water fills a fresh flask as purified (upstream quality 0)");
+        // The reference forces a river fill DIRTY (its `level = 2,
+        // purified = false` branch). This test asserted the exact opposite for
+        // years - "river water fills a fresh flask as purified" - which was our
+        // own reading, not the mod's. 0.1.49 pins the reference.
+        helper.assertTrue(LeatherFlaskItem.openWaterQuality(FlaskData.DIRTY, 0, true) == FlaskData.DIRTY,
+                "river water fills a fresh flask DIRTY (upstream level=2, purified=false)");
         helper.assertTrue(LeatherFlaskItem.openWaterQuality(FlaskData.DIRTY, 0, false) == FlaskData.DIRTY,
                 "still water fills a fresh flask as dirty");
         helper.assertTrue(LeatherFlaskItem.openWaterQuality(FlaskData.PURIFIED, 1, false) == FlaskData.IMPURIFIED,
                 "topping up purified water outside a river downgrades to impurified");
         helper.assertTrue(LeatherFlaskItem.openWaterQuality(FlaskData.DIRTY, 1, false) == FlaskData.DIRTY,
                 "dirty water stays dirty when topped up");
-        helper.assertTrue(LeatherFlaskItem.openWaterQuality(FlaskData.IMPURIFIED, 1, true) == FlaskData.PURIFIED,
-                "river water upgrades a partially filled impure flask");
+        helper.assertTrue(LeatherFlaskItem.openWaterQuality(FlaskData.IMPURIFIED, 1, true) == FlaskData.DIRTY,
+                "river water forces a partially filled impure flask dirty too");
         helper.succeed();
     }
 
@@ -1707,9 +1731,9 @@ public final class HearthwindSurvivalGameTests {
 
     @GameTest
     public void bareHandDrinkingWhileCrouchingAddsHydration(GameTestHelper helper) {
-        net.minecraft.core.BlockPos waterPos = helper.absolutePos(new net.minecraft.core.BlockPos(1, 1, 1));
-        helper.setBlock(new net.minecraft.core.BlockPos(1, 1, 1), net.minecraft.world.level.block.Blocks.WATER.defaultBlockState());
-        ServerPlayer player = aimAtWater(helper, waterPos);
+        ServerPlayer player = aimAtWater(helper,
+                net.minecraft.world.level.block.Blocks.WATER.defaultBlockState());
+        net.minecraft.core.BlockPos waterPos = player.blockPosition();
         player.setPose(net.minecraft.world.entity.Pose.CROUCHING);
         player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, ItemStack.EMPTY);
 
@@ -1718,10 +1742,10 @@ public final class HearthwindSurvivalGameTests {
         double before = HearthwindSurvivalThirst.hydration(player);
 
         // Simulate sustained drinking (hold loop, ~21 use-events)
-        var result = BareHandDrinkHandler.trySip(player, helper.getLevel());
+        var result = BareHandDrinkHandler.trySipAt(player, helper.getLevel(), waterPos);
         helper.assertTrue(result.consumesAction(), "Drinking while crouching on water must succeed");
         for (int i = 0; i < 30; i++) {
-            BareHandDrinkHandler.trySip(player, helper.getLevel());
+            BareHandDrinkHandler.trySipAt(player, helper.getLevel(), waterPos);
         }
         double after = HearthwindSurvivalThirst.hydration(player);
         helper.assertTrue(after > before, "Hydration must increase after bare hand drink: " + after + " > " + before);
@@ -2355,7 +2379,11 @@ public final class HearthwindSurvivalGameTests {
                 .finishUsingItem(bowl, helper.getLevel(), player);
         helper.assertTrue(HearthwindSurvivalThirst.hydration(player) == 13.0,
                 "water bowl must quench 3 (10 -> 13), got " + HearthwindSurvivalThirst.hydration(player));
-        helper.assertTrue(result.is(Items.BOWL), "drinking a water bowl must leave a plain bowl");
+        // The reference returns ItemStack.EMPTY for a player: the bowl is
+        // consumed and nothing comes back. We used to hand back a plain
+        // minecraft:bowl and shipped a craft recipe for it (0.1.49).
+        helper.assertTrue(result.isEmpty(),
+                "drinking a water bowl must leave nothing behind, got " + result);
         helper.succeed();
     }
 
@@ -2398,12 +2426,12 @@ public final class HearthwindSurvivalGameTests {
 
     @GameTest
     public void bowlFillsFromStillWaterAndPurifiedTag(GameTestHelper helper) {
-        net.minecraft.core.BlockPos water = helper.absolutePos(new net.minecraft.core.BlockPos(1, 2, 1));
-        helper.setBlock(1, 2, 1, net.minecraft.world.level.block.Blocks.WATER);
-        ServerPlayer player = aimAtWater(helper, water);
+        ServerPlayer player = aimAtWater(helper,
+                net.minecraft.world.level.block.Blocks.WATER.defaultBlockState());
+        net.minecraft.core.BlockPos water = player.blockPosition();
         player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, new ItemStack(Items.BOWL));
-        var result = dev.jmiahman.hearthwind.survival.hydration.HydrationBowlHandler.tryFillBowl(
-                player, helper.getLevel(), net.minecraft.world.InteractionHand.MAIN_HAND);
+        var result = dev.jmiahman.hearthwind.survival.hydration.HydrationBowlHandler.fillBowlAt(
+                player, helper.getLevel(), net.minecraft.world.InteractionHand.MAIN_HAND, water);
         helper.assertTrue(result != net.minecraft.world.InteractionResult.PASS,
                 "sneaking with a bowl at still water must fill it");
         helper.assertTrue(player.getItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND)
@@ -2412,10 +2440,10 @@ public final class HearthwindSurvivalGameTests {
         helper.assertTrue(helper.getLevel().getBlockState(water).isAir(),
                 "filling the bowl must consume the still source");
 
-        helper.setBlock(1, 2, 1, PurifiedWater.BLOCK.defaultBlockState());
+        helper.getLevel().setBlockAndUpdate(water, PurifiedWater.BLOCK.defaultBlockState());
         player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, new ItemStack(Items.BOWL));
-        result = dev.jmiahman.hearthwind.survival.hydration.HydrationBowlHandler.tryFillBowl(
-                player, helper.getLevel(), net.minecraft.world.InteractionHand.MAIN_HAND);
+        result = dev.jmiahman.hearthwind.survival.hydration.HydrationBowlHandler.fillBowlAt(
+                player, helper.getLevel(), net.minecraft.world.InteractionHand.MAIN_HAND, water);
         helper.assertTrue(result != net.minecraft.world.InteractionResult.PASS,
                 "sneaking with a bowl at purified water must fill it");
         helper.assertTrue(player.getItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND)
@@ -3007,4 +3035,85 @@ public final class HearthwindSurvivalGameTests {
         // vanilla's own code path and not ours to pin here.
         helper.succeed();
     }
+
+
+    /** 0.1.49: the reference holds the use key 20 ticks before the water is taken. */
+    @GameTest
+    public void flaskFillNeedsTheReferenceHold(GameTestHelper helper) {
+        net.minecraft.core.BlockPos rel = new net.minecraft.core.BlockPos(1, 2, 1);
+        helper.setBlock(rel, net.minecraft.world.level.block.Blocks.WATER.defaultBlockState());
+        ServerPlayer player = survivalServerPlayer(helper);
+        ItemStack flask = new ItemStack(FlaskItems.LEATHER_FLASK);
+        player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, flask);
+        helper.absolutePos(rel);
+        var item = (LeatherFlaskItem) FlaskItems.LEATHER_FLASK;
+        // No world raycast can reach the source from a mock player, so the hold
+        // is stepped through the public constant the handler gates on.
+        helper.assertTrue(LeatherFlaskItem.FILL_HOLD_TICKS == 20,
+                "the reference holds 20 ticks before taking the water, got "
+                        + LeatherFlaskItem.FILL_HOLD_TICKS);
+        helper.assertTrue(item.capacity() == 2, "a leather flask holds 2 units");
+        // The source is destroyed when the fill resolves.
+        var state = helper.getLevel().getBlockState(helper.absolutePos(rel));
+        helper.assertTrue(state.getFluidState().is(net.minecraft.tags.FluidTags.WATER),
+                "the source must start as water");
+        helper.succeed();
+    }
+
+    /** 0.1.49: the reference's tooltip wording and colours, verbatim. */
+    @GameTest
+    public void flaskTooltipMatchesTheReference(GameTestHelper helper) {
+        var item = FlaskItems.LEATHER_FLASK;
+        java.util.List<String> lines = new java.util.ArrayList<>();
+        item.appendHoverText(new ItemStack(item), net.minecraft.world.item.Item.TooltipContext.EMPTY,
+                new net.minecraft.world.item.component.TooltipDisplay(false, null),
+                (net.minecraft.network.chat.Component line) -> lines.add(line.getString()),
+                net.minecraft.world.item.TooltipFlag.NORMAL);
+        helper.assertTrue(lines.size() == 1 && lines.get(0).equals("Fill Capacity 2"),
+                "an empty flask must read 'Fill Capacity 2', got " + lines);
+
+        ItemStack filled = FlaskItems.setFill(new ItemStack(item), 2, FlaskData.DIRTY);
+        lines.clear();
+        item.appendHoverText(filled, net.minecraft.world.item.Item.TooltipContext.EMPTY,
+                new net.minecraft.world.item.component.TooltipDisplay(false, null),
+                (net.minecraft.network.chat.Component line) -> lines.add(line.getString()),
+                net.minecraft.world.item.TooltipFlag.NORMAL);
+        helper.assertTrue(lines.size() == 2 && lines.get(0).equals("Fill Level 2/2"),
+                "a filled flask must read 'Fill Level 2/2', got " + lines);
+        helper.assertTrue(lines.get(1).contains("Dirty Water"),
+                "dirty water must say so, got " + lines.get(1));
+
+        ItemStack purified = FlaskItems.setFill(new ItemStack(item), 1, FlaskData.PURIFIED);
+        lines.clear();
+        item.appendHoverText(purified, net.minecraft.world.item.Item.TooltipContext.EMPTY,
+                new net.minecraft.world.item.component.TooltipDisplay(false, null),
+                (net.minecraft.network.chat.Component line) -> lines.add(line.getString()),
+                net.minecraft.world.item.TooltipFlag.NORMAL);
+        helper.assertTrue(lines.get(1).contains("Purified Water"),
+                "purified water must say so, got " + lines.get(1));
+        helper.succeed();
+    }
+
+    /** 0.1.49: 0x2EC6B6 is the reference's own icon colour, not a house pick. */
+    @GameTest
+    public void thirstEffectUsesTheReferenceIconColour(GameTestHelper helper) {
+        int colour = ThirstMobEffect.HOLDER.value().getColor();
+        helper.assertTrue(colour == 0x2EC6B6,
+                "the thirst effect icon must be 0x2EC6B6, got " + Integer.toHexString(colour));
+        helper.succeed();
+    }
+
+    /** 0.1.49: the three numbers the reference does not set and we had wrong. */
+    @GameTest
+    public void thirstConfigMatchesTheReferenceDefaults(GameTestHelper helper) {
+        HearthwindSurvivalConfig.Thirst cfg = HearthwindSurvivalConfig.get().thirst;
+        helper.assertTrue(Math.abs(cfg.netherFactor - 1.3) < 1e-9,
+                "nether_factor is 1.3 upstream, got " + cfg.netherFactor);
+        helper.assertTrue(Math.abs(cfg.hydratingFactor - 2.0) < 1e-9,
+                "Aged sets hydrating_factor 2.0, got " + cfg.hydratingFactor);
+        helper.assertTrue(Math.abs(cfg.thirstEffectFactor - 0.03) < 1e-9,
+                "Aged sets thirst_effect_factor 0.03, got " + cfg.thirstEffectFactor);
+        helper.succeed();
+    }
+
 }

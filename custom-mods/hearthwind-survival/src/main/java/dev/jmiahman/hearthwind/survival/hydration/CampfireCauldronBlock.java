@@ -74,14 +74,6 @@ public class CampfireCauldronBlock extends BaseEntityBlock {
             Block.box(4, 1, 12, 12, 6, 13), Block.box(4, 1, 3, 12, 6, 4),
             Block.box(4, 1, 4, 5, 6, 5), Block.box(11, 1, 11, 12, 6, 12),
             Block.box(4, 1, 11, 5, 6, 12));
-    private static final VoxelShape Z_BASE_SHAPE = Shapes.or(CAULDRON_SHAPE,
-            Block.box(7, -15, 0, 9, 14, 1), Block.box(7, 14, -1, 9, 16, 1),
-            Block.box(7, 14, 15, 9, 16, 17), Block.box(7, -15, 15, 9, 14, 16),
-            Block.box(7, 14, 1, 9, 15, 15));
-    private static final VoxelShape X_BASE_SHAPE = Shapes.or(CAULDRON_SHAPE,
-            Block.box(15, -15, 7, 16, 14, 9), Block.box(15, 14, 7, 17, 16, 9),
-            Block.box(-1, 14, 7, 1, 16, 9), Block.box(0, -15, 7, 1, 14, 9),
-            Block.box(1, 14, 7, 15, 15, 9));
 
     public CampfireCauldronBlock(BlockBehaviour.Properties properties) {
         super(properties);
@@ -117,10 +109,17 @@ public class CampfireCauldronBlock extends BaseEntityBlock {
         return state.setValue(FACING, rotation.rotate(state.getValue(FACING)));
     }
 
+    /**
+     * The reference declares no {@code VoxelShape} for the campfire cauldron,
+     * so vanilla's full-cube outline applies and nothing spans the block
+     * below. We modelled a stand with legs that reached 15 blocks down
+     * (0.1.43); that was our own art idea, not the reference's, and it is
+     * gone (0.1.49).
+     */
     @Override
     protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos,
             CollisionContext context) {
-        return state.getValue(FACING).getAxis() == Direction.Axis.X ? X_BASE_SHAPE : Z_BASE_SHAPE;
+        return Shapes.block();
     }
 
     @Override
@@ -208,8 +207,15 @@ public class CampfireCauldronBlock extends BaseEntityBlock {
     @Override
     public void handlePrecipitation(BlockState state, Level level, BlockPos pos,
             Biome.Precipitation precipitation) {
+        // The reference's precipitationTick gates on FOUR things: the
+        // precipitation is rain, world.random.nextFloat() < 0.2, world.isSkyLit
+        // (so an overhang keeps the cauldron dry) and the biome is warm enough
+        // (getTemperature() >= 0.15). We only had the first two (0.1.49 fixes
+        // the other two).
         if (precipitation == Biome.Precipitation.RAIN
                 && level.isRainingAt(pos)
+                && level.canSeeSky(pos)
+                && level.getBiome(pos).value().getBaseTemperature() >= 0.15F
                 && level.getRandom().nextFloat()
                         < HearthwindSurvivalConfig.get().hydration.campfireRainFillChance
                 && state.getValue(LEVEL) < 4) {

@@ -4,7 +4,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -12,6 +11,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.PotionContents;
@@ -70,15 +70,6 @@ import dev.jmiahman.hearthwind.survival.mixin.CampfireBlockEntityAccessor;
     }
 
     /**
-     * Tells the player why a bottle on a dark campfire will never purify. The
-     * reference mod stays silent here, which is how this bug survives for
-     * hours; the rule itself is unchanged.
-     */
-    public static void warnAboutUnlitFire(ServerPlayer player) {
-        player.sendSystemMessage(Component.translatable("message.hearthwind.campfire_needs_fire"));
-    }
-
-    /**
      * Places one water bottle into the first empty campfire slot with the
      * reference boil time. Returns false for non-water stacks or a full fire.
      */
@@ -123,64 +114,38 @@ import dev.jmiahman.hearthwind.survival.mixin.CampfireBlockEntityAccessor;
             // Vanilla increments progress later in this same tick, so treat
             // "one tick short" as done to beat its fallback drop.
             if (progress[slot] + 1 >= time[slot]) {
-                // Eject the finished bottle off the fire's edge with the same
-                // face-pop vanilla uses for dispensers. Block.popResource
-                // spawns it dead-centre at the campfire's base with zero
-                // velocity, so it sat half-buried in the fire (looking like
-                // it never finished) and despawned after five minutes -
-                // players reported "the bottle disappeared".
-                Direction direction = Direction.from2DDataValue(
-                        Math.floorMod(slot + state.getValue(CampfireBlock.FACING).get2DDataValue(), 4));
-                Block.popResourceFromFace(level, pos, direction, purifiedBottle());
+                // The reference spawns the result at the raw block corner -
+                // CampfireBlockEntityMixin does ItemScatterer.spawn(world,
+                // pos.getX(), pos.getY(), pos.getZ(), newStack) with no +0.5 -
+                // with ItemScatterer's own eject velocity. 26.2 dropped
+                // ItemScatterer, so this mirrors its 1.20.1 body: the position
+                // goes in untouched and the velocity is
+                // f1*(cos a), f1, 0.2*f1*(sin a) with f1 in [0.1, 0.3].
+                spawnAtCorner(level, pos);
                 items.set(slot, ItemStack.EMPTY);
                 level.sendBlockUpdated(pos, state, state, 3);
                 level.gameEvent(GameEvent.BLOCK_CHANGE, pos, GameEvent.Context.of(state));
-                // The reference mod is silent here; a player watching a bottle
-                // boil needs to know the loop closed, and the fire's own smoke
-                // is easy to miss. Hearthwind addition, listed in
-                // docs/PLAYER_CHANGES.md.
-                level.playSound(null, pos, SoundEvents.AMETHYST_BLOCK_CHIME, SoundSource.BLOCKS, 0.6F, 1.4F);
-                spawnBurst(level, pos, state, slot);
                 changed = true;
-            } else {
-                spawnSteam(level, pos, state, slot);
             }
+            // No completion sound and no particle. The reference
+            // (CampfireBlockEntityMixin) cancels vanilla's spawn and does
+            // nothing else: no chime, no steam, no burst. We added all three in
+            // 0.1.33 as Hearthwind extras; under the parity rule they go again
+            // (0.1.49).
         }
         if (changed) {
             campfire.setChanged();
         }
     }
 
-    /**
-     * White steam over a boiling bottle instead of the dark item smoke
-     * vanilla emits ({@code particleTick} suppresses that smoke for water
-     * slots). Mirrors vanilla's per-slot position and chance.
-     */
-    private static void spawnSteam(ServerLevel level, BlockPos pos, BlockState state, int slot) {
+    /** ItemScatterer.spawn(level, x, y, z, stack), verbatim in behaviour. */
+    private static void spawnAtCorner(ServerLevel level, BlockPos pos) {
         RandomSource random = level.getRandom();
-        if (random.nextFloat() >= 0.2F) {
-            return;
-        }
-        Direction direction = Direction.from2DDataValue(
-                Math.floorMod(slot + state.getValue(CampfireBlock.FACING).get2DDataValue(), 4));
-        double x = pos.getX() + 0.5 - direction.getStepX() * 0.3125 + direction.getClockWise().getStepX() * 0.3125;
-        double y = pos.getY() + 0.5;
-        double z = pos.getZ() + 0.5 - direction.getStepZ() * 0.3125 + direction.getClockWise().getStepZ() * 0.3125;
-        level.sendParticles(ParticleTypes.WHITE_SMOKE, x, y, z, 2, 0.05, 0.01, 0.05, 0.0);
-    }
-
-    /**
-     * The visible end of the boil: a puff of steam and a few rising bubbles
-     * over the slot that just finished, so the loop reads as finished even
-     * when the player is not staring straight at the fire.
-     */
-    private static void spawnBurst(ServerLevel level, BlockPos pos, BlockState state, int slot) {
-        Direction direction = Direction.from2DDataValue(
-                Math.floorMod(slot + state.getValue(CampfireBlock.FACING).get2DDataValue(), 4));
-        double x = pos.getX() + 0.5 - direction.getStepX() * 0.3125 + direction.getClockWise().getStepX() * 0.3125;
-        double y = pos.getY() + 0.6;
-        double z = pos.getZ() + 0.5 - direction.getStepZ() * 0.3125 + direction.getClockWise().getStepZ() * 0.3125;
-        level.sendParticles(ParticleTypes.WHITE_SMOKE, x, y, z, 6, 0.06, 0.08, 0.06, 0.02);
-        level.sendParticles(ParticleTypes.BUBBLE, x, y, z, 4, 0.05, 0.1, 0.05, 0.1);
+        float angle = random.nextFloat() * ((float) Math.PI * 2F);
+        float strength = random.nextFloat() * 0.2F + 0.1F;
+        ItemEntity item = new ItemEntity(level, pos.getX(), pos.getY(), pos.getZ(), purifiedBottle());
+        item.setDeltaMovement(strength * (float) Math.cos(angle), strength,
+                strength * (float) Math.sin(angle) * 0.2F);
+        level.addFreshEntity(item);
     }
 }

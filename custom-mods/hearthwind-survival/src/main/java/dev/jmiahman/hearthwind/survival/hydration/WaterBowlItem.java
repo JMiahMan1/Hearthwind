@@ -32,8 +32,9 @@ import net.minecraft.world.level.Level;
  * bowl safe; that was our own idea, not the reference's, and it is reverted
  * here (0.1.47).
  *
- * <p>Returns a plain bowl unless the drinker has infinite materials
- * (creative), exactly like upstream.
+ * <p>Returns {@link ItemStack#EMPTY} for a player, exactly like upstream: the
+ * bowl is consumed and nothing is given back. The {@code pour_*_water_bowl}
+ * shapeless recipes we used to ship were our own addition and are removed.
  */
 public class WaterBowlItem extends Item {
     private final boolean hasThirstChance;
@@ -53,9 +54,13 @@ public class WaterBowlItem extends Item {
                         cfg.potionBadThirstDuration / 2, 0, false, false, true));
             }
         }
-        if (user instanceof Player player && player.hasInfiniteMaterials()) {
-            return result;
+        // The reference returns ItemStack.EMPTY for a player, so drinking the
+        // bowl consumes it and hands back nothing - there is no bowl craft
+        // remainder. Only a non-player (e.g. a dispenser-like caller) gets the
+        // residual stack. 0.1.49.
+        if (user instanceof Player) {
+            return ItemStack.EMPTY;
         }
-        return new ItemStack(Items.BOWL);
+        return result;
     }
 }

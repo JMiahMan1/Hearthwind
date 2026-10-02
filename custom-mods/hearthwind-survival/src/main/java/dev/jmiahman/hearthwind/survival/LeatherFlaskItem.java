@@ -9,6 +9,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.stats.Stats;
 import net.minecraft.tags.BiomeTags;
+import net.minecraft.tags.FluidTags;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -26,7 +27,10 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.level.material.Fluids;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 /**
  * Portable water vessel, five tiers (capacity {@code 2 + tier}), a
@@ -34,10 +38,15 @@ import java.util.List;
  * (Aged 3.1.2):
  *
  * <ul>
- *   <li>Open water fills the flask to capacity in one use. River-biome
- *       water counts as purified (quality 0); other open water is dirty
- *       (quality 2); topping up a purified/impure flask outside a river
- *       downgrades it to impurified (quality 1).</li>
+ *   <li>Filling from open water needs a <b>20-tick hold</b> (the reference's
+ *       {@code LeatherFlask#method_7884} counts {@code drinkTime} while the
+ *       use key is down) and <b>destroys the source block</b> when it
+ *       resolves, because the water has been taken into the flask.</li>
+ *   <li>Any {@code FluidTags.WATER} source fills the flask, purified water
+ *       included. Open water is written <b>dirty</b> (quality 2), and a
+ *       {@code BiomeTags.IS_RIVER} biome forces <b>dirty</b> outright
+ *       (the reference's {@code level = 2, purified = false} branch) - river
+ *       water is the dirtiest water in the pack, not the cleanest.</li>
  *   <li>Vanilla cauldrons fill one unit per use and always with dirty
  *       water; sneaking pours one unit back.</li>
  *   <li>Sneaking at open water empties the flask while keeping purity.</li>
@@ -79,7 +88,7 @@ public final class LeatherFlaskItem extends Item {
             quality = FlaskData.IMPURIFIED;
         }
         if (river && (empty || !dirty)) {
-            quality = FlaskData.PURIFIED;
+            quality = FlaskData.DIRTY;
         }
         return quality;
     }
@@ -106,15 +115,30 @@ public final class LeatherFlaskItem extends Item {
         return InteractionResult.PASS;
     }
 
+    /**
+     * Held-use ticks per player, so the 20-tick fill hold can be counted. The
+     * reference keeps the same counter on the player entity
+     * ({@code LeatherFlask#drinkTime}); we key ours by UUID for the same reason
+     * {@link BareHandDrinkHandler} does.
+     */
+    private static final Map<UUID, Integer> FILL_TIME = new HashMap<>();
+
+    /** Ticks the reference holds the use key before the water is taken (0.1.49). */
+    public static final int FILL_HOLD_TICKS = 20;
+
     /** Fill from, or (sneaking) empty into, an open water source. */
     private static InteractionResult tryWaterInteraction(ServerPlayer sp, ServerLevel server, ItemStack stack) {
         HitResult ray = sp.pick(sp.blockInteractionRange(), 0.0f, true);
         if (ray.getType() != HitResult.Type.BLOCK) {
+            FILL_TIME.remove(sp.getUUID());
             return InteractionResult.PASS;
         }
         BlockPos pos = ((BlockHitResult) ray).getBlockPos();
         FluidState fluid = server.getFluidState(pos);
-        if (!fluid.is(Fluids.WATER) || !fluid.isSource()) {
+        // FluidTags, not Fluids.WATER: the reference fills from anything in the
+        // water tag, which purified water is in.
+        if (!fluid.is(FluidTags.WATER) || !fluid.isSource()) {
+            FILL_TIME.remove(sp.getUUID());
             return InteractionResult.PASS;
         }
         int fill = data(stack) == null ? 0 : data(stack).fillLevel();
@@ -124,10 +148,21 @@ public final class LeatherFlaskItem extends Item {
             return InteractionResult.SUCCESS_SERVER;
         }
         if (fill < ((LeatherFlaskItem) stack.getItem()).capacity()) {
+            int held = FILL_TIME.getOrDefault(sp.getUUID(), 0);
+            if (held < FILL_HOLD_TICKS) {
+                FILL_TIME.put(sp.getUUID(), held + 1);
+                sp.swing(InteractionHand.MAIN_HAND, true);
+                return InteractionResult.SUCCESS_SERVER;
+            }
+            FILL_TIME.remove(sp.getUUID());
             boolean river = server.getBiome(pos).is(BiomeTags.IS_RIVER);
             setFilled(stack, sp, server,
                     ((LeatherFlaskItem) stack.getItem()).capacity(),
                     openWaterQuality(quality, fill, river));
+            // The water is now in the flask, so the source it came from is gone.
+            // The reference sets Blocks.AIR unless the Puddles mod is loaded,
+            // and Puddles is not in this pack.
+            server.setBlock(pos, net.minecraft.world.level.block.Blocks.AIR.defaultBlockState(), 3);
             return InteractionResult.SUCCESS_SERVER;
         }
         return InteractionResult.PASS;
@@ -217,18 +252,19 @@ public final class LeatherFlaskItem extends Item {
             java.util.function.Consumer<Component> lines, TooltipFlag flag) {
         FlaskData data = data(stack);
         if (data == null) {
-            lines.accept(Component.literal("Empty (" + this.capacity + " uses)")
+            // The reference's empty-state line, verbatim.
+            lines.accept(Component.literal("Fill Capacity " + this.capacity)
                     .withStyle(net.minecraft.ChatFormatting.GRAY));
             return;
         }
-        lines.accept(Component.literal("Uses: " + data.fillLevel() + "/" + this.capacity)
+        lines.accept(Component.literal("Fill Level " + data.fillLevel() + "/" + this.capacity)
                 .withStyle(net.minecraft.ChatFormatting.GRAY));
-        String purity = switch (data.qualityLevel()) {
-            case FlaskData.PURIFIED -> "Purified";
-            case FlaskData.DIRTY -> "Dirty";
-            default -> "Impurified";
-        };
-        lines.accept(Component.literal(purity + " water")
-                .withStyle(net.minecraft.ChatFormatting.GRAY));
+        // Colour-coded exactly as the reference: dark green dirty, dark aqua
+        // impurified, light aqua purified.
+        switch (data.qualityLevel()) {
+            case FlaskData.PURIFIED -> lines.accept(Component.literal("\u00a72Purified Water"));
+            case FlaskData.DIRTY -> lines.accept(Component.literal("\u00a72Dirty Water"));
+            default -> lines.accept(Component.literal("\u00a73Impurified Water"));
+        }
     }
 }

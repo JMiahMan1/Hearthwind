@@ -99,7 +99,7 @@ public final class HearthwindSurvivalConfig {
         /** Upstream {@code harder_nether} (off in Aged). */
         public boolean harderNether = false;
         /** Upstream {@code nether_factor} (only when harderNether). */
-        public double netherFactor = 2.0;
+        public double netherFactor = 1.3;
         /**
          * Use the migrated hydration corpus (data/dehydration/hydration_items)
          * so foods and drinks restore hydration by tier.

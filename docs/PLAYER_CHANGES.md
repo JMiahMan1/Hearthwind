@@ -74,6 +74,20 @@ contract of what the pack does. Grown from the Aged fork; server-side only.
   boils - that uses Minecraft's own bubble sound rather than Aged's custom one,
   and it plays on the server tick, so everyone near the fire hears it instead of
   only the player looking at it.
+- **Water is drunk the way Aged drinks it (0.1.49)**: seventeen Dehydration
+  behaviours moved to the reference's own. A river is now the *dirtiest* water
+  in the pack (we had it backwards), filling a flask from open water takes a
+  short hold and uses up the source block, a flask's tooltip reads
+  `Fill Level n/cap` with colour-coded `Dirty Water` / `Impurified Water` /
+  `Purified Water`, drinking a bowl of water gives the bowl back nothing, the
+  bamboo pump purifies in **one** press instead of four, a camp cauldron only
+  fills from rain when it can see the sky and the biome is not freezing cold,
+  and a bottle now pops off a finished campfire at the corner of the block
+  with no chime and no puff of steam - the fire's own smoke is all there is.
+- **Sipping from water is stricter (0.1.49)**: you have to be within 1.5
+  blocks of a still source and looking at it. We used to also let you sip
+  through a waterlogged block, off a cauldron, or while standing in the water.
+  That matches Aged, where those sips simply do not land.
 - **Purified water flows (0.1.48)**: two things Aged's purified water could do
   that ours could not. It now **displaces vanilla water** - pour or let it run
   into a pool of normal water and you get purified water instead of the flow
