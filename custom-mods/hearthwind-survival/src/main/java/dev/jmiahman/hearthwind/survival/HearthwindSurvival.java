@@ -36,6 +36,7 @@ public class HearthwindSurvival implements ModInitializer {
 		PayloadTypeRegistry.serverboundPlay().register(dev.jmiahman.hearthwind.survival.revive.DownedRevivePayload.TYPE, dev.jmiahman.hearthwind.survival.revive.DownedRevivePayload.CODEC);
 		ThirstMobEffect.register();
 		HydrationMobEffect.register();
+		dev.jmiahman.hearthwind.survival.hydration.DehydrationSounds.register();
 		dev.jmiahman.hearthwind.survival.revive.AftermathMobEffect.register();
 		EnvironmentzEffects.register();
 		HearthwindSurvivalThirst.registerTickLoop();
@@ -53,7 +54,8 @@ public class HearthwindSurvival implements ModInitializer {
 			// cauldron like a water bucket. On server start, because vanilla's own
 			// cauldron rows are registered during Minecraft's bootstrap.
 			PurifiedWater.registerCauldron();
-			EnvironmentCorpus.load(server.getResourceManager());			for (String line : EnvironmentCorpus.summary()) {
+			EnvironmentCorpus.load(server.getResourceManager());
+			for (String line : EnvironmentCorpus.summary()) {
 				LOGGER.info(line);
 			}
 			HydrationCorpus.load(server.getResourceManager());

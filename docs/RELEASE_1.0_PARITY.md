@@ -646,10 +646,27 @@ one invented table:
   is the `idiv` divisor for the duration, and the amplifier is the following
   `iconst_0`. Those two rows were already at parity; the 🟡 markers were
   spurious and are gone.
+- **Dehydration sounds (0.1.50).** All four of Dehydration's own sound events
+  ship, at the reference's ids, with its nine `.ogg` files and its
+  `sounds.json` copied verbatim (GPL-3.0 - the same terms the project already
+  ships its textures under, with an `ATTRIBUTION.md` row). That closes the
+  last ❌ in `docs/AGED_HYDRATION.md`, which is now **✅ 93 · 🟡 9 · ❌ 1 over
+  103 rows**, the one left being the `thirst_preview` droplet tooltips. Until
+  this release every one of those five moments played a *vanilla* substitute -
+  `BOTTLE_FILL` to fill a flask, `BOTTLE_EMPTY` to drink one (and only on the
+  sip that emptied it, so a part-full flask drank in silence),
+  `GENERIC_DRINK` for the hand sip, `BUBBLE_COLUMN_BUBBLE_POP` for the boil -
+  on the reasoning that we should not redistribute another pack's audio. That
+  was never a licensing necessity: the project already ships Dehydration's
+  textures. Reading the bytecode to wire the sounds also corrected two numbers
+  this file and the audit had wrong for years: the sip pitch is
+  `0.9 + random/5.0` - a **division**, so a 0.9-1.1 spread, not the five-fold
+  wobble previously recorded - and the cauldron bubble volume is
+  `0.5 + random*0.4 + 0.8` = 0.8-1.3, not the 0.5-0.9 recorded.
 - **Dehydration mechanics parity pass (0.1.49).** Seventeen more rows of
   `docs/AGED_HYDRATION.md` moved from 🟡 to ✅, and two were marked *not
-  reproducible on 26.2* with the reason. The audit is now **✅ 92 · 🟡 9 ·
-  ❌ 2 over 103 rows**. The changes a player can feel:
+  reproducible on 26.2* with the reason. The audit was **✅ 92 · 🟡 9 ·
+  ❌ 2 over 103 rows** at that release. The changes a player can feel:
   - **A river fill is DIRTY.** We had it exactly backwards - the test called
     `flaskOpenWaterQualityMatchesAged` asserted "river water fills a fresh
     flask as purified" while being the reference's opposite. The reference's

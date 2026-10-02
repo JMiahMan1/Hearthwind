@@ -138,6 +138,14 @@ public final class BareHandDrinkHandler {
     public static final double SIP_REACH = 1.5;
 
     private static void completeSip(ServerPlayer sp, ServerLevel level, BlockPos pos, boolean still) {
+        // Reference EventInit offset 571: water_sip, PLAYERS, volume 1.0, and a
+        // pitch of 0.9 + random.nextFloat() / 5.0 - a DIVISION, so the spread is
+        // 0.9 to 1.1 and not the five-fold wobble an earlier reading of this
+        // method suggested. Replaces vanilla's GENERIC_DRINK.
+        level.playSound(null, sp.getX(), sp.getY(), sp.getZ(),
+                dev.jmiahman.hearthwind.survival.hydration.DehydrationSounds.WATER_SIP,
+                SoundSource.PLAYERS, 1.0f,
+                0.9f + sp.getRandom().nextFloat() / 5.0f);
         HearthwindSurvivalConfig.BareHand cfg = HearthwindSurvivalConfig.get().bareHand;
         HearthwindSurvivalThirst.addThirst(sp, Math.max(1, cfg.waterSourceQuench));
         // Drink hook parity: the hand is empty by rule, so this is a no-op

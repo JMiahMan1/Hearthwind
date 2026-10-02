@@ -17,6 +17,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
+import dev.jmiahman.hearthwind.survival.hydration.DehydrationSounds;
 
 /**
  * Headless gametests, run with the fabric-api gametest harness:
@@ -3116,4 +3117,91 @@ public final class HearthwindSurvivalGameTests {
         helper.succeed();
     }
 
+    /**
+     * 0.1.50: Dehydration 1.3.6's four sound events, registered at the
+     * reference's own ids.
+     *
+     * <p>Until this release every one of these moments played a VANILLA
+     * substitute - {@code BOTTLE_FILL} when a flask was filled,
+     * {@code BOTTLE_EMPTY} when it was drunk, {@code GENERIC_DRINK} for the
+     * bare-hand sip and {@code BUBBLE_COLUMN_BUBBLE_POP} for the boiling
+     * cauldron - so the pack did not sound the way Aged does. The ids matter
+     * as well as the files: {@code assets/dehydration/sounds.json} resolves
+     * each entry by id, so a renamed id plays silence even with the .ogg
+     * sitting right there.
+     */
+    @GameTest
+    public void dehydrationSoundsUseTheReferenceIds(GameTestHelper helper) {
+        assertSound(helper, DehydrationSounds.FILL_FLASK, "fill_flask");
+        assertSound(helper, DehydrationSounds.WATER_SIP, "water_sip");
+        assertSound(helper, DehydrationSounds.EMPTY_FLASK, "empty_flask");
+        assertSound(helper, DehydrationSounds.CAULDRON_BUBBLE, "cauldron_bubble");
+        helper.succeed();
+    }
+
+    private static void assertSound(GameTestHelper helper, net.minecraft.sounds.SoundEvent event,
+            String name) {
+        helper.assertTrue(event != null,
+                "dehydration:" + name + " must be registered - DehydrationSounds.register() is not wired");
+        helper.assertTrue(event.location().toString().equals("dehydration:" + name),
+                "the sound event id must be dehydration:" + name + ", got " + event.location());
+    }
+
+    /**
+     * 0.1.50: the {@code .ogg} files and the {@code sounds.json} that names
+     * them have to ship in OUR jar, because the ids above resolve against our
+     * own asset tree.
+     *
+     * <p>Dehydration is GPL-3.0 and this project already ships its textures
+     * verbatim under {@code assets/dehydration/} with an
+     * {@code ATTRIBUTION.md} row; these nine files came the same way. A test
+     * that only checked the registry would have passed while every one of them
+     * was missing, which is exactly how the vanilla substitutes survived.
+     */
+    @GameTest
+    public void dehydrationSoundFilesShipInOurJar(GameTestHelper helper) {
+        String[] oggs = {
+            "assets/dehydration/sounds/fill_flask_1.ogg",
+            "assets/dehydration/sounds/fill_flask_2.ogg",
+            "assets/dehydration/sounds/water_sip_1.ogg",
+            "assets/dehydration/sounds/water_sip_2.ogg",
+            "assets/dehydration/sounds/water_sip_3.ogg",
+            "assets/dehydration/sounds/empty_flask_1.ogg",
+            "assets/dehydration/sounds/empty_flask_2.ogg",
+            "assets/dehydration/sounds/cauldron_bubble_1.ogg",
+            "assets/dehydration/sounds/cauldron_bubble_2.ogg",
+        };
+        for (String file : oggs) {
+            try (java.io.InputStream in = DehydrationSounds.class.getClassLoader()
+                    .getResourceAsStream(file)) {
+                helper.assertTrue(in != null, file + " must ship in the hearthwind-survival jar");
+                assert in != null;
+                byte[] bytes = in.readAllBytes();
+                helper.assertTrue(bytes.length > 1000,
+                        file + " must be a real ogg, not a " + bytes.length + "-byte stub");
+            } catch (java.io.IOException e) {
+                throw new AssertionError("could not read " + file, e);
+            }
+        }
+        // The manifest is JSON, not audio, so it gets its own check: every sound
+        // event must actually be NAMED in it. Minecraft resolves a played
+        // SoundEvent by looking its id up here, so a manifest that exists but
+        // omits an event plays silence - and a size check would not notice.
+        try (java.io.InputStream in = DehydrationSounds.class.getClassLoader()
+                .getResourceAsStream("assets/dehydration/sounds.json")) {
+            helper.assertTrue(in != null, "assets/dehydration/sounds.json must ship");
+            assert in != null;
+            String manifest = new String(in.readAllBytes(),
+                    java.nio.charset.StandardCharsets.UTF_8);
+            for (String event : new String[] {
+                "fill_flask", "water_sip", "empty_flask", "cauldron_bubble"}) {
+                helper.assertTrue(manifest.contains("\"" + event + "\""),
+                        "sounds.json must name " + event
+                                + ", or the event plays silence; manifest was: " + manifest);
+            }
+        } catch (java.io.IOException e) {
+            throw new AssertionError("could not read assets/dehydration/sounds.json", e);
+        }
+        helper.succeed();
+    }
 }

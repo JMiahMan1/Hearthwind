@@ -591,7 +591,7 @@ campfire and the kelp route.
 Legend: ✅ at parity · 🟡 deliberate deviation (reason in one clause) ·
 ❌ missing · ❌ unverified (say what could not be found).
 
-Summary: **✅ 92 · 🟡 9 · ❌ 2** over 103 rows. **0.1.49 closed 17 more rows**: a
+Summary: **✅ 93 · 🟡 9 · ❌ 1** over 103 rows. **0.1.49 closed 17 more rows**: a
 river fill is DIRTY (we had it exactly backwards), the flask fill needs a 20-tick hold
 and destroys the source, the flask tooltip reads `Fill Level n/cap` with the
 reference's colour-coded lines, the sip raycast is the reference's fixed 1.5 blocks with
@@ -601,19 +601,21 @@ cauldron's rain needs sky-light and a 0.15 °C biome, its voxel shape is vanilla
 cube, the pump converts in one press and scans blocks 0…49 above, and the boil pops at
 the block corner with no chime, no steam and no unlit-fire hint. Two rows are marked
 **not reproducible on 26.2** (the shared campfire counter, the flask reset recipes).
-The nine 🟡 left are the purified bucket's particle/sound/recursion extras, the sip and
-flask sound moments, the `useHydrationCorpus` flag, the HUD wobble cadence, the
-thirst-damage difficulty gate and the cauldron bucket fill; the two ❌ are
-`thirst_preview` droplet tooltips and the four custom sound events (0.1.50).
-the four custom sound events). 0.1.45 closed the last of them
-four more: the campfire cauldron's potion pour, the copper cauldron's one-step potion
-fill, the bubble sound while it boils, and the rule that a block placed above the
-cauldron removes it; 0.1.45 then ported rain extinguishing campfires, which is
-AdditionZ's job rather than Dehydration's, so the whole port queue's most
-survival-critical key is closed. Four ❌ rows remain, none of them hydration
-behaviour: thirst droplet tooltips and the four custom
-sound events. The last
-`❌ unverified` row was closed on 0.1.35 (the hydration corpus resolves 105 of
+**0.1.50 closed the last ❌**: all four custom sound events ship with Dehydration's own
+`.ogg` files and `sounds.json`, wired at the reference's exact moments — and two of the
+readings this file carried for years were wrong, the sip pitch being a division
+(`0.9 + random/5.0`, so 0.9–1.1, not a five-fold wobble) and the cauldron bubble being
+louder than documented (`0.8 + random*0.5`, not `0.5 + random*0.4`).
+The nine 🟡 left are the purified bucket's particle/sound/recursion extras, the
+`useHydrationCorpus` flag, the HUD wobble cadence, the thirst-damage difficulty gate and
+the cauldron bucket fill; the one ❌ left is `thirst_preview`, the droplet tooltips that
+show how much an item quenches. Earlier releases closed the rest of the ❌ column: 0.1.43
+the campfire cauldron's potion pour, the copper cauldron's one-step potion fill, the
+bubble sound while it boils, and the rule that a block placed above the cauldron removes
+it; 0.1.45 then ported rain extinguishing campfires, which is AdditionZ's job rather than
+Dehydration's, so the whole port queue's most survival-critical key is closed; 0.1.48
+purified water displacing vanilla water and the purified bucket filling a cauldron. The
+last `❌ unverified` row was closed on 0.1.35 (the hydration corpus resolves 105 of
 its 115 catalogued ids in a real world, and the gametest now pins that), and
 the Alchemy 2 cauldron gates were loaded on 0.1.39.
 
@@ -738,7 +740,7 @@ the bytecode rather than trusting the prose:
 | bamboo pump: 1 slot, `pump_cooldown` 1200, `pump_requires_water` scan of 50 blocks above | `pumpCooldown = 1200`, `pumpRequiresWater = false`; the scan covers blocks 10…59 above instead of 0…49 | ✅ 0.1.49: the scan is blocks 0…49 above, counting the pump's own block | `hydration/BambooPumpBlock.hasWaterAbove` |
 | bamboo pump: **one** pump converts the container and the hand is emptied | 4 pumps for a bucket, 1 for a bottle, +2 units for a flask; the container is stored and handed back later; a pending cooldown rides on the item so it survives break/replace | ✅ 0.1.49: one press converts any container, a flask keeps its fill level and becomes purified, and the cooldown rides on the block entity only | `hydration/BambooPumpBlockEntity.updateInventory`; test `bambooPumpPurifiesItsContainer` |
 | bamboo pump: cooldown messages `Pump Cooldown: <n>s` and `Pump found no water` | same two strings, sent as action-bar text | ✅ | `BambooPumpBlock.java:153-159`; `assets/dehydration/lang/en_us.json` |
-| the four custom sounds (`fill_flask`, `water_sip`, `empty_flask`, `cauldron_bubble`) | no `sounds.json`; vanilla substitutes only | ❌ | `find custom-mods/hearthwind-survival/src/main/resources/assets/dehydration -name sounds.json` → nothing |
+| the four custom sounds (`fill_flask`, `water_sip`, `empty_flask`, `cauldron_bubble`) | all four ship, with Dehydration's own `.ogg` files and `sounds.json` | ✅ 0.1.50 | `DehydrationSounds` registers `dehydration:{fill_flask,water_sip,empty_flask,cauldron_bubble}` and the nine reference `.ogg` files are copied verbatim under `assets/dehydration/sounds/` with the reference's own `sounds.json` (GPL-3.0, see `ATTRIBUTION.md`). Wired at the reference's exact moments and values read from the bytecode: fill = `fill_flask` on BLOCKS 1.0/1.0 (`LeatherFlask#use` offset 630); sneak-drain = `empty_flask` on BLOCKS 1.0/1.0 (offset 468); **every** sip = `empty_flask` on NEUTRAL 1.0/1.0 (`finishUsing` offset 117 — we used to stay silent unless the flask ran dry); bare-hand sip completion = `water_sip` on PLAYERS 1.0 with pitch `0.9 + random/5.0` (`EventInit` offset 571 — note the `fdiv`, so the spread is 0.9–1.1, NOT the five-fold wobble an earlier reading of this file claimed); boil = `cauldron_bubble` on BLOCKS at `0.5 + random*0.4 + 0.8` = 0.8–1.3, louder than the 0.5–0.9 we had guessed. Two tests: `dehydrationSoundsUseTheReferenceIds` and `dehydrationSoundFilesShipInOurJar` |
 | brewing: water + charcoal → purified, water + kelp → purified, purified + ghast tear → hydration | all three shipped 0.1.35, plus the `hydration` potion and its effect; the effect ticks once every `50 >> amplifier` ticks for `amp + 1` thirst (Aged's cadence) and a dose is 900 ticks | ✅ | `PurifiedWater.registerBrewing()` registers them on `FabricPotionBrewingBuilder.BUILD` (26.2 has a real hook where the reference needed a mixin on `registerDefaults`); `HydrationMobEffect`; gametests `hydrationBrewingMixesMatchAged` (brews all three and checks vanilla's nether wart still wins) and `aHydrationDoseWorthsAboutEighteenThirst` (ticks a full dose through `MobEffectInstance.tickServer`; no mock player ticks in a gametest, so that is vanilla's own cadence path) |
 | `bottle_consumes_source_block = false` → a plain glass bottle leaves the source intact | 26.2 vanilla already leaves it intact; no removal hook | ✅ | `HydrationStorages.java:40-46` |
 | `#minecraft:tags/blocks/cauldrons` lists all five dehydration cauldrons | shipped identically | ✅ | `data/minecraft/tags/block/cauldrons.json` |

@@ -9,7 +9,6 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Item.Properties;
@@ -100,12 +99,17 @@ public final class FlaskItems {
                         false, false, true));
             }
         }
+        // Reference LeatherFlask#finishUsing offset 117: empty_flask, NEUTRAL,
+        // 1.0, 1.0, played UNCONDITIONALLY. Before 0.1.50 this only played a
+        // vanilla GENERIC_DRINK on the sip that emptied the flask, so a
+        // partially filled flask drank in silence.
+        player.level().playSound(null, player.blockPosition(),
+                dev.jmiahman.hearthwind.survival.hydration.DehydrationSounds.EMPTY_FLASK,
+                net.minecraft.sounds.SoundSource.NEUTRAL, 1.0f, 1.0f);
         int newFill = data.fillLevel() - 1;
         if (newFill <= 0) {
             stack.remove(FLASK_DATA);
             stack.remove(net.minecraft.core.component.DataComponents.CONSUMABLE);
-            player.level().playSound(null, player.blockPosition(),
-                    SoundEvents.GENERIC_DRINK.value(), net.minecraft.sounds.SoundSource.PLAYERS, 0.8f, 0.9f);
         }
         return newFill <= 0 ? stack : setFill(stack, newFill, data.qualityLevel());
     }

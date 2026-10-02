@@ -1,11 +1,12 @@
 package dev.jmiahman.hearthwind.survival;
 
+import dev.jmiahman.hearthwind.survival.hydration.DehydrationSounds;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.stats.Stats;
 import net.minecraft.tags.BiomeTags;
@@ -223,7 +224,8 @@ public final class LeatherFlaskItem extends Item {
     private static void setFilled(ItemStack stack, ServerPlayer sp, ServerLevel level, int fill, int quality) {
         stack.set(FlaskItems.FLASK_DATA, new FlaskData(fill, quality));
         stack.set(DataComponents.CONSUMABLE, FlaskItems.DRINK);
-        level.playSound(null, sp.blockPosition(), SoundEvents.BOTTLE_FILL, SoundSource.PLAYERS, 1.0f, 1.0f);
+        // Reference LeatherFlask#use offset 630: fill_flask, BLOCKS, 1.0, 1.0.
+        level.playSound(null, sp.blockPosition(), DehydrationSounds.FILL_FLASK, SoundSource.BLOCKS, 1.0f, 1.0f);
         sp.awardStat(Stats.ITEM_USED.get(stack.getItem()));
     }
 
@@ -235,14 +237,18 @@ public final class LeatherFlaskItem extends Item {
         }
         stack.set(FlaskItems.FLASK_DATA, new FlaskData(fill, quality));
         stack.set(DataComponents.CONSUMABLE, FlaskItems.DRINK);
-        level.playSound(null, sp.blockPosition(), SoundEvents.BOTTLE_EMPTY, SoundSource.PLAYERS, 1.0f, 1.0f);
+        // Reference LeatherFlask#finishUsing offset 117: empty_flask, NEUTRAL,
+        // 1.0, 1.0 - and UNCONDITIONALLY, so every sip makes the sound and not
+        // only the one that empties the flask.
+        level.playSound(null, sp.blockPosition(), DehydrationSounds.EMPTY_FLASK, SoundSource.NEUTRAL, 1.0f, 1.0f);
     }
 
     /** Upstream sneak-use: drops the contents but keeps the flask itself. */
     private static void emptyFlask(ItemStack stack, ServerPlayer sp, ServerLevel level) {
         stack.remove(FlaskItems.FLASK_DATA);
         stack.remove(DataComponents.CONSUMABLE);
-        level.playSound(null, sp.blockPosition(), SoundEvents.BOTTLE_EMPTY, SoundSource.PLAYERS, 1.0f, 1.0f);
+        // Reference LeatherFlask#use offset 468: empty_flask, BLOCKS, 1.0, 1.0.
+        level.playSound(null, sp.blockPosition(), DehydrationSounds.EMPTY_FLASK, SoundSource.BLOCKS, 1.0f, 1.0f);
         sp.awardStat(Stats.ITEM_USED.get(stack.getItem()));
     }
 
