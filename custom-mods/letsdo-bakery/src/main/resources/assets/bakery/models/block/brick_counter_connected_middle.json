@@ -2,7 +2,7 @@
 
 	"credit": "Made by Satisfy",
 	"textures": {
-		"bottom": "block/bricks",
+		"bottom": "minecraft:block/bricks",
 		"particle": "bakery:block/baker_station_side",
 		"side": "bakery:block/baker_station_side",
 		"top": "bakery:block/cabinet_top_connected_middle"

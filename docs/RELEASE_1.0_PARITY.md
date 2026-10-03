@@ -654,6 +654,30 @@ one invented table:
   which vanilla's recipe manager simplifies away because the result is the
   ingredient) plus the purified bucket's purely cosmetic client-side
   `LARGE_SMOKE` burst.
+- **The missing-texture checkerboard, everywhere, not just on the menu (0.1.53).** A
+  26.2 change to how model texture references resolve broke **173 references across
+  98 model files in nine vendored mods**: 1.20.1 read a bare `block/bricks` in a mod
+  model as `minecraft:block/bricks`, and 26.2 reads it as `<that mod>:block/bricks`.
+  Every one of them pointed at a file that does not exist, so the block rendered as
+  the missing-texture checkerboard - bakery's brick counters, candlelight's stoves,
+  meadow's crops, vinery's presses, farm_and_charm's planters, herbalbrews'
+  furniture, brewery's and nethervinery's brewing stations, and **our own campfire
+  cauldron**, which is a survival-critical block. All 173 now name `minecraft:`
+  explicitly.
+  This class of bug was invisible to the existing `validate_models.py` for two
+  reasons, both fixed: it only walked models *reachable* from a blockstate whose
+  stem appears as a Java literal, and `dehydration:block/campfire_cauldron` is
+  registered from the constant `CAMPFIRE_CAULDRON`, not the string
+  `campfire_cauldron`, so the cauldron's own models were never scanned. The
+  validator now also scans **every** model we ship for un-namespaced texture
+  references, with one documented upstream exception. A new
+  `custom-mods/tools/audit_pack_assets.py` indexes all 28,546 models, 22,814
+  textures, 10,462 blockstates and 4,405 item definitions across the vanilla jar and
+  all 141 client jars, and reports what is genuinely absent - currently 44
+  references, all of them upstream naming mismatches in mods we do not build
+  (chipped, natures_spirit, betterarcheology, lootr, gardens_of_the_dead,
+  undergroundworlds, chalk), plus the ten orphaned chipped debug-lantern models whose
+  placeholder texture upstream never replaced.
 - **The thirst droplets now tell you how much an item quenches (0.1.52).**
   `thirst_preview` was the last ❌ anywhere in the hydration audit and it is now
   ported, so that audit is **✅ 100 · 🟡 3 · ❌ 0 over 103 rows** - nothing is

@@ -1,8 +1,8 @@
 {
   "credit": "Made by Satisfy",
   "textures": {
-    "0": "block/flower_pot",
-    "1": "block/dirt",
+    "0": "minecraft:block/flower_pot",
+    "1": "minecraft:block/dirt",
     "2": "farm_and_charm:block/window_sill",
     "3": "farm_and_charm:block/white_flower_pot_2",
     "particle": "farm_and_charm:block/window_sill"

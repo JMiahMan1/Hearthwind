@@ -5,8 +5,8 @@
 		"particle": "bakery:block/brick_sink_side",
 		"side": "bakery:block/brick_sink_side",
 		"top": "bakery:block/brick_sink_top",
-		"bricks": "block/bricks",
-		"metal_top": "block/blast_furnace_top"
+		"bricks": "minecraft:block/bricks",
+		"metal_top": "minecraft:block/blast_furnace_top"
 	},
 	"elements": [
 		{

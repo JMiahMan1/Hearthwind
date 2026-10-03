@@ -9,6 +9,6 @@
 		"bottom": "meadow:block/wooden_cauldron_bottom",
 		"particle": "meadow:block/wooden_cauldron_side",
 		"side": "meadow:block/wooden_cauldron_side",
-		"content": "block/powder_snow"
+		"content": "minecraft:block/powder_snow"
 	}
 }

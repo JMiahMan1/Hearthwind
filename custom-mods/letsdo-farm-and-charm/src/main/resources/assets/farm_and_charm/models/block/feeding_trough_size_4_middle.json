@@ -4,8 +4,8 @@
 	"textures": {
 		"0": "farm_and_charm:block/feeding_trough_bottom",
 		"1": "farm_and_charm:block/feeding_trough_front",
-		"3": "block/composter_compost",
-		"4": "block/composter_ready",
+		"3": "minecraft:block/composter_compost",
+		"4": "minecraft:block/composter_ready",
 		"5": "farm_and_charm:block/feeding_trough_side",
 		"particle": "farm_and_charm:block/feeding_trough_bottom"
 	},

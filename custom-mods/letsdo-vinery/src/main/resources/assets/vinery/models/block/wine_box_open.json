@@ -2,9 +2,9 @@
 	"credit": "Made by Satisfy",
 	"textures": {
 		"1": "vinery:block/wine_box",
-		"2": "block/hay_block_top",
-		"3": "block/glass",
-		"4": "block/polished_deepslate",
+		"2": "minecraft:block/hay_block_top",
+		"3": "minecraft:block/glass",
+		"4": "minecraft:block/polished_deepslate",
 		"particle": "vinery:block/wine_box"
 	},
 	"elements": [

@@ -8,10 +8,10 @@
 		"4": "herbalbrews:block/cauldron_side_3",
 		"5": "herbalbrews:block/cauldron_side_4",
 		"6": "herbalbrews:block/cauldron_top_2",
-		"7": "block/spruce_log",
+		"7": "minecraft:block/spruce_log",
 		"10": "herbalbrews:block/coal",
-		"11": "block/campfire_fire",
-		"12": "block/campfire_log_lit",
+		"11": "minecraft:block/campfire_fire",
+		"12": "minecraft:block/campfire_log_lit",
 		"particle": "herbalbrews:block/cauldron_bottom"
 	},
 	"elements": [

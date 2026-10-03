@@ -5,7 +5,7 @@
 		"particle": "bakery:block/baker_station_side",
 		"side": "bakery:block/baker_station_side",
 		"top": "bakery:block/cabinet_top",
-		"bottom": "block/bricks",
+		"bottom": "minecraft:block/bricks",
 		"front": "bakery:block/baker_station_1"
 	},
 	"elements": [

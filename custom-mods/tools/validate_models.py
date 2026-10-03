@@ -220,6 +220,50 @@ def main() -> int:
     for model_id in sorted(roots):
         validate_root(model_id, "blockstate/item definition")
 
+    # A texture reference with no namespace is the 1.20.1 -> 26.x migration
+    # trap, and it is invisible to reachability-based scanning: it only bites
+    # models a player actually loads, and our reachability gate already skips
+    # blockstates whose stem is not a Java literal. In 1.20.1 a bare path in a
+    # mod model resolved to minecraft:; in 26.2 it takes the MODEL's namespace,
+    # so a vendored port's `"bricks": "block/bricks"` silently became
+    # `farm_and_charm:block/bricks` and rendered as the missing-texture
+    # checkerboard. 173 of these shipped through 0.1.52 across 98 model files
+    # in nine vendored ports, so this check scans EVERY model we ship rather
+    # than only the reachable ones - it is cheap, and a dormant model gaining a
+    # bare ref is still a latent bug.
+    # One upstream exception, listed rather than silenced: chipped ships ten
+    # debug lantern models whose texture is the literal `block/texture`, a
+    # Blockbench placeholder it never replaced. No texture by that name exists
+    # in chipped or in vanilla, no blockstate in chipped points at any of those
+    # ten models (so they cannot render), and inventing a PNG would be inventing
+    # art. Every other chipped lantern names a real
+    # `chipped:block/lantern/<name>` texture.
+    ALLOWED_BARE = {("chipped", "block/texture")}
+
+    for asset_root in RESOURCE_ROOTS:
+        ns = os.path.basename(asset_root)
+        root = Path(asset_root)
+        for path in sorted(root.rglob("models/**/*.json")):
+            try:
+                data = json.loads(path.read_text())
+            except json.JSONDecodeError:
+                continue
+            textures = data.get("textures")
+            if not isinstance(textures, dict):
+                continue
+            for key, value in textures.items():
+                if (
+                    isinstance(value, str)
+                    and not value.startswith("#")
+                    and ":" not in value
+                    and (ns, value) not in ALLOWED_BARE
+                ):
+                    problems.append(
+                        f"unnamespaced texture: {ns}:{value}  "
+                        f"(textures[{key}] in {path.relative_to(root).as_posix()} - "
+                        f"in 26.2 this resolves to {ns}:, not minecraft:)"
+                    )
+
     if problems:
         print(f"validate_models: {len(problems)} problem(s)")
         for problem in sorted(set(problems)):

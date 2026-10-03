@@ -7,7 +7,7 @@
 		"11": "brewery:block/brewing_station/wood/wooden_brewing_station_side_2",
 		"12": "brewery:block/brewing_station/wood/wooden_brewing_station_top_3",
 		"13": "brewery:block/brewing_station/wood/wooden_brewing_station_side_1",
-		"14": "block/water_still",
+		"14": "minecraft:block/water_still",
 		"particle": "brewery:block/brewing_station/wood/wooden_brewing_station_side_2"
 	},
 	"elements": [

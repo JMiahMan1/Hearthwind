@@ -3,10 +3,10 @@
 	"credit": "Made by Satisfy",
 	"textures": {
 		"side": "bakery:block/brick_sink_side",
-		"water": "block/water_still",
+		"water": "minecraft:block/water_still",
 		"top": "bakery:block/brick_sink_top",
-		"bricks": "block/bricks",
-		"metal_top": "block/blast_furnace_top",
+		"bricks": "minecraft:block/bricks",
+		"metal_top": "minecraft:block/blast_furnace_top",
 		"particle": "bakery:block/brick_sink_side"
 	},
 	"elements": [

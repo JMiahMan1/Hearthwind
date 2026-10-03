@@ -8,8 +8,8 @@
     "7": "farm_and_charm:block/stove_top",
     "8": "farm_and_charm:block/furnace_lit_inside_bottom",
     "9": "farm_and_charm:block/furnace_lit_grate",
-    "10": "block/fire_0",
-    "11": "block/fire_1",
+    "10": "minecraft:block/fire_0",
+    "11": "minecraft:block/fire_1",
     "particle": "farm_and_charm:block/stove_side"
   },
   "elements": [

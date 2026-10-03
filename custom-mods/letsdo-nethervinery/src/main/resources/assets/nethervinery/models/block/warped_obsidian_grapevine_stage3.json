@@ -4,8 +4,8 @@
 	"textures": {
 		"1": "nethervinery:block/warped_grape_bush_bottom_stage3",
 		"2": "nethervinery:block/warped_grape_bush_top_stage3",
-		"6": "block/obsidian",
-		"particle": "block/obsidian"
+		"6": "minecraft:block/obsidian",
+		"particle": "minecraft:block/obsidian"
 	},
 	"elements": [
 		{

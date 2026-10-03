@@ -478,5 +478,15 @@ nothing may remain in system temp dirs from this project.
 - `python3 custom-mods/tools/validate_menu_assets.py` (run by the client
   harness too) whenever a FancyMenu config or a `conversion/overrides/`
   asset folder changes.
+- `python3 custom-mods/tools/audit_pack_assets.py` for a PACK-WIDE asset
+  audit - it indexes every model, texture, blockstate and item definition
+  in the vanilla jar and all 141 client jars and reports what is genuinely
+  absent. It is a DIAGNOSTIC, not a gate: 44 upstream references in mods we
+  do not build are still open. The gate half lives in `validate_models.py`,
+  which now scans EVERY model we ship for un-namespaced texture references -
+  1.20.1 read a bare `block/x` in a mod model as `minecraft:block/x` and 26.2
+  reads it as `<that mod>:block/x`, which broke 173 references across 98 files
+  in nine vendored mods in 0.1.53. Same checkerboard as the 0.1.39 main menu,
+  so it is worth checking whenever a port touches model JSON.
 - `ruff check tools/` for python tooling changes (install once via
   `sudo dnf install -y ruff`; not yet present on this host)

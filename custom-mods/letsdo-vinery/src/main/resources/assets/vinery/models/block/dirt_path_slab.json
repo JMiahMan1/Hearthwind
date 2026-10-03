@@ -2,12 +2,12 @@
 	"credit": "Made by Satisfy",
 	"parent": "block/slab_top",
 	"textures": {
-		"4": "block/dirt_path_top",
-		"5": "block/dirt",
-		"particle": "block/dirt_path_side",
-		"side": "block/dirt_path_side",
-		"bottom": "block/dirt",
-		"top": "block/dirt_path_top"
+		"4": "minecraft:block/dirt_path_top",
+		"5": "minecraft:block/dirt",
+		"particle": "minecraft:block/dirt_path_side",
+		"side": "minecraft:block/dirt_path_side",
+		"bottom": "minecraft:block/dirt",
+		"top": "minecraft:block/dirt_path_top"
 	},
 	"elements": [
 		{

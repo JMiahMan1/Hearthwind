@@ -5,7 +5,7 @@
 		"0": "farm_and_charm:block/feeding_trough_bottom",
 		"1": "farm_and_charm:block/feeding_trough_front",
 		"3": "farm_and_charm:block/feeding_trough_side",
-		"4": "block/composter_ready",
+		"4": "minecraft:block/composter_ready",
 		"particle": "farm_and_charm:block/feeding_trough_bottom"
 	},
 	"elements": [

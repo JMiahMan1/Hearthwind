@@ -8,8 +8,8 @@
     "7": "candlelight:block/wood_fired_oven_top_on",
     "8": "candlelight:block/furnace_lit_inside_bottom",
     "9": "candlelight:block/furnace_lit_grate",
-    "10": "block/fire_0",
-    "11": "block/fire_1",
+    "10": "minecraft:block/fire_0",
+    "11": "minecraft:block/fire_1",
     "particle": "candlelight:block/stone_bricks_stove_side"
   },
   "elements": [

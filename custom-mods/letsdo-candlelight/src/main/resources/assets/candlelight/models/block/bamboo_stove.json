@@ -4,7 +4,7 @@
     "0": "candlelight:block/bamboo_stove",
     "1": "candlelight:block/bamboo_stove_top",
     "2": "candlelight:block/bamboo_stove_bottom",
-    "3": "block/campfire_fire",
+    "3": "minecraft:block/campfire_fire",
     "particle": "candlelight:block/bamboo_stove"
   },
   "elements": [
