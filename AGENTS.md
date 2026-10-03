@@ -59,6 +59,21 @@ How far CI can go:
    `pack_version.data_major`; 26.2 = 107). Then run
    `python3 conversion/scripts/resolve_deps.py`, review the readiness
    report, then `build_pack.py --server-dir`.
+   **Reading the resolver's choice.** `pick_version` ranks
+   `(fabric?, no-forge?, filename-does-not-name-a-newer-MC,
+   exclusive-to-target-MC, date_published, -len(game_versions))`. The two
+   traps, both hit in 0.1.54:
+   - **`game_versions` cannot be the safety gate.** Authors extend one
+     rolling build list, so a 26.2-compatible build also claims 26.3 (and
+     snapshots). Every upgrade available to us claims 26.3. "Claims only
+     26.2" also fails, because those authors publish no exclusive build at
+     all. **The build FILENAME is the only signal authors actually set** -
+     `almanac-fabric-26.2-1.26.9.1.jar` is safe,
+     `spawnanimations-v1.11.6-mc1.17-26.3.9-mod.jar` is not. `mc1.21+`
+     reads as BELOW 26.2. Before shipping an "upgrade", read the filename.
+   - **Never let narrowness outrank recency.** `-len(game_versions)` above
+     `date_published` silently pins to older builds, because a newer
+     release claims *more* versions.
 2. **Custom mods**: `cd custom-mods && ./gradlew build`. Copy the plain
    jar into a test server (NEVER the `-sources` jar - its unexpanded
    fabric.mod.json poisons logs with `${version}` warnings).

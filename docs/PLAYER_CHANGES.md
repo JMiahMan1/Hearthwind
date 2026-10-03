@@ -418,6 +418,44 @@ Aged 3.1.2 ships a separate `inmisaddon` mod on top of Inmis. Upstream has no
 - The addon's LibZ inventory tab stays gated behind LibZ, which has no 26.2
   build yet, so it is not active in this pack.
 
+### 0.1.54 - Aged parity pass (fixing settings that never applied)
+
+Six of these are **behaviour that silently differed from Aged** because the
+26.2 builds of these mods read their settings from a different file than Aged's
+pack shipped, so our defaults - not Aged's values - were in force.
+
+- **Combat rolls now work during weapon cooldown.** Rolling for a melee hit is
+  allowed while your weapon is still on cooldown, exactly as in Aged. Combat
+  Roll's 3.0.1 build looks in a `combat_roll` folder, not Aged's `combatroll`,
+  and defaults this to off, so it was off here too.
+- **Trapdoors are no longer coupled.** Coupling a trapdoor to a pressure plate
+  or button no longer opens it. Aged explicitly leaves trapdoors uncoupled;
+  ours coupled them because the port reads `couplings.properties` rather than
+  Aged's `couplings.toml` and defaulted the key to on. Doors and fence gates
+  still couple.
+- **The chat filter now uses all 29 of Aged's phrases.** Log Begone shipped with
+  no config, so it fell back to a bundled two-phrase list; the pack now ships
+  Aged's full list.
+- **Blast furnaces show one steel recipe, not two.** Aged deletes the
+  earlystage mod's own steel recipe and replaces it with an identical one under
+  a different id; the pack now does the same, so the duplicate entry is gone.
+  The cost is unchanged - 2 iron ingots and 2 extra coal.
+- **Digging earns slightly more Stamina XP** (10% more per block), matching
+  Aged's value.
+- **Butterflies no longer spawn in the wild.** Aged sets their spawn weight to
+  zero, so the reference has none; ours were biome-spawned. Fireflies and
+  caterpillars are unaffected.
+- **Two missing textures now render.** The meadow wooden cauldron's bottom face,
+  and the young coconut's top and bottom faces. All three were referenced by
+  models we already shipped.
+- **Eight mods updated to their newest 26.2 builds**: LetMeDespawn, Almanac,
+  Formations Nether, Formations Overworld, Fabric Language Kotlin, Moog's
+  Structure Lib, and two more that were pinned to older versions by a resolver
+  bug. The pack now ships Aged's newest available build for every mod that has
+  one, with two deliberate exceptions: **Boids** stays on its 26.2-only build
+  because the 26.3 build crashes the 26.2 mixin loader, and **Villages and
+  Pillages** is our own 26.2 port rather than the Modrinth build.
+
 ### 26.2 Port Status
 - Verified 2026-09-24: full `./gradlew build` green; server gametests **300/300 passed** (container); client gametests **PASS** (container, 33 screenshots); fresh-world Profundis smoke passed forced chunk generation with no broken-chunk errors.
 - Cooking removals now default **on** with the shipped Candlelight stoves and cooking stations: vanilla furnace recipes for bread, cooked beef, and other cooked foods are removed; non-cooking recipes remain available.

@@ -99,6 +99,48 @@ Fixed (small bug fixes, 2026-09-24):
    were added (Aged's exact wording where Aged had the item, vanilla-style
    names otherwise). New client gametest `ItemNameGameTests` walks the live
    item and entity registries and fails on any raw key.
+6. **Six settings silently differed from Aged because their 26.2 builds read a
+   different file than Aged's pack shipped (0.1.54).** Each was verified
+   against what the port actually opens, not against what the mod read in
+   1.20.1:
+   - `combat-roll`: Aged ships `config/combatroll/server.json5`, but the 26.2
+     jar reads folder `combat_roll`, so our `allow_rolling_while_weapon_cooldown`
+     never loaded and rolled back to 3.0.1's `false` - combat rolls were blocked
+     during weapon cooldown for us and allowed in Aged.
+   - `couplings`: our port reads `config/couplings.properties` via Java
+     Properties, not Aged's `couplings.toml`, and defaulted
+     `couple_trapdoors` to `"true"` - trapdoors coupled for us and not in Aged.
+   - `logbegone`: our port reads `logbegone.json`, we shipped none, and it fell
+     back to a bundled two-phrase default - **27 of Aged's 29 filters were
+     lost**. Aged's `logbegone.toml` was translated mechanically (its `regex`
+     array is genuinely empty).
+   - `earlystage` steel: Aged's `reciperemover.json` deletes
+     `earlystage:steel_ingot_from_blasting` at `recipeList[88]`, and Aged's
+     steel instead comes from its own
+     `aged:steel_ingot_from_blasting_extra_iron_ingot_and_coal`. The two files
+     are the same recipe - only the id and key order differ - so we shipped
+     both and the blast furnace offered steel twice, on the cheap route Aged
+     does not have. Added the id to `data/earlystage/recipe_removals/aged.json`;
+     two primitive gametests and the steel guidebook entry now assert it.
+   - `staminaPerDig` was `1.0`; Aged's `levelz.json5` ships `"staminaBase": 1.1`,
+     so every player earned 9.1% less Stamina XP. One constant moves all three
+     derived awards.
+   - `butterflies` spawned; Aged's `naturalist.json` sets
+     `"butterflySpawnWeight": 0`. Fireflies and caterpillars are untouched.
+   `backslot.json` was deliberately left alone: its Java defaults of 0 look like
+   a deviation but ARE upstream's, and Aged ships `backslot.json5` as a pack
+   override, so our shipped file already matches.
+7. **Two ranking bugs kept us on old mod versions (0.1.54).** `-len(game_versions)`
+   outranked `date_published`, and newer releases claim more versions, so the
+   newer build lost. And `game_versions` cannot be the safety gate at all -
+   every available upgrade claims 26.3. Both fixed in `resolve_deps.py`, which
+   now gates on the build filename; see the 0.1.54 sweep in section 5.9.
+8. **Missing textures that Aged has (0.1.54).** `meadow:block/cauldron_bottom`
+   (our port referenced it but never carried it) and the three
+   `natures_spirit:block/young_coconut*` faces, which upstream's own 26.2 jar
+   renamed without updating its models. Aged's art is the parity target. The
+   other 40 missing texture references are missing in Aged's jars too and were
+   deliberately left alone.
 
 Still open (do these first, section 6, W0):
 
@@ -186,16 +228,41 @@ Still open (do these first, section 6, W0):
   - Docs describing a "5 food groups" diet are wrong: the implementation is
     Aged's NutritionZ model (Carbohydrates, Protein, Fat, Vitamins, Minerals,
     0-300).
-- **Duplicate jars in the pack:** vendored `architectury-fabric-21.0.7`
+- ~~**Duplicate jars in the pack:** vendored `architectury-fabric-21.0.7`
   next to Modrinth 21.1.10, vendored `supermartijn642corelib-1.1.24a`
-  next to 1.1.24b, vendored `modmenu-20.0.1` next to 20.0.2. Remove the
-  stale vendored copies (check `patch_vendored.py` doesn't target them
-  first).
-- **Aged config tuning isn't carried over** for mods we already ship:
-  `lootr.json`, `sparsestructures.json5`, `immersive_aircraft.json`,
-  `immersive_armors.json`, `smallships-common.toml`, `adventurez.json5`,
-  `couplings.toml`, `logbegone.toml`, `combatroll`, `modmenu.json`. Only
-  `combat_roll` and `kiwi-client.yaml` exist in `conversion/overrides/config`.
+  next to 1.1.24b, vendored `modmenu-20.0.1` next to 20.0.2.~~
+  **Closed in 0.1.54, and the class of bug is now impossible to ship again.**
+  Filename-based pruning could never catch these, because a vendored snapshot
+  and a Modrinth pick for the same mod can have different filenames. Three more
+  instances were live: vendored `letmedespawn-26.2-1.26.7.3` next to the 1.26.9.1
+  pick, vendored `supermartijn642configlib-1.1.8` next to 1.1.8a, and our own
+  `villagesandpillages-26.2+0.1.0` port next to Modrinth 2.0.0. The two stale
+  vendored snapshots were deleted (both were plain `keep` entries with no
+  `local_override`); the Villages and Pillages case is the deliberate
+  rebuild-from-section-5.3 case and is kept that way.
+  `build_pack.py` now (a) asserts, before it prints "Materialized", that no mod
+  id appears in more than one jar in either `dist/*/mods`, reading
+  `fabric.mod.json` out of each jar, and (b) `reconcile_duplicate_mod_ids()`
+  deletes a staged pick when a vendored or custom jar already provides that mod
+  id, so the manifest's `local_override` list no longer has to stay complete.
+  Worth noting: the mrpack was correct in all four cases and only the
+  materialised `dist/` directories were wrong, which is why boot tests kept
+  passing while a real boot of `dist/server` would have hit Fabric's
+  duplicate-mod-id failure.
+- **Aged config tuning still not carried over**, after 0.1.54 closed the three
+  file-name mismatches (`combat_roll`, `couplings.properties`, `logbegone.json`):
+  `cameraoverhaul.json` (its 26.2 schema became restructured `.toml` with
+  per-context blocks, so all twelve of Aged's factors need a manual re-tune, not
+  a file copy), `defaultoptions/` (two files), `presencefootsteps/`, `emi.css`.
+  Already carried over and matching Aged: `adventurez.json5`, `backslot.json`
+  (which also folds Aged's `backslotaddon.json5` in), `immersive_aircraft.json`,
+  `immersive_armors.json`, `lootr.json`, `modmenu.json`, `moreculling.toml`,
+  `smallships-common.toml`, `sparsestructures.json5`, `DistantHorizons.toml`,
+  `sodium-options.json`, `time-and-wind/`, `fancymenu/`, `kiwi-client.yaml`.
+  `interactic`, `lmft` and `nameplate` are Aged configs for mods we do not
+  ship, and `SeasonHUD-client.toml` is covered by our own in-tree `SeasonHud`.
+  Every in-tree rebuild's defaults match their Java field initialisers, which is
+  the authority - not the stale generated `conversion/dist/**/config/*.json`.
 - **Docs claiming ✅ that the data contradicts:** FEATURE_PARITY rates
   jobs/rpgdifficulty/seasons ✅ where AGED_PARITY shows 🟡 gaps.
   AGED_PARITY says Aged had no revive mod, but Aged ships `revive-1.0.7`.
@@ -525,7 +592,7 @@ and ported mods are reviewed in their port notes.
 | `hopo-better-underwater-ruins` | HopoBetterUnderwaterRuins-[1.20-1.20.2]-1.1.4b.jar | 1.2.8 |
 | `mru` | MRU-1.0.4+1.20.1+fabric.jar | 1.0.40+26.2-fabric |
 | `terrablender` | TerraBlender-fabric-1.20.1-3.0.1.7.jar | 26.2.0.0.2 |
-| `almanac` | almanac-1.20.x-fabric-1.0.2.jar | 1.26.7.3 |
+| `almanac` | almanac-1.20.x-fabric-1.0.2.jar | 1.26.9.1 |
 | `appleskin` | appleskin-fabric-mc1.20.1-2.5.1.jar | 3.0.10+mc26.2 |
 | `architectury-api` | architectury-9.2.14-fabric.jar | 21.1.10+fabric |
 | `balm` | balm-fabric-1.20.1-7.3.9.jar | 26.2.0.8+fabric-26.2 |
@@ -542,30 +609,66 @@ and ported mods are reviewed in their port notes.
 | `entity-model-features` | entity_model_features_fabric_1.20.1-2.2.6.jar | 3.3.8-fabric-26.2 |
 | `entitytexturefeatures` | entity_texture_features_fabric_1.20.1-6.2.8.jar | 7.2.4-fabric-26.2 |
 | `fabric-api` | fabric-api-0.92.2+1.20.1.jar | 0.161.0+26.2 |
-| `fabric-language-kotlin` | fabric-language-kotlin-1.13.0+kotlin.2.1.0.jar | 1.14.0+kotlin.2.4.20 |
+| `fabric-language-kotlin` | fabric-language-kotlin-1.13.0+kotlin.2.1.0.jar | 1.14.1+kotlin.2.4.20 |
 | `ferrite-core` | ferritecore-6.0.1-fabric.jar | 9.0.0-fabric |
 | `formations` | formations-1.0.3-fabric-mc1.20.2.jar | 1.0.4-fabric-mc26.2 |
-| `formations-nether` | formationsnether-1.0.5.jar | 1.0.5a-mc1.21+ |
-| `formations-overworld` | formationsoverworld-1.0.4.jar | 1.0.5a-mc1.21+ |
+| `formations-nether` | formationsnether-1.0.5.jar | 1.0.5b-mc1.21+ |
+| `formations-overworld` | formationsoverworld-1.0.4.jar | 1.0.5c-mc1.21+ |
 | `fzzy-config` | fzzy_config-0.5.8+1.20.1.jar | 0.7.7+26.2 |
 | `geckolib` | geckolib-fabric-1.20.1-4.4.9.jar | 5.5.5 |
 | `immersive-aircraft` | immersive_aircraft-1.1.5+1.20.1-fabric.jar | 1.5.2+26.2 |
 | `immersive-armors` | immersive_armors-1.6.1+1.20.1-fabric.jar | 1.8.2+26.2 |
 | `jump-over-fences` | jumpoverfences-fabric-1.20.1-1.3.1.jar | 1.8.1 |
-| `lmd` | letmedespawn-1.20.x-fabric-1.4.4.jar | 1.26.7.3 |
+| `lmd` | letmedespawn-1.20.x-fabric-1.4.4.jar | 1.26.9.1 |
 | `lithium` | lithium-fabric-mc1.20.1-0.11.2.jar | mc26.2-0.25.3-fabric |
 | `lootr` | lootr-fabric-1.20-0.7.33.81.jar | 1.24.39.122 |
+| `mes` (Moog's End Structures) | mes-1.3.1-1.20-fabric.jar | 2.1.1 |
+| `mns` (Moog's Nether Structures) | mns-1.0.1-1.20-fabric.jar | 3.1.1 |
 | `modmenu` | modmenu-7.2.2.jar | 20.0.2 |
 | `owo-lib` | owo-lib-0.11.2+1.20.jar | 0.13.1+26.2 |
 | `resourceful-config` | resourcefulconfig-fabric-1.20.1-2.1.2.jar | 5.0.0 |
 | `resourceful-lib` | resourcefullib-fabric-1.20.1-2.1.29.jar | 5.0.4 |
 | `scholar` | scholar-1.20.1-1.0.0-fabric.jar | 1.2.5 |
 | `sparsestructures` | sparsestructures-fabric-1.20.1-2.2.0.jar | 3.1.4 |
+| `spawn-animations` | spawnanimations-v1.9.4-mc1.17x-1.20x-mod.jar | 1.11.5+mod |
 | `superb-steeds` | superbsteeds-1.20-4.jar | 26.2-r2 |
-| `supermartijn642s-config-lib` | supermartijn642configlib-1.1.8a-fabric-mc1.20.jar | 1.1.8-fabric-mc26.2 |
+| `supermartijn642s-config-lib` | supermartijn642configlib-1.1.8a-fabric-mc1.20.jar | 1.1.8a-fabric-mc26.2 |
 | `tcdcommons` | tcdcommons-3.12.3+fabric-1.20.1.jar | 5.5.6+fn-26.2 |
 
 Deviations found: (none recorded yet)
+
+#### 0.1.54 version sweep
+
+Nine of the rows above moved to a newer 26.2 build, plus Moog's Structure
+Lib (3.4.2) came along as a transitive dependency Aged did not ship at all.
+The sweep found that `pick_version` in `conversion/scripts/resolve_deps.py` had
+two ranking bugs, both now fixed:
+
+- `-len(game_versions)` outranked `date_published`. Among builds that all claim
+  26.2, a newer Modrinth release normally also appends future snapshot strings,
+  so it claims MORE versions and lost. This silently pinned us to older builds.
+- `game_versions` cannot be the target-MC safety gate at all. Measured against
+  the Modrinth API, *every* available upgrade for these mods claims 26.3,
+  because authors extend one rolling build list. "Claims only 26.2" fails
+  outright too - these authors publish no 26.2-exclusive build. The build
+  **filename** is the only signal authors actually set, so the resolver now
+  reads it: `almanac-fabric-26.2-1.26.9.1.jar` is safe,
+  `spawnanimations-v1.11.6-mc1.17-26.3.9-mod.jar` is not. `mc1.21+` reads as
+  BELOW 26.2, since it means "1.21 and later".
+
+Two deliberate holds, both because the newer build is a different Minecraft:
+
+- **`boids` stays on `2.0.0+26.2`.** Its 26.3 build's mixin plugin throws
+  `AbstractMethodError` on the 26.2 mixin loader.
+- **`spawn-animations` stays on `1.11.5+mod`.** 1.11.6 is a 26.3.9 build.
+
+**`villagesandpillages` is not in this table** because we ship our own 26.2
+port (`villagesandpillages-26.2+0.1.0.jar`) rather than the Modrinth build -
+see section 5.3. `build_pack.py` reconciles that by mod id, not by filename.
+
+No gameplay-affecting behaviour change was found in the six upgraded mods on
+review; the server suite (412/412), the client suite and all six verifiers pass
+on the new set.
 
 ### 5.10 Aged bugs: for review
 
