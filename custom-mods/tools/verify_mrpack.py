@@ -270,6 +270,40 @@ def download_release(tag: str) -> list[Path]:
     return sorted(target.glob("*.mrpack"))
 
 
+def superseded_pick_check(path: Path, index: dict, problems: list[str]) -> None:
+    """Fail if the index asks a launcher to download a jar the pack also ships.
+
+    A pack's real contents are `files[]` (downloaded by the launcher) UNION
+    `overrides/mods/*` (bundled). build_pack.py reconciles duplicate mod ids in
+    the materialized dist directories, but the mrpack is not built from those,
+    so a resolved pick can stay in `files[]` while an override jar already
+    provides the same mod id. That is not cosmetic: Minecraft refuses to boot
+    on a duplicate mod id, so the importing player gets a dead pack.
+
+    villagesandpillages shipped exactly that way through 0.1.53 -
+    `files[]` listed Modrinth's villagesandpillages-fabric-2.0.0+mc26.2.jar
+    while `overrides/mods/` carried our own port, and it took update_prism.sh
+    (which installs from the mrpack) to surface it.
+
+    The realized dist directory is the reference: build_pack.py has already
+    reduced it to one jar per mod id, so any index entry absent from it is a
+    pick that was deliberately superseded and must not be in the index.
+    """
+    target = "server" if "Server" in path.name else "client"
+    realized = REPO / "conversion" / "build" / "dist" / target / "mods"
+    if not realized.is_dir():
+        return
+    present = {j.name for j in realized.glob("*.jar")}
+    for entry in index.get("files", []):
+        name = Path(entry["path"]).name
+        if name not in present:
+            _fail(problems,
+                  f"{path.name}: files[] lists {name}, which the realized {target} "
+                  "install does not contain - it was superseded by a bundled "
+                  "override jar, so a launcher would install two jars for one "
+                  "mod id and Minecraft would refuse to boot")
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("packs", nargs="*", type=Path)
@@ -296,6 +330,8 @@ def main() -> int:
     for pack in packs:
         index = check_pack(pack, problems)
         counts.append((pack, len((index or {}).get("files", []))))
+        if index:
+            superseded_pick_check(pack, index, problems)
         if args.deep and index:
             deep_check(pack, index, problems)
     if problems:

@@ -227,6 +227,38 @@ def main():
 
     vendored_jars, custom_jars = local_jars(mc)
     server_custom_jars = [j for j in custom_jars if "hearthwind-client" not in j.name]
+
+    # A locally built jar WINS over a Modrinth pick for the same mod id, and
+    # that decision has to be made BEFORE the index is written.
+    # villagesandpillages is the live case: our own port ships as
+    # overrides/mods/villagesandpillages-26.2+0.1.0.jar, and the Modrinth pick
+    # villagesandpillages-fabric-2.0.0+mc26.2.jar was ALSO being listed in
+    # files[] for the launcher to download. Anyone importing the pack ended up
+    # with two jars claiming one mod id, and Fabric refuses to boot on that, so
+    # this was a genuine player-facing pack bug - caught by update_prism.sh,
+    # which installs from the mrpack rather than from the dist directories.
+    # The post-materialisation reconciliation below could not catch it: it
+    # repairs dist/*/mods, which the mrpack never reads.
+    local_mod_ids = {}
+    for j in vendored_jars + custom_jars:
+        for mid in _jar_mod_ids(j):
+            local_mod_ids.setdefault(mid, j.name)
+
+    def drop_superseded(entries):
+        kept = []
+        for r in entries:
+            keys = {r.get("file"), r.get("slug")} - {None}
+            winner = next(
+                (local_mod_ids[k] for k in sorted(keys) if k in local_mod_ids), None
+            )
+            if winner:
+                print(f"  index: skip {r['file']} (mod id provided in-tree by {winner})")
+                continue
+            kept.append(r)
+        return kept
+
+    ready = drop_superseded(ready)
+    ready_server = [r for r in ready if not r.get("client_only")]
     if not custom_jars:
         print("WARNING: no custom-mods jars found - run `cd custom-mods && ./gradlew build` first")
 
