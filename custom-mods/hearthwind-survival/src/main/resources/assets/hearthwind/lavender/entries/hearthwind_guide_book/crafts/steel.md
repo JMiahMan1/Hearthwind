@@ -13,7 +13,7 @@ Put {gilt}2 iron ingots{} in the blast furnace and {gilt}2 coal{} in its extra s
 
 ;;;;;
 
-<recipe;earlystage:steel_ingot_from_blasting>
+<recipe;aged:steel_ingot_from_blasting_extra_iron_ingot_and_coal>
 
 Steel tools and armour are stronger than iron.
 

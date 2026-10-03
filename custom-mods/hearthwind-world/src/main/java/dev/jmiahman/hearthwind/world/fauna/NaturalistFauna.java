@@ -50,7 +50,11 @@ public final class NaturalistFauna {
     public static void registerAll() {
         // 1. Snails & Critters
         registerSnail("snail", 0.4f, 0.3f);
-        registerHerbivore("butterfly", 0.4f, 0.4f, 4.0, 0.25);
+        // Butterflies are deliberately NOT registered. Aged ships
+        // naturalist.json with "butterflySpawnWeight": 0, so the reference
+        // spawns none, and we were biome-spawning them - an unrecorded
+        // divergence that is now parity (0.1.54). Fireflies and
+        // caterpillars are untouched; Aged only zeroes the butterfly.
         registerHerbivore("firefly", 0.3f, 0.3f, 2.0, 0.25);
         registerHerbivore("caterpillar", 0.3f, 0.2f, 4.0, 0.15);
 

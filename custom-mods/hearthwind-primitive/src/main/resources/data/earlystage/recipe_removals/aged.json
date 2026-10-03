@@ -1,5 +1,5 @@
 {
- "_comment": "Recipes removed to match the pack's progression. 'ores' forces the ore-piece economy (ores drop pieces; ingots come from the slower blasting recipes in the corpus). 'cooking' removes furnace cooking so food is cooked on stoves - enabled only when the stove content is playable (config removeCookedFoodRecipes). 'earlystage:steel_ingot_from_blasting' is deliberately NOT removed: that is our own steel recipe (the upstream pack deleted its own variant in favour of a differently-named one).",
+ "_comment": "Recipes removed to match the pack's progression. 'ores' forces the ore-piece economy (ores drop pieces; ingots come from the slower blasting recipes in the corpus). 'cooking' removes furnace cooking so food is cooked on stoves - enabled only when the stove content is playable (config removeCookedFoodRecipes). 'earlystage:steel_ingot_from_blasting' IS removed, mirroring Aged's reciperemover.json entry 88: the reference deletes the earlystage mod's own steel recipe and supplies an identical replacement under the id 'aged:steel_ingot_from_blasting_extra_iron_ingot_and_coal', which is the pack's single steel route.",
  "ores": [
   "minecraft:coal_from_blasting_coal_ore",
   "minecraft:coal_from_blasting_deepslate_coal_ore",
@@ -73,6 +73,7 @@
   "chalk:crafting_table/glow_chalk",
   "charmony:variant_wood/chest_minecart",
   "charmony:variant_wood/bamboo_variant_chest_raft",
+  "earlystage:steel_ingot_from_blasting",
   "vinery:dirt_slab"
  ],
  "cooking": [

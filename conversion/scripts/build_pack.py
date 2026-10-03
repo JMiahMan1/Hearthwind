@@ -86,6 +86,67 @@ def local_jars(mc: str):
     return vendored, custom
 
 
+def _jar_mod_ids(jar):
+    """Mod ids a fabric jar claims, from its fabric.mod.json ([] if unreadable)."""
+    import zipfile
+
+    try:
+        with zipfile.ZipFile(jar) as z:
+            names = [n for n in z.namelist() if n.endswith("fabric.mod.json")]
+            if not names:
+                return []
+            meta = json.loads(z.read(min(names, key=len)))
+    except (zipfile.BadZipFile, KeyError, ValueError, OSError):
+        return []
+    ids = meta.get("id") or []
+    return [ids] if isinstance(ids, str) else list(ids)
+
+
+def reconcile_duplicate_mod_ids(mods_dir, local_names):
+    """Drop staged Modrinth picks that a locally built jar already provides.
+
+    `local_names` are the vendored + custom jar filenames, i.e. the ones we
+    chose to build or pin ourselves. manifest `local_override` only covers the
+    entries somebody remembered to declare, so an undeclared vendored jar and
+    its resolved pick both reached mods/ under different filenames and the
+    loader saw one mod id twice. Rather than trust the manifest to stay
+    complete, resolve the collision here by mod id and keep the local build.
+    Returns nothing; prints what it removed.
+    """
+    owners = {}
+    for jar in sorted(Path(mods_dir).glob("*.jar")):
+        for mid in _jar_mod_ids(jar):
+            owners.setdefault(mid, []).append(jar)
+    for mid, jars in sorted(owners.items()):
+        if len(jars) < 2:
+            continue
+        locals_ = [j for j in jars if j.name in local_names]
+        if not locals_:
+            continue
+        for j in jars:
+            if j.name in local_names:
+                continue
+            print(
+                f"  drop superseded pick {j.name} in {Path(mods_dir).name} "
+                f"(mod id {mid} already provided by {locals_[0].name})"
+            )
+            j.unlink()
+
+
+def duplicate_mod_ids(mods_dir):
+    """Map mod id -> [jar filenames] for any mod claimed by 2+ jars in mods_dir.
+
+    Reads each jar's fabric.mod.json, so it catches collisions between a
+    vendored jar and a resolved pick, between two resolved picks, or between a
+    vendored jar and one of our own custom builds - not just same-name cases.
+    """
+    owners = {}
+    for jar in sorted(Path(mods_dir).glob("*.jar")):
+        for mid in _jar_mod_ids(jar):
+            owners.setdefault(mid, []).append(jar.name)
+    return {mid: names for mid, names in owners.items() if len(names) > 1}
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument(
@@ -423,7 +484,27 @@ def main():
         shutil.rmtree(cdir_legacy, ignore_errors=True)
         shutil.copytree(sdir, sdir_legacy)
         shutil.copytree(cdir, cdir_legacy)
-        print(f"Materialized {len(ready)} jars + {len(custom_jars)} custom into {sdir / 'mods'} (server) and {cdir / 'mods'} (client) + world datapacks")
+        # Fail loudly on two jars claiming the same mod id. This is not
+        # hypothetical: conversion/vendored/letmedespawn-fabric-26.2-1.26.7.3.jar
+        # was a manual snapshot that outlived its purpose, so when LetMeDespawn
+        # gained a newer 26.2-named Modrinth build (1.26.9.1) the vendored jar
+        # and the resolved pick both shipped and both landed in mods/. Vendored
+        # jars are added to the `want`/`allowed` sets by NAME, so filename-based
+        # pruning can never notice that two different filenames are one mod.
+        # Minecraft refuses to boot on a duplicate mod id, and a pack that
+        # cannot boot is the worst possible outcome, so this is a hard error.
+        local_names = vendored_names | custom_names | server_custom_names
+        for d in (sdir / "mods", cdir / "mods"):
+            reconcile_duplicate_mod_ids(d, local_names)
+        for d in (sdir / "mods", cdir / "mods"):
+            dupes = duplicate_mod_ids(d)
+            if dupes:
+                for mid, names in sorted(dupes.items()):
+                    print(f"ERROR duplicate mod id {mid} in {d}: {', '.join(names)}")
+                sys.exit(1)
+        print(
+            f"Materialized {len(ready)} jars + {len(custom_jars)} custom into {sdir / 'mods'} (server) and {cdir / 'mods'} (client) + world datapacks"
+        )
 
 
 if __name__ == "__main__":

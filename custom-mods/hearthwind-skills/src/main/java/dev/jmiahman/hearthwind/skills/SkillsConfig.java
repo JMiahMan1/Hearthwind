@@ -56,8 +56,14 @@ public final class SkillsConfig {
         public double miningPerBlock = 2.0;
         /** Farming-skill XP per harvested crop block / bred animal kill? (crops only v1). */
         public double farmingPerCrop = 4.0;
-        /** Stamina XP per dug shovel-mineable block. */
-        public double staminaPerDig = 1.0;
+        /**
+         * Stamina XP per dug shovel-mineable block. Aged's levelz.json5 ships
+         * {@code "staminaBase": 1.1}; we carried 1.0 for the whole port, so
+         * every player earned 9.1% less Stamina XP than the reference (0.1.54).
+         * The two derived awards in {@code SkillEvents} (0.1x and 0.15x this
+         * value) scale with it, so one constant moves all three.
+         */
+        public double staminaPerDig = 1.1;
         /** Strength XP per hostile mob melee kill. */
         public double strengthPerMeleeKill = 6.0;
         /** Archery XP per ranged-weapon kill. */

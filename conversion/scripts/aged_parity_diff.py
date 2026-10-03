@@ -62,7 +62,7 @@ ACTIONS = {
 # In-house 26.2 ports of third-party mods. Imported from build_pack so the
 # two scripts can never drift (a stale copy once made the gate reject a port).
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from build_pack import PORTED_MODULES  # noqa: E402
+from build_pack import PORTED_MODULES, _jar_mod_ids  # noqa: E402
 # Manifest rebuild groups map to the hearthwind module that replaces them.
 REBUILD_GROUP_MODULES = {
     "aged-survival": "hearthwind-survival",
@@ -228,6 +228,26 @@ def check_pack(aged_pids, entries, accounted, dependencies):
 
     server_jars = {p.name for p in DIST_SERVER.glob("*.jar")} if DIST_SERVER.is_dir() else set()
     client_jars = {p.name for p in DIST_CLIENT.glob("*.jar")} if DIST_CLIENT.is_dir() else set()
+
+    # mod id -> the dist filenames that claim it, per side. build_pack.py's
+    # reconcile_duplicate_mod_ids() drops a Modrinth pick when a jar we build
+    # or pin in-tree already provides the same mod id, so a resolved pick being
+    # absent from the dist is NOT on its own a parity failure: villagesandpillages
+    # is rebuilt by our own custom-mods port, which is the documented
+    # "Hearthwind module replaces an Aged mod" exception rather than a gap.
+    # Comparing filenames alone cannot see that, because the two jars have
+    # different names - which is exactly how the duplicate slipped through
+    # before build_pack.py started asserting on mod ids.
+    def _mod_id_index(d):
+        index = {}
+        if d.is_dir():
+            for p in d.glob("*.jar"):
+                for mid in _jar_mod_ids(p):
+                    index.setdefault(mid, set()).add(p.name)
+        return index
+
+    server_mod_ids = _mod_id_index(DIST_SERVER)
+    client_mod_ids = _mod_id_index(DIST_CLIENT)
     if not server_jars and not client_jars:
         return None
     vendor_jars = {p.name for p in VENDORED.glob("*.jar") if "sources" not in p.name}
@@ -311,7 +331,30 @@ def check_pack(aged_pids, entries, accounted, dependencies):
         if r is not None:
             expected = r["picked"]["file"]["filename"]
             target = client_jars if client_only else server_jars
+            target_mod_ids = (
+                client_mod_ids if client_only else server_mod_ids
+            )
             if expected not in target:
+                # Absent by filename but present by mod id means our own in-tree
+                # port (or a pinned vendored jar) provides the mod, which is the
+                # documented "Hearthwind module replaces an Aged mod" exception.
+                # Match on the manifest entry's own identifiers: the Modrinth
+                # pick itself is never on disk, so there is nothing to read its
+                # fabric.mod.json from. Filenames alone cannot see this because
+                # the two jars are named differently, which is how the duplicate
+                # slipped through before build_pack.py began asserting mod ids.
+                mods_here = target_mod_ids
+                candidates = {entry.get("file"), entry.get("slug"), entry.get("mod_id")}
+                providers = set()
+                for cand in candidates:
+                    if cand:
+                        providers |= mods_here.get(cand, set())
+                if providers:
+                    notes.append(
+                        f"{entry.get('file')} ({pid}): resolved {expected} superseded "
+                        f"in-tree by {sorted(providers)} (same mod id)"
+                    )
+                    continue
                 failures.append(
                     f"{entry.get('file')} ({pid}): resolved {expected} missing from "
                     f"{'client' if client_only else 'server'} dist"
@@ -466,7 +509,6 @@ def main():
     dup_keys = sorted({pid for pid in by_pid if len(by_pid[pid]) > 1})
 
     pack_failures = []
-    pack_notes = []
     if not args.no_pack:
         result = check_pack(aged_pids, entries, accounted, dependencies)
         if result is None:

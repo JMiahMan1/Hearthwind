@@ -1224,10 +1224,17 @@ public final class HearthwindPrimitiveGameTests {
                 "flint and steel must require steel, so the vanilla recipe is removed");
         helperAssert(hasRecipe(helper, "aged:iron_ingot_from_blasting_raw_iron"),
                 "the corpus blasting route to iron must still exist");
-        // Regression guard: our own steel recipe must never be swept up by the
-        // removal list (upstream deleted a different id for the same purpose).
-        helperAssert(hasRecipe(helper, "earlystage:steel_ingot_from_blasting"),
-                "our steel blasting recipe must survive the removals");
+        // Steel: the reference ships ONE steel route. Aged's reciperemover.json
+        // deletes the earlystage mod's own recipe at recipeList[88]
+        // ("earlystage:steel_ingot_from_blasting") and Aged's paxi datapack
+        // supplies an identical replacement under a different id. Before 0.1.54
+        // we shipped the earlystage recipe AND the migrated aged one, so the
+        // blast furnace showed steel twice. The removal list now carries entry
+        // 88 and the aged id is the single surviving route, exactly as in Aged.
+        helperAssert(!hasRecipe(helper, "earlystage:steel_ingot_from_blasting"),
+                "Aged deletes the earlystage steel recipe at recipeList[88], so it must be removed here too");
+        helperAssert(hasRecipe(helper, "aged:steel_ingot_from_blasting_extra_iron_ingot_and_coal"),
+                "Aged's replacement steel recipe must survive the removals");
         helper.succeed();
     }
 
@@ -1237,13 +1244,20 @@ public final class HearthwindPrimitiveGameTests {
      * coal for one steel ingot over 5200 ticks and 6 experience points; we had
      * three iron and one coal over 600 ticks for half a point, which made the
      * whole progression eight times too cheap.
+     *
+     * <p>The id is Aged's own {@code aged:} replacement recipe, because Aged
+     * removes the {@code earlystage:} id outright. Both files are the same
+     * recipe, so this asserts the cost, not which file happens to carry it.
      */
     @GameTest
     public void steelBlastingMatchesTheReferenceCost(GameTestHelper helper) {
         var recipe = helper.getLevel().recipeAccess()
                 .byKey(ResourceKey.create(Registries.RECIPE,
-                        net.minecraft.resources.Identifier.parse("earlystage:steel_ingot_from_blasting")))
-                .orElseThrow(() -> new AssertionError("the steel blasting recipe must exist"))
+                        net.minecraft.resources.Identifier.parse(
+                                "aged:steel_ingot_from_blasting_extra_iron_ingot_and_coal")))
+                .orElseThrow(() -> new AssertionError(
+                        "Aged's replacement steel blasting recipe must exist; the removal list must "
+                                + "delete earlystage:steel_ingot_from_blasting, not the aged one"))
                 .value();
         helperAssert(recipe instanceof dev.jmiahman.hearthwind.primitive.extra.ExtraBlastingRecipe,
                 "steel must use the two-ingredient blasting recipe, got " + recipe.getClass().getName());

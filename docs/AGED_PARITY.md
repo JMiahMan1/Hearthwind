@@ -47,9 +47,9 @@ migration (`fix_item_predicate` for component-map enchantment predicates,
 `random_chance_with_enchanted_bonus`, plus EntityPredicate `type` ->
 `entity_type` and `type_specific` drops); 99 loot-table fixes total.
 Loot entries referencing mods we do not ship (e.g. naturalist, which made
-the fishing table drop nothing) are pruned, and Aged's own dead
-`blasting_extra` steel recipe is skipped in favour of our
-`earlystage:steel_ingot_from_blasting`. The script
+the fishing table drop nothing) are pruned, and Aged's dead
+`blasting_extra` steel recipe id is skipped in favour of the surviving
+`aged:steel_ingot_from_blasting_extra_iron_ingot_and_coal`. The script
 also no longer depends on a `/tmp` path (scratch-policy violation); it
 defaults to `.tmp/aged-ref/extract/...`.
 
@@ -233,8 +233,15 @@ in-game HUD is not FancyMenu. Our HUD is therefore the right architecture.
     shipped Candlelight stoves and cooking stations. Vanilla furnace recipes for
     bread, cooked beef, and other cooked foods are removed; non-cooking recipes remain.
     Our own
-   `earlystage:steel_ingot_from_blasting` is deliberately excluded from the
-   list (upstream deleted a differently-named recipe for the same purpose).
+   The reference ships ONE steel route: `reciperemover.json` deletes the
+   earlystage mod's own `earlystage:steel_ingot_from_blasting` (entry 88) and
+   Aged's paxi datapack supplies an identical replacement under the id
+   `aged:steel_ingot_from_blasting_extra_iron_ingot_and_coal` (same type
+   `earlystage:blasting_extra`, 2 iron + 2 coal, 5200 ticks, 6 experience).
+   We now mirror that exactly: entry 88 is in our removal list and the `aged:`
+   id is the single surviving recipe, so the blast furnace shows steel once,
+   as it does in Aged. Before 0.1.54 we shipped both files and the player saw
+   the same recipe twice.
 7. **Skill procs — DONE.** `SkillProcs` (hearthwind-skills) implements the
    levelz capstones: crit chance scales with luck (+20% damage on a crit),
    double damage is a max-strength capstone (3%), dodge (agility, 10%),

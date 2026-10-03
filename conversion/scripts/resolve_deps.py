@@ -82,6 +82,20 @@ def vkey(s):
     return tuple(p[:4])
 
 
+MC_TAG_RE = re.compile(r"(?:^|[^0-9])(\d{1,2}\.\d{1,2}(?:\.\d{1,2})?)(?![0-9])")
+
+
+def mc_tokens(text):
+    """Every MC-looking version token in a build filename, as vkey tuples."""
+    out = []
+    for m in MC_TAG_RE.finditer(text or ""):
+        try:
+            out.append(vkey(m.group(1)))
+        except ValueError:
+            pass
+    return out
+
+
 def pick_version(versions, mc, loader_pref=("fabric",), allow_older=False):
     exact = [v for v in versions if mc in v.get("game_versions", [])]
     pool = exact
@@ -100,15 +114,42 @@ def pick_version(versions, mc, loader_pref=("fabric",), allow_older=False):
     def rank(v):
         loaders = set(v.get("loaders", []))
         gvs = v.get("game_versions", [])
-        # Prefer builds exclusive to the target MC (or fewest extra claimed
-        # versions). boids 2.0.0+26.3 claims [26.2, 26.3] but its mixin
-        # plugin AbstractMethodErrors on the 26.2 mixin loader.
+# SAFETY GATE: reject any build whose FILENAME names an MC newer than
+        # our target. This is the only signal that actually works.
+        #
+        # `game_versions` cannot be used for this. Measured on every upgrade
+        # available to us on 2026-10-03, EVERY newer build claims 26.3:
+        # almanac 1.26.9.1 claims 26.3 + 18 snapshots, letmedespawn 1.26.9.1
+        # claims 26.3 + 16, spawn_animations 1.11.6+mod claims 26.3 + 16, and
+        # formations-nether 1.0.5b / formations-overworld 1.0.5c /
+        # fabric-language-kotlin 1.14.1 each claim 26.3. Authors append the new
+        # snapshot to one rolling build list, so "claims 26.3" does not
+        # distinguish a build that also works on 26.2 from a build written for
+        # 26.3. A "claims ONLY 26.2" test also fails, because several authors
+        # publish no exclusive build at all.
+        #
+        # The filename does distinguish them:
+        #   almanac-fabric-26.2-1.26.9.1.jar        -> names 26.2    -> safe
+        #   letmedespawn-fabric-26.2-1.26.9.1.jar   -> names 26.2    -> safe
+        #   formationsnether-1.0.5b-mc1.21+.jar     -> names 1.21+   -> safe
+        #   fabric-language-kotlin-1.14.1+kotlin...  -> names nothing -> safe
+        #   spawnanimations-v1.11.6-mc1.17-26.3.9-   -> names 26.3.9  -> REJECT
+        #     mod.jar
+        #   boids ... 2.0.0+26.3                     -> names 26.3    -> REJECT
+        # `mc1.21+` reads as (1, 21), below (26, 2), so "1.21 and later" is
+        # correctly treated as including our target.
+        files_ = [f for f in v.get("files", []) if f.get("primary")] or v.get(
+            "files", []
+        )
+        fname = files_[0].get("filename", "") if files_ else ""
+        named_newer = any(t > vkey(mc) for t in mc_tokens(fname))
         return (
             any(ld in loaders for ld in loader_pref),
             all(not ld.startswith("forge") for ld in loaders),
+            0 if named_newer else 1,
             1 if set(gvs) == {mc} else 0,
-            -len(gvs),
             v["date_published"],
+            -len(gvs),
         )
 
     pool.sort(key=rank, reverse=True)
