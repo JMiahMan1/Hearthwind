@@ -246,6 +246,34 @@ Eight optional professions (Miner, Farmer, Fisher, Warrior, Smither, Brewer, Bui
 
 ## Visual Inventory & UI Look & Feel
 
+- **Camera (0.1.55)**: the camera now sits where Aged put it. Hearthwind ships
+  a newer Camera Overhaul than Aged does, so Aged's ten camera factors were
+  re-applied proportionally rather than copied, and the effect is a
+  deliberately **subtler** view than the newer mod's stock settings: much less
+  roll when you strafe (and it leans the opposite way while swimming or
+  flying), much less pitch from forward and vertical movement, and gentler
+  smoothing on all of it. The 2.1.x extras that did not exist in Aged's
+  version - view bob/sway, screen shake, explosion and thunder camera trauma -
+  keep that version's stock behaviour.
+- **Footsteps (0.1.55)**: footstep volume is set to **55%** as in Aged, so
+  footsteps sit noticeably quieter than the newer Presence Footsteps default
+  of 70%. Everything else about the mod (foliage, wet-surface, per-entity
+  volumes) is at its default, because Aged's older version had no such
+  settings to carry.
+- **Options and keys (0.1.55)**: a fresh install starts on Aged's display and
+  audio settings instead of vanilla's - **12-chunk** render distance, a
+  **narrower FOV**, **auto** GUI scale, up to **170 FPS** with vsync off,
+  **fullscreen**, and Aged's lowered music / weather / master volume mix - plus
+  Aged's keybind defaults and its first-run options (movement tutorial shown,
+  the modpack welcome screen shown again). Your own `options.txt` is never
+  overwritten once you have changed something.
+- **Resource packs (0.1.55)**: this is the one place we deliberately did
+  **not** follow Aged. Aged enabled 14 texture packs by default that only
+  exist in Aged (its own art, plus the Fresh Animations, RAY and Let's Do
+  packs). Hearthwind does not ship those yet, so copying the list would have
+  enabled packs that cannot load and switched off two of ours. Hearthwind's
+  own packs stay on by default instead. This is a missing-content gap, not a
+  settings difference, and it is tracked as such.
 - **Menus (0.1.40)**: the main menu is drawn by Hearthwind itself, from art
   inside the client jar: a full-screen cottage scene, left-aligned typography
   buttons with per-button hover tints, and GitHub / Language / Accessibility

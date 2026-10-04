@@ -1,0 +1,88 @@
+# Hearthwind 0.1.54 - Camera Overhaul parity port.
+#
+# Aged ships CameraOverhaul 1.4.1 and retunes it in
+# cameraoverhaul.json; we ship 2.1.2, which renamed the file to
+# cameraoverhaul.toml, widened the factor scale, split the profile into
+# six per-context tables, and added camera sway / screen shakes /
+# trauma. A straight file copy would therefore do nothing at all, so
+# every value below is Aged's value expressed as a RATIO of the mod's
+# own default for that field, re-applied to 2.1.2's default.
+#
+#   Aged 1.4.1 default -> Aged value (ratio) -> 2.1.2 default -> here
+#
+#   strafingRollFactor              1.0 -> 0.3  (0.30) -> 10.0 -> 3.0
+#   strafingRollFactorWhenFlying   -1.0 -> -0.5 (0.50) -> 10.0 -> -5.0
+#   strafingRollFactorWhenSwimming -1.0 -> -0.5 (0.50) -> 10.0 -> -5.0
+#   yawDeltaRollFactor              1.0 -> 0.2  (0.20) -> turningRollAccumulation 1.0 -> 0.2
+#   verticalVelocityPitchFactor     1.0 -> 0.3  (0.30) -> 2.5  -> 0.75
+#   forwardVelocityPitchFactor      1.0 -> 0.3  (0.30) -> 7.0  -> 2.1
+#   horizontalVelocitySmoothing     0.8 -> 0.4  (0.50) -> 1.0  -> 0.5
+#   verticalVelocitySmoothing       0.8 -> 0.4  (0.50) -> 1.0  -> 0.5
+#   yawDeltaSmoothingFactor         0.8 -> 0.4  (0.50) -> turningRollSmoothing 1.0 -> 0.5
+#   yawDeltaDecayFactor             0.5 -> 0.4  (0.80) -> turningRollIntensity 1.25 -> 1.0
+#
+# Both defaults sets were read out of the jars' own ConfigData
+# constructors, not from documentation. 1.4.1 = the exact jar Aged's
+# modrinth.index.json points at (sha1 64484033377fe7fdd2e008e5c1e6b113eb0c25a3).
+#
+# The yawDelta* -> turningRoll* renames are the one inferred step: 1.4.1's
+# yawDeltaRollFactor / yawDeltaSmoothingFactor / yawDeltaDecayFactor are
+# the only "turning" fields in the old schema and turningRollAccumulation /
+# turningRollSmoothing / turningRollIntensity are the only new ones, and
+# the mod's own en_us strings describe them as the same effect.
+#
+# Aged had a single movement value covering walking and sprinting, so
+# that ratio is applied to both; mounts and vehicles are new in 2.1.2 and
+# get the same ratio rather than stock, because Aged's intent was a
+# camera this subtle everywhere. cameraSmoothing, the sway/shake/trauma
+# group and everything else in [general] did not exist in 1.4.1, so they
+# are left at 2.1.2's own defaults and are omitted here.
+
+configVersion = 3
+
+[general]
+turningRollAccumulation = 0.2
+turningRollSmoothing = 0.5
+turningRollIntensity = 1.0
+
+[walking]
+strafingRollFactor = 3.0
+forwardVelocityPitchFactor = 2.1
+verticalVelocityPitchFactor = 0.75
+horizontalVelocitySmoothingFactor = 0.5
+verticalVelocitySmoothingFactor = 0.5
+
+[sprinting]
+strafingRollFactor = 3.0
+forwardVelocityPitchFactor = 2.1
+verticalVelocityPitchFactor = 0.75
+horizontalVelocitySmoothingFactor = 0.5
+verticalVelocitySmoothingFactor = 0.5
+
+[swimming]
+strafingRollFactor = -5.0
+forwardVelocityPitchFactor = 2.1
+verticalVelocityPitchFactor = 0.75
+horizontalVelocitySmoothingFactor = 0.5
+verticalVelocitySmoothingFactor = 0.5
+
+[flying]
+strafingRollFactor = -5.0
+forwardVelocityPitchFactor = 2.1
+verticalVelocityPitchFactor = 0.75
+horizontalVelocitySmoothingFactor = 0.5
+verticalVelocitySmoothingFactor = 0.5
+
+[mounts]
+strafingRollFactor = 3.0
+forwardVelocityPitchFactor = 2.1
+verticalVelocityPitchFactor = 0.75
+horizontalVelocitySmoothingFactor = 0.5
+verticalVelocitySmoothingFactor = 0.5
+
+[vehicles]
+strafingRollFactor = 3.0
+forwardVelocityPitchFactor = 2.1
+verticalVelocityPitchFactor = 0.75
+horizontalVelocitySmoothingFactor = 0.5
+verticalVelocitySmoothingFactor = 0.5

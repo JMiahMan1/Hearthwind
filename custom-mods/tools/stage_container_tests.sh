@@ -96,6 +96,14 @@ rsync -a --delete "$REPO/conversion/scripts/" "$R/conversion/scripts/"
 rsync -a --delete "$REPO/conversion/build/dist/server/mods/" "$R/conversion/build/dist/server/mods/"
 rsync -a --delete "$REPO/conversion/build/dist/client/mods/" "$R/conversion/build/dist/client/mods/"
 rsync -a --delete "$REPO/conversion/datapacks/hearthwind/" "$R/conversion/datapacks/hearthwind/"
+# The pack's config overrides. run_client_gametests.sh copies these into the
+# game dir so mods load exactly what a player gets (fancymenu layouts,
+# cameraoverhaul.toml, presencefootsteps/userconfig.json, defaultoptions/).
+# Without this they never reach the container and the suite silently boots
+# with MOD DEFAULTS - which is how a hand-written cameraoverhaul.toml with the
+# wrong section names would have passed every gate.
+[ -d "$REPO/conversion/overrides/config" ] && \
+  rsync -a --delete "$REPO/conversion/overrides/config/" "$R/conversion/overrides/config/"
 rsync -a --delete "$REPO/dev-server/mods/" "$R/dev-server/mods/"
 [ -d "$REPO/conversion/vendored" ] && rsync -a --delete "$REPO/conversion/vendored/" "$R/conversion/vendored/" || true
 

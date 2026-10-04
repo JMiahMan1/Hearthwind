@@ -249,11 +249,43 @@ Still open (do these first, section 6, W0):
   materialised `dist/` directories were wrong, which is why boot tests kept
   passing while a real boot of `dist/server` would have hit Fabric's
   duplicate-mod-id failure.
-- **Aged config tuning still not carried over**, after 0.1.54 closed the three
-  file-name mismatches (`combat_roll`, `couplings.properties`, `logbegone.json`):
-  `cameraoverhaul.json` (its 26.2 schema became restructured `.toml` with
-  per-context blocks, so all twelve of Aged's factors need a manual re-tune, not
-  a file copy), `defaultoptions/` (two files), `presencefootsteps/`, `emi.css`.
+- **Aged config tuning: COMPLETE as of 0.1.55.** 0.1.54 closed the three
+  file-name mismatches (`combat_roll`, `couplings.properties`, `logbegone.json`)
+  and 0.1.55 closed the four that needed real porting:
+  - `cameraoverhaul.toml` - Aged ships CameraOverhaul **1.4.1** and we ship
+    **2.1.2**, which renamed the file `.json` -> `.toml`, widened the factor
+    scale, split one profile into six per-context tables, and added camera
+    sway / screen shakes / trauma. A file copy would have been dead config, so
+    each of Aged's ten factors is carried as its **ratio to the mod's own
+    default for that field**, re-applied to 2.1.2's default: e.g.
+    `strafingRollFactor` 1.0 -> 0.3 (0.30x) onto a default of 10.0 -> 3.0;
+    `yawDeltaRollFactor` 0.2 (0.20x) onto `turningRollAccumulation` -> 0.2;
+    `yawDeltaDecayFactor` 0.4 (0.80x) onto `turningRollIntensity` -> 1.0.
+    Both default sets were read out of the jars' own `ConfigData` constructors,
+    not from docs; 1.4.1 is the exact jar Aged's index points at
+    (sha1 `64484033377fe7fdd2e008e5c1e6b113eb0c25a3`). Verified live: the mod
+    re-serialises every shipped value and fills only the omitted keys with
+    2.1.2 defaults. The `yawDelta*` -> `turningRoll*` renames are the one
+    inferred step. Features with no 1.4.1 equivalent (sway, shakes, trauma,
+    `cameraSmoothing`) stay at 2.1.2 defaults.
+  - `presencefootsteps/userconfig.json` - Aged ships PresenceFootsteps
+    **1.10.1** with a flat `{"volume": 55}`; we ship **1.13.3**, where `volume`
+    became an object with a nested `volume` key (mod default 70). Shipping
+    Aged's file verbatim was *silently discarded* and regenerated at stock -
+    caught by reading what the mod wrote back. We now ship the full 1.13.3
+    schema with Aged's 55 on the nested key.
+  - `defaultoptions/options.txt` + `keybindings.txt` - copied, **except**
+    `resourcePacks`, `incompatibleResourcePacks` and `version`. 14 of the 23
+    packs Aged enables by default do not exist in Hearthwind (10 `file/*.zip`
+    FreshAnimations/RAY/Let's-Do packs plus `aged_dirt_replace_to_gray`,
+    `aged_guide_book`, `aged_welcome_screen`, `fixes_for_aged`), and the list
+    would also have switched **off** the two scholar packs Hearthwind enables
+    for itself. Shipping it would have re-created the 0.1.39 class of bug
+    (default-enabled packs that cannot resolve) and is a W5 gap, not a config
+    gap. `version:3465` is a 1.20.1 value; 26.2 is 4903 and the game rewrites
+    it anyway.
+  - `emi.css` was never a real gap: Hearthwind does not ship EMI, so it has no
+    config to carry. Recorded here so the old ledger line is not re-audited.
   Already carried over and matching Aged: `adventurez.json5`, `backslot.json`
   (which also folds Aged's `backslotaddon.json5` in), `immersive_aircraft.json`,
   `immersive_armors.json`, `lootr.json`, `modmenu.json`, `moreculling.toml`,
@@ -447,7 +479,8 @@ datapack.
 | Let's Do - Pixel Perfect | missing |
 | RAY's 3D Ladders, RAY's 3D Rails, FancyFast Bushy Leaves | missing |
 | Shaderpacks: Complementary Unbound r5.3, Photon 1.0a (need Iris + Sodium) | missing |
-| `config/sodium-options.json`, `moreculling.toml`, `presencefootsteps`, `fbp`, `DistantHorizons.toml`, `cameraoverhaul.json`, `defaultoptions`, `emi.css`, `nameplate.json`, `lmft.json` | missing (come with the mods in 5.1/5.2) |
+| `config/sodium-options.json`, `moreculling.toml`, `fbp`, `DistantHorizons.toml`, `nameplate.json`, `lmft.json` | missing (come with the mods in 5.1/5.2) |
+| `config/presencefootsteps`, `defaultoptions`, `cameraoverhaul.json` | shipped in 0.1.55, ported to the 26.2 schema rather than copied (see 5.11) |
 | FancyMenu title screen + `resources/aged` art | intentional deviation, and 0.1.40 corrected the reason: Hearthwind's own title screen (`HearthwindTitleScreenMixin`) draws the menu from art inside the client jar, because Aged's layout could only ever paint unresolvable `aged:` paths |
 
 ### 5.7 HUD and screen look and feel
@@ -973,12 +1006,11 @@ deviation - and then the 61-mod port queue.
    shipped verbatim: `adventurez`, `lootr`, `modmenu`, `moreculling`,
    `sparsestructures`, `immersive_aircraft`, `immersive_armors`,
    `sodium-options`, `smallships-common`, `DistantHorizons`. `backslot.json`
-   already carried Aged's five values. Four are deliberately not ported, with
-   reasons recorded in `conversion/overrides/config`: `cameraoverhaul` (the
-   26.2 config was restructured into sections, so Aged's keys no longer exist
-   and shipping them would be dead config), `logbegone` (26.2 has no external
-   config file at all), `couplings` (player progress, not a setting), and
-   `backslotaddon`/`jobsaddon` (those mods are not shipped).
+already carried Aged's five values. The remaining gaps are recorded in
+  `conversion/overrides/config` and were resolved in 0.1.55: `cameraoverhaul`
+  (ported as a per-field ratio, see 5.11 above), `logbegone` (26.2 has no
+  external config file at all), `couplings` (player progress, not a setting),
+  and `backslotaddon`/`jobsaddon` (those mods are not shipped).
 
 **Startup chat (0.1.41).** Joining a world used to bury the pack's own first
 instructions under two dozen mods announcing themselves, so the client's system

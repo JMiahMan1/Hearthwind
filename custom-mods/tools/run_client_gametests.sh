@@ -191,6 +191,18 @@ if [ -d "$REPO/conversion/overrides/config/fancymenu" ]; then
   cp -R "$REPO/conversion/overrides/config/fancymenu" "$WORK/config/"
 fi
 
+# Same argument for the other config overrides whose mod READS the file: a
+# hand-written cameraoverhaul.toml whose section or key names do not match
+# what CameraOverhaul 2.1.2 expects is silently ignored at best and throws
+# during ConfigData load at worst, and neither the server suite nor
+# verify_mrpack() can see it. Staging them here makes the real client boot
+# them, which is the only place they are actually parsed.
+for cfg in cameraoverhaul.toml presencefootsteps defaultoptions; do
+  if [ -e "$REPO/conversion/overrides/config/$cfg" ]; then
+    cp -R "$REPO/conversion/overrides/config/$cfg" "$WORK/config/"
+  fi
+done
+
 # Every [source:location] asset the staged layouts name must resolve, or the
 # menu paints the missing-texture checkerboard. Cheap, and it is the guard that
 # was missing when the background shipped broken.

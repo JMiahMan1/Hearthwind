@@ -118,7 +118,32 @@ cd custom-mods && bash tools/run_client_gametests_container.sh [--keep-dir]
 #    Server suite needs custom-mods/.gradle/loom-cache (merged jar for the
 #    mixin-shadow test) - staged automatically. Set JAVA_HOME explicitly in
 #    containers (run_gametests.sh defaults to a Cellar path).
+#    Both wrappers forward CGT_EXCLUDE_MODS but DEFAULT IT TO EMPTY, so a
+#    bare `run_client_gametests_container.sh` loads DistantHorizons and
+#    deadlocks (see the DH trap below). Always invoke it as
+#    CGT_EXCLUDE_MODS=DistantHorizons bash tools/run_client_gametests_container.sh
 ```
+
+**The stage script must carry `conversion/overrides/config`.** Config the pack
+ships only reaches a container test if `stage_container_tests.sh` rsyncs it;
+otherwise `run_client_gametests.sh`'s `cp -R` silently copies nothing and the
+suite boots every mod on **stock defaults** while still reporting PASS. That
+was true for the FancyMenu staging until 0.1.55 - so every client run before
+then verified the menu with mod defaults, not the shipped layout. When a mod
+reads a config file we ship, confirm the file is present in the game dir
+inside the volume (`docker run --rm -v cgtvol:/s alpine ls
+/s/repo/custom-mods/.tmp/cgt-game/config`) AND read back **what the mod wrote**
+after the run: a wrong schema is discarded and regenerated at defaults without
+any error. That read-back is what caught Aged's flat `{"volume": 55}` being
+thrown away by PresenceFootsteps 1.13.3, which had nested it. Keep
+`--keep-dir` for any run whose point is inspecting a config; without it the
+game dir is deleted at the end.
+
+**DefaultOptions cannot be verified by the client suite.** The harness
+deliberately pre-writes a complete `$WORK/options.txt` for the gametest API, so
+DefaultOptions finds every option already set and applies nothing. Its defaults
+are still shipped, but the suite proves only that the file parses - treat
+"DefaultOptions applied" as unverified in-container, not as covered.
 
 REAL-CLIENT gametests (fabric-client-gametest-api-v1, headless, no
 window/mouse takeover - runs under xvfb in docker or CI):
