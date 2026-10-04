@@ -267,13 +267,17 @@ Eight optional professions (Miner, Farmer, Fisher, Warrior, Smither, Brewer, Bui
   Aged's keybind defaults and its first-run options (movement tutorial shown,
   the modpack welcome screen shown again). Your own `options.txt` is never
   overwritten once you have changed something.
-- **Resource packs (0.1.55)**: this is the one place we deliberately did
-  **not** follow Aged. Aged enabled 14 texture packs by default that only
-  exist in Aged (its own art, plus the Fresh Animations, RAY and Let's Do
-  packs). Hearthwind does not ship those yet, so copying the list would have
-  enabled packs that cannot load and switched off two of ours. Hearthwind's
-  own packs stay on by default instead. This is a missing-content gap, not a
-  settings difference, and it is tracked as such.
+- **Resource packs (0.1.56)**: Hearthwind now ships Aged's 12 texture packs
+  and 2 shader packs. The texture packs are FreshAnimations (v1.10.5, the newer
+  version we already shipped), Expressive Fresh Moves, the six FA+ add-ons
+  (Spiders, Quivers, Objects, Details, Classic Horses, Emissive), RAY's 3D
+  Ladders and 3D Rails, FancyFast Bushy Leaves, and Let's Do - Pixel Perfect.
+  The shader packs are Complementary Unbound r5.3 and Photon v1.0a, selectable
+  from the Iris shader options. All packs had their `pack_format` updated
+  from 15 (1.20.1) to 64 (26.2) so the game actually loads them. The two RAY's
+  packs are marked incompatible with each other, as in Aged. The four `aged_*`
+  packs (dirt replacement, guide book, welcome screen, fixes) are Aged's own
+  art and are not shipped; Hearthwind has its own equivalents.
 - **Menus (0.1.40)**: the main menu is drawn by Hearthwind itself, from art
   inside the client jar: a full-screen cottage scene, left-aligned typography
   buttons with per-button hover tints, and GitHub / Language / Accessibility

@@ -475,10 +475,10 @@ datapack.
 
 | Aged ships | Hearthwind |
 |---|---|
-| FreshAnimations 1.9.2 + FA+ Classic Horses, Details, Emissive, Objects, Quivers, Spiders; Expressive Fresh Moves 3.0.1 | FreshAnimations 1.10.5 only |
-| Let's Do - Pixel Perfect | missing |
-| RAY's 3D Ladders, RAY's 3D Rails, FancyFast Bushy Leaves | missing |
-| Shaderpacks: Complementary Unbound r5.3, Photon 1.0a (need Iris + Sodium) | missing |
+| FreshAnimations 1.9.2 + FA+ Classic Horses, Details, Emissive, Objects, Quivers, Spiders; Expressive Fresh Moves 3.0.1 | FreshAnimations 1.10.5 + all FA+ add-ons + Expressive Fresh Moves (0.1.56) |
+| Let's Do - Pixel Perfect | shipped in 0.1.56 |
+| RAY's 3D Ladders, RAY's 3D Rails, FancyFast Bushy Leaves | shipped in 0.1.56 |
+| Shaderpacks: Complementary Unbound r5.3, Photon 1.0a (need Iris + Sodium) | shipped in 0.1.56 |
 | `config/sodium-options.json`, `moreculling.toml`, `fbp`, `DistantHorizons.toml`, `nameplate.json`, `lmft.json` | missing (come with the mods in 5.1/5.2) |
 | `config/presencefootsteps`, `defaultoptions`, `cameraoverhaul.json` | shipped in 0.1.55, ported to the 26.2 schema rather than copied (see 5.11) |
 | FancyMenu title screen + `resources/aged` art | intentional deviation, and 0.1.40 corrected the reason: Hearthwind's own title screen (`HearthwindTitleScreenMixin`) draws the menu from art inside the client jar, because Aged's layout could only ever paint unresolvable `aged:` paths |

@@ -139,6 +139,16 @@ thrown away by PresenceFootsteps 1.13.3, which had nested it. Keep
 `--keep-dir` for any run whose point is inspecting a config; without it the
 game dir is deleted at the end.
 
+**Resource and shader packs must be staged too.** `stage_container_tests.sh`
+carries `conversion/overrides/resourcepacks/` and `conversion/vendored/resourcepacks/`
+into the container, and `run_client_gametests.sh` copies them into the game dir.
+Without this the client suite boots with no file-based resource packs at all.
+A pack whose `pack_format` predates the game's is silently dropped from the
+enabled list, so a pack copied from a 1.20.1 pack without updating its
+`pack.mcmeta` would load in no test and in no install. 26.2 uses resource pack
+format **64** (`PackFormat.lastPreMinorVersion(CLIENT_RESOURCES)`) and datapack
+format **81** (`SERVER_DATA`).
+
 **DefaultOptions cannot be verified by the client suite.** The harness
 deliberately pre-writes a complete `$WORK/options.txt` for the gametest API, so
 DefaultOptions finds every option already set and applies nothing. Its defaults

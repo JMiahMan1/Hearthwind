@@ -99,3 +99,5 @@ modelPart_right_sleeve:true
 modelPart_left_pants_leg:true
 modelPart_right_pants_leg:true
 modelPart_hat:true
+resourcePacks:["vanilla", "file/FreshAnimations_v1.10.5.zip", "fabric", "extendeddrawersaddon:addon", "seasons:seasonal_lush_caves", "Moonlight Mods Dynamic Assets", "vinery:bushy_leaves", "meadow:better_leaves", "scholar:colored_books", "scholar:chiseled_bookshelf_colored_books", "file/§fFancy§5Fast §2Bushy Leaves§0.zip", "file/Expressive Fresh Moves v3.0.1.zip", "file/FA+Spiders-v1.1.zip", "file/FA+Quivers-v1.1.zip", "file/FA+Objects-v1.1.zip", "file/FA+Details-v1.1.zip", "file/FA+Classic_Horses-v1.2.zip", "file/FA+Emissive-v1.2.zip", "file/Let's Do - Pixel Perfect.zip", "file/§9RAY's §f3D §6Ladders§8§o§k.zip", "file/§9RAY's §f3D §6Rails§8§o§k.zip"]
+incompatibleResourcePacks:["file/§9RAY's §f3D §6Ladders§8§o§k.zip", "file/§9RAY's §f3D §6Rails§8§o§k.zip"]

@@ -203,6 +203,19 @@ for cfg in cameraoverhaul.toml presencefootsteps defaultoptions; do
   fi
 done
 
+# Resource and shader packs. A pack whose pack_format is older than the game's
+# is silently dropped from the enabled list, so a pack copied from a 1.20.1
+# pack without its pack.mcmeta updated would load in no test and in no install.
+# Stage both the overrides and the vendored set so the client actually boots them.
+for dir in resourcepacks shaderpacks; do
+  for src in "$REPO/conversion/overrides/$dir" "$REPO/conversion/vendored/$dir"; do
+    if [ -d "$src" ]; then
+      mkdir -p "$WORK/$dir"
+      cp -R "$src"/*.zip "$WORK/$dir/" 2>/dev/null || true
+    fi
+  done
+done
+
 # Every [source:location] asset the staged layouts name must resolve, or the
 # menu paints the missing-texture checkerboard. Cheap, and it is the guard that
 # was missing when the background shipped broken.

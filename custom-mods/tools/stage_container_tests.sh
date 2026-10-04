@@ -104,6 +104,15 @@ rsync -a --delete "$REPO/conversion/datapacks/hearthwind/" "$R/conversion/datapa
 # wrong section names would have passed every gate.
 [ -d "$REPO/conversion/overrides/config" ] && \
   rsync -a --delete "$REPO/conversion/overrides/config/" "$R/conversion/overrides/config/"
+# Resource and shader packs. A pack whose pack_format predates the game's is
+# silently dropped from the enabled list, so a pack copied from a 1.20.1 pack
+# without its pack.mcmeta updated would load in no test and in no install.
+# Stage both the overrides and the vendored set.
+for dir in resourcepacks shaderpacks; do
+  for src in "$REPO/conversion/overrides/$dir" "$REPO/conversion/vendored/$dir"; do
+    [ -d "$src" ] && rsync -a "$src/" "$R/conversion/overrides/$dir/" 2>/dev/null || true
+  done
+done
 rsync -a --delete "$REPO/dev-server/mods/" "$R/dev-server/mods/"
 [ -d "$REPO/conversion/vendored" ] && rsync -a --delete "$REPO/conversion/vendored/" "$R/conversion/vendored/" || true
 
