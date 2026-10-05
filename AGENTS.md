@@ -105,15 +105,17 @@ cd custom-mods && bash tools/run_gametests.sh [--keep-server]
 ```
 
 CONTAINER MANDATE: never run game/client tests on the host. Build on the
-host (`./gradlew build`), then run the container wrappers (they stage
-host-built jars + sources into /tmp/cgthearthwind-stage — Docker Desktop
-cannot bind-mount /Users paths, and its file sharing intermittently serves
-empty dirs, so staging goes through a seeded named volume `cgtvol`):
+host (`./gradlew build`), then run the container wrappers. They stage
+host-built jars + sources into `custom-mods/.tmp/cgthearthwind-stage` and
+**bind-mount that tree** - no named volume, no `docker cp`. (The old
+`cgtvol` + `docker cp` seeding was a workaround for Docker Desktop file
+sharing; measured 0.1.57, bind mounts serve the whole 56k-file stage fine,
+and `docker cp` never deletes, which silently kept removed jars alive.)
 
 ```bash
 cd custom-mods && bash tools/run_gametests_container.sh [--keep-server]
 cd custom-mods && bash tools/run_client_gametests_container.sh [--keep-dir]
-# -> same harnesses inside pinned linux images (java 26); screenshots copy
+# -> same harnesses inside pinned linux images (java 25); screenshots copy
 #    back to .tmp/shots/cgt/. Stage script: tools/stage_container_tests.sh.
 #    Server suite needs custom-mods/.gradle/loom-cache (merged jar for the
 #    mixin-shadow test) - staged automatically. Set JAVA_HOME explicitly in
@@ -124,6 +126,34 @@ cd custom-mods && bash tools/run_client_gametests_container.sh [--keep-dir]
 #    CGT_EXCLUDE_MODS=DistantHorizons bash tools/run_client_gametests_container.sh
 ```
 
+**The images are Java 25, not 26, for a reason.** MC 26.2's version manifest
+declares `java_version` 25 and Prism auto-provisions the matching runtime, so
+25 is what a real player runs; `update_prism.sh` actively repairs any Java 26
+pin. Testing on 26 proved nothing about the runtime users actually get. Keep
+both Dockerfiles and CI's `java-version` at 25.
+
+**Every container run must clean up after itself, and so must you.** Docker on
+this host is Colima, whose QEMU VM holds **8 GB of RAM** and whose image/volume
+leftovers reached **29 GB** on disk. All three wrappers now start the VM if it
+is down, and on exit call `tools/cleanup_container_tests.sh`, which removes the
+Hearthwind images and test volumes and stops the VM *only if that run started
+it*. `CGT_KEEP=1` skips cleanup for a debugging session; `--keep-images` and
+`--stop-vm` are available on the cleanup script directly. This is not hygiene
+theatre: a Colima VM left up for a day drove this 32 GB machine into swap
+exhaustion (11.4 GB swap used, 19-30 MB physical free), and the Minecraft
+client then died with **SIGSEGV in the C2 compiler** - `Chunk::next_chop` on a
+garbage pointer, because native allocation could not be satisfied.
+`hs_err_pid22780` and `hs_err_pid58980` were both misdiagnosed as a JIT bug or
+DistantHorizons native corruption before the `Memory:` line in the reports
+showed the machine had no memory left.
+
+**When a client dies with a random-looking JVM SIGSEGV, read `Memory:` in the
+`hs_err_pid*.log` and run `sysctl vm.swapusage` before blaming Java.** The
+frames name whichever code happened to allocate next; the cause may be the
+host. Also remember `opencode` itself can hold 8-10 GB. The Colima VM's disk
+(`~/.colima`, ~21 GB after cleanup) also holds other projects' images - never
+`colima delete` without checking `docker images` first.
+
 **The stage script must carry `conversion/overrides/config`.** Config the pack
 ships only reaches a container test if `stage_container_tests.sh` rsyncs it;
 otherwise `run_client_gametests.sh`'s `cp -R` silently copies nothing and the
@@ -131,11 +161,11 @@ suite boots every mod on **stock defaults** while still reporting PASS. That
 was true for the FancyMenu staging until 0.1.55 - so every client run before
 then verified the menu with mod defaults, not the shipped layout. When a mod
 reads a config file we ship, confirm the file is present in the game dir
-inside the volume (`docker run --rm -v cgtvol:/s alpine ls
-/s/repo/custom-mods/.tmp/cgt-game/config`) AND read back **what the mod wrote**
-after the run: a wrong schema is discarded and regenerated at defaults without
-any error. That read-back is what caught Aged's flat `{"volume": 55}` being
-thrown away by PresenceFootsteps 1.13.3, which had nested it. Keep
+(`ls custom-mods/.tmp/cgthearthwind-stage/repo/custom-mods/.tmp/cgt-game/config`
+- the bind mount means it is a plain host path) AND read back **what the mod
+wrote** after the run: a wrong schema is discarded and regenerated at defaults
+without any error. That read-back is what caught Aged's flat `{"volume": 55}`
+being thrown away by PresenceFootsteps 1.13.3, which had nested it. Keep
 `--keep-dir` for any run whose point is inspecting a config; without it the
 game dir is deleted at the end.
 
@@ -149,16 +179,16 @@ enabled list, so a pack copied from a 1.20.1 pack without updating its
 format **64** (`PackFormat.lastPreMinorVersion(CLIENT_RESOURCES)`) and datapack
 format **81** (`SERVER_DATA`).
 
-**The `cgtvol` seed step must `rm -rf /s/repo` before `docker cp`.** `docker
-cp` overwrites and adds but never deletes, so a jar that is removed from
-`conversion/build/dist/*/mods/` keeps running out of the volume from the
-previous run. This bit hard: reverting an adoption pruned the jar from the
+**Stale jars used to survive in a volume; bind mounts removed that class of
+bug.** The old `cgtvol` seed used `docker cp`, which overwrites and adds but
+never deletes, so a jar removed from `conversion/build/dist/*/mods/` kept
+running from the previous run - reverting an adoption pruned the jar from the
 staged dist, every verifier went green, and the next boot still died on the
-exact jar that had been removed - `NoClassDefFoundError` from a class the
-revert was supposed to take with it. Both `*_container.sh` wrappers now clear
-`/s/repo` first and deliberately leave `/s/gradle-home` alone so its caches
-still persist. If a boot fails for something you are certain you removed, check
-the volume before believing the code.
+exact jar that had been removed. The wrappers now bind-mount the staged tree
+directly, so what the container sees is always exactly what the repo staged in
+that run. If a boot still fails for something you are certain you removed,
+re-run `tools/stage_container_tests.sh` and check the stage before believing
+the code.
 
 **DefaultOptions cannot be verified by the client suite.** The harness
 deliberately pre-writes a complete `$WORK/options.txt` for the gametest API, so

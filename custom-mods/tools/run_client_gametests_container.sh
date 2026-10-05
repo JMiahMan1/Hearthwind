@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
 # Containerized client gametests (MANDATORY path: never run UI tests on the host).
-# Stages host-built jars + sources into /tmp/cgthearthwind-stage (mountable;
-# Docker Desktop cannot bind-mount /Users paths), then runs the standard
-# harness inside the pinned linux image (java 26 + xvfb + Mesa).
-# Screenshots are copied back to the repo .tmp/shots/cgt/ afterwards.
+# Stages host-built jars + sources into $REPO/.tmp/cgthearthwind-stage and
+# BIND-MOUNTS that tree, so the container reads exactly what the repo stages
+# and nothing else. No named volume and no `docker cp`: the image is pinned,
+# the inputs are files, and what the container writes lands back in the stage
+# where a host-side cp can pick it up.
 #
 # Usage: bash tools/run_client_gametests_container.sh [--keep-dir]
 set -euo pipefail
@@ -11,28 +12,37 @@ DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO="$(cd "$DIR/../.." && pwd)"
 STAGE="${CGT_STAGE_DIR:-$REPO/.tmp/cgthearthwind-stage}"
 
+# Docker on this host is Colima, whose QEMU VM holds 8 GB of RAM for as long
+# as it runs, and whose image/volume leftovers reached 29 GB. An 8 GB VM left
+# up for a day pushed this 32 GB machine into swap exhaustion, and the client
+# then died with SIGSEGV in the C2 compiler purely because native allocation
+# could not be satisfied. So: remember whether the VM was already up, and
+# always clean up on exit. CGT_KEEP=1 skips cleanup for a debugging session.
+colima status >/dev/null 2>&1 && CGT_VM_PREEXISTING=1 || CGT_VM_PREEXISTING=0
+if [ "$CGT_VM_PREEXISTING" = 0 ]; then
+  echo "starting colima for this run (the cleanup trap stops it again)"
+  colima start >/dev/null 2>&1 || colima start
+fi
+cleanup_container_tests() {
+  if [ "${CGT_KEEP:-0}" = 1 ]; then
+    echo "CGT_KEEP=1 - leaving test images and volumes in place"
+    return 0
+  fi
+  if [ "$CGT_VM_PREEXISTING" = 0 ]; then
+    bash "$DIR/cleanup_container_tests.sh" --stop-vm
+  else
+    bash "$DIR/cleanup_container_tests.sh"
+  fi
+}
+trap cleanup_container_tests EXIT
+
+
 CGT_STAGE_DIR="$STAGE" bash "$DIR/stage_container_tests.sh"
 docker build -f "$DIR/docker/client-gametest.Dockerfile" -t hearthwind-client-gametest "$DIR/docker"
 
-# Seed a named volume via `docker cp`: Docker Desktop file sharing does not
-# reliably serve host bind mounts (shows empty dirs), but the Docker API
-# transport always works. Reseed every run so fresh jars are picked up;
-# provision/server-jar caches inside the volume survive (cp only overwrites).
-docker volume create cgtvol >/dev/null
-docker rm -f cgtseed >/dev/null 2>&1 || true
-docker create -v cgtvol:/s --name cgtseed alpine true >/dev/null
-# docker cp OVERWRITES and ADDS but never DELETES, so a jar dropped from the
-# staged dist kept running out of the volume from the previous run - a
-# reverted mod crashed the next boot until this line existed. Clear the repo
-# tree first; /s/gradle-home is deliberately left alone, its caches persist.
-docker run --rm -v cgtvol:/s alpine rm -rf /s/repo
-docker cp "$STAGE/repo" cgtseed:/s/
-docker cp "$STAGE/gradle-home" cgtseed:/s/
-docker rm cgtseed >/dev/null
-
 set +e
 docker run --rm \
-  -v cgtvol:/work \
+  -v "$STAGE:/work" \
   -w /work/repo/custom-mods \
   -e CGT_ENV=ci \
   -e CGT_XVFB=1 \
@@ -48,16 +58,11 @@ docker run --rm \
 RC=$?
 set -e
 
-# Pull shots back out through the Docker API (bind mounts can't be trusted).
-mkdir -p "$REPO/.tmp/shots/cgt"
-docker rm -f cgtshots >/dev/null 2>&1 || true
-docker create -v cgtvol:/s --name cgtshots alpine true >/dev/null
-docker cp cgtshots:/s/repo/.tmp/shots/cgt/. "$REPO/.tmp/shots/cgt/" 2>/dev/null || true
-docker rm cgtshots >/dev/null
-mkdir -p "$REPO/.tmp/logs"
-docker rm -f cgtlogs >/dev/null 2>&1 || true
-docker create -v cgtvol:/s --name cgtlogs alpine true >/dev/null
-docker cp cgtlogs:/s/repo/custom-mods/.tmp/logs/cgt-client.log "$REPO/.tmp/logs/cgt-client-container.log" 2>/dev/null || true
-docker rm cgtlogs >/dev/null
+# Outputs were written through the bind mount, so they are already on the
+# host inside the stage - a plain host-side copy, no Docker API involved.
+mkdir -p "$REPO/.tmp/shots/cgt" "$REPO/.tmp/logs"
+cp -R "$STAGE/repo/.tmp/shots/cgt/." "$REPO/.tmp/shots/cgt/" 2>/dev/null || true
+cp "$STAGE/repo/custom-mods/.tmp/logs/cgt-client.log" \
+   "$REPO/.tmp/logs/cgt-client-container.log" 2>/dev/null || true
 echo "screenshots copied back: $(ls "$REPO"/.tmp/shots/cgt/*.png 2>/dev/null | wc -l | tr -d ' ')"
 exit "$RC"

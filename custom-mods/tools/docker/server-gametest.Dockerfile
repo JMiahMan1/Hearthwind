@@ -1,4 +1,8 @@
-FROM eclipse-temurin:26-jdk-noble
+# Java 25, matching MC 26.2's declared java_version - Prism auto-provisions
+# 25 for real players (see update_prism.sh), so testing on 26 proved nothing
+# about the runtime users actually get: a C2 compiler crash on Microsoft
+# JDK 25.0.1 shipped through CI green for that reason. Keep this at 25.
+FROM eclipse-temurin:25-jdk-noble
 
 # Headless server-gametest image: dedicated MC server runs (fabric-server.jar
 # downloaded at runtime by the harness) plus the python static checks.

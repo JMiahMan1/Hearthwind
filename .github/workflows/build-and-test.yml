@@ -20,7 +20,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: '26'
+          java-version: '25'
           cache: gradle
 
       - name: Build all modules
@@ -77,7 +77,7 @@ jobs:
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: '26'
+          java-version: '25'
           cache: gradle
       # In-house mod jars must exist before materializing: build_pack.py
       # globs them from custom-mods/*/build/libs (absent on clean checkouts).
@@ -174,7 +174,7 @@ jobs:
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: '26'
+          java-version: '25'
       - name: Build all modules
         run: ./gradlew build --no-daemon --max-workers=2
         working-directory: custom-mods
@@ -258,7 +258,7 @@ jobs:
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: '26'
+          java-version: '25'
           cache: gradle
       - name: Install xvfb + Mesa GL
         run: |
