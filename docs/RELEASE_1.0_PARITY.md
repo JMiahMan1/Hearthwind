@@ -349,6 +349,12 @@ three are in this list); `shatterbyte-lib` is OctoLib's renamed project.
 
 ### 5.2 Needs a port (66 + surveyor WIP)
 
+> **Machine-checked count is 59, not the 66 this table was written against.**
+> `python3 conversion/scripts/aged_parity_diff.py` reads
+> `conversion/curated/aged-missing-allowlist.json` and is the authority for how
+> many are left; this table below is the working notes and has not been pruned
+> row-by-row to match. Quote the diff, not this heading.
+
 Port tier: **A nudge** = upstream already has Fabric 26.1.x (a 26.1 to 26.2
 bump). **B near** = Fabric 1.21.9-1.21.11. **C full** = older, full port
 through `docs/PORTING.md`. **D no-source** = no public source (ARR/binary
@@ -984,7 +990,8 @@ tooltips and the four custom sound events (we use vanilla substitutes). The
 functional-parity work therefore moves on to AdditionZ's `villager_gender` -
 which needs the user's approval, because 26.2 has no `VillagerBreedTask` and
 opposite-sex breeding without the female-villager texture swap is itself a
-deviation - and then the 61-mod port queue.
+deviation - and then the 59-mod port queue (61 until 0.1.57 removed the
+`inmis`/`inmisaddon` duplicates).
 
 ## 6. Workstreams toward 1.0.0, in priority order
 
@@ -1078,13 +1085,31 @@ pinned to Aged's value.
 **W4: Port queue (section 5.2), rewritten 0.1.44.** The old order had
 drifted: it still listed `inmis`, `backslot` and `trinkets` (all shipped) plus
 `bento-box`, `lootbeams` and `villagertradefix`, which are not in the queue at
-all. Current state, measured against the Modrinth API on 2026-09-30: the queue
-holds **62 entries and every one is a port - not one has a 26.2 Fabric build**,
-so there is nothing left to adopt from the W2 list. Three were already finished
-and had simply never been dropped from the allowlist (`inmis` shipped,
-`backslotaddon` rebuilt in-tree, `Dungeon Now Loading` ported as `dungeonz`),
-and `time-and-wind-ct` joined them when the audit proved the port already
-exists.
+all. Current state, re-audited against the built pack 0.1.57: the queue holds
+**59 entries and every one is a port - not one has a 26.2 Fabric build**,
+so there is nothing left to adopt from the W2 list.
+
+Two corrections to what this section previously claimed. It said three entries
+"were already finished and had simply never been dropped from the allowlist".
+Only `inmis` held up under audit, so 0.1.57 removed `inmis` and `inmisaddon`
+(both `realized_by=inmis`, both present in `dist/`) and left the rest alone:
+
+- `backslotaddon` was **not** verified as rebuilt. The manifest still carries it
+  as `action: keep` with reason "Depends on backslot" and an empty
+  `realized_by`; the shipped `backslot-26.2+0.1.0.jar` describes itself as a
+  port of BackSlot only. It stays in the queue.
+- `Dungeon Now Loading` was **not** ported as `dungeonz`. `dungeonz` is a
+  separate mod (`id: dungeonz`, "adds the basement for creating and exploring
+  dungeons") and carries its own manifest entry; `Dungeon Now Loading` still
+  has its own entry with reason `DEFER - 177-class yarn port, empty source`.
+  It stays in the queue.
+
+`time-and-wind-ct` did leave the queue legitimately (realized as
+`time-and-wind` in `hearthwind-world`). And `surveyor` stays in despite
+`custom-mods/surveyor` existing with sources: it is **not built** and **not in
+`dist/`**, which is exactly the plan/shipment distinction the allowlist now
+spells out in its `_doc`. A manifest action of `keep`, `rebuild` or `port` with
+an empty `realized_by` is a plan, not a shipment.
 
 Suggested order:
 
