@@ -149,6 +149,17 @@ enabled list, so a pack copied from a 1.20.1 pack without updating its
 format **64** (`PackFormat.lastPreMinorVersion(CLIENT_RESOURCES)`) and datapack
 format **81** (`SERVER_DATA`).
 
+**The `cgtvol` seed step must `rm -rf /s/repo` before `docker cp`.** `docker
+cp` overwrites and adds but never deletes, so a jar that is removed from
+`conversion/build/dist/*/mods/` keeps running out of the volume from the
+previous run. This bit hard: reverting an adoption pruned the jar from the
+staged dist, every verifier went green, and the next boot still died on the
+exact jar that had been removed - `NoClassDefFoundError` from a class the
+revert was supposed to take with it. Both `*_container.sh` wrappers now clear
+`/s/repo` first and deliberately leave `/s/gradle-home` alone so its caches
+still persist. If a boot fails for something you are certain you removed, check
+the volume before believing the code.
+
 **DefaultOptions cannot be verified by the client suite.** The harness
 deliberately pre-writes a complete `$WORK/options.txt` for the gametest API, so
 DefaultOptions finds every option already set and applies nothing. Its defaults

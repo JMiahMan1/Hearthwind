@@ -1119,7 +1119,22 @@ Suggested order:
    iron-golem cap. Study in `docs/AGED_HYDRATION.md` and
    `.tmp/azstudy/ADDITIONZ-STUDY.md`.
 2. **Tier A (4)**: `fbp-renewed`, `fishing-real`, `moonlight`, `surveyor` -
-   all Fabric 26.1.x, no 26.2 build.
+   all Fabric 26.1.x, no 26.2 build. Measured against Modrinth 0.1.57, all
+   four are **ports, not adoptions**, and the reason is worth writing down
+   because it disqualifies the shortcut. Their newest 26.x-claiming builds
+   declare `depends.minecraft` `=26.1.2` (moonlight), `~26.1.2`
+   (fishing-real, fbp) and `>=26.1` (surveyor). Only surveyor's range reaches
+   26.2, so it was the one candidate for adoption - and it **crashes on
+   26.2**: `NoClassDefFoundError: net/minecraft/util/Tuple` at
+   `S2CUpdateRegionPacket.<clinit>` -> `SurveyorNetworking.init` ->
+   `Surveyor.onInitialize`, and `net/minecraft/util/Tuple.class` is absent
+   from the 26.2 jar. So a build can declare compatibility, be accepted by
+   every metadata check we have, and still not run. **`depends.minecraft` is
+   not proof a jar loads; boot-smoke is.** Do not adopt a 26.1 build on the
+   strength of its declaration range - boot it. (Also note for later: that
+   surveyor version marks `mcqoy` required on Modrinth although surveyor
+   never references it and bundles `kaleido-config-0.3.3+1.3.2.jar`
+   instead.)
 3. **Gameplay content**: `medievalweapons`, `smitherz`, `voidz`, `travelerz`,
    `antique-atlas` + `surveyor`, `another-furniture`, `connectiblechains`,
    `niftycarts`, `villager-transportation`, `smarterfarmers`,

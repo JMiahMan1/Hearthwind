@@ -15,6 +15,11 @@ docker build -f "$DIR/docker/server-gametest.Dockerfile" -t hearthwind-server-ga
 docker volume create cgtvol >/dev/null
 docker rm -f cgtseed >/dev/null 2>&1 || true
 docker create -v cgtvol:/s --name cgtseed alpine true >/dev/null
+# docker cp OVERWRITES and ADDS but never DELETES, so a jar dropped from the
+# staged dist kept running out of the volume from the previous run - a
+# reverted mod crashed the next boot until this line existed. Clear the repo
+# tree first; /s/gradle-home is deliberately left alone, its caches persist.
+docker run --rm -v cgtvol:/s alpine rm -rf /s/repo
 docker cp "$STAGE/repo" cgtseed:/s/
 docker cp "$STAGE/gradle-home" cgtseed:/s/
 docker rm cgtseed >/dev/null
