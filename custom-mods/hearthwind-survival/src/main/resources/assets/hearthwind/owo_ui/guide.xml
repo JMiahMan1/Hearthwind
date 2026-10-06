@@ -5,32 +5,31 @@
              words, like a manuscript initial. Usage in an entry:
              <|drop-cap@hearthwind:guide|letter=w,text=elcome\, traveller...|> -->
         <template name="drop-cap">
-            <!-- Fixed widths on purpose: the page column is a known 104 px
-                 inside the 112 px page anchor, and owo resolves fill/content
-                 sizing for labels inside a horizontal flow from a stale or
-                 too-small parent width, which clipped the text mid-word at the
-                 page edge. 104 = column, 78 = column minus the 22+3 initial. -->
+            <!-- Fixed widths on purpose: owo resolves fill/content sizing for labels
+                 inside a horizontal flow from a stale or too-small parent width,
+                 which clipped the text mid-word at the page edge. The anchor is
+                 112 wide; 112 - (22 initial + 2 gap) = 88 for the text. -->
             <flow-layout direction="horizontal">
                 <children>
                     <texture texture="hearthwind:textures/gui/guide/initial/{{letter}}.png"
                              texture-width="22" texture-height="22" region-width="22" region-height="22">
                         <blend>true</blend>
                         <margins>
-                            <right>3</right>
+                            <right>2</right>
                         </margins>
                     </texture>
                     <label>
                         <text>{{text}}</text>
                         <color>#FF3B2A1E</color>
-                        <max-width>78</max-width>
+                        <max-width>88</max-width>
                         <sizing>
-                            <horizontal method="fixed">78</horizontal>
+                            <horizontal method="fixed">88</horizontal>
                         </sizing>
                     </label>
                 </children>
                 <vertical-alignment>top</vertical-alignment>
                 <sizing>
-                    <horizontal method="fixed">104</horizontal>
+                    <horizontal method="fixed">112</horizontal>
                 </sizing>
                 <margins>
                     <bottom>4</bottom>
