@@ -55,6 +55,32 @@ done
 mkdir -p "$R/custom-mods/.gradle/loom-cache"
 rsync -a --delete "$REPO/custom-mods/.gradle/loom-cache/" "$R/custom-mods/.gradle/loom-cache/"
 
+# Stale-jar guard. This script copies HOST-BUILT jars; it never builds. Editing
+# a module's src and then running a container test therefore tests the PREVIOUS
+# jar and still reports PASS. That bit us for real: 48 guidebook entries were
+# re-paginated, the client suite was re-run, and the render came back unchanged
+# because the staged jar had 4 page separators where the source had 11.
+#
+# Detection is by GIT, not mtime. An mtime comparison is useless here - this
+# repo's src files are routinely newer than jars that are perfectly current
+# (logbegone's jar is Sep 21 and its icon.png Sep 23, yet nothing changed in
+# it), so mtime flags most of the tree. Uncommitted work under custom-mods/ is
+# exactly the "edited but not rebuilt" case and has no false positives.
+# NB: git's plain pathspec '*' does NOT cross '/', so custom-mods/*/src matches
+# nothing. :(glob) with ** is what actually works here.
+dirty="$(git -C "$REPO" status --porcelain -- ':(glob)custom-mods/*/src/**' ':(glob)custom-mods/*/build.gradle' 2>/dev/null)"
+if [ -n "$dirty" ]; then
+  echo "UNBUILT SOURCE CHANGES - refusing to stage."
+  echo "These files changed but the module has not been rebuilt, so the"
+  echo "container would test the PREVIOUS jar and still report PASS:"
+  echo "$dirty" | sed 's/^/    /' | head -20
+  echo
+  echo "Fix:  cd custom-mods && ./gradlew build --no-daemon --max-workers=2"
+  echo "Override for a deliberate stale run with CGT_ALLOW_STALE=1."
+  [ "${CGT_ALLOW_STALE:-0}" = 1 ] || exit 1
+  echo "(CGT_ALLOW_STALE=1 - continuing anyway)"
+fi
+
 # 2. fresh host-built jars (plain only, never -sources)
 for d in "$REPO"/custom-mods/hearthwind-*/build/libs \
          "$REPO"/custom-mods/athena/build/libs \
