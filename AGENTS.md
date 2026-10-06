@@ -440,6 +440,29 @@ python3 ../custom-mods/tools/rcon.py 127.0.0.1 25575 agedtest "summon item ~ ~ ~
   A local boot that reaches `Done` with every probe green means the
   failure was the runner, not the pack.
 
+## Porting a Yarn-era mod (W4)
+
+MC 26.x uses Mojang's own names, so a mod already built for 26.x ports in a
+couple of edits (`fishing-real`, `lmft`). Almost every other queue entry is a
+1.20.1-1.21.11 Fabric mod compiled against Yarn, and a port starts by renaming
+every MC class, field and method before the 26.2 delta is even visible. Loom
+1.17 has no `migrateMappings` task, so use:
+
+```bash
+python3 custom-mods/tools/remap_to_mojmap.py <upstream.jar> --mc <its MC version>
+# -> .tmp/mapwork/out/<mod>/src/**, clean Mojmap, a few seconds
+```
+
+It remaps the **jar** with tiny-remapper (descriptor-aware) and decompiles with
+Vineflower, because a published Fabric jar is compiled against *intermediary*,
+not Yarn, and source-level string substitution gets overloads wrong in ways that
+still compile. The mapping table is built by joining Fabric's intermediary
+(`official -> intermediary`) with Mojang's `client.txt` (`official -> mojmap`)
+on the shared `official` column - Yarn's own file can no longer be joined
+directly, it dropped that column. Artifacts cache under `.tmp/mapwork/`.
+
+`--mc` must be the jar's own MC version; the mapping tables are per-version.
+
 ## 1.0.0 focus: Aged parity FIRST (read docs/RELEASE_1.0_PARITY.md)
 
 Until 1.0.0 ships, every task is judged by ONE rule: **does it make
