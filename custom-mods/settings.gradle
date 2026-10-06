@@ -46,5 +46,10 @@ include 'backslot'
 	include 'fleshz'
 	include 'adventurez'
 include 'tlc'
-	// include 'surveyor' // TEMP-OFF 2026-09-21: 26.1->26.2 nudge WIP (~324 compile errors); re-enable when :surveyor:compileJava is green
+	// include 'surveyor' // BLOCKED 0.1.57: not a 26.1->26.2 nudge. The in-tree sources are
+	// YARN-mapped (28 files use Identifier, 0 use ResourceLocation) while this project is
+	// mojmap, so the 334 compile errors are mostly a mapping mismatch, not API drift.
+	// Upstream has no 26.2 build (newest is 1.2.4+26.1). Port = yarn->mojmap remap of 86
+	// files + the 26.2 delta (net/minecraft/util/Tuple is gone). Low priority: surveyor
+	// is a library with no consumer until antique-atlas lands. See the Todo.
 	// NOTE: letsdo-brewery/candlelight/herbalbrews/meadow sources are present
