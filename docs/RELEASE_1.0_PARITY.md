@@ -723,7 +723,7 @@ confirm. When we keep Aged's behaviour instead, list that too.
 
 ### 5.11 Approved deviations from Aged
 
-**There is exactly one**, added in 0.1.57 at the user's explicit request:
+**There are exactly two**, both added in 0.1.57 at the user's explicit request:
 
 - **Pale oak bark.** 26.2 added the pale oak tree; Aged's `earlystage` is a
   1.20.1 mod that predates it, so the reference has no pale oak bark and there
@@ -735,6 +735,18 @@ confirm. When we keep Aged's behaviour instead, list that too.
   the bark system deviates: the other eleven barks and their tree set match Aged
   exactly, and the drop path now has a gametest (`strippingLogsDropsTheirBark`),
   which it did not before.
+
+- **A water bottle is refused on an unlit campfire.** Dehydration has no `LIT`
+  check when a bottle goes on a fire - its `CampfireBlockMixin.onUseMixin` never
+  reads `LIT` (see `docs/AGED_HYDRATION.md` row 1) - so the reference accepts the
+  bottle and then never boils it, because the boil only advances in the lit
+  tick. That produced a bottle sitting in a campfire slot forever with no
+  progress and, since the 0.1.49 parity pass removed our unlit-fire hint, no
+  message at all: indistinguishable from a broken mechanic, which is exactly how
+  it was reported. Hearthwind now declines the placement and says why ("Light
+  the campfire first..."). Nothing else about the boil changes: 1000 ticks while
+  lit (the reference's hard-coded value, not a config one), frozen rather than
+  decayed while the fire is out, and relighting resumes the same counter.
 
 The section exists so the count is stated rather than implied, and so adding
 one is a deliberate act.

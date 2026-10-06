@@ -26,10 +26,13 @@ public abstract class CampfireBlockEntityMixin {
     @Inject(method = "placeFood", at = @At("HEAD"), cancellable = true)
     private void hearthwind$placeWaterBottle(ServerLevel level, @Nullable LivingEntity source,
             ItemStack placeItem, CallbackInfoReturnable<Boolean> cir) {
-        if (CampfirePurification.placeWaterBottle(level, source,
-                (CampfireBlockEntity) (Object) this, placeItem)) {
-            cir.setReturnValue(true);
+        if (!CampfirePurification.isWaterPotion(placeItem)) {
+            return; // food: leave it to vanilla
         }
+        // We own the water-bottle path: cancel whether it lands or not, so a
+        // refused bottle is never placed by vanilla's own placeFood instead.
+        cir.setReturnValue(CampfirePurification.placeWaterBottle(level, source,
+                (CampfireBlockEntity) (Object) this, placeItem));
     }
 
     @Inject(method = "cookTick", at = @At("HEAD"))

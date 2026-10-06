@@ -715,7 +715,7 @@ public final class HearthwindSurvivalGameTests {
     }
 
     @GameTest(maxTicks = 200)
-    public void aDarkCampfireKeepsTheBottleAndNeverBoils(GameTestHelper helper) {
+    public void aDarkCampfireRefusesTheBottle(GameTestHelper helper) {
         net.minecraft.core.BlockPos rel = new net.minecraft.core.BlockPos(1, 2, 1);
         // Blocks.CAMPFIRE.defaultBlockState() is LIT=true, so a dark fire has
         // to ask for it explicitly.
@@ -724,19 +724,19 @@ public final class HearthwindSurvivalGameTests {
         net.minecraft.core.BlockPos pos = helper.absolutePos(rel);
         net.minecraft.server.level.ServerLevel level = helper.getLevel();
         var campfire = (net.minecraft.world.level.block.entity.CampfireBlockEntity) level.getBlockEntity(pos);
-        net.minecraft.world.entity.player.Player player =
-                helper.makeMockPlayer(net.minecraft.world.level.GameType.SURVIVAL);
-        ItemStack bottle = net.minecraft.world.item.alchemy.PotionContents.createItemStack(
-                Items.POTION, net.minecraft.world.item.alchemy.Potions.WATER);
-        helper.assertTrue(CampfirePurification.placeWaterBottle(level, player, campfire, bottle),
-                "Dehydration parity: a dark campfire still accepts the bottle");
         helper.assertTrue(!CampfirePurification.isLit(campfire.getBlockState()),
                 "the test campfire must be unlit");
-        helper.runAfterDelay(60, () -> {
-            helper.assertTrue(CampfirePurification.isWaterPotion(campfire.getItems().get(0)),
-                    "an unlit campfire must never purify the bottle (it only boils while lit)");
-            helper.succeed();
-        });
+        ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND,
+                net.minecraft.world.item.alchemy.PotionContents.createItemStack(
+                        Items.POTION, net.minecraft.world.item.alchemy.Potions.WATER));
+        helper.useBlock(rel, player);
+        helper.assertTrue(campfire.getItems().stream().allMatch(ItemStack::isEmpty),
+                "a dark campfire must REFUSE the bottle - Hearthwind deviation, the"
+                        + " reference accepts it and then never boils it (see 5.11)");
+        helper.assertTrue(CampfirePurification.isWaterPotion(player.getMainHandItem()),
+                "a refused bottle must stay in the player's hand");
+        helper.succeed();
     }
 
     /**
@@ -748,8 +748,11 @@ public final class HearthwindSurvivalGameTests {
     @GameTest(maxTicks = 200)
     public void aBoilFreezesWhileTheFireIsOutAndResumesWhenRelit(GameTestHelper helper) {
         net.minecraft.core.BlockPos rel = new net.minecraft.core.BlockPos(1, 2, 1);
+        // The bottle has to go on while the fire is BURNING: 0.1.57 refuses a
+        // dark fire outright (see aDarkCampfireRefusesTheBottle). The fire is
+        // put out below, once the bottle is already boiling.
         helper.setBlock(rel, net.minecraft.world.level.block.Blocks.CAMPFIRE.defaultBlockState()
-                .setValue(net.minecraft.world.level.block.CampfireBlock.LIT, false));
+                .setValue(net.minecraft.world.level.block.CampfireBlock.LIT, true));
         net.minecraft.core.BlockPos pos = helper.absolutePos(rel);
         net.minecraft.server.level.ServerLevel level = helper.getLevel();
         var campfire = (net.minecraft.world.level.block.entity.CampfireBlockEntity)
@@ -761,9 +764,11 @@ public final class HearthwindSurvivalGameTests {
         ItemStack bottle = net.minecraft.world.item.alchemy.PotionContents.createItemStack(
                 Items.POTION, net.minecraft.world.item.alchemy.Potions.WATER);
         helper.assertTrue(CampfirePurification.placeWaterBottle(level, player, campfire, bottle),
-                "water bottle must be placeable");
+                "water bottle must be placeable on a burning campfire");
         accessor.hearthwind$cookingProgress()[0] = 600;
-        // Let the real server run the dark-fire ticker for a while.
+        // Put it out: the boil must freeze, not decay, for the next 60 ticks.
+        level.setBlock(pos, campfire.getBlockState()
+                .setValue(net.minecraft.world.level.block.CampfireBlock.LIT, false), 3);
         helper.runAfterDelay(60, () -> {
             helper.assertTrue(accessor.hearthwind$cookingProgress()[0] == 600,
                     "Aged parity: a boil must freeze on a dark fire, not decay back to zero (was "

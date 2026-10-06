@@ -23,6 +23,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
 
 import dev.jmiahman.hearthwind.survival.mixin.CampfireBlockEntityAccessor;
+import org.jspecify.annotations.Nullable;
 
     /**
      * Dehydration parity for boiling water bottles on a campfire.
@@ -70,12 +71,30 @@ import dev.jmiahman.hearthwind.survival.mixin.CampfireBlockEntityAccessor;
     }
 
     /**
+     * Tells the player why the bottle will not go on. Hearthwind deviation,
+     * requested 0.1.57: the reference has no {@code LIT} check, so it accepts a
+     * bottle on a dark fire and then never boils it - a state with no progress,
+     * no result and (since 0.1.49) no message, which is indistinguishable from
+     * a bug. Refusing outright is the only outcome a player can act on.
+     * Recorded in docs/RELEASE_1.0_PARITY.md 5.11 and docs/PLAYER_CHANGES.md.
+     */
+    public static void rejectUnlitFire(@Nullable LivingEntity source) {
+        if (source instanceof ServerPlayer player) {
+            player.sendSystemMessage(Component.translatable("message.hearthwind.campfire_needs_fire"));
+        }
+    }
+
+    /**
      * Places one water bottle into the first empty campfire slot with the
      * reference boil time. Returns false for non-water stacks or a full fire.
      */
     public static boolean placeWaterBottle(ServerLevel level, LivingEntity source,
             CampfireBlockEntity campfire, ItemStack stack) {
         if (!isWaterPotion(stack)) {
+            return false;
+        }
+        if (!isLit(campfire.getBlockState())) {
+            rejectUnlitFire(source);
             return false;
         }
         CampfireBlockEntityAccessor accessor = (CampfireBlockEntityAccessor) campfire;
