@@ -1130,7 +1130,36 @@ Only `inmis` held up under audit, so 0.1.57 removed `inmis` and `inmisaddon`
   It stays in the queue.
 
 `time-and-wind-ct` did leave the queue legitimately (realized as
-`time-and-wind` in `hearthwind-world`). And `surveyor` stays in despite
+`time-and-wind` in `hearthwind-world`).
+
+**Port queue assessed for tractability (0.1.57).** All 59 remaining entries
+were queried against Modrinth for source, license and newest Fabric version,
+because the queue is only actionable if we know which entries can be ported
+at all:
+
+- **54 of 59 publish source.**
+- **7 are All-Rights-Reserved**, so they cannot be ported in-tree without
+  asking the author: `amarite`, `creeper-overhaul`, `enderman-overhaul`,
+  `hearths`, `immersive-ui`, `smarter-farmers-farmers-replant`,
+  `villager-transportation`. Five of those (`amarite`, `astrocraft`,
+  `deuf-refabricated`, `hearths`, `villager-transportation`) also publish no
+  source at all. These need a permission request or an in-house rebuild from
+  behaviour, not a port - and that is a decision, not a yak-shave.
+- **Nothing in the queue has a 26.2 build.** The two closest are the Tier A
+  entries at 26.1.2 (`fbp-renewed`, `surveyor`) and `Fishing Real` (26.1.2);
+  everything else is 1.20.1-1.21.x era.
+
+Per-entry findings so far, all measured:
+
+| entry | finding |
+|---|---|
+| `fishing-real` | **Ported in-tree and compiling** (`custom-mods/fishingreal`). Blocked from shipping by Boids, not by the port - see below. |
+| `fbp-renewed` | 26.1.2 source, but 65 java files for the Fabric build and it uses Lombok plus Sodium/Iris/SereneSeasons/GlitchCore compat imports, so it needs build wiring (Lombok processor, those jars as compile deps) before any porting starts. Not a quick win. |
+| `surveyor` | The in-tree copy is Yarn-mapped (28 files use `Identifier`, none use `ResourceLocation`) against a Mojmap workspace, so its 334 errors are a mapping mismatch plus the 26.2 delta. Real work, and low value: it is a library with no consumer until `antique-atlas`. |
+| `lmft` | CC0-1.0 (cleanest license in the queue), 5 files, and 26.2 still has `TagLoader.tryBuildTag`, `SortingEntry` and `PlayerList.placeNewPlayer`. Needs two retargets: its mixin names `lambda$build$6`, which does not exist (26.2 has `$0..$3`), and `Permissions.COMMANDS_MODERATOR` is gone (26.2 has `Permission`/`PermissionSet`). |
+| `shut-up-gl-error` | 4 files and MIT, but its current upstream added a **JamLib** config dependency that Aged never shipped, so a straight port would pull in a mod Aged does not have. |
+| `dripsounds`, `borderless-mining`, `modelfix`, `seamless-loading-screen`, `tooltipfix`, `translucencyfix` | All source-available, but their newest builds are 1.17.1-1.21.11, so every one is a multi-version port despite being tiny in code. |
+ And `surveyor` stays in despite
 `custom-mods/surveyor` existing with sources: it is **not built** and **not in
 `dist/`**, which is exactly the plan/shipment distinction the allowlist now
 spells out in its `_doc`. A manifest action of `keep`, `rebuild` or `port` with
