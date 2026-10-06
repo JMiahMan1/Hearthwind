@@ -723,8 +723,21 @@ confirm. When we keep Aged's behaviour instead, list that too.
 
 ### 5.11 Approved deviations from Aged
 
-**There are none.** The section exists so the count is stated rather than
-implied, and so adding one is a deliberate act.
+**There is exactly one**, added in 0.1.57 at the user's explicit request:
+
+- **Pale oak bark.** 26.2 added the pale oak tree; Aged's `earlystage` is a
+  1.20.1 mod that predates it, so the reference has no pale oak bark and there
+  is nothing to copy. Without an entry, stripping pale oak yields nothing while
+  every other vanilla tree yields bark, which reads as a broken mechanic. We
+  register `earlystage:pale_oak_bark` (log + wood, listed in
+  `earlystage:bark_items` so it also lights campfires) with a texture recoloured
+  from the vanilla `pale_oak_log` palette rather than invented. Nothing else in
+  the bark system deviates: the other eleven barks and their tree set match Aged
+  exactly, and the drop path now has a gametest (`strippingLogsDropsTheirBark`),
+  which it did not before.
+
+The section exists so the count is stated rather than implied, and so adding
+one is a deliberate act.
 
 The FancyMenu first-run panel was investigated as a candidate deviation and
 turned out not to be one. It is a picture-in-picture window drawn over the main

@@ -197,6 +197,15 @@ public final class HearthwindPrimitiveItems {
     public static final Item BAMBOO_BARK = new BarkItem(new Item.Properties()
             .setId(key("earlystage", "bamboo_bark")),
             net.minecraft.world.level.block.Blocks.BAMBOO_BLOCK, null);
+    // Hearthwind addition - NOT in Aged. Aged's earlystage 1.1.1 is a 1.20.1 mod
+    // and predates pale oak, so the reference has no pale oak bark to copy; but
+    // 26.2 ships pale oak and without this entry stripping pale oak yields
+    // nothing, which reads as a broken bark mechanic. Registered so every
+    // vanilla tree gives bark. Recorded in docs/RELEASE_1.0_PARITY.md 5.11 and
+    // docs/PLAYER_CHANGES.md.
+    public static final Item PALE_OAK_BARK = new BarkItem(new Item.Properties()
+            .setId(key("earlystage", "pale_oak_bark")),
+            net.minecraft.world.level.block.Blocks.PALE_OAK_LOG, net.minecraft.world.level.block.Blocks.PALE_OAK_WOOD);
 
     // earlystage buckets (see HearthwindBuckets for mechanics)
     // earlystage buckets (see HearthwindBuckets for mechanics)
@@ -279,6 +288,7 @@ public final class HearthwindPrimitiveItems {
         register("earlystage", "crimson_bark", CRIMSON_BARK);
         register("earlystage", "mangrove_bark", MANGROVE_BARK);
         register("earlystage", "bamboo_bark", BAMBOO_BARK);
+        register("earlystage", "pale_oak_bark", PALE_OAK_BARK);
         register("earlystage", "wooden_bucket", WOODEN_BUCKET);
         register("earlystage", "water_wooden_bucket", WATER_WOODEN_BUCKET);
         register("earlystage", "clay_bucket", CLAY_BUCKET);

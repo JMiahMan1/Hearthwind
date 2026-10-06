@@ -1695,4 +1695,63 @@ public final class HearthwindPrimitiveGameTests {
         helper.succeed();
     }
 
+    /**
+     * Stripping a log must spawn its bark item (earlystage parity). This is the
+     * half of the bark mechanic that had no test at all: the campfire-lighting
+     * half is covered, but nothing asserted the drop, so a mixin whose injection
+     * point stopped matching would leave every verifier green while no bark ever
+     * dropped. Covers log + wood for a warm, a nether, a mangrove and the
+     * Hearthwind-only pale oak bark.
+     */
+    @GameTest
+    public void strippingLogsDropsTheirBark(GameTestHelper helper) {
+        ServerPlayer mockPlayer = helper.makeMockServerPlayerInLevel();
+        mockPlayer.setGameMode(net.minecraft.world.level.GameType.SURVIVAL);
+
+        net.minecraft.world.level.block.Block[] logs = {
+                Blocks.OAK_LOG,
+                Blocks.OAK_WOOD,
+                Blocks.SPRUCE_LOG,
+                Blocks.CRIMSON_STEM,
+                Blocks.MANGROVE_LOG,
+                Blocks.PALE_OAK_LOG,
+                Blocks.PALE_OAK_WOOD,
+        };
+        net.minecraft.world.item.Item[] barks = {
+                HearthwindPrimitiveItems.OAK_BARK,
+                HearthwindPrimitiveItems.OAK_BARK,
+                HearthwindPrimitiveItems.SPRUCE_BARK,
+                HearthwindPrimitiveItems.CRIMSON_BARK,
+                HearthwindPrimitiveItems.MANGROVE_BARK,
+                HearthwindPrimitiveItems.PALE_OAK_BARK,
+                HearthwindPrimitiveItems.PALE_OAK_BARK,
+        };
+
+        for (int i = 0; i < logs.length; i++) {
+            BlockPos rel = new BlockPos(1 + i, 1, 1);
+            helper.setBlock(rel, logs[i].defaultBlockState());
+            var abs = helper.absolutePos(rel);
+
+            ItemStack axe = new ItemStack(Items.IRON_AXE);
+            mockPlayer.setItemInHand(InteractionHand.MAIN_HAND, axe);
+            BlockHitResult hit = new BlockHitResult(
+                    Vec3.atCenterOf(abs), Direction.NORTH, abs, false);
+            axe.useOn(new net.minecraft.world.item.context.UseOnContext(
+                    helper.getLevel(), mockPlayer, InteractionHand.MAIN_HAND, axe, hit));
+
+            helper.assertFalse(helper.getBlockState(rel).is(logs[i]),
+                    logs[i].getName().getString() + " should have been stripped");
+
+            final net.minecraft.world.item.Item expectedBark = barks[i];
+            var drops = helper.getLevel().getEntitiesOfClass(
+                    net.minecraft.world.entity.item.ItemEntity.class,
+                    new net.minecraft.world.phys.AABB(abs).inflate(2.0),
+                    e -> e.getItem().is(expectedBark));
+            helper.assertTrue(!drops.isEmpty(),
+                    "stripping " + logs[i].getName().getString() + " must drop "
+                            + barks[i].getDescriptionId());
+        }
+        helper.succeed();
+    }
+
 }
