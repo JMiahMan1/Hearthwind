@@ -215,6 +215,17 @@ subprojects {
 			modCompileClasspath "net.fabricmc.fabric.api:fabric-gametest-api-v1:4.0.21+4a7fa0819e"
 		}
 	}
+	if (project.name == 'fishingreal') {
+		// Port of ExpensiveKoala's Fishing Real (MIT) from its 26.1.2 source.
+		// Config.java keeps upstream's NeoForge ModConfigSpec usage, which
+		// fabric's ForgeConfigAPIPort provides - the same jar the pack ships.
+		loom {
+			accessWidenerPath = file("src/main/resources/fishingreal.accesswidener")
+		}
+		dependencies {
+			implementation files("${rootDir}/../conversion/vendored/compile-libs/ForgeConfigAPIPort-v26.2.1-mc26.2.x-Fabric.jar")
+		}
+	}
 	if (project.name == 'exposure') {
 		// HanLax93 26.2 branch re-homed as a Fabric-only single module
 		// (architectury @ExpectPlatform dispatch replaced with direct calls
