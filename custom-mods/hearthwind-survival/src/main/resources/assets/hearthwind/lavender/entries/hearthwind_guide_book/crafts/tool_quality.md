@@ -15,10 +15,14 @@
 - Epic
 - {gilt}Legendary{}
 
+;;;;;
+
 The finer the quality, the rarer it is.
 
 ;;;;;
 
 {rubric}Reforging{}
+
+;;;;;
 
 At an anvil, lay the item with its own material (iron for iron, flint for flint), or an amethyst shard or netherite ingot. It costs {gilt}2 levels{} and gives a new quality.

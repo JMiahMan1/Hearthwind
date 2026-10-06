@@ -11,6 +11,8 @@
 
 Each sip restores {gilt}2 droplets{}.
 
+;;;;;
+
 <recipe;dehydration:leather_flask>
 
 ;;;;;
@@ -19,6 +21,9 @@ Each sip restores {gilt}2 droplets{}.
 
 - Still water: {gilt}impure{}. 15% chance of Thirst.
 - River water: {gilt}dirty{}. 30% chance of Thirst.
+
+;;;;;
+
 - A water cauldron over fire: {gilt}purified{}. Safe.
 
 {faded}Sneak and use a flask to pour it out.{}
@@ -29,6 +34,8 @@ Each sip restores {gilt}2 droplets{}.
 
 Wrap a flask in metal to carry more: iron 3 sips, gold 4, diamond 5, netherite 6.
 
+;;;;;
+
 <recipe;dehydration:iron_leather_flask>
 
 ;;;;;
@@ -36,6 +43,10 @@ Wrap a flask in metal to carry more: iron 3 sips, gold 4, diamond 5, netherite 6
 <recipe;dehydration:golden_leather_flask>
 
 <recipe;dehydration:diamond_leather_flask>
+
+;;;;;
+
+
 
 ;;;;;
 

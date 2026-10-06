@@ -14,4 +14,7 @@
 - {lapis}Spring{}: mild
 - {rubric}Summer{}: warm, crops grow quickly
 - {gilt}Autumn{}: root crops thrive
+
+;;;;;
+
 - {lapis}Winter{}: cold. Animals will not breed, and snow gathers in storms.

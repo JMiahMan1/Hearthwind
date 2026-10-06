@@ -16,11 +16,16 @@
 - Fire and lava: strongest
 - Lit campfire, furnace, smoker, blast furnace
 - Magma block
+
+;;;;;
+
 - A torch, if you stand beside it
 
 {rubric}Cooling{}
 
 - Ice, packed ice, blue ice
 - Snow
+
+;;;;;
 
 {faded}A furnace only warms you while it burns.{}

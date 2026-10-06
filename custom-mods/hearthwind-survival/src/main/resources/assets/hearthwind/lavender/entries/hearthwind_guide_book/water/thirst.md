@@ -19,4 +19,6 @@ You lose half a heart every 4 seconds until you drink.
 
 {rubric}Green droplets{}
 
+;;;;;
+
 Bad water gives you {gilt}Thirst{}: your droplets turn green and drain faster until it passes.

@@ -16,6 +16,9 @@
 - The land: deserts are hot, snowfields cold
 - Night is colder than day
 - Shade and caves are cooler
+
+;;;;;
+
 - Deep underground is warmer; high peaks are colder
 - Summer warms, winter chills
 - The Nether burns; the End is cold

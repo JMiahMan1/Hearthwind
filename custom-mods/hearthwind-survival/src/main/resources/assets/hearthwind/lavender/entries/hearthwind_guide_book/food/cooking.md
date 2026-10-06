@@ -11,4 +11,6 @@
 
 <recipe;minecraft:smoker>
 
+;;;;;
+
 {faded}The furnace is for ore and clay.{}

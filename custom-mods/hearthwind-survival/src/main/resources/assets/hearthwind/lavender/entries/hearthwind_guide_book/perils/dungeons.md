@@ -23,4 +23,6 @@ Right-click a cartography table with the compass and choose a dungeon. It costs 
 
 Right-click the portal and choose a difficulty. Each asks a price in diamonds. Up to 5 may go in together.
 
+;;;;;
+
 {faded}Inside, you cannot fly or use ender pearls, you may only place torches, and death drops your gear. Leave with /dungeon leave.{}

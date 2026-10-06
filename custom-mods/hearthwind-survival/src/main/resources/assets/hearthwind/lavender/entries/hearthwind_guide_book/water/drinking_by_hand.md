@@ -17,4 +17,6 @@ Each sip restores {gilt}half a droplet{} and uses up the water source.
 
 Wild water gives you Thirst {gilt}half the time{}. River water is cleaner: the chance is halved.
 
+;;;;;
+
 {faded}Drink by hand only when you must. Purified water carries no risk.{}

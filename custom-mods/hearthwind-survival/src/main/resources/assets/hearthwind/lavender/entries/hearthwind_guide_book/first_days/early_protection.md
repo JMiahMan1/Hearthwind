@@ -17,4 +17,6 @@
 
 Your first {gilt}3 deaths{} keep your whole inventory. You wake with everything in the same slots.
 
+;;;;;
+
 Eat any food or lie in a bed and the count starts over.

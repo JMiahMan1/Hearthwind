@@ -16,6 +16,9 @@
 - {lapis}Cold{}: slower feet
 - {lapis}Freezing{}: much slower feet and arms. At the worst, frost wounds you.
 - {rubric}Hot{}: weaker blows
+
+;;;;;
+
 - {rubric}Overheating{}: much weaker blows and slower arms. At the worst, you hunger fast.
 
 ;;;;;
@@ -27,5 +30,7 @@
 - Armour
 - Things you hold
 - Sweating in hot lands
+
+;;;;;
 
 {faded}Given time in mild lands, your body settles back towards comfort on its own.{}

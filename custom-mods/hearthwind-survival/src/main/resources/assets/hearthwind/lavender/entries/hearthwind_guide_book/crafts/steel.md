@@ -17,4 +17,6 @@ Put {gilt}2 iron ingots{} in the blast furnace and {gilt}2 coal{} in its extra s
 
 Steel tools and armour are stronger than iron.
 
+;;;;;
+
 <recipe;earlystage:steel_pickaxe>

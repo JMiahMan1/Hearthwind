@@ -17,6 +17,9 @@
 
 1. Place the crafting rock.
 2. Right-click its top to lay items on the {gilt}3x3{} grid.
+
+;;;;;
+
 3. Strike it with a {gilt}rock{} in hand. The second strike makes the item.
 
 Right-click with an empty hand to take an item back.

@@ -15,6 +15,8 @@ Break them with your bare hand. Bigger heaps give more: a large rock yields up t
 
 <block;earlystage:rock>
 
+;;;;;
+
 {faded}A shovel's right-click grows or shrinks a heap by one size, at the cost of 1 durability. Break it at its largest for the most rocks.{}
 
 ;;;;;
@@ -22,6 +24,8 @@ Break them with your bare hand. Bigger heaps give more: a large rock yields up t
 {rubric}Sticks{}
 
 Leaves drop sticks when broken. One sapling makes two sticks.
+
+;;;;;
 
 <recipe;aged:sticks_from_shapeless_sapling>
 

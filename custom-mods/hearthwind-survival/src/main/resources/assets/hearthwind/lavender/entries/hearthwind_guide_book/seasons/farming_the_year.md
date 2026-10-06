@@ -14,6 +14,9 @@
 - {gilt}Wheat, carrots, cocoa{}: best in summer, none in winter
 - {gilt}Potatoes, beetroot{}: best in autumn
 - {gilt}Pumpkins{}: best in autumn, none in spring
+
+;;;;;
+
 - {gilt}Melons{}: best in autumn, none in winter
 - {gilt}Sweet berries{}: best in winter, none in summer
 

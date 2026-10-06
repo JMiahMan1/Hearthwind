@@ -26,6 +26,9 @@ Hold {gilt}Shift{} over food to see what it gives.
 - {lapis}Carbohydrates{}: faster attacks and feet
 - {lapis}Protein{}: harder blows
 - {lapis}Fat{}: tougher hide
+
+;;;;;
+
 - {lapis}Vitamins{}: 1 extra heart, Regeneration
 - {lapis}Minerals{}: tougher armour, Haste
 
@@ -37,8 +40,13 @@ Each lack takes away what plenty gives:
 
 - {lapis}Carbohydrates{}: slower attacks and feet
 - {lapis}Protein{}: feebler blows
+
+;;;;;
+
 - {lapis}Fat{}: thinner hide
 - {lapis}Vitamins{}: 1 heart less, and Weakness
 - {lapis}Minerals{}: weaker armour, and ill luck
+
+;;;;;
 
 {faded}Bread is mostly carbohydrate, beef is protein and fat, apples are vitamins.{}

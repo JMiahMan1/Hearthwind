@@ -11,6 +11,8 @@
 
 Doing a thing trains it. Mining trains Mining, fighting trains Strength.
 
+;;;;;
+
 Click a skill's icon to read about it.
 
 ;;;;;
@@ -18,6 +20,8 @@ Click a skill's icon to read about it.
 {rubric}Raising a skill{}
 
 Click {gilt}+{} beside a skill to spend one level of experience on it. Skills rise to {gilt}30{}.
+
+;;;;;
 
 You begin with {gilt}3 hearts{}. Each level of Health adds half a heart.
 
@@ -29,6 +33,9 @@ Much is closed to the untrained. Tooltips show what you still lack.
 
 - Crafting table: {gilt}Health 3{}
 - Furnace: {gilt}Smithing 3{}
+
+;;;;;
+
 - Stone: {gilt}Mining 5{}
 - Stone tools: {gilt}Mining 7{}
 
@@ -42,5 +49,7 @@ Much is closed to the untrained. Tooltips show what you still lack.
 ;;;;;
 
 {rubric}Masteries{}
+
+;;;;;
 
 At level 30 some skills grant a rare gift: a Strength blow may strike double, Agility may dodge, Defense may turn damage back, and Luck may spare you from death.

@@ -11,6 +11,9 @@
 
 - Melon slice, sweet berries, honey: {gilt}half a droplet{}
 - Stews and soups: {gilt}1.5 droplets{}
+
+;;;;;
+
 - Apple, tea: {gilt}2 droplets{}
 - Golden apple, beer: {gilt}3 droplets{}
 - Milk: {gilt}4 droplets{}

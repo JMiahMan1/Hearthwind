@@ -17,9 +17,13 @@
 
 A campfire is always placed {gilt}unlit{}. Right-click it with bark to light it; the bark is used up.
 
+;;;;;
+
 The campfire takes bark or coal at its heart.
 
 <recipe;minecraft:campfire>
+
+;;;;;
 
 Place {gilt}water bottles{} on a lit campfire to boil them into purified water. [Making Water Pure](^hearthwind:water/purifying)
 
@@ -28,6 +32,8 @@ Place {gilt}water bottles{} on a lit campfire to boil them into purified water. 
 {rubric}Flint and steel{}
 
 The old flint and steel is gone. It is now made from flint and a {gilt}steel ingot{}.
+
+;;;;;
 
 <recipe;aged:flint_and_steel>
 

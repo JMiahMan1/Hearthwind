@@ -12,6 +12,9 @@
 - Most armour: {gilt}+1{} warmth per piece
 - Leather and wolf fur: {gilt}+3{} per piece
 - Chainmail: none
+
+;;;;;
+
 - Wanderer's garb: cools you
 
 ;;;;;
@@ -21,6 +24,10 @@
 Wolves drop pelts. Pelts make the warmest armour.
 
 <recipe;environmentz:wolf_chestplate>
+
+;;;;;
+
+
 
 ;;;;;
 
@@ -35,6 +42,9 @@ Light cloth for hot lands.
 {rubric}At the anvil{}
 
 - Lay {gilt}polar bear fur{}, mammoth fur or bear fur on armour to line it: {gilt}+3{} per piece.
+
+;;;;;
+
 - Lay {gilt}ice{} on armour to chill it for a while.
 - Shears remove the lining.
 

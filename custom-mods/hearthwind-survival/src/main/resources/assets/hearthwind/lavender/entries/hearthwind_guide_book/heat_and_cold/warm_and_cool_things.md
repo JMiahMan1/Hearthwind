@@ -19,6 +19,8 @@ The best cure for cold. They wear out with use.
 
 <recipe;environmentz:heating_stones>
 
+;;;;;
+
 <recipe;earlystage:heating_stones_from_rock>
 
 ;;;;;
@@ -28,5 +30,7 @@ The best cure for cold. They wear out with use.
 The best cure for heat.
 
 <recipe;environmentz:ice_pack>
+
+;;;;;
 
 {faded}Snowballs and ice cool you a little. Standing in water cools you too, but soaks you.{}

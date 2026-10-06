@@ -13,6 +13,8 @@
 
 Fills only from a water cauldron, and breaks when you pour it.
 
+;;;;;
+
 <recipe;earlystage:wooden_bucket>
 
 ;;;;;
@@ -20,6 +22,8 @@ Fills only from a water cauldron, and breaks when you pour it.
 {rubric}Clay and brick{}
 
 Fire a clay bucket on a campfire and it becomes a {gilt}brick bucket{}. A brick bucket holds water or lava and lasts.
+
+;;;;;
 
 <recipe;earlystage:clay_bucket>
 
