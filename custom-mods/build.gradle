@@ -222,6 +222,12 @@ subprojects {
 			accessWidenerPath = file("src/main/resources/lmft.accesswidener")
 		}
 	}
+	// connectiblechains: WIP, see settings.gradle. Port of legoatoom's Connectible
+	// Chains (LGPL-3.0) from its 1.21.11 build; sources come from
+	// tools/remap_to_mojmap.py and the flashback-compat mixins plus their bundled
+	// mixinconstraints plugin are dropped because this pack does not ship flashback.
+	// Enable together with the settings.gradle include; it needs
+	// conversion/vendored/compile-libs/cloth-config-26.2.155.jar on the classpath.
 	if (project.name == 'fishingreal') {
 		// Port of ExpensiveKoala's Fishing Real (MIT) from its 26.1.2 source.
 		// Config.java keeps upstream's NeoForge ModConfigSpec usage, which

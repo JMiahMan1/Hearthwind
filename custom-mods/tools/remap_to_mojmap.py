@@ -170,6 +170,56 @@ def build_intermediary_to_mojmap(intermediary_tiny, mojang_txt, out):
     return stats
 
 
+
+def fix_source_leftovers(src, table):
+    """Rename intermediary members the remapper left behind.
+
+    tiny-remapper is descriptor-aware and correct where it applies, but it only
+    rewrites a member when the constant-pool owner matches the class the
+    mapping row sits under. Calls through a super-interface whose row lives on
+    the implementing class are therefore missed - measured on
+    connectiblechains, where `readView.method_71441(...)` stayed intermediary
+    even though the table has `method_71441 -> getString`.
+
+    Only tokens that survive are touched, and only when the whole table agrees
+    on one target name; ambiguous names are left for a human.
+    """
+    names = {}
+    ambiguous = set()
+    for line in open(table, encoding='utf-8'):
+        p = line.rstrip('\n').split('\t')
+        if len(p) == 5 and p[0] == '' and p[1] in ('m', 'f'):
+            src_name, dst = p[3], p[4]
+            if src_name in names and names[src_name] != dst:
+                ambiguous.add(src_name)
+            else:
+                names[src_name] = dst
+    for a in ambiguous:
+        names.pop(a, None)
+
+    fixed = left = 0
+    for dirpath, _, files in os.walk(src):
+        for f in files:
+            if not f.endswith('.java'):
+                continue
+            path = os.path.join(dirpath, f)
+            text = open(path, encoding='utf-8', errors='ignore').read()
+            if 'class_' not in text and 'method_' not in text and 'field_' not in text:
+                continue
+            def sub(m):
+                return names.get(m.group(0), m.group(0))
+            pat = r'\b(?:method_\d+|field_\d+|class_\d+)\b'
+            before = len(re.findall(pat, text))
+            new_text = re.sub(pat, sub, text)
+            after = len(re.findall(pat, new_text))
+            fixed += before - after
+            left += after
+            if new_text != text:
+                open(path, 'w', encoding='utf-8').write(new_text)
+    print(f'  leftover pass: rewrote {fixed} member references, {left} unresolved')
+    return left
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('jar', help='the upstream mod jar (intermediary names)')
@@ -210,13 +260,9 @@ def main():
     print(f'  decompiling -> {os.path.relpath(src, ROOT)}')
     subprocess.run(['java', '-jar', decomp, '--silent=1', moj_jar, src], check=True)
 
-    leftovers = 0
-    for dirpath, _, files in os.walk(src):
-        for f in files:
-            if f.endswith('.java'):
-                leftovers += open(os.path.join(dirpath, f), encoding='utf-8', errors='ignore').read().count('class_')
+    unresolved = fix_source_leftovers(src, table)
     java = sum(1 for dp, _, fs in os.walk(src) for f in fs if f.endswith('.java'))
-    print(f'  {java} java files, {leftovers} leftover intermediary references')
+    print(f'  {java} java files, {unresolved} unresolved intermediary references')
     if not args.keep:
         os.remove(moj_jar)
     print(f'  sources: {os.path.relpath(src, ROOT)}')
