@@ -64,4 +64,13 @@ if [ "$STOP_VM" = 1 ] && command -v colima >/dev/null 2>&1; then
   fi
 fi
 
+# The staged tree (repo copy + gradle cache + provisioned jars) is ~1.6 GB and is
+# rebuilt from scratch by stage_container_tests.sh on every run, so it is pure
+# scratch. CGT_KEEP=1 keeps it for a debugging session - that is also how you
+# keep a failed run's game dir and screenshots.
+STAGE="${CGT_STAGE_DIR:-$REPO/.tmp/cgthearthwind-stage}"
+if [ "${CGT_KEEP:-0}" != 1 ] && [ -d "$STAGE" ]; then
+  rm -rf "$STAGE" && say "removed the staged tree ($(basename "$STAGE"))"
+fi
+
 say "container test cleanup done"
