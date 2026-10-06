@@ -96,7 +96,8 @@ for d in "$REPO"/custom-mods/hearthwind-*/build/libs \
           "$REPO"/custom-mods/fleshz/build/libs \
           "$REPO"/custom-mods/exposure/build/libs \
           "$REPO"/custom-mods/lavender/build/libs \
-          "$REPO"/custom-mods/inmis/build/libs \
+          "$REPO"/custom-mods/lmft/build/libs \
+         "$REPO"/custom-mods/inmis/build/libs \
           "$REPO"/custom-mods/lootbeams/build/libs \
           "$REPO"/custom-mods/backslot/build/libs \
           "$REPO"/custom-mods/passable-foliage/build/libs \

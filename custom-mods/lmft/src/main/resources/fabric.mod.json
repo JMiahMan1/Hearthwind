@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "id": "lmft",
+  "version": "${version}",
+  "name": "Load My F***ing Tags",
+  "description": "Prevents one bad tag entry from failing an entire tag. Hearthwind 26.2 FORK of Blodhgarm's Load My Fucking Tags (CC0-1.0), ported 1.21.11 -> 26.2, upstream naming kept.",
+  "authors": [
+    "Blodhgarm"
+  ],
+  "contact": {
+    "sources": "https://github.com/Dragon-Seeker/LoadMyFuckingTags"
+  },
+  "license": "CC0-1.0",
+  "icon": "assets/lmft/icon.png",
+  "environment": "*",
+  "entrypoints": {},
+  "mixins": [
+    "lmft-common.mixins.json"
+  ],
+  "accessWidener": "lmft.accesswidener",
+  "depends": {
+    "fabricloader": ">=0.19.5",
+    "minecraft": "~26.2",
+    "java": ">=25"
+  }
+}

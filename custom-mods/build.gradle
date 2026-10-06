@@ -215,6 +215,13 @@ subprojects {
 			modCompileClasspath "net.fabricmc.fabric.api:fabric-gametest-api-v1:4.0.21+4a7fa0819e"
 		}
 	}
+	if (project.name == 'lmft') {
+		// Port of Blodhgarm's Load My F***ing Tags (CC0-1.0) from its 1.21.11
+		// source. The accesswidener exposes TagLoader$SortingEntry.
+		loom {
+			accessWidenerPath = file("src/main/resources/lmft.accesswidener")
+		}
+	}
 	if (project.name == 'fishingreal') {
 		// Port of ExpensiveKoala's Fishing Real (MIT) from its 26.1.2 source.
 		// Config.java keeps upstream's NeoForge ModConfigSpec usage, which

@@ -1161,6 +1161,30 @@ Per-entry findings so far, all measured:
 | `lmft` | CC0-1.0 (cleanest license in the queue), 5 files, and 26.2 still has `TagLoader.tryBuildTag`, `SortingEntry` and `PlayerList.placeNewPlayer`. Needs two retargets: its mixin names `lambda$build$6`, which does not exist (26.2 has `$0..$3`), and `Permissions.COMMANDS_MODERATOR` is gone (26.2 has `Permission`/`PermissionSet`). |
 | `shut-up-gl-error` | 4 files and MIT, but its current upstream added a **JamLib** config dependency that Aged never shipped, so a straight port would pull in a mod Aged does not have. |
 | `dripsounds`, `borderless-mining`, `modelfix`, `seamless-loading-screen`, `tooltipfix`, `translucencyfix` | All source-available, but their newest builds are 1.17.1-1.21.11, so every one is a multi-version port despite being tiny in code. |
+
+**The structural blocker for the rest of the queue is the mapping mismatch, not
+the code size.** 26.x uses Mojang's own names (`net.minecraft.resources.Identifier`,
+`ClientTooltipComponent`, `Mob.finalizeSpawn(..., EntitySpawnReason, ...)`), and
+every mod built for 26.x inherits them - which is why `fishing-real` and `lmft`
+ported in two or three edits each. Almost everything else in the queue is a
+1.20.1-1.21.11 Fabric mod compiled against **Yarn**
+(`net.minecraft.util.Identifier`, `DrawContext`, `MobSpawnType`), so porting one
+means a mechanical rename of every MC class, field and method in the tree *plus*
+the version delta. Measured: `connectiblechains` is 36 files of which 8 touch
+Yarn `Identifier`; `surveyor` is 86 files with 28; `tooltipfix` is 4 files and
+still needs the whole conversion.
+
+There is no shortcut in the toolchain: loom 1.17 has no `migrateMappings` task
+(verified by listing `:hearthwind-survival:tasks --all`), and the conversion has
+to be yarn(1.21.x) -> mojmap(1.21.x) before the 26.2 delta can even be seen.
+
+So the efficient path is to build that remapper once - parse loom's cached Yarn
+and Mojmap mapping files for the same MC version into a rename table and apply
+it to a source tree - and then every remaining port starts from Mojmap sources
+with only the 26.2 API delta left. Doing 50 ports by hand without it is the slow
+way. Recorded here because it is the single biggest determinant of how fast the
+rest of W4 can move.
+
  And `surveyor` stays in despite
 `custom-mods/surveyor` existing with sources: it is **not built** and **not in
 `dist/`**, which is exactly the plan/shipment distinction the allowlist now
