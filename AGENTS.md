@@ -407,6 +407,14 @@ python3 ../custom-mods/tools/rcon.py 127.0.0.1 25575 agedtest "summon item ~ ~ ~
   our namespaces and `dehydrationRecipesLoad` asserts every
   dehydration recipe still resolves; model `block/chain` is likewise
   `block/iron_chain` now.
+- **Memory pressure makes this flake fire almost every time.** Measured
+  0.1.57: with the host at 20 MB free and swap 17 GB/18.4 GB used (opencode
+  ~10 GB plus a Colima VM that had come back up at 5 GB), the suite failed
+  7 and then 9 tests across two runs; stopping the VM (free RAM 0.02 -> 4.38
+  GB) and rerunning the SAME tree gave 413/413. So before believing a
+  gametest failure - or blaming the change you just made - check
+  `vm_stat`/`sysctl vm.swapusage` and `pgrep -fl qemu-system`. This is the
+  same starvation that produced the client SIGSEGVs above.
 - Headless gametests occasionally fail with `Cannot invoke
   "it.unimi.dsi.fastutil.ints.IntArrayList.getInt(int)" because
   "this.wrapped" is null` inside
