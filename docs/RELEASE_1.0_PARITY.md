@@ -1185,6 +1185,26 @@ with only the 26.2 API delta left. Doing 50 ports by hand without it is the slow
 way. Recorded here because it is the single biggest determinant of how fast the
 rest of W4 can move.
 
+What the remapper needs, verified rather than assumed:
+
+- `mera` (Fabric's source remapper) is **not** published on
+  `maven.fabricmc.net/net/fabricmc/mera/` - the directory listing is empty -
+  so it has to be built from github.com/FabricMC/mera, or reimplemented.
+- The input mappings **are** obtainable: Yarn publishes
+  `1.21.11+build.6` on the Fabric maven, and Mojang's own mappings for
+  1.21.11 come from the version manifest. Yarn's tiny v2 carries
+  `official -> intermediary + named`; Mojang's carries `official -> mojmap`,
+  so joining on `official` yields the yarn -> mojmap table.
+- Do NOT try to remap sources by plain string substitution. Overloads and
+  name collisions make it wrong in ways that compile but change behaviour.
+  Remap the upstream **jar** with tiny-remapper (well-defined, descriptor
+  aware) and decompile for reference, or build mera and remap the source
+  tree through loom's AST-aware path.
+- Loom's `.gradle/loom-cache/projects/*/source_mappings/*.tiny` are NOT a
+  yarn->mojmap table; they are the access-widener overlay (namespace
+  `official`, no target column), so they cannot be reused for this.
+
+
  And `surveyor` stays in despite
 `custom-mods/surveyor` existing with sources: it is **not built** and **not in
 `dist/`**, which is exactly the plan/shipment distinction the allowlist now
