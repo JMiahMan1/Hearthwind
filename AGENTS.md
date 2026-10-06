@@ -154,6 +154,29 @@ host. Also remember `opencode` itself can hold 8-10 GB. The Colima VM's disk
 (`~/.colima`, ~21 GB after cleanup) also holds other projects' images - never
 `colima delete` without checking `docker images` first.
 
+**DistantHorizons is the one mod in this pack that crashes a real client, and
+it is excluded from every client test.** Four `hs_err` reports agree on the
+shape: pid35899 died *inside* DH's own bundled native
+(`Java_dh_1sqlite_core_NativeDB_deserialize` in `libsqlitejdbc.dylib`);
+pid22780 and pid58980 died in `Chunk::next_chop` while compiling entirely
+different methods (`SingleVariant::emitQuads`, then `OreFeature::doPlace`)
+and pid66728 in `Arena::destruct_contents` with an empty compile task. Arena
+ALLOC and arena FREE integrity failures in different places, plus a direct
+native crash, is the signature of native memory corruption - and DH is the
+only mod here that ships native libraries (39 of them: sqlite, zstd).
+Measured: with DH removed the same client runs indefinitely; with it loaded
+it has died from ~2 to ~5 minutes in, every time. **Do not burn a session
+assuming it is the graphics stack or the JVM version** - and do not "fix" it
+by editing `conversion/overrides/config/DistantHorizons.toml`:
+that file is byte-identical to Aged's by design, and `chunkGeneratorMode`
+(which DH 3.x defaults to `FEATURES` and its own log calls unsafe with our
+dungeonz chunk generator) does not exist in Aged's 2.2.1 schema, so setting
+it breaks the parity we already have. One 13-minute survival on
+`PRE_EXISTING_ONLY` was followed by a 2-minute crash on a default config, so
+that hypothesis is NOT confirmed. Until this is understood, run the suite
+with `CGT_EXCLUDE_MODS=DistantHorizons` and treat the mod as a known crash
+source for AMD/macOS OpenGL 4.1 hosts.
+
 **The stage script must carry `conversion/overrides/config`.** Config the pack
 ships only reaches a container test if `stage_container_tests.sh` rsyncs it;
 otherwise `run_client_gametests.sh`'s `cp -R` silently copies nothing and the
