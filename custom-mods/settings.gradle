@@ -39,7 +39,7 @@ include 'couplings'
 include 'memoryleakfix'
 include 'async-locator'
 include 'lavender'
-// include 'connectiblechains' // WIP 0.1.57: remapped to Mojmap, port not finished
+// include 'connectiblechains' // WIP 0.1.57: remapped + all artifacts fixed; ~10 26.2 API breaks left
 include 'fishingreal'
 include 'lmft'
 include 'inmis'

@@ -92,19 +92,37 @@ def desc_of(t, class_rev):
 
 
 def parse_mojang(path):
-    classes, classes_rev, members = {}, {}, {}
-    owner = None
+    """obf -> mojmap classes, and (obf owner, obf name, obf desc) -> mojmap member.
+
+    TWO passes on purpose. Member descriptors name their parameter and return
+    types, and those have to be converted from mojmap back to obf to match
+    Fabric's rows - which needs the class table complete. Parsing in one pass
+    meant any member whose type is declared LATER in Mojang's file fell back to
+    the unconverted mojmap path and silently failed to join: measured on
+    connectiblechains that lost ~26% of members (66,494 of 94,916 mapped).
+    """
+    classes, classes_rev = {}, {}
     for line in open(path, encoding='utf-8'):
         if line.startswith('#'):
             continue
         raw = line.rstrip('\n')
-        # Mojang indents members with SPACES. Keying on '\t' here silently
-        # matches every class and no members at all - measured, not assumed.
         if not raw[:1].isspace():
             m = re.match(r'^(\S+) -> (\S+):$', raw)
             if m:
                 classes[m.group(2)] = m.group(1)
                 classes_rev[m.group(1)] = m.group(2)
+
+    members = {}
+    owner = None
+    for line in open(path, encoding='utf-8'):
+        if line.startswith('#'):
+            continue
+        raw = line.rstrip('\n')
+        # Mojang indents members with SPACES, not tabs - keying on '\t' here
+        # silently matched every class and no members at all.
+        if not raw[:1].isspace():
+            m = re.match(r'^(\S+) -> (\S+):$', raw)
+            if m:
                 owner = m.group(2)
             continue
         if owner is None:
@@ -217,6 +235,22 @@ def fix_source_leftovers(src, table):
             if new_text != text:
                 open(path, 'w', encoding='utf-8').write(new_text)
     print(f'  leftover pass: rewrote {fixed} member references, {left} unresolved')
+
+    # Vineflower sometimes emits a package separator as '$' in a type name
+    # (`net.net$minecraft.core.BlockPos`), which is not a package at all.
+    # Mechanical and safe to collapse.
+    mangled = 0
+    for dirpath, _, files in os.walk(src):
+        for f in files:
+            if not f.endswith('.java'):
+                continue
+            path = os.path.join(dirpath, f)
+            text = open(path, encoding='utf-8', errors='ignore').read()
+            new_text, n = re.subn(r'net\.net\$minecraft', 'net.minecraft', text)
+            if n:
+                mangled += n
+                open(path, 'w', encoding='utf-8').write(new_text)
+    print(f'  mangled package names repaired: {mangled}')
     return left
 
 
