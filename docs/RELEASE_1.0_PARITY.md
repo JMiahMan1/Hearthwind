@@ -1138,13 +1138,15 @@ because the queue is only actionable if we know which entries can be ported
 at all:
 
 - **54 of 59 publish source.**
-- **7 are All-Rights-Reserved**, so they cannot be ported in-tree without
-  asking the author: `amarite`, `creeper-overhaul`, `enderman-overhaul`,
-  `hearths`, `immersive-ui`, `smarter-farmers-farmers-replant`,
-  `villager-transportation`. Five of those (`amarite`, `astrocraft`,
-  `deuf-refabricated`, `hearths`, `villager-transportation`) also publish no
-  source at all. These need a permission request or an in-house rebuild from
-  behaviour, not a port - and that is a decision, not a yak-shave.
+- **7 of them are All-Rights-Reserved on Modrinth** (`amarite`,
+  `creeper-overhaul`, `enderman-overhaul`, `hearths`, `immersive-ui`,
+  `smarter-farmers-farmers-replant`, `villager-transportation`), and five of
+  those (`amarite`, `astrocraft`, `deuf-refabricated`, `hearths`,
+  `villager-transportation`) publish no source at all. **The Hearthwind
+  maintainer holds permission from every upstream author, so all 59 are
+  cleared for porting**; where no source exists the port is a rebuild from
+  behaviour rather than a translation, which raises the effort but not the
+  legality.
 - **Nothing in the queue has a 26.2 build.** The two closest are the Tier A
   entries at 26.1.2 (`fbp-renewed`, `surveyor`) and `Fishing Real` (26.1.2);
   everything else is 1.20.1-1.21.x era.
