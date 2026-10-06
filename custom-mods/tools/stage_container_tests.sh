@@ -68,7 +68,12 @@ rsync -a --delete "$REPO/custom-mods/.gradle/loom-cache/" "$R/custom-mods/.gradl
 # exactly the "edited but not rebuilt" case and has no false positives.
 # NB: git's plain pathspec '*' does NOT cross '/', so custom-mods/*/src matches
 # nothing. :(glob) with ** is what actually works here.
-dirty="$(git -C "$REPO" status --porcelain -- ':(glob)custom-mods/*/src/**' ':(glob)custom-mods/*/build.gradle' 2>/dev/null)"
+# Only TRACKED modifications count. An untracked path is a brand-new module,
+# which cannot be "stale" - it would not stage at all if it had never built.
+# '|| true' matters: the script runs under `set -e -o pipefail`, and grep -v
+# exits 1 when it filters everything out (i.e. when the tree is CLEAN), which
+# would kill staging on exactly the good path.
+dirty="$(git -C "$REPO" status --porcelain -- ':(glob)custom-mods/*/src/**' ':(glob)custom-mods/*/build.gradle' 2>/dev/null | grep -vE '^\?\?' || true)"
 if [ -n "$dirty" ]; then
   echo "UNBUILT SOURCE CHANGES - refusing to stage."
   echo "These files changed but the module has not been rebuilt, so the"
