@@ -119,11 +119,6 @@
       "reason": "W4 port queue (plan 5.2): fbp-renewed - not yet ported"
     },
     {
-      "project_id": "MIdaKqt7",
-      "filename": "Fishingreal-1.20.1-1.7.2.jar",
-      "reason": "PORTED IN-TREE but NOT SHIPPABLE: blocked on Boids. custom-mods/fishingreal compiles on 26.2 (upstream master is 26.1.2, MIT, 5 java files; the 26.2 delta was CriteriaTriggers moved to advancements.triggers, and EntityType.loadPassengersRecursive now taking an EntitySpawnRequest record - both fixed, plus the matching accesswidener descriptor). It builds, but the moment it is present in the server boids-2.0.0+26.2.jar's dormant compat hook activates and dies fatally: @Mixin(koala.fishingreal.FishingReal), @Inject(method=\"convertItemStack\", at=@At(INVOKE, target=\"Lnet/minecraft/world/entity/Mob;finalizeSpawn(...,MobSpawnType,...)\")) with injectors.defaultRequire=1 and required=true. MobSpawnType has ZERO occurrences in 26.2 - it was renamed EntitySpawnReason - so the injection target cannot exist. Mine x, no refMap). boids-2.0.0+26.3 fixes that mixin (uses EntitySpawnReason) but adds BoidsMixinPlugin, and staging +26.3 instead also failed the boot. So this is an upstream boids defect, not a fishing-real one. To ship: rename our holder class so boids' target class does not exist (boids physics then never gets disabled on caught fish), or wait for upstream boids. Not shipped pending a decision."
-    },
-    {
       "project_id": "TbriQCWD",
       "filename": "GeckoLibIrisCompat-Fabric-1.0.0.jar",
       "reason": "W4 port queue (plan 5.2): geckoanimfix - not yet ported"

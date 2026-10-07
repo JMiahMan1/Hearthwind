@@ -36,6 +36,7 @@ PORTED_MODULES = (
     "chipped", "dungeonz", "athena", "exposure",
     "passable-foliage", "profundis", "adventurez", "fleshz",
     "smallships", "inmis", "lootbeams", "backslot", "tlc",
+    "fishingreal", "connectiblechains", "lmft",
 )
 
 

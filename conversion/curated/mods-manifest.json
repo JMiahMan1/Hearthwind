@@ -1507,6 +1507,14 @@
       "group": "aged-client",
       "realized_by": "hearthwind-client",
       "reason": "Aged's first-join welcome screen (hearthwind-client WelcomeScreen) plus its five hotbar /item replace commands (hearthwind-survival StarterKit), rebuilt in-tree 0.1.30"
+    },
+    {
+      "file": "fishing-real",
+      "slug": "fishing-real",
+      "project_id": "MIdaKqt7",
+      "action": "rebuild",
+      "realized_by": "fishingreal",
+      "reason": "Rebuilt in-tree from upstream 26.1.2 source. 26.2 delta: CriteriaTriggers moved to advancements.triggers, EntityType.loadPassengersRecursive now takes an EntitySpawnRequest record, and the accesswidener descriptor updated to match. Ships together with boids 2.0.0+26.3: boids +26.2 carried a dormant compat hook (RealFishingMixin) that targets Mob.finalizeSpawn with the removed MobSpawnType and sets injectors.defaultRequire=1, so the moment FishingReal exists the boot dies; +26.3 fixes that mixin to EntitySpawnReason and works on 26.2 (verified)."
     }
   ],
   "client_optional_extra_note": "All 28 client-only visual/perf mods from 3.1.2 (sodium, iris, indium, DistantHorizons, EMF/ETF, firstperson, skinlayers, presence-footsteps, sound-physics, fancymenu stack, etc.) ship as an OPTIONAL companion download, not in the server index.",
