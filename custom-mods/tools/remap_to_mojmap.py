@@ -251,6 +251,24 @@ def fix_source_leftovers(src, table):
                 mangled += n
                 open(path, 'w', encoding='utf-8').write(new_text)
     print(f'  mangled package names repaired: {mangled}')
+
+    # Vineflower also emits '$' for a NESTED class in a qualified name
+    # (`net.minecraft...ValueInput$ValueInputList`), which is not valid Java -
+    # it wants Outer.Inner. Only touches full net.minecraft.* references, so a
+    # '$' anywhere else is left alone.
+    nested = 0
+    for dirpath, _, files in os.walk(src):
+        for f in files:
+            if not f.endswith('.java'):
+                continue
+            path = os.path.join(dirpath, f)
+            text = open(path, encoding='utf-8', errors='ignore').read()
+            new_text, n = re.subn(r'(net\.minecraft(?:\.[A-Za-z0-9_]+)+)\$', r'\1.', text)
+            new_text, n2 = re.subn(r'(net\.minecraft(?:\.[A-Za-z0-9_]+)+)\$', r'\1.', new_text)
+            if n or n2:
+                nested += n + n2
+                open(path, 'w', encoding='utf-8').write(new_text)
+    print(f'  nested-class \$ separators repaired: {nested}')
     return left
 
 
