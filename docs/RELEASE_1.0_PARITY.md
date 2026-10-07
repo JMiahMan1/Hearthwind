@@ -723,7 +723,7 @@ confirm. When we keep Aged's behaviour instead, list that too.
 
 ### 5.11 Approved deviations from Aged
 
-**There are exactly two**, both added in 0.1.57 at the user's explicit request:
+**There are exactly three**, all added in 0.1.57 at the user's explicit request:
 
 - **Pale oak bark.** 26.2 added the pale oak tree; Aged's `earlystage` is a
   1.20.1 mod that predates it, so the reference has no pale oak bark and there
@@ -747,6 +747,24 @@ confirm. When we keep Aged's behaviour instead, list that too.
   the campfire first..."). Nothing else about the boil changes: 1000 ticks while
   lit (the reference's hard-coded value, not a config one), frozen rather than
   decayed while the fire is out, and relighting resumes the same counter.
+
+- **Distant Horizons is not shipped (dropped from the client).** Five `hs_err`
+  reports, five different native/JVM-internal frames, all 2-5 minutes in and
+  all with it loaded: `Java_dh_1sqlite_core_NativeDB_deserialize` inside its
+  bundled `libsqlitejdbc`; `Chunk::next_chop` while compiling
+  `SingleVariant::emitQuads`; `Chunk::next_chop` while compiling
+  `OreFeature::doPlace`; `Arena::destruct_contents` with an empty compile
+  task; and `objc_release+0x22` in `libobjc.A.dylib`. Unrelated frames at
+  unrelated sites is the signature of native memory corruption, and DH is the
+  only mod here shipping native libraries (39: sqlite, zstd). Measured A/B:
+  without DH the same client runs indefinitely, with it, it dies every time.
+  Config cannot fix it - `chunkGeneratorMode = "SURFACE"` (Aged's own intent,
+  renamed from the dead `distantGeneratorMode` and silently defaulting to the
+  FEATURES mode DH's own comment calls unsafe with custom generator mods) was
+  set, DH rewrote the file back to FEATURES and crashed anyway. The maintainer
+  also reports a **strange black mesh in the distance** - LOD geometry
+  rendering unlit, the same pipeline failing rather than crashing. Revisit
+  upstream, then restore `action: client-optional` in the manifest.
 
 The section exists so the count is stated rather than implied, and so adding
 one is a deliberate act.

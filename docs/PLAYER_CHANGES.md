@@ -279,6 +279,12 @@ Eight optional professions (Miner, Farmer, Fisher, Warrior, Smither, Brewer, Bui
   packs are marked incompatible with each other, as in Aged. The four `aged_*`
   packs (dirt replacement, guide book, welcome screen, fixes) are Aged's own
   art and are not shipped; Hearthwind has its own equivalents.
+- **Distant Horizons is not included (0.1.57)**: it crashes this project's
+  development client on AMD/macOS (five separate native JVM crashes, all a few
+  minutes in) and renders an unlit **black mesh** in the distance rather than
+  proper LOD terrain, so it is left out rather than shipped broken. Everything
+  else in the pack is unaffected; this is a deviation from Aged, which does
+  ship it, and it will be revisited when Distant Horizons itself is fixed.
 - **Menus (0.1.40)**: the main menu is drawn by Hearthwind itself, from art
   inside the client jar: a full-screen cottage scene, left-aligned typography
   buttons with per-button hover tints, and GitHub / Language / Accessibility

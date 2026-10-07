@@ -563,6 +563,12 @@ def main():
     for f in unaccounted:
         print(f"  FAIL {f['project_id']} {f['filename']}")
     for f, entry in dropped:
+        if entry.get("approved_deviation"):
+            print(
+                f"  note {f['project_id']} {f['filename']} -> intentionally "
+                f"dropped ({entry.get('file')}), an approved deviation"
+            )
+            continue
         print(
             f"  FAIL {f['project_id']} {f['filename']} -> manifest drop "
             f"({entry.get('file')})"
@@ -598,8 +604,11 @@ def main():
         print("WARN: none")
     print()
 
+    # An entry explicitly marked approved_deviation is a recorded exception
+    # (see docs/RELEASE_1.0_PARITY.md 5.11), not a failure.
+    unapproved_drops = [e for _, e in dropped if not e.get("approved_deviation")]
     failed = bool(
-        unaccounted or dropped or rule_failures or pack_failures
+        unaccounted or unapproved_drops or rule_failures or pack_failures
     )
     if rule_failures:
         print("Manifest rule violations:")

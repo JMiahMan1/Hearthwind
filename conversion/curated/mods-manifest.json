@@ -1468,8 +1468,11 @@
       "file": "distanthorizons",
       "slug": "distanthorizons",
       "project_id": "uCdwusMi",
-      "action": "client-optional",
-      "note": "Adopted upstream 26.2 (W2)"
+      "action": "drop",
+      "note": "Adopted upstream 26.2 (W2)",
+      "reason": "DEVIATION 3 (user-approved 0.1.57, to revisit): crashes AMD/macOS OpenGL 4.1 clients. Five hs_err reports, five different native/JVM-internal frames, all 2-5 minutes in and all with DH loaded: Java_dh_1sqlite_core_NativeDB_deserialize in its bundled libsqlitejdbc; Chunk::next_chop while compiling SingleVariant::emitQuads; Chunk::next_chop while compiling OreFeature::doPlace; Arena::destruct_contents with an empty compile task; and objc_release+0x22 in libobjc.A.dylib. Different frames at unrelated sites is the signature of native memory corruption, and DH is the only mod in the pack shipping native libraries (39 of them: sqlite, zstd). Measured A/B: with DH removed the same client runs indefinitely; with it loaded it dies every time. NOT fixable by config - chunkGeneratorMode=SURFACE (Aged's own intent, renamed from distantGeneratorMode and silently defaulting to the unsafe FEATURES) was tested and DH rewrote the file and crashed anyway. Separately, the maintainer reports a strange BLACK MESH in the distance that looks terrible - LOD geometry rendering unlit/untextured, i.e. the same LOD pipeline failing rather than crashing. Revisit upstream or re-enable by restoring action=client-optional once DH renders and runs correctly on this stack (AMD Radeon Pro 5500M, macOS OpenGL 4.1).",
+      "approved_deviation": true,
+      "deviation_id": "5.11#3"
     },
     {
       "file": "smooth_swapping",
@@ -1515,6 +1518,14 @@
       "action": "rebuild",
       "realized_by": "fishingreal",
       "reason": "Rebuilt in-tree from upstream 26.1.2 source. 26.2 delta: CriteriaTriggers moved to advancements.triggers, EntityType.loadPassengersRecursive now takes an EntitySpawnRequest record, and the accesswidener descriptor updated to match. Ships together with boids 2.0.0+26.3: boids +26.2 carried a dormant compat hook (RealFishingMixin) that targets Mob.finalizeSpawn with the removed MobSpawnType and sets injectors.defaultRequire=1, so the moment FishingReal exists the boot dies; +26.3 fixes that mixin to EntitySpawnReason and works on 26.2 (verified)."
+    },
+    {
+      "file": "lmft",
+      "slug": "lmft",
+      "project_id": "67kVxsaO",
+      "action": "rebuild",
+      "realized_by": "lmft",
+      "reason": "Rebuilt in-tree from upstream 1.21.11 source (CC0-1.0). 26.2 delta: its mixin names lambda$build$6, which does not exist (26.2 has lambda$build$0..3) - the per-tag build body is lambda$build^1 - and displayClientMessage(component, false) became sendSystemMessage. Upstream naming kept at the author's request."
     }
   ],
   "client_optional_extra_note": "All 28 client-only visual/perf mods from 3.1.2 (sodium, iris, indium, DistantHorizons, EMF/ETF, firstperson, skinlayers, presence-footsteps, sound-physics, fancymenu stack, etc.) ship as an OPTIONAL companion download, not in the server index.",
