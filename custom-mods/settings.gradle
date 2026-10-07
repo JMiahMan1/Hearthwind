@@ -39,7 +39,7 @@ include 'couplings'
 include 'memoryleakfix'
 include 'async-locator'
 include 'lavender'
-// include 'connectiblechains' // WIP 0.1.57: remapped, all decompiler artifacts fixed, 9 API breaks left
+// include 'connectiblechains' // WIP 0.1.57: remapped cleanly; needs a careful pass over 9 API breaks
 include 'fishingreal'
 include 'lmft'
 include 'inmis'
