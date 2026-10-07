@@ -44,6 +44,8 @@ for d in "$REPO"/custom-mods/hearthwind-* \
          "$REPO"/custom-mods/profundis \
          "$REPO"/custom-mods/smallships \
          "$REPO"/custom-mods/villagesandpillages \
+         "$REPO"/custom-mods/connectiblechains \
+         "$REPO"/custom-mods/fishingreal \
          "$REPO"/custom-mods/letsdo-*; do
   [ -d "$d/src" ] || continue
   mod="$(basename "$d")"
@@ -97,6 +99,7 @@ for d in "$REPO"/custom-mods/hearthwind-*/build/libs \
           "$REPO"/custom-mods/exposure/build/libs \
           "$REPO"/custom-mods/lavender/build/libs \
           "$REPO"/custom-mods/lmft/build/libs \
+         "$REPO"/custom-mods/connectiblechains/build/libs \
          "$REPO"/custom-mods/inmis/build/libs \
           "$REPO"/custom-mods/lootbeams/build/libs \
           "$REPO"/custom-mods/backslot/build/libs \

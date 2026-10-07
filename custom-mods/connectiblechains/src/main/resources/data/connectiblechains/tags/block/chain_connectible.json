@@ -1,0 +1,16 @@
+{
+  "replace": false,
+  "values": [
+    "#minecraft:bars",
+    "#minecraft:walls",
+    "#minecraft:fences",
+    {
+      "id": "supplementaries:rope_knot",
+      "required": false
+    },
+    {
+      "id": "supplementaries:sign_post",
+      "required": false
+    }
+  ]
+}

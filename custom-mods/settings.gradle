@@ -39,9 +39,9 @@ include 'couplings'
 include 'memoryleakfix'
 include 'async-locator'
 include 'lavender'
-// include 'connectiblechains' // WIP 0.1.57: all API renames done; Tuple removal + decompiler generics left
+include 'connectiblechains'
 include 'fishingreal'
-include 'lmft'
+// include 'lmft' // LOCAL ONLY: pending the upstream author's agreement on naming
 include 'inmis'
 include 'lootbeams'
 include 'backslot'

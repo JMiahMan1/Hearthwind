@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1, "id": "connectiblechains", "version": "${version}",
+  "name": "Connectible Chains",
+  "description": "Hearthwind 26.2 port of legoatoom's Connectible Chains (LGPL-3.0).",
+  "authors": ["legoatoom"],
+  "contact": {"sources": "https://github.com/legoatoom/ConnectibleChains"},
+  "license": "LGPL-3.0", "environment": "*",
+  "entrypoints": {
+    "main": ["com.github.legoatoom.connectiblechains.ConnectibleChains"],
+    "client": ["com.github.legoatoom.connectiblechains.client.ClientInitializer"],
+    "modmenu": ["com.github.legoatoom.connectiblechains.config.ModMenuIntegration"]
+  },
+  "depends": {"fabricloader": ">=0.19.5", "fabric-api": "*", "minecraft": "~26.2", "java": ">=25", "cloth-config": ">=26.2"}
+}
