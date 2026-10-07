@@ -100,6 +100,7 @@ for d in "$REPO"/custom-mods/hearthwind-*/build/libs \
           "$REPO"/custom-mods/lavender/build/libs \
           "$REPO"/custom-mods/lmft/build/libs \
          "$REPO"/custom-mods/connectiblechains/build/libs \
+         "$REPO"/custom-mods/fishingreal/build/libs \
          "$REPO"/custom-mods/inmis/build/libs \
           "$REPO"/custom-mods/lootbeams/build/libs \
           "$REPO"/custom-mods/backslot/build/libs \

@@ -41,7 +41,7 @@ include 'async-locator'
 include 'lavender'
 include 'connectiblechains'
 include 'fishingreal'
-// include 'lmft' // LOCAL ONLY: pending the upstream author's agreement on naming
+include 'lmft'
 include 'inmis'
 include 'lootbeams'
 include 'backslot'

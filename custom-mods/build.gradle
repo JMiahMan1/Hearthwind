@@ -215,7 +215,6 @@ subprojects {
 			modCompileClasspath "net.fabricmc.fabric.api:fabric-gametest-api-v1:4.0.21+4a7fa0819e"
 		}
 	}
-/* LOCAL ONLY (lmft) - re-enable with the settings.gradle include
 	if (project.name == 'lmft') {
 		// Port of Blodhgarm's Load My F***ing Tags (CC0-1.0) from its 1.21.11
 		// source. The accesswidener exposes TagLoader$SortingEntry.
@@ -223,7 +222,6 @@ subprojects {
 			accessWidenerPath = file("src/main/resources/lmft.accesswidener")
 		}
 	}
-*/
 	if (project.name == 'connectiblechains') {
 		// Port of legoatoom's Connectible Chains (LGPL-3.0) from its 1.21.11 build.
 		// Sources came from tools/remap_to_mojmap.py; the flashback-compat mixins
