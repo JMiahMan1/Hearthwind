@@ -1180,6 +1180,37 @@ Per-entry findings so far, all measured:
 | `shut-up-gl-error` | 4 files and MIT, but its current upstream added a **JamLib** config dependency that Aged never shipped, so a straight port would pull in a mod Aged does not have. |
 | `dripsounds`, `borderless-mining`, `modelfix`, `seamless-loading-screen`, `tooltipfix`, `translucencyfix` | All source-available, but their newest builds are 1.17.1-1.21.11, so every one is a multi-version port despite being tiny in code. |
 
+**Measured 0.1.57: the queue's remaining cost is 26.2's REWORKS, not the
+mapping conversion.** Five ports were driven to the point where the only work
+left was redesign rather than rename, and they converged on the same three
+surfaces:
+
+- **Rendering.** `GuiGraphics` has no `blit`; `MultiBufferSource` is gone;
+  `LevelRenderer`'s section bookkeeping moved; tooltips were rebuilt around
+  `Tooltip`/`TooltipRenderUtil`. Anything that draws needs a new approach, and
+  nameplate's `DrawContextAccessor` mixin has no fields left to reach.
+- **Items and tools.** `SwordItem`/`PickaxeItem` are gone (482 sites in
+  medievalweapons alone), `Tier`/`Tiers` became the `ToolMaterial` record,
+  `InteractionResultHolder` became `InteractionResult`.
+- **Generic chains.** Decompiled code loses type witnesses and
+  method-reference targets: surveyor's remaining 40 are all in
+  `ByteBufCodecs` chains and need each inner codec extracted to a typed local.
+
+The remapper is now reliable (class + member + mixin-string coverage, any MC
+version, yarn builds resolved from metadata), and the migration sheet in
+AGENTS.md covers every one of these - so the mechanical half of each port is
+solved. What is left per mod is the redesign, which is why these four are
+parked rather than half-portd: niftycarts, medievalweapons, nameplate and
+surveyor all have their remapped sources preserved under `.tmp/mapwork/`, each
+with a written diagnosis of its last mile, and none of them is in the tree or
+the pack.
+
+Also worth stating plainly: several queue mods carry compat code for mods this
+pack does not ship (Jade, WTHIT, GeckoLib, Traveler's Titles, RPGDifficulty).
+Removing that is correct - it is dead integration - and it is a deviation from
+upstream only in the sense that upstream ships those mods' classes; the
+behaviour for our pack is identical.
+
 **The structural blocker for the rest of the queue is the mapping mismatch, not
 the code size.** 26.x uses Mojang's own names (`net.minecraft.resources.Identifier`,
 `ClientTooltipComponent`, `Mob.finalizeSpawn(..., EntitySpawnReason, ...)`), and
