@@ -252,6 +252,9 @@ def fix_source_leftovers(src, table):
             path = os.path.join(dirpath, f)
             text = open(path, encoding='utf-8', errors='ignore').read()
             new_text, n = re.subn(r'net\.net\$minecraft', 'net.minecraft', text)
+            # the same artifact appears for other roots (com.com$mojang)
+            new_text, n2 = re.subn(r'com\.com\$mojang', 'com.mojang', new_text)
+            n += n2
             if n:
                 mangled += n
                 open(path, 'w', encoding='utf-8').write(new_text)

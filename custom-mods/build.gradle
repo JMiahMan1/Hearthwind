@@ -237,6 +237,11 @@ subprojects {
 		}
 	}
 */
+/* WIP nameplate - enable with the settings.gradle include
+	if (project.name == 'nameplate') {
+		// Port of Globox1997's Nameplate (MIT) from its 1.21.1 build.
+	}
+*/
 	if (project.name == 'lmft') {
 		// Port of Blodhgarm's Load My F***ing Tags (CC0-1.0) from its 1.21.11
 		// source. The accesswidener exposes TagLoader$SortingEntry.

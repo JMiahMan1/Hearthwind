@@ -42,6 +42,7 @@ include 'lavender'
 include 'connectiblechains'
 include 'fishingreal'
 include 'lmft'
+// include 'nameplate' // WIP 0.1.57: remapped; 26.2 rendering rework + rpgdifficulty compat left
 // include 'medievalweapons' // WIP 0.1.57: remapped; needs the 26.2 item/tool rework + compat deps
 include 'inmis'
 include 'lootbeams'
