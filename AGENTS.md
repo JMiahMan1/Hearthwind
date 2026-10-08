@@ -440,6 +440,80 @@ python3 ../custom-mods/tools/rcon.py 127.0.0.1 25575 agedtest "summon item ~ ~ ~
   A local boot that reaches `Done` with every probe green means the
   failure was the runner, not the pack.
 
+### API surfaces 26.2 reworked (each measured on a real port)
+
+Everything below was hit while porting fishing-real, connectiblechains, lmft,
+surveyor, niftycarts and tooltipfix, and each replacement was looked up in the
+26.2 jar rather than guessed. Check here FIRST when a port reports "cannot find
+symbol" - it saves rediscovering the same renames per mod.
+
+**Naming.** 26.x is Mojang-native. Mods built for 26.x already use
+`net.minecraft.resources.Identifier` (not Yarn's `net.minecraft.util.Identifier`),
+so they need NO remap - decompile and go. Fabric's maven has no 26.x
+intermediary at all; its yarn/intermediary stop at `1.21.11`. The remapper is
+only for 1.21.x-and-earlier jars.
+
+**Removed with no replacement** (needs a shim or an inline equivalent):
+
+| Removed | Replacement used |
+|---|---|
+| `net.minecraft.util.Tuple` (no `net.minecraft` Pair either) | a local `Tuple` record with `getA()`/`getB()` so call sites read unchanged |
+| `LightTexture.pack(b, s)` | inline `(b << 4) \| (s << 4)`; `setLight(int)` still exists so the packing convention holds |
+| `ChatFormatting.getName/getNames/isColor/getColor` | the class is stripped to `values/valueOf/toString/stripFormatting/getByCode`; build name lists from `values()` (the 16 colours are declared first) and use the literal RGB (`GREEN` = `0x55FF55`) |
+
+**Signatures and visibility that changed:**
+
+- `new ListTag(Collection)` is **package-private** - only the no-arg constructor
+  is public. Add with `add()`/`addAndUnwrap()`; a small `ListTags.of(coll)`
+  helper keeps call sites readable.
+- Dyes and banners are `ColorCollection` records: `Items.DYE.red()`,
+  `Items.BANNER.red()`, `lightBlue()` etc. The per-colour constants are gone.
+- `EntityType.Builder.of(...)` needs an explicit constructor-reference cast -
+  `(EntityType.EntityFactory<T>) Foo::new` - or generic inference fails.
+- `BlockPos.getCenter()` is gone: `Vec3.atCenterOf(pos)`.
+- `Mob.finalizeSpawn` and friends take **`EntitySpawnReason`** (`MobSpawnType`
+  has zero occurrences in the 26.2 jar).
+- `CriteriaTriggers` moved to `net.minecraft.advancements.triggers`.
+- `LightTexture` -> `Lightmap`; `EntityModelLayerRegistry` ->
+  `net.minecraft.client.model.geom.LayerDefinitions`.
+
+**Rendering / client reworks:**
+
+- `GuiGraphics` has **no `blit`** - the drawing API was reworked (see also
+  `GuiGraphicsExtractor` above). Ports that blit textures need a new approach.
+- `LevelRenderer` no longer has `countRenderedSections()` /
+  `hasRenderedAllSections()`; section bookkeeping moved into
+  `SectionOcclusionGraph` and `ChunkSectionsToRender`.
+- Tooltips: `Tooltip` + `TooltipRenderUtil`, no `DrawContext.drawTooltip`.
+- `CameraRenderState` moved to
+  `net.minecraft.client.renderer.state.level.CameraRenderState`, the entity
+  override is `submit(...)` not `render(...)`, and `submitNameTag` is
+  `submitNameDisplay`.
+- `RenderTypes.entitySmoothCutout(id)` -> `entityCutout(id)`.
+
+**Fabric API renames (26.2 build):**
+
+- `PayloadTypeRegistry.playS2C()` -> `clientboundPlay()` (`playC2S` ->
+  `serverboundPlay`).
+- `ServerPlayNetworking.createS2CPacket(...)` -> `createClientboundPacket(...)`.
+- `ResourceLoader.registerReloader(...)` -> `registerReloadListener(...)`.
+- The model-layer registry is `ModelLayerRegistry.registerModelLayer(...)`
+  (`EntityModelLayerRegistry` in the 1.21-era API).
+- A nested library jar must be extracted and put on the compile classpath
+  (surveyor nests `kaleido-config` this way).
+
+**Decompiler artifacts - expect all four, they are not real breaks:**
+
+1. `(Target) this` inside a mixin needs `(Target) (Object) this`.
+2. Intersection casts are dropped: `(BlockAttachedEntity & Chainable) this`.
+3. Constructor-reference casts vanish, breaking generic inference.
+4. A type variable can come out as a bare placeholder (`(R)` where the
+   method's real return type is `BoundingBox`), and locals get renamed
+   (`zx` referenced as `z`).
+5. Type witnesses are erased in nested generic chains - `ByteBufCodecs.map`
+   and friends need `.<B, K, V, M>map(...)` re-supplied.
+
+
 ## Porting a Yarn-era mod (W4)
 
 MC 26.x uses Mojang's own names, so a mod already built for 26.x ports in a
