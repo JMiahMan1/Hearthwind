@@ -212,6 +212,11 @@ def fix_source_leftovers(src, table):
                 ambiguous.add(src_name)
             else:
                 names[src_name] = dst
+        elif len(p) == 3 and p[0] == 'c':
+            # class rows too: mixin annotation strings carry
+            # `Lnet/minecraft/class_1234;method()V` targets, and those are
+            # STRINGS, so the remapper cannot touch them.
+            names[p[1].split('/')[-1]] = p[2].replace('.', '/')
     for a in ambiguous:
         names.pop(a, None)
 
@@ -272,6 +277,21 @@ def fix_source_leftovers(src, table):
     return left
 
 
+
+def yarn_url(mc):
+    """Newest yarn build for this MC version, from the maven metadata."""
+    import xml.etree.ElementTree as ET
+    meta = urllib.request.urlopen(urllib.request.Request(
+        'https://maven.fabricmc.net/net/fabricmc/yarn/maven-metadata.xml', headers=UA), timeout=60).read()
+    versions = [v.text for v in ET.fromstring(meta).iter('version')]
+    # exact-version builds only: <mc>+build.N, not <mc>-preX or -rcN
+    builds = [v for v in versions if v.startswith(f'{mc}+build.')]
+    if not builds:
+        raise SystemExit(f'no yarn build for {mc} (closest: {[v for v in versions if v.startswith(mc)][-3:]})')
+    best = max(builds, key=lambda v: int(v.rsplit('.', 1)[1]))
+    return f'https://maven.fabricmc.net/net/fabricmc/yarn/{best}/yarn-{best}-v2.jar'
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('jar', help='the upstream mod jar (intermediary names)')
@@ -285,8 +305,9 @@ def main():
     out = os.path.abspath(args.out or os.path.join(WORK, 'out', name))
     os.makedirs(out, exist_ok=True)
 
-    yarn_jar = fetch(f'https://maven.fabricmc.net/net/fabricmc/yarn/{args.mc}+build.6/yarn-{args.mc}+build.6-v2.jar',
-                     os.path.join(WORK, f'yarn-{args.mc}.jar'))
+    # Yarn's build suffix differs per MC version ({mc}+build.N), so resolve it
+    # from the maven metadata rather than assuming a number.
+    yarn_jar = fetch(yarn_url(args.mc), os.path.join(WORK, f'yarn-{args.mc}.jar'))
     inter_jar = fetch(f'https://maven.fabricmc.net/net/fabricmc/intermediary/{args.mc}/intermediary-{args.mc}-v2.jar',
                       os.path.join(WORK, f'intermediary-{args.mc}.jar'))
     moj_txt = fetch(mojang_client_mappings_url(args.mc), os.path.join(WORK, f'mojang-{args.mc}.txt'))

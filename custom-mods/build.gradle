@@ -229,6 +229,14 @@ subprojects {
 			implementation files("${rootDir}/../conversion/vendored/compile-libs/kaleido-config-0.3.3+1.3.2.jar")
 		}
 	}
+/* WIP medievalweapons - enable with the settings.gradle include
+	if (project.name == 'medievalweapons') {
+		// Port of Globox_Z's Medieval Weapons (MIT) from its 1.21.1 build.
+		dependencies {
+			implementation files("${rootDir}/../conversion/vendored/compile-libs/cloth-config-26.2.155.jar")
+		}
+	}
+*/
 	if (project.name == 'lmft') {
 		// Port of Blodhgarm's Load My F***ing Tags (CC0-1.0) from its 1.21.11
 		// source. The accesswidener exposes TagLoader$SortingEntry.
