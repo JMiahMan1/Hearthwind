@@ -1,0 +1,37 @@
+package folk.sisby.surveyor.packet;
+
+import com.google.common.collect.Multimap;
+import folk.sisby.surveyor.Surveyor;
+import folk.sisby.surveyor.util.MapUtil;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import net.minecraft.core.UUIDUtil;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload.Type;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.level.Level;
+
+public record SyncLandmarksRequestedPacket(ResourceKey<Level> dimension, Multimap<UUID, Identifier> landmarks) implements SyncPacket {
+   public static final Type<SyncLandmarksRequestedPacket> ID = new Type(Surveyor.id("landmarks_requested"));
+   public static final StreamCodec<RegistryFriendlyByteBuf, SyncLandmarksRequestedPacket> CODEC = StreamCodec.composite(
+      ResourceKey.streamCodec(Registries.DIMENSION),
+      SyncLandmarksRequestedPacket::dimension,
+      SurveyorPacketCodecs.buildUuidMultimap(),
+      SyncLandmarksRequestedPacket::landmarks,
+      SyncLandmarksRequestedPacket::new
+   );
+
+   public static SyncLandmarksRequestedPacket of(ResourceKey<Level> dimension, UUID uuid, Identifier id) {
+      return new SyncLandmarksRequestedPacket(dimension, MapUtil.asMultiMap(Map.of(uuid, List.of(id))));
+   }
+
+   public Type<SyncLandmarksRequestedPacket> type() {
+      return ID;
+   }
+}

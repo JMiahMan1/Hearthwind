@@ -200,23 +200,6 @@ subprojects {
 			implementation files("${rootDir}/../conversion/vendored/compile-libs/endec-0.1.12.jar")
 		}
 	}
-/* WIP surveyor - enable with the settings.gradle include
-	if (project.name == 'surveyor') {
-		loom {
-			accessWidenerPath = file("src/main/resources/surveyor.accesswidener")
-		}
-		dependencies {
-			// kaleido-config is a plain library (no fabric.mod.json); upstream
-			// JiJs it, so do the same via loom's include (no extra pack mod).
-			implementation files("${rootDir}/../conversion/vendored/kaleido-config-0.3.3+1.3.2.jar")
-			include files("${rootDir}/../conversion/vendored/kaleido-config-0.3.3+1.3.2.jar")
-			modCompileClasspath "net.fabricmc.fabric.api:fabric-command-api-v2:3.1.0+00cb03469e"
-			modCompileClasspath "net.fabricmc.fabric.api:fabric-lifecycle-events-v1:4.1.3+4575b05f9e"
-			modCompileClasspath "net.fabricmc.fabric.api:fabric-networking-api-v1:6.3.3+72073ef09e"
-			modCompileClasspath "net.fabricmc.fabric.api:fabric-gametest-api-v1:4.0.21+4a7fa0819e"
-		}
-	}
-*/
 	if (project.name == 'surveyor') {
 		// Port of Sisby folk's Surveyor (LGPL-3.0-or-later) from its 26.1 build.
 		// 26.x mods compile against Mojang mappings, so the jar needed no remap - only
