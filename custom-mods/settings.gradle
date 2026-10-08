@@ -51,7 +51,7 @@ include 'backslot'
 	include 'fleshz'
 	include 'adventurez'
 include 'tlc'
-	// include 'surveyor' // WIP 0.1.57: 40 errors left; see the 26.2 API sheet for the type-witness technique
+	// include 'surveyor' // WIP: 40 errors; the typed-static-helper technique is proven on STRUCTURE_KEYS (12->10 in that file)
 	// YARN-mapped (28 files use Identifier, 0 use ResourceLocation) while this project is
 	// mojmap, so the 334 compile errors are mostly a mapping mismatch, not API drift.
 	// Upstream has no 26.2 build (newest is 1.2.4+26.1). Port = yarn->mojmap remap of 86
