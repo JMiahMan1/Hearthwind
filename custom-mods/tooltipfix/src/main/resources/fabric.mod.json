@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "id": "tooltipfix",
+  "version": "${version}",
+  "name": "ToolTip Fix",
+  "description": "Fixes ToolTips from running off the screen (Hearthwind 26.2 port)",
+  "authors": [
+    "kyrptonaught"
+  ],
+  "contact": {
+    "homepage": "https://www.curseforge.com/minecraft/mc-mods/tooltipfix",
+    "sources": "https://github.com/kyrptonaught/tooltipfix"
+  },
+  "license": "MIT",
+  "icon": "assets/tooltipfix/icon.png",
+  "environment": "client",
+  "mixins": [
+    {
+      "config": "tooltipfix.mixins.json",
+      "environment": "client"
+    }
+  ],
+  "depends": {
+    "fabricloader": ">=0.19.5",
+    "fabric-api": "*",
+    "minecraft": "~26.2",
+    "java": ">=25"
+  }
+}

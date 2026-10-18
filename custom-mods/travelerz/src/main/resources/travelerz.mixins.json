@@ -1,0 +1,14 @@
+{
+	"required": true,
+	"package": "net.travelerz.mixin",
+	"compatibilityLevel": "JAVA_25",
+	"mixins": [],
+	"client": [
+		"InGameHudAccess",
+		"InGameHudMixin",
+		"ClientPlayerEntityMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	}
+}

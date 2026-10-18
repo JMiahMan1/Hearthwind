@@ -1,0 +1,11 @@
+{
+  "required": true,
+  "package": "com.starfish_studios.another_furniture.mixin.fabric",
+  "compatibilityLevel": "JAVA_25",
+  "minVersion": "0.8",
+  "client": [],
+  "mixins": [],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

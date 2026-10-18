@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "d": "#minecraft:stone_tool_materials",
+    "e": "minecraft:stick"
+  },
+  "pattern": [
+    "d  ",
+    " e ",
+    "  e"
+  ],
+  "result": {
+    "count": 1,
+    "id": "medievalweapons:stone_javelin"
+  }
+}

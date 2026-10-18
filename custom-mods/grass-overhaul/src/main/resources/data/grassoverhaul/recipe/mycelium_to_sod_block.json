@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "01",
+    "23"
+  ],
+  "key": {
+    "0": "minecraft:mycelium",
+    "1": "minecraft:mycelium",
+    "2": "minecraft:mycelium",
+    "3": "minecraft:mycelium"
+  },
+  "result": {
+    "id": "grassoverhaul:mycelium_sod_block",
+    "count": 4
+  }
+}

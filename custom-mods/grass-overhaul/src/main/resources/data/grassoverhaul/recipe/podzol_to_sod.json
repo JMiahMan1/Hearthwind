@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "0"
+  ],
+  "key": {
+    "0": "minecraft:podzol"
+  },
+  "result": {
+    "id": "grassoverhaul:podzol_sod_patch",
+    "count": 2
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "d": "minecraft:gold_ingot",
+    "e": "minecraft:stick"
+  },
+  "pattern": [
+    " dd",
+    " dd",
+    "e  "
+  ],
+  "result": {
+    "count": 1,
+    "id": "medievalweapons:golden_mace"
+  }
+}

@@ -1,0 +1,78 @@
+package net.jmb19905.niftycarts.client.renderer.entity;
+
+import com.mojang.blaze3d.vertex.PoseStack;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.jmb19905.niftycarts.NiftyCarts;
+import net.jmb19905.niftycarts.client.renderer.NiftyCartsModelLayers;
+import net.jmb19905.niftycarts.client.renderer.entity.model.CartBannerFlagModel;
+import net.jmb19905.niftycarts.client.renderer.entity.model.WagonChestModel;
+import net.jmb19905.niftycarts.client.renderer.entity.model.WagonModel;
+import net.jmb19905.niftycarts.entity.WagonEntity;
+import net.minecraft.client.model.geom.ModelLayers;
+import net.minecraft.client.model.object.banner.BannerModel;
+import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.entity.EntityRendererProvider.Context;
+import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.resources.Identifier;
+import org.jetbrains.annotations.NotNull;
+
+@Environment(EnvType.CLIENT)
+public class WagonRenderer extends DrawnRenderer<WagonEntity, WagonRenderState, WagonModel> {
+   public WagonRenderer(Context renderManager) {
+      super(
+         renderManager,
+         new WagonModel(
+            renderManager.bakeLayer(NiftyCartsModelLayers.WAGON),
+            renderManager.bakeLayer(NiftyCartsModelLayers.WAGON_ROOF),
+            new WagonChestModel(renderManager.bakeLayer(NiftyCartsModelLayers.WAGON_CHEST)),
+            new BannerModel(renderManager.bakeLayer(ModelLayers.STANDING_BANNER)),
+            new CartBannerFlagModel(renderManager.bakeLayer(ModelLayers.STANDING_BANNER_FLAG))
+         )
+      );
+   }
+
+   public void extractRenderState(WagonEntity entity, WagonRenderState state, float delta) {
+      super.extractRenderState(entity, state, delta);
+      state.maxChestCount = entity.getMaxChestCount();
+      state.chestCount = entity.getChestCount();
+      state.hasRoof = entity.hasRoof();
+      state.unfurled = entity.getUnfurled();
+      state.roofTexture = entity.getRoofTexture();
+   }
+
+   protected void submitContents(WagonRenderState state, PoseStack stack, SubmitNodeCollector collector) {
+      stack.pushPose();
+      this.model.getBody().translateAndRotate(stack);
+      stack.pushPose();
+      collector.submitModel(
+         this.model.getChestModel(),
+         state,
+         stack,
+         this.model.renderType(NiftyCarts.resLoc("textures/entity/wagon_chest.png")),
+         state.lightCoords,
+         OverlayTexture.NO_OVERLAY,
+         state.outlineColor,
+         null
+      );
+      stack.popPose();
+      if (state.bannerColor != null) {
+         stack.pushPose();
+         stack.translate(0.0, -0.58, 2.62);
+         this.submitBanner(state, stack, collector);
+         stack.popPose();
+      }
+
+      stack.popPose();
+   }
+
+   @NotNull
+   public WagonRenderState createRenderState() {
+      return new WagonRenderState();
+   }
+
+   @NotNull
+   public Identifier getTextureLocation(WagonRenderState state) {
+      return NiftyCarts.resLoc("textures/entity/" + state.woodType.name() + "_wagon.png");
+   }
+}

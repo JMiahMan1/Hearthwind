@@ -1,0 +1,6 @@
+{
+  "parent": "medievalweapons:item/lance",
+  "textures": {
+    "layer0": "medievalweapons:item/diamond_lance"
+  }
+}

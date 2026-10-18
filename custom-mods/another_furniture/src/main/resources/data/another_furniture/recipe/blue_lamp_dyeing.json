@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "group": "lamps",
+  "ingredients": [
+    "minecraft:blue_dye",
+    "another_furniture:white_lamp"
+  ],
+  "result": {
+    "id": "another_furniture:blue_lamp"
+  }
+}

@@ -1,0 +1,10 @@
+{
+	"replace": false,
+	"values": [
+		"#another_furniture:benches",
+		"#another_furniture:chairs",
+		"#another_furniture:sofas",
+		"#another_furniture:stools",
+		"#another_furniture:tall_stools"
+	]
+}

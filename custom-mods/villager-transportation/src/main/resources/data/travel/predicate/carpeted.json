@@ -1,0 +1,134 @@
+{
+    "condition": "minecraft:any_of",
+    "terms": [
+      {
+        "condition": "minecraft:entity_properties",
+        "entity": "this",
+        "predicate": {
+          "entity_type": "minecraft:llama",
+          "nbt": "{equipment:{body:{id:\"minecraft:white_carpet\"}}}"
+        }
+      },
+      {
+        "condition": "minecraft:entity_properties",
+        "entity": "this",
+        "predicate": {
+          "entity_type": "minecraft:llama",
+          "nbt": "{equipment:{body:{id:\"minecraft:light_gray_carpet\"}}}"
+        }
+      },
+      {
+        "condition": "minecraft:entity_properties",
+        "entity": "this",
+        "predicate": {
+          "entity_type": "minecraft:llama",
+          "nbt": "{equipment:{body:{id:\"minecraft:gray_carpet\"}}}"
+        }
+      },
+      {
+        "condition": "minecraft:entity_properties",
+        "entity": "this",
+        "predicate": {
+          "entity_type": "minecraft:llama",
+          "nbt": "{equipment:{body:{id:\"minecraft:black_carpet\"}}}"
+        }
+      },
+      {
+        "condition": "minecraft:entity_properties",
+        "entity": "this",
+        "predicate": {
+          "entity_type": "minecraft:llama",
+          "nbt": "{equipment:{body:{id:\"minecraft:brown_carpet\"}}}"
+        }
+      },
+      {
+        "condition": "minecraft:entity_properties",
+        "entity": "this",
+        "predicate": {
+          "entity_type": "minecraft:llama",
+          "nbt": "{equipment:{body:{id:\"minecraft:red_carpet\"}}}"
+        }
+      },
+      {
+        "condition": "minecraft:entity_properties",
+        "entity": "this",
+        "predicate": {
+          "entity_type": "minecraft:llama",
+          "nbt": "{equipment:{body:{id:\"minecraft:orange_carpet\"}}}"
+        }
+      },
+      {
+        "condition": "minecraft:entity_properties",
+        "entity": "this",
+        "predicate": {
+          "entity_type": "minecraft:llama",
+          "nbt": "{equipment:{body:{id:\"minecraft:yellow_carpet\"}}}"
+        }
+      },
+      {
+        "condition": "minecraft:entity_properties",
+        "entity": "this",
+        "predicate": {
+          "entity_type": "minecraft:llama",
+          "nbt": "{equipment:{body:{id:\"minecraft:lime_carpet\"}}}"
+        }
+      },
+      {
+        "condition": "minecraft:entity_properties",
+        "entity": "this",
+        "predicate": {
+          "entity_type": "minecraft:llama",
+          "nbt": "{equipment:{body:{id:\"minecraft:green_carpet\"}}}"
+        }
+      },
+      {
+        "condition": "minecraft:entity_properties",
+        "entity": "this",
+        "predicate": {
+          "entity_type": "minecraft:llama",
+          "nbt": "{equipment:{body:{id:\"minecraft:cyan_carpet\"}}}"
+        }
+      },
+      {
+        "condition": "minecraft:entity_properties",
+        "entity": "this",
+        "predicate": {
+          "entity_type": "minecraft:llama",
+          "nbt": "{equipment:{body:{id:\"minecraft:light_blue_carpet\"}}}"
+        }
+      },
+      {
+        "condition": "minecraft:entity_properties",
+        "entity": "this",
+        "predicate": {
+          "entity_type": "minecraft:llama",
+          "nbt": "{equipment:{body:{id:\"minecraft:blue_carpet\"}}}"
+        }
+      },
+      {
+        "condition": "minecraft:entity_properties",
+        "entity": "this",
+        "predicate": {
+          "entity_type": "minecraft:llama",
+          "nbt": "{equipment:{body:{id:\"minecraft:purple_carpet\"}}}"
+        }
+      },
+      {
+        "condition": "minecraft:entity_properties",
+        "entity": "this",
+        "predicate": {
+          "entity_type": "minecraft:llama",
+          "nbt": "{equipment:{body:{id:\"minecraft:magenta_carpet\"}}}"
+        }
+      },
+      {
+        "condition": "minecraft:entity_properties",
+        "entity": "this",
+        "predicate": {
+          "entity_type": "minecraft:llama",
+          "nbt": "{equipment:{body:{id:\"minecraft:pink_carpet\"}}}"
+        }
+      }
+    ]
+  }
+  

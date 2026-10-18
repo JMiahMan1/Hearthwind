@@ -1,0 +1,24 @@
+{
+    "text.autoconfig.nameplate.title": "Configuração do Talk Bubbles",
+    "text.autoconfig.nameplate.option.backgroundOpacity": "Opacidade do plano de fundo",
+    "text.autoconfig.nameplate.option.nameColor": "Cor do nome",
+    "text.autoconfig.nameplate.option.backgroundColor": "Cor de fundo",
+    "text.autoconfig.nameplate.option.showHealth": "Mostrar saúde",
+    "text.autoconfig.nameplate.option.showLevel": "Mostrar nível",
+    "text.autoconfig.nameplate.option.squaredDistance": "Distância ao quadrado",
+    "text.autoconfig.nameplate.option.excluded_entities": "Entidades Excluídas",
+    "text.autoconfig.nameplate.option.levelMultiplier": "Multiplicador de Nível",
+    "text.autoconfig.nameplate.option.showHostileOnly": "Mostrar apenas hostil",
+    "text.autoconfig.nameplate.option.showNameplateIfObstructed": "Mostrar placa de identificação se obstruída",
+    "text.autoconfig.nameplate.option.excludedEntities": "Entidades Excluídas",
+    "text.autoconfig.nameplate.option.nameplateHeight": "Altura da placa de identificação",
+    "text.autoconfig.nameplate.option.nameplateSize": "Tamanho da placa de identificação",
+
+    "text.nameplate.health": "VIDA: %d/%d",
+    "text.nameplate.level": "§eNível%s§r %s",
+    "text.nameplate.jade.level": " §eLv.%s",
+
+    "config.waila.plugin_nameplate": "Placa de identificação",
+    "config.waila.plugin_nameplate.mob_level_info": "Informações sobre o nível do Mob",
+    "config.jade.plugin_nameplate.mob_level_info": "Mob Level Info"
+}

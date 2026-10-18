@@ -210,7 +210,14 @@ def main() -> int:
         for name in sorted(refs):
             if resolve(name, set()) is None:
                 problems.append(f"missing texture reference: #{name}  (chain of {root_id})")
+        # `minecraft:missingno` is the engine's missing-texture SENTINEL: vanilla's
+        # own block/air model references it, and any blockstate that uses
+        # minecraft:block/air as a hidden state (another_furniture's curtains do)
+        # reaches it through a legitimate vanilla chain. It is not, and must not
+        # be, a real PNG.
         for value in sorted({v for v in defs.values() if not v.startswith("#")}):
+            if value == "minecraft:missingno":
+                continue
             ns, tex = parse_id(value)
             exists = tex in (vanilla_textures if ns == "minecraft" else our_textures)
             if not exists:

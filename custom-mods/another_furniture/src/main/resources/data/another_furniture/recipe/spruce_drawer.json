@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "group": "drawers",
+  "key": {
+    "#": "minecraft:spruce_planks",
+    "S": "minecraft:spruce_slab",
+    "/": "minecraft:stick"
+  },
+  "pattern": [
+    "###",
+    "S/S",
+    "###"
+  ],
+  "result": {
+    "count": 1,
+    "id": "another_furniture:spruce_drawer"
+  }
+}

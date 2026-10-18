@@ -1,0 +1,6 @@
+{
+  "parent": "medievalweapons:item/mace",
+  "textures": {
+    "layer0": "medievalweapons:item/diamond_mace"
+  }
+}

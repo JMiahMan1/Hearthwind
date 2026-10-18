@@ -1,0 +1,7 @@
+{
+  "render_type": "minecraft:cutout",
+    "parent": "another_furniture:block/template/curtain_closed_top",
+    "textures": {
+        "curtain": "another_furniture:block/curtain2/blue_closed_top"
+    }
+}

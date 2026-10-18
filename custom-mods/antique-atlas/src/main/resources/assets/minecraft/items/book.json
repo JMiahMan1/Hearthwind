@@ -1,0 +1,7 @@
+{
+  "model": {
+    "type": "antique_atlas:atlas",
+    "base": { "type": "minecraft:model", "model": "minecraft:item/book" },
+    "atlas": { "type": "minecraft:model", "model": "antique_atlas:item/atlas" }
+  }
+}

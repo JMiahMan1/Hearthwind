@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "0"
+  ],
+  "key": {
+    "0": "minecraft:mycelium"
+  },
+  "result": {
+    "id": "grassoverhaul:mycelium_sod_patch",
+    "count": 2
+  }
+}

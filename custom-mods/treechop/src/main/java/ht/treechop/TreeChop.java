@@ -1,0 +1,53 @@
+package ht.treechop;
+
+import ht.treechop.api.TreeChopAPI;
+import ht.treechop.common.config.Lazy;
+import ht.treechop.common.platform.Platform;
+import ht.treechop.compat.HugeFungusHandler;
+import ht.treechop.compat.HugeMushroomHandler;
+import ht.treechop.compat.LeafDecayOverrides;
+import ht.treechop.compat.ProblematicLeavesTreeHandler;
+import java.util.function.Supplier;
+import net.minecraft.ChatFormatting;
+import net.minecraft.client.Minecraft;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
+import net.minecraft.sounds.SoundEvent;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+public abstract class TreeChop {
+   public static final String MOD_ID = "treechop";
+   public static final String MOD_NAME = "HT's TreeChop";
+   public static final Logger LOGGER = LogManager.getLogger("treechop");
+   public static Platform platform;
+   public static TreeChopInternalAPI api;
+   private static int cryCounter = 10;
+   public static final Identifier CHOP_WOOD = resource("chop_wood");
+   public static final Lazy<net.minecraft.sounds.SoundEvent> CHOP_WOOD_EVENT = new Lazy<>(
+      (Supplier<net.minecraft.sounds.SoundEvent>)(() -> SoundEvent.createVariableRangeEvent(CHOP_WOOD))
+   );
+
+   public static void initUsingAPI(TreeChopAPI api) {
+      HugeMushroomHandler.register(api);
+      HugeFungusHandler.register(api);
+      ProblematicLeavesTreeHandler.register(api);
+      LeafDecayOverrides.register(api);
+   }
+
+   public static void showText(String text) {
+      Minecraft.getInstance()
+         .player
+         .sendSystemMessage(Component.literal(String.format("%s[%s] %s%s", ChatFormatting.GRAY, "HT's TreeChop", ChatFormatting.WHITE, text)));
+   }
+
+   public static Identifier resource(String path) {
+      return Identifier.fromNamespaceAndPath("treechop", path);
+   }
+
+   public static void cry(Throwable e) {
+      if (cryCounter-- > 0) {
+         LOGGER.error("Something went wrong - please share this log file at https://github.com/hammertater/treechop/issues", e);
+      }
+   }
+}

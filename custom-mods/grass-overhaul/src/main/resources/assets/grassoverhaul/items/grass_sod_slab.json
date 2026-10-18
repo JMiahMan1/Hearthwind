@@ -1,0 +1,12 @@
+{
+  "model": {
+    "type": "minecraft:model",
+    "model": "grassoverhaul:item/grass_sod_slab",
+    "tints": [
+      {
+        "type": "minecraft:constant",
+        "value": 7516266
+      }
+    ]
+  }
+}

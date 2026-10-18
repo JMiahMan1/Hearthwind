@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "group": "flower_boxes",
+  "key": {
+    "#": "minecraft:jungle_planks",
+    "D": "minecraft:dirt",
+    "S": "minecraft:jungle_slab"
+  },
+  "pattern": [
+    "SDS",
+    "###"
+  ],
+  "result": {
+    "count": 3,
+    "id": "another_furniture:jungle_flower_box"
+  }
+}

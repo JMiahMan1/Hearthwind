@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:smithing_transform",
+  "addition": "minecraft:netherite_ingot",
+  "base": "medievalweapons:diamond_long_sword",
+  "result": {
+    "count": 1,
+    "id": "medievalweapons:netherite_long_sword"
+  },
+  "template": "minecraft:netherite_upgrade_smithing_template"
+}

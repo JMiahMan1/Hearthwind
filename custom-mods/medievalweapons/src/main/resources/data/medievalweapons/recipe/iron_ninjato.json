@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "d": "minecraft:iron_ingot",
+    "e": "minecraft:stick"
+  },
+  "pattern": [
+    " d ",
+    "d  ",
+    "e  "
+  ],
+  "result": {
+    "count": 1,
+    "id": "medievalweapons:iron_ninjato"
+  }
+}

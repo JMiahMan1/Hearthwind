@@ -1,0 +1,57 @@
+{
+  "display": {
+    "icon": {
+      "id": "minecraft:hay_block",
+      "count": 1
+    },
+    "title": "And the Caravans and Bees",
+    "description": "While riding the Camel with a Villager, Lead the Llama with a Villager riding on it.",
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "parent": "minecraft:husbandry/ride_a_camel_with_a_villager",
+  "criteria": {
+    "lead_llama_with_a_villager": {
+      "trigger": "minecraft:player_interacted_with_entity",
+      "conditions": {
+        "player": {
+          "vehicle": {
+            "entity_type": "minecraft:camel",
+            "passenger": {
+              "entity_type": "#travel:villagers"
+            }
+          }
+        },
+        "item": {
+          "items": [
+            "minecraft:lead"
+          ],
+          "count": 1
+        },
+        "entity": [
+          {
+            "condition": "minecraft:entity_properties",
+            "entity": "this",
+            "predicate": {
+              "entity_type": [
+                "minecraft:llama",
+                "minecraft:trader_llama"
+              ],
+              "passenger": {
+                "entity_type": "#travel:villagers"
+              }
+            }
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "lead_llama_with_a_villager"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

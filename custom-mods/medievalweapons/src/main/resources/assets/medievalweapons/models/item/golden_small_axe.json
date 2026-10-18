@@ -1,0 +1,6 @@
+{
+  "parent": "medievalweapons:item/small_axe",
+  "textures": {
+    "layer0": "medievalweapons:item/golden_small_axe"
+  }
+}

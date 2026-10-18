@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "grassoverhaul",
+  "version": "${version}",
+  "name": "Grass Overhaul",
+  "description": "Adds stackable carpet-like sods, slabs, stairs and full blocks, for all grass variations. (Hearthwind 26.2 port)",
+  "authors": [
+    "ElocinDev",
+    "Luna Pixel Studios"
+  ],
+  "license": "AGNYA License",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "elocindev.grassoverhaul.GrassOverhaul"
+    ],
+    "client": [
+      "elocindev.grassoverhaul.ClientInit"
+    ]
+  },
+  "depends": {
+    "fabricloader": ">=0.19.5",
+    "minecraft": "~26.2",
+    "java": ">=25",
+    "fabric-api": "*"
+  }
+}

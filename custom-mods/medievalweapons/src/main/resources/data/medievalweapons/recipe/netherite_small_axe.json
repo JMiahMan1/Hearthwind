@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:smithing_transform",
+  "addition": "minecraft:netherite_ingot",
+  "base": "medievalweapons:diamond_small_axe",
+  "result": {
+    "count": 1,
+    "id": "medievalweapons:netherite_small_axe"
+  },
+  "template": "minecraft:netherite_upgrade_smithing_template"
+}

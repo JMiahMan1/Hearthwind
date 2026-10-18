@@ -1,0 +1,98 @@
+package net.jmb19905.niftycarts.entity.ai.goal;
+
+import java.util.EnumSet;
+import java.util.List;
+import java.util.function.Predicate;
+import net.jmb19905.niftycarts.entity.AbstractDrawnEntity;
+import net.jmb19905.niftycarts.util.NiftyTargetingUtil;
+import net.minecraft.world.entity.EntitySelector;
+import net.minecraft.world.entity.PathfinderMob;
+import net.minecraft.world.entity.ai.goal.Goal.Flag;
+import net.minecraft.world.entity.ai.navigation.PathNavigation;
+import net.minecraft.world.entity.ai.util.DefaultRandomPos;
+import net.minecraft.world.level.pathfinder.Path;
+import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.Nullable;
+
+public class AvoidCartGoal<T extends AbstractDrawnEntity> extends net.minecraft.world.entity.ai.goal.Goal {
+   protected final PathfinderMob mob;
+   private final double walkSpeedModifier;
+   @Nullable
+   protected AbstractDrawnEntity toAvoid;
+   protected final float maxDist;
+   @Nullable
+   protected Path path;
+   protected final PathNavigation pathNav;
+   protected final Class<T> avoidClass;
+   protected final Predicate<AbstractDrawnEntity> avoidPredicate;
+   protected final Predicate<AbstractDrawnEntity> predicateOnAvoidEntity;
+   private NiftyTargetingUtil.Conditions<AbstractDrawnEntity> avoidEntityTargeting;
+
+   public AvoidCartGoal(net.minecraft.world.entity.PathfinderMob pathfinderMob, Class<T> class_, float f, double d) {
+      this(pathfinderMob, class_, livingEntity -> true, f, d, EntitySelector.NO_CREATIVE_OR_SPECTATOR::test);
+   }
+
+   public AvoidCartGoal(
+      net.minecraft.world.entity.PathfinderMob pathfinderMob,
+      Class<T> class_,
+      Predicate<AbstractDrawnEntity> predicate,
+      float f,
+      double d,
+      Predicate<AbstractDrawnEntity> predicate2
+   ) {
+      this.mob = pathfinderMob;
+      this.avoidClass = class_;
+      this.avoidPredicate = predicate;
+      this.maxDist = f;
+      this.walkSpeedModifier = d;
+      this.predicateOnAvoidEntity = predicate2;
+      this.pathNav = pathfinderMob.getNavigation();
+      this.setFlags(EnumSet.of(Flag.MOVE));
+      this.avoidEntityTargeting = new NiftyTargetingUtil.Conditions();
+      this.avoidEntityTargeting = this.avoidEntityTargeting.range(f).selector(predicate2.and(predicate));
+   }
+
+   public AvoidCartGoal(
+      net.minecraft.world.entity.PathfinderMob pathfinderMob, Class<T> class_, float f, double d, Predicate<AbstractDrawnEntity> predicate
+   ) {
+      this(pathfinderMob, class_, livingEntity -> true, f, d, predicate);
+   }
+
+   public boolean canUse() {
+      List<? extends AbstractDrawnEntity> entityList = this.mob
+         .level()
+         .getEntitiesOfClass(this.avoidClass, this.mob.getBoundingBox().inflate(this.maxDist, 3.0, this.maxDist), entity -> true);
+      this.toAvoid = NiftyTargetingUtil.getNearestEntity(
+         entityList, this.avoidEntityTargeting, this.mob, this.mob.getX(), this.mob.getY(), this.mob.getZ()
+      );
+      if (this.toAvoid == null) {
+         return false;
+      } else {
+         Vec3 vec3 = DefaultRandomPos.getPosAway(this.mob, 5, 7, this.toAvoid.position());
+         if (vec3 == null) {
+            return false;
+         } else if (this.toAvoid.distanceToSqr(vec3.x, vec3.y, vec3.z) < this.toAvoid.distanceToSqr(this.mob)) {
+            return false;
+         } else {
+            this.path = this.pathNav.createPath(vec3.x, vec3.y, vec3.z, 0);
+            return this.path != null;
+         }
+      }
+   }
+
+   public boolean canContinueToUse() {
+      return !this.pathNav.isDone();
+   }
+
+   public void start() {
+      this.pathNav.moveTo(this.path, this.walkSpeedModifier);
+   }
+
+   public void stop() {
+      this.toAvoid = null;
+   }
+
+   public void tick() {
+      this.mob.getNavigation().setSpeedModifier(this.walkSpeedModifier);
+   }
+}

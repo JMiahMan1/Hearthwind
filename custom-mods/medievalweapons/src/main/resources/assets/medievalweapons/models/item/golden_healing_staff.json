@@ -1,0 +1,6 @@
+{
+  "parent": "medievalweapons:item/healing_staff",
+  "textures": {
+    "layer0": "medievalweapons:item/golden_healing_staff"
+  }
+}

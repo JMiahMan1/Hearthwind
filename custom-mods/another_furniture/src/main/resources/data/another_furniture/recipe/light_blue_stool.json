@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "group": "stools",
+  "key": {
+    "#": "#minecraft:planks",
+    "/": "minecraft:stick",
+    "W": "minecraft:light_blue_wool"
+  },
+  "pattern": [
+    "#W#",
+    "/ /"
+  ],
+  "result": {
+    "count": 3,
+    "id": "another_furniture:light_blue_stool"
+  }
+}

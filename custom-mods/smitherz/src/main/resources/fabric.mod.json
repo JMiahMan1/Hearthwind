@@ -1,0 +1,43 @@
+{
+	"schemaVersion": 1,
+	"id": "smitherz",
+	"version": "${version}",
+	"name": "SmitherZ",
+	"description": "Enhance your tools with upgrades (Hearthwind 26.2 port)",
+	"authors": [
+		"Globox_Z"
+	],
+	"contact": {
+		"homepage": "https://www.curseforge.com/minecraft/mc-mods/smitherz",
+		"sources": "https://github.com/Globox1997/SmitherZ",
+		"issues": "https://github.com/Globox1997/SmitherZ/issues"
+	},
+	"license": "MIT",
+	"icon": "assets/smitherz/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"net.smitherz.SmitherzMain"
+		],
+		"client": [
+			"net.smitherz.SmitherzClient"
+		],
+		"modmenu": [
+			"net.smitherz.config.ModMenuIntegration"
+		]
+	},
+	"mixins": [
+		"smitherz.mixins.json"
+	],
+	"depends": {
+		"java": ">=25",
+		"minecraft": "~26.2",
+		"fabric-api": "*",
+		"fabricloader": ">=0.19.5",
+		"cloth-config2": ">=26.2.155",
+		"libz": ">=1.0.3+1.21.1"
+	},
+	"suggests": {
+		"modmenu": "*"
+	}
+}

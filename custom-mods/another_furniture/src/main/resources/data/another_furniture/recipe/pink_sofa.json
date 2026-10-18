@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "group": "sofas",
+  "key": {
+    "#": "#minecraft:planks",
+    "/": "minecraft:stick",
+    "W": "minecraft:pink_wool"
+  },
+  "pattern": [
+    "#W ",
+    "#WW",
+    "/ /"
+  ],
+  "result": {
+    "count": 3,
+    "id": "another_furniture:pink_sofa"
+  }
+}

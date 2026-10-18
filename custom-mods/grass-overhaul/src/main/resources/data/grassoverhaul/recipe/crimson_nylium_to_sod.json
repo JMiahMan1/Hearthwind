@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "0"
+  ],
+  "key": {
+    "0": "minecraft:crimson_nylium"
+  },
+  "result": {
+    "id": "grassoverhaul:crimson_nylium_sod_patch",
+    "count": 2
+  }
+}

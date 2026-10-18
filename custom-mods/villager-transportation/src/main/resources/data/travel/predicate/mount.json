@@ -1,0 +1,46 @@
+[
+{
+   "condition": "minecraft:inverted",
+   "term": {
+     "condition": "minecraft:entity_properties",
+     "entity": "this",
+     "predicate": {
+       "entity_type": "#travel:villager_rideable",
+       "passenger": {}
+     }
+   }
+ },
+ {
+  "condition": "minecraft:inverted",
+  "term": {
+    "condition": "minecraft:entity_properties",
+    "entity": "this",
+    "predicate": {
+      "entity_type": "camel",
+      "passenger": {}
+    }
+  }
+},
+ {
+  "condition": "minecraft:inverted",
+  "term": {
+    "condition": "minecraft:entity_properties",
+    "entity": "this",
+    "predicate": {
+      "entity_type": "llama",
+      "passenger": {}
+    }
+  }
+},
+{
+  "condition": "minecraft:inverted",
+  "term": {
+    "condition": "minecraft:entity_properties",
+    "entity": "this",
+    "predicate": {
+      "entity_type": "trader_llama",
+      "passenger": {}
+    }
+  }
+}
+]

@@ -1,0 +1,6 @@
+{
+  "parent": "medievalweapons:item/rapier",
+  "textures": {
+    "layer0": "medievalweapons:item/iron_rapier"
+  }
+}

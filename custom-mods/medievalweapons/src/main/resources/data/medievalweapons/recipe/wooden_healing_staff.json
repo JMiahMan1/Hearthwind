@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "d": "#minecraft:planks",
+    "e": "minecraft:stick"
+  },
+  "pattern": [
+    "  d",
+    " e ",
+    "d  "
+  ],
+  "result": {
+    "count": 1,
+    "id": "medievalweapons:wooden_healing_staff"
+  }
+}

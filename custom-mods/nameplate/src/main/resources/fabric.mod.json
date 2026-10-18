@@ -1,0 +1,42 @@
+{
+  "schemaVersion": 1,
+  "id": "nameplate",
+  "version": "${version}",
+  "name": "Nameplate",
+  "description": "This mod adds simple nameplates onto mobs to show their level. Hearthwind 26.2 port (upstream: Globox1997's Nameplate, MIT).",
+  "authors": [
+    "Globox_Z"
+  ],
+  "contact": {
+    "homepage": "https://www.curseforge.com/minecraft/mc-mods/nameplate",
+    "sources": "https://github.com/Globox1997/Nameplate",
+    "issues": "https://github.com/Globox1997/Nameplate/issues"
+  },
+  "license": "MIT",
+  "icon": "assets/nameplate/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "net.nameplate.NameplateMain"
+    ],
+    "client": [
+      "net.nameplate.NameplateClient"
+    ],
+    "modmenu": [
+      "net.nameplate.config.ModMenuIntegration"
+    ]
+  },
+  "mixins": [
+    "nameplate.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.19.5",
+    "fabric-api": "*",
+    "minecraft": "~26.2",
+    "java": ">=25",
+    "cloth-config2": ">=26.2.155"
+  },
+  "suggests": {
+    "modmenu": "*"
+  }
+}

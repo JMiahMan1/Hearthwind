@@ -1,0 +1,63 @@
+package ht.treechop.common.settings;
+
+import ht.treechop.common.settings.codec.Codecs;
+import ht.treechop.common.settings.codec.SimpleCodec;
+import java.util.Set;
+import java.util.stream.Collectors;
+import net.minecraft.client.resources.language.I18n;
+import net.minecraft.network.FriendlyByteBuf;
+
+public enum SettingsField {
+   CHOPPING("choppingEnabled", "treechop.setting.chopping", Boolean.TRUE),
+   SNEAK_BEHAVIOR("sneakBehavior", "treechop.setting.sneak_behavior", SneakBehavior.INVERT_CHOPPING),
+   TREES_MUST_HAVE_LEAVES("treeMustHaveLeaves", "treechop.setting.trees_must_have_leaves", Boolean.TRUE),
+   CHOP_IN_CREATIVE_MODE("chopInCreativeMode", "treechop.setting.chop_in_creative_mode", Boolean.FALSE);
+
+   public static final SettingsField[] VALUES = values();
+   private final String configKey;
+   private final String langKey;
+   private final SimpleCodec<?> codec;
+   private Object defaultValue;
+
+   private SettingsField(String configKey, String langKey, Object defaultValue) {
+      this.configKey = configKey;
+      this.langKey = langKey;
+      this.defaultValue = defaultValue;
+      this.codec = Codecs.forType(defaultValue.getClass());
+   }
+
+   public String getConfigKey() {
+      return this.configKey;
+   }
+
+   public String getFancyName() {
+      return I18n.get(this.langKey, new Object[0]);
+   }
+
+   public Object getDefaultValue() {
+      return this.defaultValue;
+   }
+
+   public void encode(FriendlyByteBuf buffer, Object value) {
+      buffer.writeByte(this.ordinal());
+      this.codec.encode(buffer, value);
+   }
+
+   private Object decodeValue(FriendlyByteBuf buffer) {
+      return this.codec.decode(buffer);
+   }
+
+   public static Setting decode(FriendlyByteBuf buffer) {
+      SettingsField field = values()[buffer.readByte()];
+      Object value = field.decodeValue(buffer);
+      return new Setting(field, value);
+   }
+
+   public String getValueName(Object value) {
+      return I18n.get(this.codec.getLocalizationString(value), new Object[0]);
+   }
+
+   public Set<Object> getValues() {
+      return this.codec.getValues().stream().map(a -> a).collect(Collectors.toSet());
+   }
+}

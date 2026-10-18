@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "group": "tall_stools",
+  "ingredients": [
+    "minecraft:orange_dye",
+    "another_furniture:white_tall_stool"
+  ],
+  "result": {
+    "id": "another_furniture:orange_tall_stool"
+  }
+}

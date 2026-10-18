@@ -1,0 +1,1 @@
+scoreboard objectives add dismount_cooldown dummy

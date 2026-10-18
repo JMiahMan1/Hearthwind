@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "group": "drawers",
+  "key": {
+    "#": "minecraft:jungle_planks",
+    "S": "minecraft:jungle_slab",
+    "/": "minecraft:stick"
+  },
+  "pattern": [
+    "###",
+    "S/S",
+    "###"
+  ],
+  "result": {
+    "count": 1,
+    "id": "another_furniture:jungle_drawer"
+  }
+}

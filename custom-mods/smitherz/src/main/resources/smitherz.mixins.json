@@ -1,0 +1,22 @@
+{
+	"required": true,
+	"package": "net.smitherz.mixin",
+	"compatibilityLevel": "JAVA_25",
+	"plugin": "net.smitherz.mixin.SmitherMixinPlugin",
+	"mixins": [
+		"ItemMixin",
+						"SmithingScreenHandlerMixin",
+		"GrindstoneScreenHandlerMixin",
+		"LivingEntityMixin",
+		"ItemStackMixin"
+	],
+	"client": [
+		"client.SmithingScreenMixin",
+		"client.HandledScreenMixin",
+		"client.ItemStackClientMixin",
+		"client.GrindstoneScreenMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	}
+}

@@ -1,0 +1,6 @@
+{
+  "parent": "medievalweapons:item/sickle",
+  "textures": {
+    "layer0": "medievalweapons:item/iron_sickle"
+  }
+}

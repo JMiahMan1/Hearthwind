@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "eed",
+    "ed ",
+    "d  "
+  ],
+  "key": {
+    "d": "minecraft:string",
+    "e": "minecraft:stick"
+  },
+  "result": {
+    "id": "medievalweapons:recurve_bow",
+    "count": 1
+  }
+}

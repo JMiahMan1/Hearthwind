@@ -1,0 +1,42 @@
+{
+  "schemaVersion": 1,
+  "id": "voidz",
+  "version": "${version}",
+  "name": "VoidZ",
+  "description": "Void addon for the AdventureZ mod (Hearthwind 26.2 port)",
+  "authors": [
+    "Globox_Z"
+  ],
+  "contact": {
+    "homepage": "https://www.curseforge.com/minecraft/mc-mods/voidz",
+    "sources": "https://github.com/Globox1997/VoidZ"
+  },
+  "license": "GPLv3",
+  "icon": "assets/voidz/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "net.voidz.VoidMain"
+    ],
+    "client": [
+      "net.voidz.VoidClient"
+    ],
+    "modmenu": [
+      "net.voidz.config.ModMenuIntegration"
+    ]
+  },
+  "mixins": [
+    "voidz.mixins.json"
+  ],
+  "depends": {
+    "java": ">=25",
+    "minecraft": "~26.2",
+    "fabricloader": ">=0.19.5",
+    "fabric-api": "*",
+    "cloth-config2": ">=26.2.155",
+    "adventurez": "*"
+  },
+  "suggests": {
+    "modmenu": "*"
+  }
+}

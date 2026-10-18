@@ -1,0 +1,40 @@
+{
+	"schemaVersion": 1,
+	"id": "travelerz",
+	"version": "${version}",
+	"name": "TravelerZ",
+	"description": "Biome and mob level titles (Hearthwind 26.2 port)",
+	"authors": [
+		"Globox_Z"
+	],
+	"contact": {
+		"homepage": "https://www.curseforge.com/minecraft/mc-mods/travelerz",
+		"sources": "https://github.com/Globox1997/TravelerZ",
+		"issues": "https://github.com/Globox1997/TravelerZ/issues"
+	},
+	"license": "MIT",
+	"icon": "assets/travelerz/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"net.travelerz.TravelerzMain"
+		],
+		"client": [
+			"net.travelerz.TravelerzClient"
+		],
+		"modmenu": [
+			"net.travelerz.config.ModMenuIntegration"
+		]
+	},
+	"mixins": [
+		"travelerz.mixins.json"
+	],
+	"depends": {
+		"java": ">=25",
+		"minecraft": "~26.2",
+		"fabric-api": "*",
+		"fabricloader": ">=0.19.5",
+		"cloth-config2": ">=26.2.155",
+		"nameplate": "*"
+	}
+}

@@ -1,0 +1,6 @@
+{
+  "parent": "medievalweapons:item/dagger",
+  "textures": {
+    "layer0": "medievalweapons:item/wooden_dagger"
+  }
+}

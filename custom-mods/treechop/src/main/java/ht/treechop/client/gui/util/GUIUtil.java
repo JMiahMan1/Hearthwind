@@ -1,0 +1,48 @@
+package ht.treechop.client.gui.util;
+
+import java.util.List;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.Component;
+
+public class GUIUtil {
+   public static final int TEXT_LINE_HEIGHT = 8;
+   public static final int BUTTON_HEIGHT = 20;
+   public static int TOOLTIP_WIDTH_BUFFER = 20;
+   private static int tooltipX;
+   private static int tooltipY;
+   private static Component tooltipText;
+
+   public static int getTextWidth(Component name) {
+      return getTextWidth(name.getString());
+   }
+
+   public static int getTextWidth(String name) {
+      Font font = Minecraft.getInstance().font;
+      return font.width(name);
+   }
+
+   public static int getMinimumButtonWidth(Component name) {
+      return getTextWidth(name) + 9;
+   }
+
+   public static void showTooltip(int x, int y, Component text) {
+      tooltipX = x;
+      tooltipY = y;
+      tooltipText = text;
+   }
+
+   public static void renderTooltip(GuiGraphicsExtractor gui) {
+      Screen screen = Minecraft.getInstance().gui.screen();
+      if (screen != null && tooltipText != null) {
+         int maxWidth = Math.max(Math.max(tooltipX, screen.width - tooltipX) - TOOLTIP_WIDTH_BUFFER, TOOLTIP_WIDTH_BUFFER);
+         Font font = Minecraft.getInstance().font;
+         List<net.minecraft.util.FormattedCharSequence> splitText = font.split(tooltipText, maxWidth);
+         gui.setTooltipForNextFrame(font, splitText, tooltipX, tooltipY);
+      }
+
+      tooltipText = null;
+   }
+}

@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "group": "drawers",
+  "key": {
+    "#": "minecraft:dark_oak_planks",
+    "S": "minecraft:dark_oak_slab",
+    "/": "minecraft:stick"
+  },
+  "pattern": [
+    "###",
+    "S/S",
+    "###"
+  ],
+  "result": {
+    "count": 1,
+    "id": "another_furniture:dark_oak_drawer"
+  }
+}

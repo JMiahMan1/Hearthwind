@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "d": "#minecraft:planks",
+    "e": "minecraft:stick"
+  },
+  "pattern": [
+    "de",
+    " e"
+  ],
+  "result": {
+    "count": 1,
+    "id": "medievalweapons:wooden_francisca"
+  }
+}

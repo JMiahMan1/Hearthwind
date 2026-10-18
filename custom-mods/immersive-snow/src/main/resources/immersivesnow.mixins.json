@@ -1,0 +1,12 @@
+{
+	"required": true,
+	"package": "straywave.minecraft.immersivesnow.mixin",
+	"compatibilityLevel": "JAVA_25",
+	"mixins": [
+		"MinecraftServerInvoker",
+		"ServerLevelMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	}
+}

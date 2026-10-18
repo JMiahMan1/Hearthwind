@@ -1,0 +1,44 @@
+{
+	"schemaVersion": 1,
+	"id": "niftycarts",
+	"version": "${version}",
+	"name": "NiftyCarts",
+	"description": "A Fabric Port of the AstikorCarts Minecraft mod. It adds carts for travel, shipping and farming.",
+	"authors": [
+		"MennoMax",
+		"paul101",
+		"jmb19905"
+	],
+	"contact": {
+		"sources": "https://github.com/jmb05/nifty-carts"
+	},
+	"license": "MIT",
+	"icon": "assets/niftycarts/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"net.jmb19905.niftycarts.NiftyCarts"
+		],
+		"client": [
+          "net.jmb19905.niftycarts.client.NiftyCartsClient"
+		]
+	},
+	"mixins": [
+		"niftycarts.mixins.json",
+		{
+			"config": "niftycarts.client.mixins.json",
+			"environment": "client"
+		}
+	],
+	"depends": {
+		"fabricloader": ">=0.19.5",
+		"minecraft": "~26.2",
+		"java": ">=25",
+		"fabric-api": "*",
+		"forgeconfigapiport": ">=26.2.1"
+	},
+	"suggests": {
+		"forgeconfigscreens": "*"
+	},
+	"accessWidener": "niftycarts.accesswidener"
+}

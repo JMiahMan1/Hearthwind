@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "group": "tall_stools",
+  "ingredients": [
+    "minecraft:green_dye",
+    "another_furniture:white_tall_stool"
+  ],
+  "result": {
+    "id": "another_furniture:green_tall_stool"
+  }
+}

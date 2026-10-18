@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "id": "villagerfix",
+  "version": "${version}",
+  "name": "Villager Trade Fix",
+  "description": "Fixes villager trades to make them non op (Hearthwind 26.2 port)",
+  "authors": [
+    "Globox_Z"
+  ],
+  "contact": {
+    "homepage": "https://www.curseforge.com/minecraft/mc-mods/villagertradefix",
+    "sources": "https://github.com/Globox1997/VillagerTradeFix",
+    "issues": "https://github.com/Globox1997/VillagerTradeFix/issues"
+  },
+  "license": "MIT",
+  "icon": "assets/villagerfix/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "net.villagerfix.VillagerFixMain"
+    ],
+    "modmenu": [
+      "net.villagerfix.config.ModMenuIntegration"
+    ]
+  },
+  "mixins": [
+    "villagerfix.mixins.json"
+  ],
+  "depends": {
+    "java": ">=25",
+    "minecraft": "~26.2",
+    "fabric-api": "*",
+    "fabricloader": ">=0.19.5",
+    "cloth-config2": ">=26.2.155"
+  },
+  "suggests": {
+    "modmenu": "*"
+  }
+}

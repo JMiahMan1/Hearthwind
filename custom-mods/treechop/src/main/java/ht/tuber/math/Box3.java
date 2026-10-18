@@ -1,0 +1,69 @@
+package ht.tuber.math;
+
+import java.util.Objects;
+
+public class Box3 {
+   public static final Box3 ZERO = new Box3(0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
+   private final double x1;
+   private final double y1;
+   private final double z1;
+   private final double x2;
+   private final double y2;
+   private final double z2;
+
+   public Box3(double x1, double y1, double z1, double x2, double y2, double z2) {
+      this.x1 = x1;
+      this.y1 = y1;
+      this.z1 = z1;
+      this.x2 = x2;
+      this.y2 = y2;
+      this.z2 = z2;
+   }
+
+   public Box3(Vector3 first, Vector3 second) {
+      this(
+         Math.min(first.x(), second.x()),
+         Math.min(first.y(), second.y()),
+         Math.min(first.z(), second.z()),
+         Math.max(first.x(), second.x()),
+         Math.max(first.y(), second.y()),
+         Math.max(first.z(), second.z())
+      );
+   }
+
+   public double getMinX() {
+      return this.x1;
+   }
+
+   public double getMinY() {
+      return this.y1;
+   }
+
+   public double getMinZ() {
+      return this.z1;
+   }
+
+   public double getMaxX() {
+      return this.x2;
+   }
+
+   public double getMaxY() {
+      return this.y2;
+   }
+
+   public double getMaxZ() {
+      return this.z2;
+   }
+
+   @Override
+   public int hashCode() {
+      return Objects.hash(this.x1, this.y1, this.z1, this.x2, this.y2, this.z2);
+   }
+
+   @Override
+   public boolean equals(Object other) {
+      return !(other instanceof Box3 box)
+         ? false
+         : this.x1 == box.x1 && this.y1 == box.y1 && this.z1 == box.z1 && this.x2 == box.x2 && this.y2 == box.y2 && this.z2 == box.z2;
+   }
+}

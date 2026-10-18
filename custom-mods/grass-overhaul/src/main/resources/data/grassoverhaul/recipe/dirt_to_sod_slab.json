@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "012"
+  ],
+  "key": {
+    "0": "minecraft:dirt",
+    "1": "minecraft:dirt",
+    "2": "minecraft:dirt"
+  },
+  "result": {
+    "id": "grassoverhaul:dirt_sod_slab",
+    "count": 6
+  }
+}

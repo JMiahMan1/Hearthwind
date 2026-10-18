@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "group": "drawers",
+  "key": {
+    "#": "minecraft:bamboo_planks",
+    "S": "minecraft:bamboo_slab",
+    "/": "minecraft:stick"
+  },
+  "pattern": [
+    "###",
+    "S/S",
+    "###"
+  ],
+  "result": {
+    "count": 1,
+    "id": "another_furniture:bamboo_drawer"
+  }
+}

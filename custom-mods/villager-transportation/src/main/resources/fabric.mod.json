@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "id": "mr_villager_transportation",
+  "version": "${version}",
+  "name": "Villager Transportation",
+  "description": "Easier Villager transportation by using Camels and Llamas! (Hearthwind 26.2 port)",
+  "authors": [
+    "Jaffthry"
+  ],
+  "contact": {
+    "homepage": "https://modrinth.com/datapack/villager-transportation"
+  },
+  "license": "LicenseRef-All-Rights-Reserved",
+  "icon": "villager-transportation_pack.png",
+  "environment": "*",
+  "depends": {
+    "fabricloader": ">=0.19.5",
+    "minecraft": "~26.2",
+    "java": ">=25",
+    "fabric-api": "*"
+  }
+}

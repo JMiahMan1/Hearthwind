@@ -1,0 +1,42 @@
+{
+  "schemaVersion": 1,
+  "id": "libz",
+  "version": "${version}",
+  "name": "LibZ",
+  "description": "Library for Globox_Z mods (Hearthwind 26.2 port)",
+  "authors": [
+    "Globox_Z"
+  ],
+  "contact": {
+    "homepage": "https://www.curseforge.com/minecraft/mc-mods/libz",
+    "sources": "https://github.com/Globox1997/LibZ",
+    "issues": "https://github.com/Globox1997/LibZ/issues"
+  },
+  "license": "MIT",
+  "icon": "assets/libz/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "net.libz.LibzMain"
+    ],
+    "client": [
+      "net.libz.LibzClient"
+    ],
+    "modmenu": [
+      "net.libz.config.ModMenuIntegration"
+    ]
+  },
+  "mixins": [
+    "libz.mixins.json"
+  ],
+  "depends": {
+    "java": ">=25",
+    "minecraft": "~26.2",
+    "fabric-api": "*",
+    "fabricloader": ">=0.19.5",
+    "cloth-config2": ">=26.2.155"
+  },
+  "suggests": {
+    "modmenu": "*"
+  }
+}

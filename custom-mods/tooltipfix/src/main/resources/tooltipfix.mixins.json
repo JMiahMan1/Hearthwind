@@ -1,0 +1,12 @@
+{
+  "required": true,
+  "package": "net.kyrptonaught.tooltipfix.mixin",
+  "compatibilityLevel": "JAVA_25",
+  "client": [
+    "FixToolTipMixin",
+    "OrderedTextToolTipAccessor"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

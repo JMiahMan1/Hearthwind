@@ -1,0 +1,15 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "net.libz.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "plugin": "net.libz.mixin.LibzMixinPlugin",
+  "client": [
+    "client.InventoryScreenMixin",
+    "client.HandledScreenMixin",
+    "client.MouseMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

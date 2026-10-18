@@ -1,0 +1,31 @@
+{
+	"schemaVersion": 1,
+	"id": "immersivesnow",
+	"version": "${version}",
+	"name": "Immersive Snow",
+	"description": "Small tweaks that add to Minecraft's Winter theme. (Hearthwind 26.2 port)",
+	"authors": [
+		"Straywave"
+	],
+	"contact": {
+		"homepage": "https://modrinth.com/mod/immersive-snow",
+		"issues": "https://github.com/Straywave/ImmersiveSnow/issues"
+	},
+	"license": "MIT",
+	"icon": "assets/immersivesnow/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"straywave.minecraft.immersivesnow.fabric.Entrypoint"
+		]
+	},
+	"mixins": [
+		"immersivesnow.mixins.json"
+	],
+	"depends": {
+		"fabricloader": ">=0.19.5",
+		"minecraft": "~26.2",
+		"java": ">=25",
+		"fabric-api": "*"
+	}
+}

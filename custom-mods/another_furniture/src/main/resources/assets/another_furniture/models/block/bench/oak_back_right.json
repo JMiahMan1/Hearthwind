@@ -1,0 +1,8 @@
+{
+  "render_type": "minecraft:cutout",
+	"parent": "another_furniture:block/template/bench_back_right",
+	"textures": {
+		"2": "another_furniture:block/bench/oak",
+		"particle": "another_furniture:block/bench/oak"
+	}
+}

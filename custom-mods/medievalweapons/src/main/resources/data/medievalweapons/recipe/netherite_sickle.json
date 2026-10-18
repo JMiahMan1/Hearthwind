@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:smithing_transform",
+  "addition": "minecraft:netherite_ingot",
+  "base": "medievalweapons:diamond_sickle",
+  "result": {
+    "count": 1,
+    "id": "medievalweapons:netherite_sickle"
+  },
+  "template": "minecraft:netherite_upgrade_smithing_template"
+}

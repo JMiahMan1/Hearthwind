@@ -1,0 +1,17 @@
+{
+  "required": false,
+  "minVersion": "0.8",
+  "package": "ht.treechop.mixin",
+  "compatibilityLevel": "JAVA_25",
+  
+  "mixins": [
+    "EntityChopSettingsMixin"
+  ],
+  "client": [
+    "MultiPlayerGameModeMixin",
+    "GuiMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

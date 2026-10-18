@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "group": "benches",
+  "key": {
+    "S": "minecraft:jungle_slab",
+    "/": "minecraft:stick"
+  },
+  "pattern": [
+    "/  ",
+    "SSS",
+    "/ /"
+  ],
+  "result": {
+    "count": 3,
+    "id": "another_furniture:jungle_bench"
+  }
+}
