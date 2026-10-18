@@ -54,11 +54,6 @@
       "reason": "W4 port queue (plan 5.2): deuf-refabricated - not yet ported"
     },
     {
-      "project_id": "T8MMXTpr",
-      "filename": "DripSounds-1.19.4-0.3.2.jar",
-      "reason": "W4 port queue (plan 5.2): dripsounds - not yet ported"
-    },
-    {
       "project_id": "vZoqTqwv",
       "filename": "Dungeon Now Loading-fabric-1.20.1-1.5.jar",
       "reason": "W4 port queue (plan 5.2): dungeon-now-loading - not yet ported"
