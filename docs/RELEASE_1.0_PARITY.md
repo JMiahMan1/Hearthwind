@@ -349,6 +349,35 @@ three are in this list); `shatterbyte-lib` is OctoLib's renamed project.
 
 ### 5.2 Needs a port (66 + surveyor WIP)
 
+> **surveyor, medievalweapons, nameplate, niftycarts, antique-atlas, smitherz,
+> libz, travelerz, another_furniture, treechop, grass-overhaul, particular,
+> immersive-snow, voidz, villager-transportation and villagerfix are now ported
+> and server-verified, and immersive-thunder and tooltipfix are ported and
+> built** (see the updates in the port queue section below): all eighteen are
+> still unshipped - antique-atlas
+> and particular because they are client-only and their client halves (atlas
+> screen/canvas/item-model; particle visuals and config screen) need the client
+> suite, and the rest because their client halves (item definitions, custom
+> offhand model, glint; nameplate text/health-bar rendering; niftycarts
+> screens, cart renderers and textured cart assembly; smitherz screens,
+> smither/grinder tabs and gem tooltips; libz tab rendering; travelerz title
+> sizing and biome-change packet path; another_furniture renderers, seat
+> entity, drawer openers and fuel tags; treechop dynamic chopped-log rendering,
+> chop indicator, settings screen and keybinds; grass-overhaul grass sod tints
+> and creative-tab placement) have not been exercised by the client suite
+> (immersive-snow has no client-only surface - its server boot plus command
+> probe is its whole surface; immersive-thunder is the opposite case, a
+> client-only mixin over `LightningBolt.tick` that the dedicated server never
+> loads, so nothing short of a client run exercises it; voidz's end-portal
+> renderer and its in-void build/break gating are likewise client-side;
+> villager-transportation is a pure datapack whose mount loop was exercised
+> headless over RCON, leaving only its advancement toast presentation to the
+> client suite; villagerfix's trade-price mixins are server-side and were
+> exercised over RCON, but its cloth-config screen is client-only;
+> tooltipfix is another client-only mixin the dedicated server never loads, so
+> its tooltip wrapping/flip only shows up in a client run).
+> **No WIPs remain in this section.**
+
 > **Machine-checked count is 59, not the 66 this table was written against.**
 > `python3 conversion/scripts/aged_parity_diff.py` reads
 > `conversion/curated/aged-missing-allowlist.json` and is the authority for how
@@ -529,7 +558,7 @@ shipped Time & Wind data reads 14, exactly like Aged.
 
 | Element | Aged | Hearthwind | Status |
 |---|---|---|---|
-| LibZ tabs floating above the panel (bag, sword, axe, figure) | LibZ | `TabStrip` (bundle, iron sword, iron axe, armor stand) | ✅ placement (0.1.32, re-measured 0.1.33): every Aged capture floats the strip on the 21 rows above the 200x215 panel, the selected tab only taller so it merges into the panel edge, which is what `TabStrip.draw`/`clicked` do and what `ScreensTourGameTests` asserts; 🟡 the art is a legal stand-in for GPL tab art, silhouettes match the capture. **0.1.44**, after executing LibZ 1.0.3's own `DrawTabHelper`/`TabRegistry` against stub classes and measuring `Inventory.png` at exactly 6.000x: the sheet is byte-identical to `libz:textures/gui/icons.png` (sha256 equal) and the geometry, pitch, icon offset and unselected hit rects all match, so **the rebuild is kept and the mod is not ported** - nothing consumes its registration API (every LibZ-dependent mod in the pack is already ours or unported) and two of its mixin targets no longer exist on 26.2. Three gaps closed in passing: a **5th tab for a non-empty equipped backpack** (its icon is the backpack itself, which Aged shows too), **tooltip titles now the reference's own translatable text** (Crafting / Skills / Jobs / Party / Backpack, replacing our literals with `[K]`-style key hints), and the unselected **first** tab's hit box corrected from 25 rows to LibZ's 21 |
+| LibZ tabs floating above the panel (bag, sword, axe, figure) | LibZ | `TabStrip` (bundle, iron sword, iron axe, armor stand) | ✅ placement (0.1.32, re-measured 0.1.33): every Aged capture floats the strip on the 21 rows above the 200x215 panel, the selected tab only taller so it merges into the panel edge, which is what `TabStrip.draw`/`clicked` do and what `ScreensTourGameTests` asserts; 🟡 the art is a legal stand-in for GPL tab art, silhouettes match the capture. **0.1.44**, after executing LibZ 1.0.3's own `DrawTabHelper`/`TabRegistry` against stub classes and measuring `Inventory.png` at exactly 6.000x: the sheet is byte-identical to `libz:textures/gui/icons.png` (sha256 equal) and the geometry, pitch, icon offset and unselected hit rects all match, so **the rebuild is kept and the mod is not ported** - nothing consumes its registration API (every LibZ-dependent mod in the pack is already ours or unported) and two of its mixin targets no longer exist on 26.2. Three gaps closed in passing: a **5th tab for a non-empty equipped backpack** (its icon is the backpack itself, which Aged shows too), **tooltip titles now the reference's own translatable text** (Crafting / Skills / Jobs / Party / Backpack, replacing our literals with `[K]`-style key hints), and the unselected **first** tab's hit box corrected from 25 rows to LibZ's 21. **0.1.58 correction**: the "not ported" call was reversed - porting SmitherZ (a real LibZ consumer) required LibZ's registration API, so with user approval LibZ itself was ported (see the smitherz+libz update below); the TabStrip rebuild remains our inventory tabs and LibZ is only used for mod-registered tabs on the smithing/grindstone screens |
 | Left accessory column (5 slots) | **Trinkets** + **BackSlot**/addon + **Inmis** | Trinkets Updated fork (data-driven slots), BackSlot back+belt slots (G / Shift+G, HUD + avatar rendering) with the BackSlot Addon shield/sword/lantern renders, Inmis backpacks (B, chest slot, on-back) with the Addon's 3D backpack models and Trinkets-slot support | ✅ 0.1.27: ports done 0.1.24 (Trinkets, Inmis, BackSlot + Addon) and the Inmis Addon rebuilt in-tree (3D models, Trinkets slot, Aged config keys); the LibZ tab strip is our own clean-room `TabStrip` (no 26.2 LibZ build exists; see 5.7) |
 | Extra slots beside the player preview | **BackSlot** (back slot 41 + belt slot 42 only) and the right-hand column is **Trinkets**' own accessory grid | BackSlot back+belt slots, Trinkets Updated accessory slots | ✅ both already shipped (0.1.24/0.1.27). The old ❌ row was mis-attributed: BackSlot 1.2.15's `PlayerScreenHandlerMixin` only adds slots 41/42, so nothing weapon/bow-specific needs porting |
 | `Lv. N` label on the player preview | LevelZ `inventorySkillLevel` (posX 0 / posY 62, 0.6 scale, white) | `InventoryScreenButtonMixin` draws `Lv. <overall>` | ✅ 2026-09-26; overall level = min(30, sum/12) like LevelZ (was a raw sum, so it showed Lv. 360) |
@@ -1109,6 +1138,22 @@ zoomify, satin-style perf mods) or has no 26.2 build to adopt
 missing jar. Re-run `python3 conversion/scripts/aged_parity_diff.py` before
 quoting any of this; it is the only source of truth here.
 
+**0.1.58 correction:** `dripsounds` does have an official 26.2 Fabric build
+(`Drip Sounds-0.6.3+26.2-Fabric.jar`, mod id `waterdripsound`, LGPL-3.0-only,
+`minecraft >=26.2`, `cloth-config >=26.2` - the pack ships cloth-config
+26.2.155). It is therefore **adopted upstream, not ported**: the manifest
+entry is `client-optional` with the usual `Adopted upstream 26.2 (W2)` note,
+and the `T8MMXTpr` allowlist entry is gone. (The tooltipfix rebuild above is a
+separate case: upstream never made a 26.2 build for it.)
+Re-running the resolver for that adoption also exposed a version-pin trap
+worth recording: it picked `neruina 3.3.5`, which hard-depends on
+`configurable ~3.5.3`, but Modrinth's only 3.5.3 Fabric build is filename-named
+`configurable-3.5.3+26.3-fabric.jar` - it claims 26.2 in `game_versions` yet
+fails the filename gate, so the resolver keeps 3.5.2 and the pair does not
+boot. The manifest therefore pins `neruina` to the previously shipped
+`neruina-3.3.3+26.2-fabric.jar` via `local_override` (vendored), which depends
+on `configurable ~3.5.2` and boots to `Done`.
+
 **W3: Close parity gaps in the Hearthwind rebuilds (section 5.3).**
 Highest gameplay impact first: jobs curve, 3 concurrent jobs and switch
 cooldown (done 0.1.28 - all three were already live; 0.1.28 added the
@@ -1129,8 +1174,10 @@ pinned to Aged's value.
 drifted: it still listed `inmis`, `backslot` and `trinkets` (all shipped) plus
 `bento-box`, `lootbeams` and `villagertradefix`, which are not in the queue at
 all. Current state, re-audited against the built pack 0.1.57: the queue holds
-**59 entries and every one is a port - not one has a 26.2 Fabric build**,
-so there is nothing left to adopt from the W2 list.
+**59 entries at that audit (57 today) and every one is a port - not one has a
+26.2 Fabric build**, so there is nothing left to adopt from the W2 list -
+except `dripsounds`, which gained an official 26.2 build and was adopted in
+0.1.58 (see the W2 correction above).
 
 Two corrections to what this section previously claimed. It said three entries
 "were already finished and had simply never been dropped from the allowlist".
@@ -1199,11 +1246,484 @@ surfaces:
 The remapper is now reliable (class + member + mixin-string coverage, any MC
 version, yarn builds resolved from metadata), and the migration sheet in
 AGENTS.md covers every one of these - so the mechanical half of each port is
-solved. What is left per mod is the redesign, which is why these four are
+solved. What is left per mod is the redesign, which is why these four were
 parked rather than half-portd: niftycarts, medievalweapons, nameplate and
 surveyor all have their remapped sources preserved under `.tmp/mapwork/`, each
-with a written diagnosis of its last mile, and none of them is in the tree or
-the pack.
+with a written diagnosis of its last mile. (None of the four is parked any
+more: see the 0.1.58 updates below - surveyor, medievalweapons, nameplate and
+niftycarts are all in the tree and server-verified, still unshipped, and
+`antique-atlas` - surveyor's only consumer - has since followed them.)
+
+**Update (0.1.58 dev): surveyor is ported, built and server-verified.**
+`custom-mods/surveyor` is now in `settings.gradle` with its root
+`build.gradle` block. Starting from its 26.1 build (26.x is Mojmap, so no
+remap was needed) the 15 remaining errors were the four shapes the last-mile
+diagnosis predicted: erased `ByteBufCodecs` type witnesses (now typed static
+helpers in `SurveyorPacketCodecs`), raw-type inference breakdowns
+(`Map`/`Set`/`List` parameterised), `ListTag(Collection)` needing `<Tag>`
+witnesses and the `countRenderedSections` removal. `./gradlew build` green;
+jar `surveyor-26.2+0.1.0.jar`, 117 classes, nested kaleido-config intact.
+Runtime: booted the 0.1.57 server tree to `Done` (11.4s) with no surveyor
+init/mixin errors, RCON probes answered (`/surveyor` -> "Mapped 74 total
+chunks! Mapped 1 structures!", `/landmarks` -> "There are 0 Landmarks"),
+data persisted to `world/dimensions/minecraft/overworld/data/surveyor/*.dat`
+and `config/surveyor.toml` was generated. The **client** entrypoint is not
+yet exercised: the jar is deliberately NOT in `dist/` or `PORTED_MODULES`,
+because surveyor is a library whose only consumer is `antique-atlas`; it
+joins the pack (and the client suite, which boots any jar in dist) together
+with that port. One deliberate deviation from the upstream jar metadata: the
+nested `fabric.mod.json` keeps version `1.2.4+26.1` so a future
+`antique-atlas` dependency constraint on surveyor still satisfies.
+
+**Update (0.1.58 dev): medievalweapons is ported, built and server-verified.**
+`custom-mods/medievalweapons` (59 sources + assets/data) is in
+`settings.gradle`/`build.gradle`; dead compat (Jade/LevelZ/bettercombat and
+the six unshipped-material integrations, 4k lines of `CompatItems`/
+`CompatRecipes`) was pruned, as were the 75 bettercombat weapon-attribute
+files and the bettercombat attack animation. The port is the queue's "482
+SwordItem sites" item: every weapon is now a plain `Item` with
+`ToolMaterial.applySwordProperties`, offhand attack re-implements 26.2's
+`Player.attack` flow (private `createAttackSource`/`canCriticalAttack`/
+`doSweepAttack`/`damageStatsAndHearts`/`attackVisualEffects`/`baseDamageScaleFactor`/
+`playServerSideSound` shadowed), and the four client mixins moved to
+`Hud`/`HumanoidRenderState`. Three deviations from upstream, all recorded
+here: (1) the per-hero item glint (`RenderInit.CUSTOM_GLINT` + the
+`ItemRenderer` wrap) is deferred - the old `RenderType.create` glint has no
+26.2 equivalent and the rebuild will go through the Fabric
+`FeatureRendererRegistry`/`RenderPipeline` route; (2) the first-person
+blocking arm rotation is deferred with it (its old hook lived on the removed
+`ItemRenderer.renderStatic`) - this needs a new `ItemInHandRenderer` hook;
+(3) `canDisableShield` no longer exists, so shield-disable is now the
+`Weapon(1)` component that `applySwordProperties` already grants - same
+behaviour, new mechanism. One upstream bug was silently fixed: its
+`EnchantmentMixin` compared an `Enchantment` instance against a
+`ResourceKey`, which could never match; ours resolves the piercing/impaling/
+loyalty instances from the server registry at `SERVER_STARTED`
+(`EnchantmentCache`) so javelins actually accept them. Recipes needed the
+26.2 ingredient flattening (`{"item": x}` -> `"x"`, `{"tag": t}` ->
+`"#t"`; 74 files, 62 shaped + 12 smithing). Runtime: booted the 0.1.57
+server tree to `Done` (11.7s), RCON summons resolved display names
+(`iron_dagger`, `long_bow`, `netherite_big_axe`), all 74 recipes parse
+(4842 total) and the three item probes (`PROBE_DAGGER_OK`, `PROBE_BOW_OK`,
+`PROBE_BIGAXE_OK`) answered. The **client** half is not yet exercised: 77
+`assets/medievalweapons/items/*.json` definitions (incl. the custom
+`medievalweapons:offhand` model type registered in `OffhandItemModel`) and
+the four client mixins need the client suite, so the module is deliberately
+NOT in `dist/` or `PORTED_MODULES` yet.
+
+**Update (0.1.58 dev): nameplate is ported, built and server-verified.**
+`custom-mods/nameplate` is in `settings.gradle`/`build.gradle` and the render
+rewrite - the queue's "`MultiBufferSource` is gone" item - is done. Upstream
+hooked `MobRenderer.render` directly; 26.2 has no such seam, so the port hooks
+`LivingEntityRenderer.extractRenderState`/`submit` and carries its data on a
+duck-typed `LivingEntityRenderState` mixin (`NameplateRenderState`), with a
+`MobRenderer.shouldShowName -> false` cancel replacing the old `hasLabel`
+cancel. The billboard is rebuilt on the submission pipeline
+(`submitCustomGeometry` quads for the health bar, two `submitText` passes for
+the outline, `cameraState.orientation` for the facing) and the client-only
+state mixin had to sit in the `client` list of `nameplate.mixins.json` - a
+server boot crashed with "target was not found" until it did. Traveler's
+Titles (`TitlePacket`) and RPGDifficulty branches are pruned. Runtime: booted
+the 0.1.57 server tree to `Done`, `config/nameplate.json` generated, and an
+RCON-spawned zombie came back from `data get entity` carrying
+`MobRpgLevel: 1`/`HasMobRpgLabel: 1b`, proving the save-data mixin applies.
+Client visuals (text/health-bar submissions) and the tracker packet need the
+client suite, so the module is deliberately NOT in `dist/` or
+`PORTED_MODULES` yet.
+
+**Update (0.1.58 dev): niftycarts is ported, built and server-verified.**
+`custom-mods/niftycarts` is in `settings.gradle`/`build.gradle`, ported from
+its 1.21.11 build - so the item definitions and render-state classes already
+existed and the queue's "`GuiGraphics` drawing rework" was only the three
+screens. What remained was the 26.2 delta proper: the advancement package
+moves (`triggers`/`predicates`), the sprite package rebuild
+(`sprite.Material`/`SpriteId`/`SpriteGetter`, `Sheets.BANNER_BASE`,
+`Context.getSprites()`/`getBlockModelResolver()`), the block-model submit
+path (`BlockStateModelSet` + `submitBlockModel` + `BlockTintSource`), a
+self-registering `KeyMapping` constructor and `KeyMapping.Category.register`
+(the Fabric key-binding module no longer exists in 26.2),
+`ModelLayerRegistry`, `CreativeModeTabEvents.modifyOutputEvent`,
+`PayloadTypeRegistry.serverboundPlay`/`clientboundPlay`, ValueIO save data
+(`ServerEntity.addPairing`, `SavedDataStorage`), the single
+`interact(Player, InteractionHand, Vec3)` seam, and rows-native
+`ContainerScreen` sizing (its `imageWidth`/`imageHeight` are final now).
+night-config `core`/`toml` 3.8.4 were extracted into
+`conversion/vendored/compile-libs/` because ForgeConfigAPIPort's nested jars
+are not on the compile classpath, and the access widener was converted to the
+slash-name `v2 official` form. Runtime: booted the 0.1.57 server tree to
+`Done`, no mixin-apply or parse failures, 4853 recipes (4842 + 11), and RCON
+probes summon `niftycarts:oak_hand_cart` ("Summoned New Oak Hand Cart") and
+the `niftycarts:hand_cart` entity ("Summoned new Hand Cart") with
+PROBE_ITEM_OK/PROBE_ENTITY_OK/PROBE_WHEEL_OK markers. The client half
+(screens, cart renderers, the `ModelManagerMixin` textured cart assembly,
+keybinds) needs the client suite, so the module is deliberately NOT in
+`dist/` or `PORTED_MODULES` yet.
+
+**Update (0.1.58 dev): antique-atlas is ported, built and server-load-verified.**
+`custom-mods/antique-atlas` is in `settings.gradle`/`build.gradle` and compiles
+against our ported surveyor jar. Porting the 3.1.2+1.21 build
+(52 remapped files, 808 compile errors to zero) hinged on three things. (1)
+`AtlasScreen`, `MarkerTextures` and `TileTextures` decompiled to empty files
+("Unable to decompile"); they were recovered with CFR from the remapped jar.
+(2) The render core was rebuilt around a new `AtlasCanvas` abstraction
+(`GuiAtlasCanvas` over `GuiGraphicsExtractor` for the screen,
+`WorldAtlasCanvas` over `PoseStack`+`SubmitNodeCollector` for the in-world
+path) because 26.2 removed `GuiGraphics` and `MultiBufferSource`;
+`DrawBatcher`/`DrawUtil`/`AtlasRenderer`/`MarkerTexture` draw through it
+(pipeline-first `blit(RenderPipelines.GUI_TEXTURED, ...)`, ARGB tints instead
+of `RenderSystem.setShaderColor`). (3) The reloader metadata port replaced the
+removed `MetadataSectionSerializer` with `MetadataSectionType` and hoisted
+`MarkerTextureMeta`/`TileTextureMeta` out of their reloaders (a class's own
+nested types are not in scope in its `extends` clause). Items went the data
+driven route: `ItemProperties`/`ModelResourceLocation` are gone, so the
+hand-held atlas is a custom `AtlasItemModel` (the `OffhandItemModel` pattern)
+registered in `ItemModels.ID_MAPPER` with an `assets/minecraft/items/book.json`
+override, and `ItemGroupEvents` became
+`CreativeModeTabEvents.modifyOutputEvent`. `MixinItemStack` hooks
+`ItemStack.use` (`InteractionResult`); `MixinItemModels`, `MixinModelLoader`
+and `MixinHeldItemRenderer` were deleted - in-hand atlas rendering is DEFERRED
+(26.2's `ItemInHandRenderer` has no `renderMap` seam), with
+`HandheldAtlasRenderer`/`WorldAtlasCanvas` kept for a future
+`SpecialModelRenderer` route. Runtime: the 0.1.57 server tree plus the
+antique-atlas and surveyor jars boots to `Done` with no mixin-apply or parse
+failures and lists `antique_atlas 26.2+0.1.0`. It is a client-only mod, so its
+real verification (atlas screen, canvas quads, book override, dimension
+bookmarks) needs the client suite; the module is deliberately NOT in `dist/`
+or `PORTED_MODULES` yet.
+
+**Update (0.1.58 dev): smitherz and libz are ported, built and server-verified.**
+`custom-mods/libz` and `custom-mods/smitherz` are both in the tree. Porting
+smitherz (1.1.1, 51 files, 440 compile errors to zero) falsified the 0.1.44
+premise that nothing consumes LibZ's registration API - SmitherZ opens its
+Smither/Grinder screens through LibZ tabs on the vanilla Smithing/Grindstone
+screens, so with the user's approval LibZ was ported too (the TabStrip rebuild
+stays; LibZ only draws tabs mods register, and none of the rebuilt inventory
+tabs are LibZ-registered). LibZ port: the two dead config mixins
+(`IntegratedServerLoaderMixin`, `MarshallerImplMixin`) and the whole
+config-sync subsystem (jackson nesting, `ConfigSync`/`ConfigHelper`,
+EMI/REI plugins, `EventInit`) were pruned; the legacy byte-buf networking is
+now a real `CustomPacketPayload` (`SetMousePositionPayload`,
+`serverboundPlay`/`clientboundPlay`), `InventoryScreenMixin` moved from the
+removed `EffectRenderingInventoryScreen` to `AbstractContainerScreen`, and
+`DrawTabHelper`/`HandledScreenMixin`/`MouseMixin` were converted to
+`GuiGraphicsExtractor` + `MouseButtonEvent` (pipeline-first blits). SmitherZ
+port: the `TieredItem`/`ArmorItem` marker mixins were replaced by
+`UpgradeHelper.isUpgradeable` (`TOOL`/`WEAPON`/`EQUIPPABLE` armor slots) and
+the draylar-tiered + RPGDifficulty compat pruned; gems carry their attributes
+via `Properties.attributes` (`Item` no longer exposes
+`getDefaultAttributeModifiers`); items set `Properties.setId` before
+construction; tooltips moved to the 26.2 `ClientTooltipComponent` interface
+and `ClientTooltipComponentCallback`; screens render through
+`extractRenderState`/`extractBackground`/`extractSlot` with pipeline-first
+blits; both recipes were flattened to 26.2 ingredients. Runtime: the 0.1.57
+tree plus the smitherz and libz jars boots to `Done` with no mixin-apply or
+parse failures and 4770 recipes (both smitherz recipes load); RCON summons
+resolve display names (`Smither Hammer`, `Strength I Gem`) and
+item-existence probes pass. Client-only halves (smitherz screens, LibZ tabs,
+gem tooltip) need the client suite, so neither module is in `dist/` or
+`PORTED_MODULES` yet.
+
+**Update (0.1.58 dev): travelerz is ported, built and server-verified.**
+`custom-mods/travelerz` (Globox_Z's TravelerZ 1.0.3+1.21.1 - biome titles with
+a mob-level subtitle sampled through Nameplate) is in the tree. It depends on
+our ported `nameplate` for `NameplateTracker.getMobLevel`, so the build wires
+the nameplate jar as a file dependency with a `:nameplate:jar` task edge. The
+26.2 delta: the RPGDifficulty zone-title compat (`TitleCompat`) was pruned -
+that mod is not in the pack; the vanilla title API moved from `Gui` to `Hud`
+(`Minecraft.getInstance().gui.hud.setTitle/setSubtitle`), so
+`InGameHudAccess` now targets `Hud.title` and the HUD mixin retargets
+`Hud.extractTitle` with the same constants (4.0F/2.0F scale, -10/5 y) and the
+same `Font.width` `INVOKE_ASSIGN` ordinals; the server probe uses
+`EntityTypes.SKELETON.create(Level, EntitySpawnReason.TRIGGERED)` with the
+skeleton class from `entity.monster.skeleton`, `snapTo` (renamed from
+`moveTo`), `AutoConfigClient` for the config screen, and
+`clientboundPlay`/`serverboundPlay` for payload registration. Runtime: the
+0.1.57 tree plus the travelerz and nameplate jars boots to `Done` with no
+mixin-apply or parse failures, and `config/travelerz.json` is generated with
+the shipped defaults. The client half (title sizing mixin, biome-change
+packet round-trip) needs the client suite, so the module is not in `dist/` or
+`PORTED_MODULES` yet.
+
+**Update (0.1.58 dev): another_furniture is ported, built and server-verified.**
+`custom-mods/another_furniture` is Globox_Z's Another Furniture 4.0.2+1.21.1
+(the newest 1.21.1 build; Aged shipped 3.0.1+1.20.1, so this is also a version
+bump). The architectury dependency was metadata-only (`@ExpectPlatform`
+annotations) and was stripped; the disabled Create-Compat mixins and the
+conditional mixin plugin were dropped with the dead mixins.json entries. The
+26.2 delta: shared `BlockBehaviour.Properties` cannot be reused across blocks
+any more (the block id must be set before construction and the drops are
+precomputed), so `AFBlocks.Properties` is now a set of factory methods that
+stamp the id through a thread-local while `registerBlock` wraps construction in
+`pushId`/`popId`; `AFRegistryImpl` creates block entity types through the new
+direct `BlockEntityType` constructor, and item lists are built lazily as
+suppliers (creating `ItemStack`s during `AFBlocks.<clinit>` trips "Components
+not bound yet"); `onRemove` -> `affectNeighborsAfterRemoval`, `updateShape`
+gains `ScheduledTickAccess`/`RandomSource` (schedules via
+`tickAccess.scheduleTick`), stool bouncing moved to `getBounceRestitution()`,
+`DirectionProperty` -> `EnumProperty<Direction>`, `ItemInteractionResult` ->
+the plain `InteractionResult`, mob classes moved packages, `FuelRegistry`
+replaced by fabric `FuelValueEvents` for the thirteen furniture fuel tags,
+`FabricCreativeModeTab`, block entities on `ValueIO`, and all five renderers
+(shelf/small shelf, service bell, flower box, seat) rebuilt on render states
+with `ItemStackRenderState`/`BlockModelRenderState`. Data: 176 item
+definitions generated (`assets/another_furniture/items/`), `render_type:
+cutout` injected into 1,052 block models (the old `BlockRenderLayerMap` list),
+and 234 recipe/advancement files migrated to the flat-string ingredient form.
+BlockItems got `useBlockDescriptionPrefix()` so their 185 shipped `block.*`
+lang keys resolve (26.2 no longer borrows the block name). One recorded
+behaviour deviation: `LampConnectorBlock`'s custom `getDescriptionId` override
+is gone (the method is final in 26.2), so the connector shows its own name.
+Runtime: the 0.1.57 tree plus the jar boots to `Done` with no mixin-apply or
+parse failures, and RCON summons resolve display names (`Oak Chair`, `Oak
+Table`, `White Sofa`, `Oak Drawer`, `Hammer`) with item-existence probes
+passing. The client half (renderers, seat riding, drawer openers, fuel tags,
+creative tab) needs the client suite, so the module is not in `dist/` or
+`PORTED_MODULES` yet.
+
+**Update (0.1.58 dev): treechop is ported, built and server-verified.**
+`custom-mods/treechop` is HT's TreeChop 0.19.3a+1.21.1 (Aged shipped
+0.19.0+1.20.1, so a version bump). The config layer moved from the old
+forgeconfigapiport v4 API to `ConfigRegistry.INSTANCE.register` +
+`ModConfigEvents.reloading` (v5). The 26.2 renderer rework is the biggest
+piece: the old `BakedModel`/`FabricBakedModel`/`RendererAccess` path is
+replaced by one `ChoppedLogModel` implementing `BlockStateModel` whose
+`emitQuads` streams the dynamic chopped-log quads, a `ChoppedLogUnbakedModel`
+implementing `BlockStateModel.UnbakedRoot` (baked particle material from
+`baker.materials()`), and a `ChoppedLogModelLoadingPlugin` on the new
+`ModelLoadingPlugin.initialize` + `modifyBlockModelBeforeBake`; `ModelUtil`
+trims/translates the new record `BakedQuad` (positions plus `UVPair`-packed
+UVs) with the same barycentric UV lerp; the old sodium branch, the block
+entity renderer and `HiddenChoppedLogBakedModel` are deleted (the athena port
+is the in-tree reference for `emitQuads`). The loot layer was rebuilt on the
+26.2 API: `ContextKey`/`ContextKeySet` replace
+`LootContextParam`/`LootContextParamSet`, `LootItemCondition.codec()`
+replaces the `LootItemConditionType` registry value (registered as a
+`MapCodec` under `BuiltInRegistries.LOOT_CONDITION_TYPE`),
+`getOptionalParameter` returns the nullable value directly, and the
+`LootContextParamSetsAccess` mixin is gone. Block entities moved to `ValueIO`
+(`ValueInput`/`ValueOutput`), including a new `EntityChopSettingsMixin`
+bridge that stores the chop-settings compound through `CompoundTag.CODEC` on
+`saveWithoutId`/`load`. Also ported: `updateShape`'s eight-argument form
+(`ScheduledTickAccess`/`RandomSource`, scheduling through `tickAccess`),
+no-arg `BlockState.isSolidRender()`, `Level.setBlocksDirty` for the client
+rerender, `BlockBehaviour.Properties.setId` before construction (the boot
+blocker - the same 26.2 rule that hit another_furniture), `KeyMapping.Category`,
+the GUI wave (`extractWidgetRenderState`/`extractRenderState`/
+`GuiGraphicsExtractor`), the object-share API provider now an
+`ITreeChopAPIProvider` lambda, and a `ConfigHandler` static-init reorder
+(`RELOAD`/`UPDATE_TAGS` signals must be initialised before the `configure()`
+block that constructs the lazy fields). Runtime: the 0.1.57 tree plus the jar
+boots to `Done` with no mixin-apply or parse failures, and `setblock
+treechop:chopped_log` + `data get block` shows `{Chops: 1, OriginalState:
+137, Shape: 0}` through the block entity (the `ValueIO` round-trip). The
+client half (dynamic chopped-log rendering under sodium, chop indicator,
+settings screen, keybinds) needs the client suite, so the module is not in
+`dist/` or `PORTED_MODULES` yet.
+
+**Update (0.1.58 dev): grass-overhaul is ported, built and server-verified.**
+`custom-mods/grass-overhaul` is ElocinDev's Grass Overhaul 1.0.0+1.21.1 (the
+only 1.21.1 build; Aged shipped the 1.20.1 line). Its declared Necronomicon
+dependency is **dropped**: no source file references its API, the library is
+not in the Aged index, and the `natural_blocks` creative-tab id the mod feeds
+is actually vanilla `minecraft:natural_blocks` (`CreativeModeTabs.NATURAL_BLOCKS`).
+The port: `FabricBlockSettings.copyOf` -> `BlockBehaviour.Properties.ofFullCopy`
+plus a mandatory `setId(ResourceKey<Block>)` per block through a
+`props(Block, String)` helper (27 blocks; `SodStair` takes the id as a second
+ctor arg); `SodPatch` moves `canPathfindThrough(BlockState, BlockGetter,
+BlockPos, PathComputationType)` to the 2-arg `isPathfindable(BlockState,
+PathComputationType)` and `updateShape` to the 8-arg form with
+`ScheduledTickAccess`/`RandomSource`, and its two snow-layer `BlockTags`
+constants are renamed (`CANNOT_SUPPORT_SNOW_LAYER`/
+`SUPPORT_OVERRIDE_SNOW_LAYER`); the Fabric `ColorProviderRegistry` is gone, so
+block tinting uses `BlockColorRegistry.register(List<BlockTintSource>, ...)`
+with a grass `BlockTintSource` whose `colorInWorld` calls
+`BiomeColors.getAverageGrassColor` (client `BlockAndTintGetter`), and the item
+tint moved into 27 generated `assets/grassoverhaul/items/*.json` item
+definitions carrying `"tints": [{"type": "minecraft:constant", "value":
+7516266}]` on the four grass sod items; items use
+`useBlockDescriptionPrefix()` since the lang only ships
+`block.grassoverhaul.*` keys; the dead `grass_slab` leftovers are deleted and
+76 models had bare texture/parent refs namespaced to `minecraft:`.
+Cleanups while validating: the three `*_bc` parent models medievalweapons had
+wrongly pruned were restored (their children were still shipped) and
+another_furniture's dead tombstone model chain was removed; `validate_models.py`
+now documents the `minecraft:missingno` sentinel skip (vanilla's air model
+chain). Runtime: the 0.1.57 tree plus the jar boots to `Done` with no
+mixin-apply or parse failures and 4813 recipes, and RCON `setblock
+grassoverhaul:grass_sod_block` + item summons resolve names ("Grass Sod
+Block", "Crimson Nylium Sod Slab") with block/item existence probes passing.
+The client half (grass sod tints, creative-tab placement) needs the client
+suite, so the module is not in `dist/` or `PORTED_MODULES` yet.
+
+**Update (0.1.58 dev): particular is ported and built; a dedicated-server boot
+verifies the pack still starts cleanly with it present.** `custom-mods/particular`
+is Chai's Particular 1.1.2+1.21 (Aged shipped 1.1.1) - a client-only particle
+mod, and Fabric silently skips client-environment mods on a dedicated server,
+so the particle work itself remains client-suite-gated. The owo-lib config
+layer moved: `ConfigScreen.registerProvider` became
+`ConfigScreenProviders.register`, the UI helpers live in
+`UIContainers`/`UIComponents`, and the `ConfigWrapper` ctor needs jankson,
+vendored as `jankson-1.2.2.jar`. The 1.21 particle classes:
+`TextureSheetParticle` is gone - every particle is a `SingleQuadParticle`
+whose constructor requires a `TextureAtlasSprite` (obtained from the new
+`FabricSpriteSet`) - and `render(VertexConsumer, Camera, float)` became
+`extract(QuadParticleRenderState, Camera, float)`, which emits
+`state.add(layer, x, y, z, quaternion, size, uvs, color, light)` quads; the
+old `PARTICLE_SHEET_*` render types map to
+`SingleQuadParticle.Layer.TRANSLUCENT/OPAQUE`. `ParticleFactoryRegistry` is
+`ParticleProviderRegistry` with `PendingParticleProvider` (a `FabricSpriteSet`
+factory) and 9-arg `createParticle`s, and with `BubblePopParticle.Provider`
+removed the ender-bubble-pop entry registers our own provider over the
+now-accessible ctor. Smaller deltas: no `stopped` field (the stop-on-collision
+behaviour is dropped), `getLightColor` -> `getLightCoords`,
+`camera.getPosition()` -> `camera.position()`, `Direction.getNormal()` ->
+`getUnitVec3i()`, `Level.getDayTime()` -> `getOverworldClockTime()`,
+`FoliageColor` moved to `net.minecraft.world.level`, and the
+`InjectContinuousFalling` hook retargets `updateVelocity` -> `postMoveUpdate`.
+Documented visual deviations: the leaf and water-splash quads are rebuilt as
+rotated square quads on the new render-state API (the splash's rectangular
+side box is approximated), since the old per-vertex geometry is not
+expressible. The 0.1.57 tree plus the jar boots to `Done` with no mixin-apply
+or parse failures; the client half (particle visuals, config screen) needs the
+client suite, so the module is not in `dist/` or `PORTED_MODULES` yet.
+
+**Update (0.1.58 dev): immersive-snow is ported, built and server-verified.**
+`custom-mods/immersive-snow` is Straywave's Immersive Snow 1.4.0 from its 1.21.1
+build - snow accumulates on cold biome surfaces and melts when warm, processed
+from a per-chunk queue that re-checks heightmap columns. All four compat hooks
+(BetterDays, SereneSeasons, SnowRealMagic, Fabric Seasons) are pruned - none of
+those mods ship here - which also retires the `ChunkMapInvoker`
+(`ChunkMap.getChunks()` is gone in 26.2; its only caller was the seasons
+recalculation path) and the mixin config plugin; the architectury
+`@ExpectPlatform` glue is dropped in favour of the fabric impls the build
+already inlined. 26.2 deltas: `ServerWorldEvents` is `ServerLevelEvents`,
+`START_WORLD_TICK` is `START_LEVEL_TICK`, `ServerChunkEvents.CHUNK_LOAD` now
+hands `(ServerLevel, LevelChunk, boolean)`, `ResourceKey.location()` is
+`identifier()`, `ChunkPos` fields are `x()`/`z()` accessors and
+`ChunkPos.containing(BlockPos)` replaces the constructor,
+`warmEnoughToRain`/`coldEnoughToSnow` take the sea level as a second argument,
+`IceBlock` melt now neighbours-update with a `null` `Orientation` (copied from
+vanilla), and `Holder.value()` replaces `comp_349()`. Runtime evidence: the
+0.1.57 tree plus the jar boots to `Done` with no mixin-apply or parse
+failures, `config/ImmersiveSnow.json` is written with the pruned schema, and
+`snow forget` responds over RCON. The mod has no client-only surface; it stays
+out of `dist/`/`PORTED_MODULES` only until the client-suite batch runs.
+
+**Update (0.1.58 dev): immersive-thunder is ported and built.**
+`custom-mods/immersive-thunder` is netcatgirl's Immersive Thunder 1.3.0 from
+its 1.21.6 fabric build (the newest upstream fabric line; Aged ships
+`ImmersiveThunder-1.20.1+1.2.2.jar`). The mod is a single `@Redirect` on the
+`Level.playLocalSound(...)` call in `LightningBolt.tick` that swaps vanilla's
+one thunder sound for close/medium/far variants chosen by the local player's
+distance from the bolt. The 1.21.6-era sources remapped cleanly (8 files, 0
+unresolved), and the 26.2 bytecode still contains the exact redirect target -
+`LightningBolt.tick` invokes
+`Level.playLocalSound:(DDDLnet/minecraft/sounds/SoundEvent;Lnet/minecraft/sounds/SoundSource;FFZ)V`
+at two sites - so the injection is unchanged apart from the `(Object)` mixin
+cast. The architectury platform scaffold (`CommonClass`, `Services`,
+`IPlatformHelper`, `FabricPlatformHelper`, the `META-INF/services` file) is
+pruned; the refmap and the empty `immersivethunder.fabric.mixins.json` are
+dropped, and the compat level is `JAVA_25`. Runtime evidence: the jar declares
+`environment: client`, so the dedicated server never loads it - the 0.1.57 tree
+plus the jar boots to `Done` with no mixin-apply or parse failures, which is
+all a server can see of this mod. Its whole surface is client-side thunder
+playback, so the client suite is the only real gate; until then it stays out
+of `dist/` and `PORTED_MODULES`.
+
+**Update (0.1.58 dev): voidz is ported, built and server-verified.**
+`custom-mods/voidz` is Globox_Z's VoidZ 1.0.11 from its 1.21.1 build - the
+AdventureZ addon that adds a Void dimension reachable through a portal, two
+void-stone blocks and the Void Shadow boss. The 24-file tree needed no compat
+pruning (its only dependencies are AdventureZ and cloth-config, both ours):
+the port is all 26.2 delta. `DimensionTransition`/`changeDimension` are
+`TeleportTransition`/`Entity.teleport`; `Entity.moveTo(BlockPos, ...)` is
+`snapTo`; `BlockEntityType.Builder` is gone, so the two block entities use the
+public `(BlockEntitySupplier, Set<Block>)` constructor; `BlockEntity` save data
+is ValueIO (`loadAdditional(ValueInput)`/`saveAdditional(ValueOutput)`);
+`ChunkGenerator` gained a `ResourceKey<Level>` on `createStructures` and lost
+the `Carving` parameter on `applyCarvers`, and `getMobsAt` returns
+`WeightedList`; block and item `Properties` now require `setId` before
+construction (the boot crashed with 'Block id not set' until every block
+threaded its registry key through a factory). Three smaller 26.2 facts: block
+items call `useBlockDescriptionPrefix()` so they pick up `block.voidz.*` names
+(26.2 builds item names from the item id, and a BlockItem no longer borrows
+the block's); the portal's render layer moved out of the deleted fabric
+block-render-layer API into the model JSON's `render_type`; and
+`dimension_type` gained a required `has_ender_dragon_fight` key (the server
+refused to load the dimension without it). The portal renderer is now a
+trivial `TheEndPortalRenderer` subclass - the offset hooks it overrode are
+gone - and `adventurez:unbreakable_blocks` is edited in the AdventureZ module
+rather than shadowed by a same-path file in voidz. Runtime evidence: the
+0.1.57 tree plus the jar reaches `Done` with no mixin-apply or parse failures,
+`/execute in voidz:void` resolves, and `voidz:void_stone`,
+`voidz:infested_void_stone` and `voidz:void_portal` summon with correct display
+names. The client-side renderer and the in-void build/break gating await the
+client suite; the module stays out of `dist/`/`PORTED_MODULES` until then.
+
+**Update (0.1.58 dev): villager-transportation is ported, built and
+server-verified.** `custom-mods/villager-transportation` is Jaffthry's Villager
+Transportation 1.3.3 from its 1.21.4 build - a datapack packaged as a mod
+whose tick functions mount villagers on saddled camels and carpeted llamas,
+and dismount them when a player sneaks. Permission is held per the 5.2
+clearance note; the Modrinth license still reads All-Rights-Reserved. It is
+resource-only (35 data files, no java), and the whole 26.2 delta was one
+rename: entity predicates' `type` sub-predicate is now `entity_type` (64
+keys), which 26.2 otherwise rejected outright (`Unknown registry key in
+ResourceKey[minecraft:root / minecraft:entity_sub_predicate_type]:
+minecraft:type`); the pack format is bumped 61 -> 81. 1.21.5's equipment
+refactor also moved camel saddles and llama carpets out of their old NBT keys:
+the legacy `SaddleItem`/`body_armor_item` shapes are ignored, so the mount
+selectors and the carpet predicates now test `equipment:{saddle:{...}}` and
+`equipment:{body:{...}}` respectively (confirmed by summoning and reading
+entity NBT). Runtime evidence: the 0.1.57 tree plus the jar reaches `Done`
+with zero predicate/function parse errors, and over RCON a villager summoned
+inside a saddled camel mounted it (tagged `camel_riden`), and a villager next
+to a carpeted llama mounted that too (`llama_riden`). Only the advancement
+toast presentation is client-visible, so it waits for the client suite; the
+module stays out of `dist/`/`PORTED_MODULES` with the other fifteen.
+
+**Update (0.1.58 dev): villagerfix is ported, built and server-verified.**
+`custom-mods/villagerfix` is Globox_Z's Villager Trade Fix 1.0.4 from its
+1.21.1 build - it clamps the reputation discount (config `maxReputation`,
+`maxReputationDiscount`), replaces the Hero of the Village multiplier with
+configurable `base`/`extra` values, and caches each profession's offers so a
+villager's trades survive a workstation change. The Numismatic compat mixin and
+its gating plugin are pruned (that mod does not ship). 26.2 deltas: the class
+moved to `world.entity.npc.villager`, `prepareOffersFor` is
+`updateSpecialPrices` and `TradeOffer.increaseSpecialPrice` is
+`MerchantOffer.addToSpecialPriceDiff` (both redirects retargeted),
+`getReputation` is `getPlayerReputation`, `updateTrades` takes a `ServerLevel`,
+and the per-profession cache now reads/writes through `ValueInput`/
+`ValueOutput` with `MerchantOffers.CODEC` instead of raw `CompoundTag`. The
+profession key is the registry id rather than upstream's `Object.toString()`
+(the latter is not stable across restarts, so the cache only ever worked
+within a session - a deliberate deviation to make its own feature work).
+Runtime evidence: the 0.1.57 tree plus the jar reaches `Done` with the mod
+loaded and no mixin-apply errors, `config/villagerfix.json5` is written, and a
+summoned villager reports `JobCount: 0` from `data get`, proving both the save
+and read injections run under ValueIO. Its config screen is client-only, so it
+waits for the client suite; the module stays out of `dist/`/`PORTED_MODULES`
+with the other sixteen.
+
+**Update (0.1.58 dev): tooltipfix is ported and built.**
+`custom-mods/tooltipfix` is kyrptonaught's ToolTip Fix 1.1.1 from its 1.20
+build - it wraps over-long tooltip lines to the screen edge and flips the
+tooltip to the other side of the cursor when it would clip. The 1.20-era mixin
+hooked `GuiGraphics.drawTooltip(...)`; 26.2 replaced that class with
+`GuiGraphicsExtractor`, so the mixin now targets
+`GuiGraphicsExtractor.tooltip(Font, List<ClientTooltipComponent>, int, int,
+ClientTooltipPositioner, Identifier)` (the method every deferred
+`setTooltipForNextFrame` call ends in). The list is copied mutable at HEAD,
+`Helper.newFix` wraps newline markers and long lines, and a `@ModifyVariable`
+at the `Matrix3x2fStack.pushMatrix()` call rewrites the computed render X when
+the tooltip must flip. All helper APIs survived the rework unchanged
+(`ClientTextTooltip.text` accessor, `ClientTooltipComponent.create/getWidth/
+getHeight`, `Font.split`, `FormattedCharSink`). The refmap is dropped and the
+compat level is `JAVA_25`. Runtime evidence: the jar declares
+`environment: client`, so the dedicated server never loads it; the 0.1.57 tree
+plus the jar boots to `Done` with zero mixin-apply or parse failures. Its whole
+surface is client-side tooltip layout, so the client suite is the only real
+gate; until then it stays out of `dist/` and `PORTED_MODULES`.
 
 Also worth stating plainly: several queue mods carry compat code for mods this
 pack does not ship (Jade, WTHIT, GeckoLib, Traveler's Titles, RPGDifficulty).
@@ -1255,10 +1775,10 @@ What the remapper needs, verified rather than assumed:
 
 
  And `surveyor` stays in despite
-`custom-mods/surveyor` existing with sources: it is **not built** and **not in
-`dist/`**, which is exactly the plan/shipment distinction the allowlist now
-spells out in its `_doc`. A manifest action of `keep`, `rebuild` or `port` with
-an empty `realized_by` is a plan, not a shipment.
+`custom-mods/surveyor` existing with sources: it is built (see the update
+above) but **not in `dist/`**, which is exactly the plan/shipment distinction
+the allowlist now spells out in its `_doc`. A manifest action of `keep`,
+`rebuild` or `port` with an empty `realized_by` is a plan, not a shipment.
 
 Suggested order:
 
@@ -1294,8 +1814,9 @@ Suggested order:
 4. **Client-only feel**: `tooltipfix`, `seamless-loading-screen`,
    `Shut Up GL Error`, `borderless-mining`, `DripSounds`,
    `Dungeon Now Loading`, `loadmyresources`, `modelfix`,
-   `GeckoLibIrisCompat`, `translucencyfix`, `libz` (**keep the rebuild** -
-   0.1.44 verified it pixel-parity and found no consumer for its API).
+   `GeckoLibIrisCompat`, `translucencyfix`, `libz` (**ported 0.1.58** - the
+   0.1.44 "keep the rebuild" call was reversed when SmitherZ needed LibZ's
+   tab-registration API; see the smitherz+libz update above).
 5. **Libraries and addons that are dead weight alone**: `library-fabric`,
    `euphonium`, `bbb`, `Nimble`, `indium`, `noisium-fabric`,
    `modernfix-fabric`, `lmft`, the whole EMI family, `extendeddrawersaddon`,
