@@ -265,8 +265,9 @@
       "slug": "backslotaddon",
       "project_id": "s2w3oC2W",
       "action": "keep",
-      "reason": "Depends on backslot",
-      "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
+      "reason": "Ported into the backslot module 0.1.24 (shield-on-back, double-back)",
+      "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity",
+      "realized_by": "backslot"
     },
     {
       "file": "trinkets-updated",
@@ -913,7 +914,8 @@
       "project_id": "ykSfIgTw",
       "action": "keep",
       "reason": "Cosmetic physics",
-      "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
+      "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity",
+      "realized_by": "connectiblechains"
     },
     {
       "file": "jumpoverfences",

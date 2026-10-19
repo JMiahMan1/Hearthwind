@@ -24,11 +24,6 @@
       "reason": "W4 port queue (plan 5.2): astrocraft - not yet ported"
     },
     {
-      "project_id": "s2w3oC2W",
-      "filename": "backslotaddon-1.1.1.jar",
-      "reason": "W4 port queue (plan 5.2): backslotaddon - ported into the backslot module 0.1.24 (shield-on-back, double-back-sword and lantern-on-belt transforms, Aged's lantern_on_back setting)"
-    },
-    {
       "project_id": "OSDpLd82",
       "filename": "bbb-1.20.1-fabric-1.0.2.jar",
       "reason": "W4 port queue (plan 5.2): building-but-better - not yet ported"
@@ -37,11 +32,6 @@
       "project_id": "kYq5qkSL",
       "filename": "borderless-mining-1.1.8+1.20.1.jar",
       "reason": "W4 port queue (plan 5.2): borderless-mining - not yet ported"
-    },
-    {
-      "project_id": "ykSfIgTw",
-      "filename": "connectiblechains-2.2.1+1.20.1.jar",
-      "reason": "W4 port queue (plan 5.2): connectiblechains - not yet ported"
     },
     {
       "project_id": "MI1LWe93",
@@ -152,11 +142,6 @@
       "project_id": "yUBXc3AH",
       "filename": "libz-1.0.3.jar",
       "reason": "W4 port queue (plan 5.2): libz - not yet ported"
-    },
-    {
-      "project_id": "67kVxsaO",
-      "filename": "lmft-1.0.2+1.20-fabric.jar",
-      "reason": "W4 port queue (plan 5.2): lmft - not yet ported"
     },
     {
       "project_id": "TqCKvqjC",
