@@ -423,6 +423,10 @@ subprojects {
 			modCompileClasspath "net.fabricmc.fabric.api:fabric-lifecycle-events-v1:4.1.4+29b6eb019e"
 		}
 	}
+	if (project.name == 'ships') {
+		// Data-only port of EMD123's Ships (Apache-2.0) from its 1.21.4 build.
+		// 26.2 delta: datapack format 81 and data-schema renames.
+	}
 	if (project.name == 'lmft') {
 		// Port of Blodhgarm's Load My F***ing Tags (CC0-1.0) from its 1.21.11
 		// source. The accesswidener exposes TagLoader$SortingEntry.

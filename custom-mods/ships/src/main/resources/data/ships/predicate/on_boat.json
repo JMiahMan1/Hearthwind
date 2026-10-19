@@ -1,0 +1,10 @@
+{
+  "condition": "minecraft:entity_properties",
+  "entity": "this",
+  "predicate": {
+    "vehicle": {
+      "type": "minecraft:oak_boat",
+      "nbt": "{Tags:[\"ships.boat\"]}"
+    }
+  }
+}

@@ -353,9 +353,9 @@ three are in this list); `shatterbyte-lib` is OctoLib's renamed project.
 > libz, travelerz, another_furniture, treechop, grass-overhaul, particular,
 > immersive-snow, voidz, villager-transportation and villagerfix are now ported
 > and server-verified, and immersive-thunder, tooltipfix, shut-up-gl-error,
-> loadmyresources, euphonium, smarterfarmers, phantom and spider-caves are
-> ported and built** (see the updates in the port queue section below): all
-> twenty-four are still unshipped -
+> loadmyresources, euphonium, smarterfarmers, phantom, spider-caves and ships
+> are ported and built** (see the updates in the port queue section below): all
+> twenty-five are still unshipped -
 > antique-atlas
 > and particular because they are client-only and their client halves (atlas
 > screen/canvas/item-model; particle visuals and config screen) need the client
@@ -1865,6 +1865,17 @@ errors, and RCON summons of `spider_caves:black_recluse`,
 equipment textures/assets and the custom chest material remain client-side
 visual gaps, so the two modules stay out of `dist/`/`PORTED_MODULES` with the
 others.
+
+**Update (0.1.58 dev): ships is ported and built.**
+`custom-mods/ships` is EMD123's Ships 3.0.4 from its 1.21.4 build - a pure
+datapack packaged as a mod (98 data files: 42 structure templates, 31 worldgen
+entries, 22 functions, 11 predicates, 11 tags and 5 loot tables) that adds
+sailable ship structures to world generation. The 26.2 port is the data-schema
+bump to pack format 81 plus the same class of renames as the other datapacks;
+the 0.1.57 tree plus the jar boots to `Done` with zero `Couldn't parse data
+file` errors and the datapack loads. It is server-side content, so it stays out
+of `dist/`/`PORTED_MODULES` with the other twenty-four until the client-suite
+batch runs.
 
 Also worth stating plainly: several queue mods carry compat code for mods this
 pack does not ship (Jade, WTHIT, GeckoLib, Traveler's Titles, RPGDifficulty).
