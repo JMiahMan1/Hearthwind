@@ -67,6 +67,9 @@ include 'voidz'
 include 'villager-transportation'
 include 'villagerfix'
 include 'tooltipfix'
+include 'shut-up-gl-error'
+include 'loadmyresources'
+include 'euphonium'
 	// YARN-mapped (28 files use Identifier, 0 use ResourceLocation) while this project is
 	// mojmap, so the 334 compile errors are mostly a mapping mismatch, not API drift.
 	// Upstream has no 26.2 build (newest is 1.2.4+26.1). Port = yarn->mojmap remap of 86

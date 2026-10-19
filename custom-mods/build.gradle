@@ -384,6 +384,22 @@ subprojects {
 		// Port of kyrptonaught's ToolTip Fix (MIT) from its 1.20 build.
 		// Wraps over-long tooltip lines and flips the tooltip when it would clip.
 	}
+	if (project.name == 'shut-up-gl-error') {
+		// Port of Jamalam's Shut Up GL Error (MIT) from its 1.20.1 build.
+		// Short-circuits InputConstants.isKeyDown for the two invalid keycodes.
+	}
+	if (project.name == 'loadmyresources') {
+		// Port of Keksuccino's Load My Resources (GPLv3) from its 1.20.2 build.
+		// Registers a resources/ folder as an always-on pack repository source.
+	}
+	if (project.name == 'euphonium') {
+		// Port of Sisby folk's Euphonium (LGPL-3.0-or-later) from its 1.21.1 build.
+		// Client-only ambient soundscape; config via the bundled kaleido library.
+		dependencies {
+			implementation files("${rootDir}/../conversion/vendored/compile-libs/kaleido-config-0.3.3+1.3.2.jar")
+			modCompileClasspath "net.fabricmc.fabric.api:fabric-lifecycle-events-v1:4.1.4+29b6eb019e"
+		}
+	}
 	if (project.name == 'lmft') {
 		// Port of Blodhgarm's Load My F***ing Tags (CC0-1.0) from its 1.21.11
 		// source. The accesswidener exposes TagLoader$SortingEntry.

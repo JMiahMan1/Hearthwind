@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "id": "loadmyresources",
+  "version": "${version}",
+  "name": "Load My Resources",
+  "description": "Load 'em with style! | Load My Resources © Copyright 2021-2023 Keksuccino. Load My Resources is licensed under GPLv3. (Hearthwind 26.2 port)",
+  "environment": "client",
+  "authors": [
+    "Keksuccino"
+  ],
+  "contributors": [],
+  "contact": {},
+  "license": "GPLv3",
+  "icon": "assets/loadmyresources/icon.png",
+  "entrypoints": {
+    "main": [
+      "de.keksuccino.loadmyresources.LoadMyResources"
+    ]
+  },
+  "mixins": [
+    "loadmyresources.mixin.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.19.5",
+    "minecraft": "~26.2",
+    "java": ">=25",
+    "fabric-api": "*"
+  }
+}

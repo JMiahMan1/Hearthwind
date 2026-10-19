@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "id": "euphonium",
+  "version": "${version}",
+  "name": "Euphonium",
+  "description": "Ambient sounds suitable for vanilla minecraft (Hearthwind 26.2 port)",
+  "authors": [
+    "svenhjol",
+    "Sisby folk"
+  ],
+  "contact": {
+    "homepage": "https://modrinth.com/mod/euphonium",
+    "issues": "https://github.com/sisby-folk/euphonium/issues",
+    "sources": "https://github.com/sisby-folk/euphonium"
+  },
+  "license": "LGPL-3.0-or-later",
+  "icon": "assets/euphonium/icon.png",
+  "environment": "client",
+  "entrypoints": {
+    "client": [
+      "folk.sisby.euphonium.EuphoniumClient"
+    ]
+  },
+  "jars": [
+    {
+      "file": "META-INF/jars/kaleido-config-0.3.3+1.3.2.jar"
+    }
+  ],
+  "depends": {
+    "fabricloader": ">=0.19.5",
+    "minecraft": "~26.2",
+    "java": ">=25",
+    "fabric-api": "*"
+  }
+}
