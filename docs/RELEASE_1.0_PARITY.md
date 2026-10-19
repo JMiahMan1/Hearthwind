@@ -353,8 +353,9 @@ three are in this list); `shatterbyte-lib` is OctoLib's renamed project.
 > libz, travelerz, another_furniture, treechop, grass-overhaul, particular,
 > immersive-snow, voidz, villager-transportation and villagerfix are now ported
 > and server-verified, and immersive-thunder, tooltipfix, shut-up-gl-error,
-> loadmyresources and euphonium are ported and built** (see the updates in the
-> port queue section below): all twenty-one are still unshipped - antique-atlas
+> loadmyresources, euphonium and smarterfarmers are ported and built** (see the
+> updates in the port queue section below): all twenty-two are still unshipped -
+> antique-atlas
 > and particular because they are client-only and their client halves (atlas
 > screen/canvas/item-model; particle visuals and config screen) need the client
 > suite, and the rest because their client halves (item definitions, custom
@@ -380,7 +381,10 @@ three are in this list); `shatterbyte-lib` is OctoLib's renamed project.
 > `InputConstants.isKeyDown` never runs on a dedicated server; loadmyresources
 > only registers its `resources/` pack source and filters the pack list, so it
 > is client-only too; euphonium is a client-only soundscape whose whole
-> registry/tick surface only runs in a client process).
+> registry/tick surface only runs in a client process; smarterfarmers is the
+> opposite - its farmer-brain, farmland and mob-griefing mixins are server-side
+> and were exercised by a clean boot and an RCON farmer summon, leaving its
+> cloth-config screen to the client suite).
 > **No WIPs remain in this section.**
 
 > **Machine-checked count is 59, not the 66 this table was written against.**
@@ -1159,6 +1163,16 @@ boot. The manifest therefore pins `neruina` to the previously shipped
 `neruina-3.3.3+26.2-fabric.jar` via `local_override` (vendored), which depends
 on `configurable ~3.5.2` and boots to `Done`.
 
+**0.1.58 correction (second):** `immersive-ui` also has an official 26.2 Fabric
+build (`immersiveui-fabric-26.2-0.3.6+26.2.jar`, mod id `immersiveui`,
+All-Rights-Reserved, `minecraft ~26.2`, `shatterlib *` - ShatterLib is already
+shipped as `shatterlib-fabric-0.7.0-beta.1+26.2.jar`, itself a W2 adoption).
+Adopting it needs no source access, so the ARR license is not a blocker for
+adoption; the manifest entry is `client-optional` with the usual
+`Adopted upstream 26.2 (W2)` note and the `9wv7LuMc` allowlist entry is gone.
+The rebuilt client dist now carries the jar (145 mods), the server dist is
+unchanged at 117, and the pack boots to `Done`.
+
 **W3: Close parity gaps in the Hearthwind rebuilds (section 5.3).**
 Highest gameplay impact first: jobs curve, 3 concurrent jobs and switch
 cooldown (done 0.1.28 - all three were already live; 0.1.28 added the
@@ -1179,10 +1193,10 @@ pinned to Aged's value.
 drifted: it still listed `inmis`, `backslot` and `trinkets` (all shipped) plus
 `bento-box`, `lootbeams` and `villagertradefix`, which are not in the queue at
 all. Current state, re-audited against the built pack 0.1.57: the queue holds
-**59 entries at that audit (57 today) and every one is a port - not one has a
+**59 entries at that audit (56 today) and every one is a port - not one has a
 26.2 Fabric build**, so there is nothing left to adopt from the W2 list -
-except `dripsounds`, which gained an official 26.2 build and was adopted in
-0.1.58 (see the W2 correction above).
+except `dripsounds` and `immersive-ui`, which have official 26.2 builds and
+were adopted in 0.1.58 (see the W2 corrections above).
 
 Two corrections to what this section previously claimed. It said three entries
 "were already finished and had simply never been dropped from the allowlist".
@@ -1791,6 +1805,33 @@ are unchanged in the 26.2 fabric API. Runtime evidence: the jar declares
 plus the jar boots to `Done` with zero mixin-apply or parse failures. Its whole
 surface is client-side, so the client suite is the real gate; it stays out of
 `dist/` and `PORTED_MODULES` with the other twenty.
+
+**Update (0.1.58 dev): smarterfarmers is ported and built.**
+`custom-mods/smarter-farmers` is MehVahdJukaar's Smarter Farmers 1.21-2.2.4
+from its 1.21.1 build - farmers harvest and replant a 3x3x3 farmland scan, till
+tillable blocks, pick up and eat food, and plant seeds from a neighbour-derived
+frequency list. Moonlight is not shipped here (and has no 26.2 build), so its
+four uses are replaced in-tree: the `IVillagerBrainEvent` listener becomes a
+`registerBrainGoals` TAIL inject adding `EatFoodGoal` to `Activity.MEET`;
+`ConfigBuilder`/`ModConfigHolder` become cloth-config `AutoConfig` with the
+same five options; `FrequencyOrderedCollection` is reimplemented (LinkedHashMap
+counts, stable count-descending iteration); and `PlatHelper` side/environment
+checks become `FabricLoader`. 26.2 deltas: Villager moved to
+`world.entity.npc.villager`, `VillagerProfession.FARMER` is compared through
+`Holder.is`, `VillagerData.level()`, `FarmBlock` is `FarmlandBlock` with a
+`(Level, BlockState, BlockPos, Entity, double)` `fallOn`, `GameRules` moved to
+`world.level.gamerules` with typed `GameRule<T>` and
+`get(GameRules.MOB_GRIEFING)` (the mob-griefing wrap and the `fallOn`
+`turnToDirt` target were retargeted), food effects come from
+`DataComponents.CONSUMABLE` + `ApplyStatusEffectsConsumeEffect`, eat sounds
+from `Consumable.sound()`, `getCraftingRemainder() == null` replaces
+`hasCraftingRemainingItem`, and `ItemParticleOption` now takes an
+`ItemStackTemplate`. The debug task overlay is deferred (26.2 debug-renderer
+rework; it defaults off). Runtime evidence: the 0.1.57 tree plus the jar boots
+to `Done` with the mod loaded and no mixin-apply or parse errors, the datapack
+loads, and a farmer villager summons over RCON. Its config screen is
+client-only, so it waits with the rest; it stays out of
+`dist/`/`PORTED_MODULES`.
 
 Also worth stating plainly: several queue mods carry compat code for mods this
 pack does not ship (Jade, WTHIT, GeckoLib, Traveler's Titles, RPGDifficulty).

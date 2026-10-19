@@ -1,0 +1,20 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "net.mehvahdjukaar.smarterfarmers.mixins",
+  "compatibilityLevel": "JAVA_25",
+  "mixins": [
+    "ReplaceTaskMixin",
+    "SecondaryPoiSensorMixin",
+    "UseBonemealMixin",
+    "VillagerAccessor",
+    "VillagerMixin",
+    "WorkAtComposterAccessor",
+    "fabric.FarmBlockMixin",
+    "fabric.MobMixin"
+  ],
+  "client": [],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "id": "smarterfarmers",
+  "version": "${version}",
+  "name": "Smarter Farmers",
+  "description": "Makes Farmer Villagers smarter! (Hearthwind 26.2 port)",
+  "authors": [
+    "MehVahdJukaar"
+  ],
+  "contact": {
+    "homepage": "https://modrinth.com/mod/smarter-farmers-farmers-replant",
+    "sources": "https://github.com/MehVahdJukaar/SmarterFarmers"
+  },
+  "license": "Supplementaries Team License v.1.4",
+  "icon": "icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "net.mehvahdjukaar.smarterfarmers.fabric.SmarterFarmersFabric"
+    ],
+    "modmenu": [
+      "net.mehvahdjukaar.smarterfarmers.fabric.ModMenuCompat"
+    ]
+  },
+  "mixins": [
+    "smarterfarmers.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.19.5",
+    "minecraft": "~26.2",
+    "java": ">=25",
+    "fabric-api": "*",
+    "cloth-config": ">=26.2.155"
+  },
+  "suggests": {
+    "modmenu": "*"
+  }
+}

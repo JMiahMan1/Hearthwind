@@ -139,11 +139,6 @@
       "reason": "W4 port queue (plan 5.2): immersivethunder - not yet ported"
     },
     {
-      "project_id": "9wv7LuMc",
-      "filename": "ImmersiveUI-FABRIC-0.2.2.jar",
-      "reason": "W4 port queue (plan 5.2): immersive-ui - not yet ported"
-    },
-    {
       "project_id": "Orvt0mRa",
       "filename": "indium-1.0.34+mc1.20.1.jar",
       "reason": "W4 port queue (plan 5.2): indium - not yet ported"

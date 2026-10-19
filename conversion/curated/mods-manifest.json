@@ -1347,6 +1347,13 @@
       "note": "Adopted upstream 26.2 (W2)"
     },
     {
+      "file": "immersive-ui",
+      "slug": "immersive-ui",
+      "project_id": "9wv7LuMc",
+      "action": "client-optional",
+      "note": "Adopted upstream 26.2 (W2)"
+    },
+    {
       "file": "advancements_search",
       "slug": "advancements-search",
       "project_id": "Ccho67RI",

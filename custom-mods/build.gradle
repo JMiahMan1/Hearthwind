@@ -392,6 +392,10 @@ subprojects {
 		// Port of Keksuccino's Load My Resources (GPLv3) from its 1.20.2 build.
 		// Registers a resources/ folder as an always-on pack repository source.
 	}
+	if (project.name == 'smarter-farmers') {
+		// Port of MehVahdJukaar's Smarter Farmers (Supplementaries Team License) from its 1.21.1 build.
+		// Server-side farmer AI; Moonlight config/events replaced with cloth-config + a brain mixin.
+	}
 	if (project.name == 'euphonium') {
 		// Port of Sisby folk's Euphonium (LGPL-3.0-or-later) from its 1.21.1 build.
 		// Client-only ambient soundscape; config via the bundled kaleido library.
