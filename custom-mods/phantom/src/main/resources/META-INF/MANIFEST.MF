@@ -1,0 +1,18 @@
+Manifest-Version: 1.0
+Specification-Title: PhantomLoader
+Specification-Vendor: HexagonNico
+Specification-Version: 20.3.1
+Implementation-Title: library-fabric
+Implementation-Version: 20.3.1
+Implementation-Vendor: HexagonNico
+Implementation-Timestamp: 2024-01-21T16:24:20+0000
+Fabric-Gradle-Version: 8.2
+Fabric-Loom-Version: 1.2.8
+Fabric-Mixin-Compile-Extensions-Version: 0.6.0
+Fabric-Minecraft-Version: 1.20.3
+Fabric-Tiny-Remapper-Version: 0.8.5
+Fabric-Loader-Version: 0.15.3
+Fabric-Mixin-Version: 0.12.5+mixin.0.8.5
+Fabric-Mixin-Group: net.fabricmc
+Fabric-Mapping-Namespace: intermediary
+

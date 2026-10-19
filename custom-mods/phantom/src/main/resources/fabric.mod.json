@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "id": "phantom",
+  "version": "20.3.1+26.2",
+  "name": "Phantom Library",
+  "description": "A library to automate part of the process of creating mods for multiple loaders (Hearthwind 26.2 port)",
+  "authors": [
+    "HexagonNico"
+  ],
+  "contact": {
+    "homepage": "https://github.com/PhantomLoader/PhantomLoader",
+    "sources": "https://github.com/PhantomLoader/PhantomLoader"
+  },
+  "license": "Apache-2.0",
+  "icon": "icon.png",
+  "entrypoints": {
+    "main": [
+      "io.github.phantomloader.library.fabric.FabricInitializer"
+    ],
+    "client": [
+      "io.github.phantomloader.library.fabric.FabricClientInitializer"
+    ]
+  },
+  "depends": {
+    "fabricloader": ">=0.19.5",
+    "minecraft": "~26.2",
+    "java": ">=25",
+    "fabric-api": "*"
+  }
+}

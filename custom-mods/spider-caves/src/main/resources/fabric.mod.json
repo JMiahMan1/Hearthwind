@@ -1,0 +1,32 @@
+{
+	"schemaVersion": 1,
+	"id": "spider_caves",
+	"version": "${version}",
+	"name": "Spider Caves",
+	"description": "Adds spider caves and the black recluse (Hearthwind 26.2 port)",
+	"authors": [
+		"HexagonNico"
+	],
+	"contact": {
+		"homepage": "https://modrinth.com/mod/spider-caves",
+		"sources": "https://github.com/HexagonNico/Spider-Caves"
+	},
+	"license": "CC BY-NC-ND 4.0",
+	"icon": "icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"io.github.hexagonnico.spidercaves.fabric.FabricInitializer"
+		]
+	},
+	"mixins": [
+		"mixin.spidercaves.json"
+	],
+	"depends": {
+		"fabricloader": ">=0.19.5",
+		"minecraft": "~26.2",
+		"java": ">=25",
+		"fabric-api": "*",
+		"phantom": "^20.3.1"
+	}
+}

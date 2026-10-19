@@ -1,0 +1,16 @@
+{
+  "biome.spider_caves.spider_cave": "Паучьи пещеры",
+  "block.spider_caves.web_covered_chest": "Опутанный сундук",
+  "item.spider_caves.web_covered_chest": "Опутанный сундук",
+  "block.spider_caves.spider_egg": "Паучье яйцо",
+  "item.spider_caves.spider_egg": "Паучье яйцо",
+  "item.spider_caves.spider_fang": "Хелицера",
+  "item.spider_caves.spider_helmet": "Паучий капюшон",
+  "item.spider_caves.spider_chestplate": "Паучья куртка",
+  "item.spider_caves.spider_leggings": "Паучьи штаны",
+  "item.spider_caves.spider_boots": "Паучьи ботинки",
+  "item.modifiers.full_set": "Бонус комплекта:",
+  "item.modifiers.spider_armor_full_set": "Шанс 30% отравить атакуюшего",
+  "entity.spider_caves.black_recluse": "Паук-отшельник",
+  "item.spider_caves.black_recluse_spawn_egg": "Яйцо призыва паука-отшельника"
+}

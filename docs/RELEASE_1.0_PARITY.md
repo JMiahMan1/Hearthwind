@@ -353,8 +353,9 @@ three are in this list); `shatterbyte-lib` is OctoLib's renamed project.
 > libz, travelerz, another_furniture, treechop, grass-overhaul, particular,
 > immersive-snow, voidz, villager-transportation and villagerfix are now ported
 > and server-verified, and immersive-thunder, tooltipfix, shut-up-gl-error,
-> loadmyresources, euphonium and smarterfarmers are ported and built** (see the
-> updates in the port queue section below): all twenty-two are still unshipped -
+> loadmyresources, euphonium, smarterfarmers, phantom and spider-caves are
+> ported and built** (see the updates in the port queue section below): all
+> twenty-four are still unshipped -
 > antique-atlas
 > and particular because they are client-only and their client halves (atlas
 > screen/canvas/item-model; particle visuals and config screen) need the client
@@ -375,8 +376,12 @@ three are in this list); `shatterbyte-lib` is OctoLib's renamed project.
 > headless over RCON, leaving only its advancement toast presentation to the
 > client suite; villagerfix's trade-price mixins are server-side and were
 > exercised over RCON, but its cloth-config screen is client-only;
-> tooltipfix is another client-only mixin the dedicated server never loads, so
-> its tooltip wrapping/flip only shows up in a client run; shut-up-gl-error is
+> phantom and spider-caves are server-side and were exercised by a clean boot
+> plus RCON summons (Black Recluse, Spider Egg, Spider Hood), leaving the spider
+> model, web-covered-chest textures and armor equipment assets to the client
+> suite; tooltipfix is another client-only mixin the dedicated server never
+> loads, so its tooltip wrapping/flip only shows up in a client run;
+> shut-up-gl-error is
 > the same kind of case - its single client mixin over
 > `InputConstants.isKeyDown` never runs on a dedicated server; loadmyresources
 > only registers its `resources/` pack source and filters the pack list, so it
@@ -1832,6 +1837,34 @@ to `Done` with the mod loaded and no mixin-apply or parse errors, the datapack
 loads, and a farmer villager summons over RCON. Its config screen is
 client-only, so it waits with the rest; it stays out of
 `dist/`/`PORTED_MODULES`.
+
+**Update (0.1.58 dev): phantom and spider-caves are ported, built and
+server-verified.** Breaking the earlier "spider caves needs a library that does
+not exist" blocker, `custom-mods/phantom` is HexagonNico's Phantom Library
+20.3.1 (Apache-2.0) rebuilt for 26.2: its loader-agnostic registration helpers
+now thread `Item.Properties.setId`/`BlockBehaviour.Properties.setId` (the 26.2
+id-before-construction rule), `registerMenu` builds a vanilla `MenuType` (the
+Fabric extended-screen-handler type is gone), `registerEnchantment` is
+unsupported because enchantments are datapack-driven, the block-render-layer and
+built-in item-renderer hooks are no-ops (26.2 uses model `render_type` and
+special model renderers), particles use `ParticleProviderRegistry`, creative
+tabs use `CreativeModeTabEvents`, and loot functions register through
+`BuiltInRegistries.LOOT_FUNCTION_TYPE` codecs. `custom-mods/spider-caves` is the
+20.3.0 content mod: TerraBlender is pruned (no 26.2 build; the
+`OverworldBiomeBuilderMixin` already adds the biome to vanilla generation),
+`SheetsMixin` is dropped (chest materials are a 26.2 sprite-pipeline rework;
+the web-covered chest renders with vanilla chest textures), armor is rebuilt on
+the 26.2 `ArmorMaterial` record + `Properties.humanoidArmor`, the chest block
+uses the four-argument `ChestBlock` constructor, the poison mixin targets
+`hurtServer`, and the data pack was migrated to 26.2 schemas: flat `carvers`
+arrays, flattened `uniform` IntProviders, `carving_mask` replaced by an
+air-block predicate filter, nested loot-table entries keyed `value`, and
+flat-string/flat-result recipes. Runtime evidence: `Done`, zero mixin or parse
+errors, and RCON summons of `spider_caves:black_recluse`,
+`spider_caves:spider_egg` and `spider_caves:spider_helmet` all resolve. Armor
+equipment textures/assets and the custom chest material remain client-side
+visual gaps, so the two modules stay out of `dist/`/`PORTED_MODULES` with the
+others.
 
 Also worth stating plainly: several queue mods carry compat code for mods this
 pack does not ship (Jade, WTHIT, GeckoLib, Traveler's Titles, RPGDifficulty).

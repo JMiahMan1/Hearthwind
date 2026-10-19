@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "#": "minecraft:leather_chestplate",
+    "S": "minecraft:string",
+    "F": "spider_caves:spider_fang"
+  },
+  "pattern": [
+    "SSS",
+    "F#F"
+  ],
+  "result": {
+    "id": "spider_caves:spider_chestplate"
+  },
+  "show_notification": true
+}

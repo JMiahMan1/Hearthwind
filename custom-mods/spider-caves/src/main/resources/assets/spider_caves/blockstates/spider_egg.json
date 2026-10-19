@@ -1,0 +1,72 @@
+{
+  "variants": {
+    "eggs=1": [
+      {
+        "model": "spider_caves:block/spider_egg"
+      },
+      {
+        "model": "spider_caves:block/spider_egg",
+        "y": 90
+      },
+      {
+        "model": "spider_caves:block/spider_egg",
+        "y": 180
+      },
+      {
+        "model": "spider_caves:block/spider_egg",
+        "y": 270
+      }
+    ],
+    "eggs=2": [
+      {
+        "model": "spider_caves:block/two_spider_eggs"
+      },
+      {
+        "model": "spider_caves:block/two_spider_eggs",
+        "y": 90
+      },
+      {
+        "model": "spider_caves:block/two_spider_eggs",
+        "y": 180
+      },
+      {
+        "model": "spider_caves:block/two_spider_eggs",
+        "y": 270
+      }
+    ],
+    "eggs=3": [
+      {
+        "model": "spider_caves:block/three_spider_eggs"
+      },
+      {
+        "model": "spider_caves:block/three_spider_eggs",
+        "y": 90
+      },
+      {
+        "model": "spider_caves:block/three_spider_eggs",
+        "y": 180
+      },
+      {
+        "model": "spider_caves:block/three_spider_eggs",
+        "y": 270
+      }
+    ],
+    "eggs=4": [
+      {
+        "model": "spider_caves:block/four_spider_eggs"
+      },
+      {
+        "model": "spider_caves:block/four_spider_eggs",
+        "y": 90
+      },
+      {
+        "model": "spider_caves:block/four_spider_eggs",
+        "y": 180
+      },
+      {
+        "model": "spider_caves:block/four_spider_eggs",
+        "y": 270
+      }
+    ]
+  }
+}

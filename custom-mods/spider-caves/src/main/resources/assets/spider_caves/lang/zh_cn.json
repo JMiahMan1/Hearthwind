@@ -1,0 +1,15 @@
+{
+  "block.spider_caves.web_covered_chest": "缠网箱子",
+  "item.spider_caves.web_covered_chest": "缠网箱子",
+  "block.spider_caves.spider_egg": "蜘蛛卵",
+  "item.spider_caves.spider_egg": "蜘蛛卵",
+  "item.spider_caves.spider_fang": "蜘蛛牙",
+  "item.spider_caves.spider_helmet": "蜘蛛头巾",
+  "item.spider_caves.spider_chestplate": "蜘蛛外套",
+  "item.spider_caves.spider_leggings": "蜘蛛裤子",
+  "item.spider_caves.spider_boots": "蜘蛛靴子",
+  "item.modifiers.full_set": "套装奖励：",
+  "item.modifiers.spider_armor_full_set": "攻击时有30%的几率使敌人中毒",
+  "entity.spider_caves.black_recluse": "黑隐士",
+  "item.spider_caves.black_recluse_spawn_egg": "黑隐士刷怪蛋"
+}

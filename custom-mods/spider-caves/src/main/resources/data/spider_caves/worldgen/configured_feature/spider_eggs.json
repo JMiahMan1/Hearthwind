@@ -1,0 +1,46 @@
+{
+  "type": "minecraft:simple_block",
+  "config": {
+    "to_place": {
+      "type": "minecraft:weighted_state_provider",
+      "entries": [
+        {
+          "data": {
+            "Name": "spider_caves:spider_egg",
+            "Properties": {
+              "eggs": "1"
+            }
+          },
+          "weight": 1
+        },
+        {
+          "data": {
+            "Name": "spider_caves:spider_egg",
+            "Properties": {
+              "eggs": "2"
+            }
+          },
+          "weight": 2
+        },
+        {
+          "data": {
+            "Name": "spider_caves:spider_egg",
+            "Properties": {
+              "eggs": "3"
+            }
+          },
+          "weight": 3
+        },
+        {
+          "data": {
+            "Name": "spider_caves:spider_egg",
+            "Properties": {
+              "eggs": "4"
+            }
+          },
+          "weight": 1
+        }
+      ]
+    }
+  }
+}

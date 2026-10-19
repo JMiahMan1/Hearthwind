@@ -396,6 +396,25 @@ subprojects {
 		// Port of MehVahdJukaar's Smarter Farmers (Supplementaries Team License) from its 1.21.1 build.
 		// Server-side farmer AI; Moonlight config/events replaced with cloth-config + a brain mixin.
 	}
+	if (project.name == 'phantom') {
+		// Port of HexagonNico's Phantom Library (Apache-2.0) from its 1.20.4 build.
+		// Library shim for Spider Caves; loader-agnostic registration helpers.
+		dependencies {
+			modCompileClasspath "net.fabricmc.fabric.api:fabric-object-builder-api-v1:24.1.1+6fcd5f039e"
+			modCompileClasspath "net.fabricmc.fabric.api:fabric-particles-v1:5.0.19+d1756aa99e"
+			modCompileClasspath "net.fabricmc.fabric.api:fabric-rendering-v1:25.3.3+515ac5339e"
+			modCompileClasspath "net.fabricmc.fabric.api:fabric-creative-tab-api-v1:5.0.15+6468574f9e"
+		}
+	}
+	if (project.name == 'spider-caves') {
+		// Port of HexagonNico's Spider Caves (CC BY-NC-ND 4.0) from its 1.20.4 build.
+		// Depends on our ported Phantom library; TerraBlender integration pruned.
+		dependencies {
+			implementation files("${rootDir}/phantom/build/libs/phantom-26.2+0.1.0.jar")
+		}
+		tasks.named("compileJava") { dependsOn(":phantom:jar") }
+	}
+
 	if (project.name == 'euphonium') {
 		// Port of Sisby folk's Euphonium (LGPL-3.0-or-later) from its 1.21.1 build.
 		// Client-only ambient soundscape; config via the bundled kaleido library.

@@ -1,0 +1,12 @@
+{
+  "type": "spider_caves:simple_chest",
+  "config": {
+    "chest": {
+      "type": "minecraft:simple_state_provider",
+      "state": {
+        "Name": "spider_caves:web_covered_chest"
+      }
+    },
+    "lootTable": "spider_caves:chests/web_covered_chest"
+  }
+}
