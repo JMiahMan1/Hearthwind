@@ -352,9 +352,9 @@ three are in this list); `shatterbyte-lib` is OctoLib's renamed project.
 > **surveyor, medievalweapons, nameplate, niftycarts, antique-atlas, smitherz,
 > libz, travelerz, another_furniture, treechop, grass-overhaul, particular,
 > immersive-snow, voidz, villager-transportation and villagerfix are now ported
-> and server-verified, and immersive-thunder and tooltipfix are ported and
-> built** (see the updates in the port queue section below): all eighteen are
-> still unshipped - antique-atlas
+> and server-verified, and immersive-thunder, tooltipfix, shut-up-gl-error,
+> loadmyresources and euphonium are ported and built** (see the updates in the
+> port queue section below): all twenty-one are still unshipped - antique-atlas
 > and particular because they are client-only and their client halves (atlas
 > screen/canvas/item-model; particle visuals and config screen) need the client
 > suite, and the rest because their client halves (item definitions, custom
@@ -375,7 +375,12 @@ three are in this list); `shatterbyte-lib` is OctoLib's renamed project.
 > client suite; villagerfix's trade-price mixins are server-side and were
 > exercised over RCON, but its cloth-config screen is client-only;
 > tooltipfix is another client-only mixin the dedicated server never loads, so
-> its tooltip wrapping/flip only shows up in a client run).
+> its tooltip wrapping/flip only shows up in a client run; shut-up-gl-error is
+> the same kind of case - its single client mixin over
+> `InputConstants.isKeyDown` never runs on a dedicated server; loadmyresources
+> only registers its `resources/` pack source and filters the pack list, so it
+> is client-only too; euphonium is a client-only soundscape whose whole
+> registry/tick surface only runs in a client process).
 > **No WIPs remain in this section.**
 
 > **Machine-checked count is 59, not the 66 this table was written against.**
@@ -1724,6 +1729,68 @@ compat level is `JAVA_25`. Runtime evidence: the jar declares
 plus the jar boots to `Done` with zero mixin-apply or parse failures. Its whole
 surface is client-side tooltip layout, so the client suite is the only real
 gate; until then it stays out of `dist/` and `PORTED_MODULES`.
+
+**Update (0.1.58 dev): shut-up-gl-error is ported and built.**
+`custom-mods/shut-up-gl-error` is Jamalam's Shut Up GL Error 1.0.0 (the build
+Aged ships; MIT) - it answers "not pressed" for the two invalid keycodes that
+26.2 otherwise hands to GLFW, which stops the constant GL error spam caused by
+unbound keys. The newer 2.0.0 line was not used: its builds drag in `jamlib`
+(and architectury) as a config/event framework for the same one-line effect,
+and neither ships in our client dist. The 1.0.0 mixin hooked
+`InputUtil.isKeyDown(long, int)`; 26.2 moved the class to
+`com.mojang.blaze3d.platform.InputConstants` and changed the first parameter to
+`Window`, so the mixin is retargeted to
+`isKeyDown(Lcom/mojang/blaze3d/platform/Window;I)Z` and still cancels with
+"false" for keycodes -1 and 0. Runtime evidence: the jar declares
+`environment: client`, so the dedicated server never loads it; the 0.1.57 tree
+plus the jar boots to `Done` with zero mixin-apply or parse failures. Its whole
+surface is client-side input handling, so it stays out of
+`dist/`/`PORTED_MODULES` with the other eighteen until the client suite runs.
+
+**Update (0.1.58 dev): loadmyresources is ported and built.**
+`custom-mods/loadmyresources` is Keksuccino's Load My Resources 1.0.4 from its
+1.20.2 build; it registers every pack dropped into the game directory's
+`resources/` folder as an always-on repository source and hides its synthetic
+pack from the vanilla pack-selection list. The 1.20.2 `Pack.create` builder is
+gone in 26.2: packs are now assembled from a `PackLocationInfo`, a
+`Pack.Metadata` record and a `PackSelectionConfig`, and a repository source
+supplies `openPrimary(PackLocationInfo)` / `openFull(PackLocationInfo,
+Metadata)`. `PathPackResources` takes `(PackLocationInfo, Path)` and
+`MetadataSectionSerializer` became `MetadataSectionType`, so the custom pack
+now returns null metadata and lets the constructor-supplied metadata stand
+(the dummy `pack.mcmeta` is unused). The two old mixins became one:
+`TransferableSelectionList.updateList` now owns the pack list (the
+`PackSelectionScreen.updateList` hook no longer exists), and the hidden entry
+is removed by `getPackId()` instead of reading a private `pack` field through
+an accessor. `net.minecraft.Util`/`ResourceLocationException` no longer exist,
+so the path validator uses `os.name` for its Windows check and identifiers use
+`Identifier.tryBuild`. Runtime evidence: the jar declares `environment: client`,
+so the dedicated server never loads it; the 0.1.57 tree plus the jar boots to
+`Done` with no mixin-apply or parse failures. Its whole surface is client-side,
+so the client suite is the real gate; it stays out of `dist/` and
+`PORTED_MODULES` with the other nineteen.
+
+**Update (0.1.58 dev): euphonium is ported and built.**
+`custom-mods/euphonium` is Sisby folk's Euphonium 1.0.3 from its 1.21.1 build -
+the ambient-sound backfork of Charmonium: biome ambience for fifteen biome
+types plus world ambience (village, snowstorm, cave drone, deepslate, gravel,
+geode, mineshaft, underground water, night plains, high, dry, bleak, alien,
+End), all driven from client tick/entity-load events and a kaleido config with
+biome-ambience and world-ambience sections. It is 47 source files and 102
+`.ogg` assets (44 MB); the config library is the same vendored `kaleido-config-0.3.3+1.3.2.jar` surveyor uses, so
+it is nested under `META-INF/jars` with a `jars` entry rather than relied on
+from another mod's classpath. 26.2 deltas: `Villager` moved to
+`world.entity.npc.villager`; `Level.random` is protected (`getRandom()`);
+`getMinBuildHeight`/`getMaxBuildHeight` are `getMinY()`/`getMaxY() + 1`;
+`getDayTime()` is the WorldClock's `getOverworldClockTime()`; the convention
+biome tags are the v2 `IS_*` names; `ResourceKey.location()` is `identifier()`,
+`Holder.comp_349()` is `value()` and `registryOrThrow` is `lookupOrThrow`. The
+`ClientEntityEvents` load/unload hooks and `ClientTickEvents.END_CLIENT_TICK`
+are unchanged in the 26.2 fabric API. Runtime evidence: the jar declares
+`environment: client`, so the dedicated server never loads it; the 0.1.57 tree
+plus the jar boots to `Done` with zero mixin-apply or parse failures. Its whole
+surface is client-side, so the client suite is the real gate; it stays out of
+`dist/` and `PORTED_MODULES` with the other twenty.
 
 Also worth stating plainly: several queue mods carry compat code for mods this
 pack does not ship (Jade, WTHIT, GeckoLib, Traveler's Titles, RPGDifficulty).
