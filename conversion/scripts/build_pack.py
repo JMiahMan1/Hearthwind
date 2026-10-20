@@ -37,11 +37,17 @@ PORTED_MODULES = (
     "passable-foliage", "profundis", "adventurez", "fleshz",
     "smallships", "inmis", "lootbeams", "backslot", "tlc",
     "fishingreal", "connectiblechains", "lmft",
+    "surveyor", "medievalweapons", "nameplate", "niftycarts", "antique-atlas",
+    "smitherz", "libz", "travelerz", "another_furniture", "treechop",
+    "grass-overhaul", "particular", "immersive-snow", "immersive-thunder",
+    "voidz", "villager-transportation", "villagerfix", "tooltipfix",
+    "shut-up-gl-error", "loadmyresources", "euphonium", "smarter-farmers",
+    "phantom", "spider-caves", "ships",
 )
 
 
 def _plain_jar(j: Path) -> bool:
-    return "sources" not in j.name and "javadoc" not in j.name
+    return "-sources" not in j.name and "javadoc" not in j.name
 
 
 def local_jars(mc: str):

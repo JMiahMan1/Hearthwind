@@ -473,7 +473,8 @@
       "slug": "boids",
       "project_id": "2OckSy74",
       "action": "keep",
-      "reason": "Bird flock engine; ambience"
+      "reason": "Bird flock engine; ambience. Pinned to 26.2 build (26.3 build breaks the 26.2 Mixin plugin API); vendored copy drops the dormant RealFishingMixin (targets removed MobSpawnType signature).",
+      "local_override": "boids-2.0.0+26.2-patched.jar"
     },
     {
       "file": "birdsboids",
@@ -710,7 +711,7 @@
       "slug": "profundis",
       "project_id": "aucz7XCt",
       "action": "keep",
-      "reason": "Shipped: custom-mods/profundis yarn→mojmap port, boot-green 26.2",
+      "reason": "Shipped: custom-mods/profundis yarn\u2192mojmap port, boot-green 26.2",
       "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
     },
     {
