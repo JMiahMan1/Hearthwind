@@ -67,7 +67,7 @@ public abstract class InjectEntity {
    }
 
    @Inject(
-      method = {"onSwimmingStart"},
+      method = {"doWaterSplashEffect"},
       at = {@At("TAIL")}
    )
    private void waterParticles(CallbackInfo ci) {
