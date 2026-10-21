@@ -181,7 +181,7 @@ def custom_module_jars():
         if not (module_dir.name.startswith("hearthwind-") or module_dir.name in PORTED_MODULES):
             continue
         for jar in sorted(libs.glob("*.jar")):
-            if "sources" in jar.name or "javadoc" in jar.name:
+            if "-sources" in jar.name or "javadoc" in jar.name:
                 continue
             jars[jar.name] = module_dir.name
     return jars

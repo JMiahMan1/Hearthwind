@@ -202,7 +202,8 @@
       "project_id": "C37HUu02",
       "action": "keep",
       "reason": "Stuck pre-1.21.2; core moves into aged-primitive weapon tiers later",
-      "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
+      "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity",
+      "realized_by": "medievalweapons"
     },
     {
       "file": "amarite",
@@ -372,7 +373,8 @@
       "project_id": "po8iVUhc",
       "action": "keep",
       "reason": "Nice-to-have; fold upgrade concept into aged-primitive",
-      "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
+      "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity",
+      "realized_by": "smitherz"
     },
     {
       "file": "travelerz",
@@ -380,7 +382,8 @@
       "project_id": "eagoVRnY",
       "action": "keep",
       "reason": "Map pins; vanilla 26.x locator bar covers most",
-      "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
+      "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity",
+      "realized_by": "travelerz"
     },
     {
       "file": "libz",
@@ -388,7 +391,8 @@
       "project_id": "yUBXc3AH",
       "action": "port",
       "reason": "MIT library for the z-series mods. Upstream has no 26.2 build, so the mod itself is a W4 port-queue gap (plan 5.2) and is NOT shipped. What we do ship is the clean-room `TabStrip` reimplementation of LibZ's DrawTabHelper geometry (24x27/25/21 tabs, 25 px pitch) in hearthwind-client, plus the panel chrome measured off the Aged captures: a 200x215 panel with the strip floating on the 21 rows above it (re-measured 0.1.33 - the 200x236 'band' shipped in 0.1.32 was the strip misread).",
-      "note": "Clean-room layout reimplementation shipped in-tree; the mod itself still needs a port"
+      "note": "Clean-room layout reimplementation shipped in-tree; the mod itself still needs a port",
+      "realized_by": "libz"
     },
     {
       "file": "fabric-seasons",
@@ -689,7 +693,8 @@
       "project_id": "dGtrU8l3",
       "action": "keep",
       "reason": "Superseded by adopted undergroundworlds 3.2.1",
-      "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
+      "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity",
+      "realized_by": "spider-caves"
     },
     {
       "file": "tru.e-ending",
@@ -876,7 +881,8 @@
       "project_id": "ulloLmqG",
       "action": "keep",
       "reason": "Decor; stuck 1.21.1",
-      "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
+      "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity",
+      "realized_by": "another_furniture"
     },
     {
       "file": "chipped",
@@ -939,7 +945,8 @@
       "project_id": "vLUPqRLH",
       "action": "keep",
       "reason": "QOL nicety stuck",
-      "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
+      "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity",
+      "realized_by": "villager-transportation"
     },
     {
       "file": "superbsteeds",
@@ -962,7 +969,8 @@
       "project_id": "M185nxi6",
       "action": "rebuild",
       "reason": "Illager ship structures (EMD0123/Ships, Apache-2.0) - a different mod from Small Ships",
-      "note": "Not covered by custom-mods/smallships (that port is Small Ships, project rGWEHQrP). No official 26.2 build; queued for a port."
+      "note": "Not covered by custom-mods/smallships (that port is Small Ships, project rGWEHQrP). No official 26.2 build; queued for a port.",
+      "realized_by": "ships"
     },
     {
       "file": "niftycarts",
@@ -970,7 +978,8 @@
       "project_id": "CXd6g9xp",
       "action": "keep",
       "reason": "Carts niche; config existed but non-core",
-      "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
+      "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity",
+      "realized_by": "niftycarts"
     },
     {
       "file": "immersive_aircraft",
@@ -986,7 +995,8 @@
       "project_id": "K2YWwbQ8",
       "action": "keep",
       "reason": "Unresolved; vanilla trading fine",
-      "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
+      "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity",
+      "realized_by": "villagerfix"
     },
     {
       "file": "smarterfarmers",
@@ -994,7 +1004,8 @@
       "project_id": "Bh6ZOMvp",
       "action": "keep",
       "reason": "Farmer AI nicety; tied to farm&charm ecosystem",
-      "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
+      "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity",
+      "realized_by": "smarter-farmers"
     },
     {
       "file": "exposure",
@@ -1010,7 +1021,8 @@
       "project_id": "Y5Ve4Ui4",
       "action": "keep",
       "cat": "qol",
-      "note": "Exploration identity; verify readiness"
+      "note": "Exploration identity; verify readiness",
+      "realized_by": "antique-atlas"
     },
     {
       "file": "lavender",
@@ -1221,7 +1233,8 @@
       "project_id": "Eeb4VkF6",
       "action": "keep",
       "reason": "Flora ambience stuck 1.21.1",
-      "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity"
+      "note": "Kept from Aged - resolved upstream or staged for porting to ensure 100% feature parity",
+      "realized_by": "grass-overhaul"
     },
     {
       "file": "terralith",
@@ -1544,6 +1557,102 @@
       "action": "rebuild",
       "realized_by": "lmft",
       "reason": "Rebuilt in-tree from upstream 1.21.11 source (CC0-1.0). 26.2 delta: its mixin names lambda$build$6, which does not exist (26.2 has lambda$build$0..3) - the per-tag build body is lambda$build^1 - and displayClientMessage(component, false) became sendSystemMessage. Upstream naming kept at the author's request."
+    },
+    {
+      "file": "surveyor",
+      "slug": "surveyor",
+      "project_id": "4KjqhPc9",
+      "action": "keep",
+      "note": "Ported in-tree 0.1.58 (W4 port queue)",
+      "realized_by": "surveyor"
+    },
+    {
+      "file": "nameplate",
+      "slug": "nameplate",
+      "project_id": "9J82qMn9",
+      "action": "keep",
+      "note": "Ported in-tree 0.1.58 (W4 port queue)",
+      "realized_by": "nameplate"
+    },
+    {
+      "file": "treechop",
+      "slug": "treechop",
+      "project_id": "gHoB7SHO",
+      "action": "keep",
+      "note": "Ported in-tree 0.1.58 (W4 port queue)",
+      "realized_by": "treechop"
+    },
+    {
+      "file": "particular",
+      "slug": "particular",
+      "project_id": "B1CcCd9h",
+      "action": "keep",
+      "note": "Ported in-tree 0.1.58 (W4 port queue)",
+      "realized_by": "particular"
+    },
+    {
+      "file": "immersive-snow",
+      "slug": "immersive-snow",
+      "project_id": "mQdEVqSA",
+      "action": "keep",
+      "note": "Ported in-tree 0.1.58 (W4 port queue)",
+      "realized_by": "immersive-snow"
+    },
+    {
+      "file": "immersive-thunder",
+      "slug": "immersivethunder",
+      "project_id": "uKjKoMsj",
+      "action": "keep",
+      "note": "Ported in-tree 0.1.58 (W4 port queue)",
+      "realized_by": "immersive-thunder"
+    },
+    {
+      "file": "voidz",
+      "slug": "voidz",
+      "project_id": "OMiCHIwt",
+      "action": "keep",
+      "note": "Ported in-tree 0.1.58 (W4 port queue)",
+      "realized_by": "voidz"
+    },
+    {
+      "file": "tooltipfix",
+      "slug": "tooltipfix",
+      "project_id": "2RKFTmiB",
+      "action": "keep",
+      "note": "Ported in-tree 0.1.58 (W4 port queue)",
+      "realized_by": "tooltipfix"
+    },
+    {
+      "file": "shut-up-gl-error",
+      "slug": "shut-up-gl-error",
+      "project_id": "houIxdGF",
+      "action": "keep",
+      "note": "Ported in-tree 0.1.58 (W4 port queue)",
+      "realized_by": "shut-up-gl-error"
+    },
+    {
+      "file": "loadmyresources",
+      "slug": "load-my-resources",
+      "project_id": "TqCKvqjC",
+      "action": "keep",
+      "note": "Ported in-tree 0.1.58 (W4 port queue)",
+      "realized_by": "loadmyresources"
+    },
+    {
+      "file": "euphonium",
+      "slug": "euphonium",
+      "project_id": "XH8cnjHW",
+      "action": "keep",
+      "note": "Ported in-tree 0.1.58 (W4 port queue)",
+      "realized_by": "euphonium"
+    },
+    {
+      "file": "phantom",
+      "slug": "phantom-loader",
+      "project_id": "mWdDy9A0",
+      "action": "keep",
+      "note": "Ported in-tree 0.1.58 (W4 port queue)",
+      "realized_by": "phantom"
     }
   ],
   "client_optional_extra_note": "All 28 client-only visual/perf mods from 3.1.2 (sodium, iris, indium, DistantHorizons, EMF/ETF, firstperson, skinlayers, presence-footsteps, sound-physics, fancymenu stack, etc.) ship as an OPTIONAL companion download, not in the server index.",
