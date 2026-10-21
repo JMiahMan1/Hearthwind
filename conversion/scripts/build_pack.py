@@ -39,7 +39,7 @@ PORTED_MODULES = (
     "fishingreal", "connectiblechains", "lmft",
     "surveyor", "medievalweapons", "nameplate", "niftycarts", "antique-atlas",
     "smitherz", "libz", "travelerz", "another_furniture", "treechop",
-    "grass-overhaul", "particular", "immersive-snow", "immersive-thunder",
+    "grass-overhaul", "immersive-snow", "immersive-thunder",
     "voidz", "villager-transportation", "villagerfix", "tooltipfix",
     "shut-up-gl-error", "loadmyresources", "euphonium", "smarter-farmers",
     "phantom", "spider-caves", "ships",

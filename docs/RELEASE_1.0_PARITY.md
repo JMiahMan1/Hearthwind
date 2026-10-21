@@ -349,17 +349,21 @@ three are in this list); `shatterbyte-lib` is OctoLib's renamed project.
 
 ### 5.2 Needs a port (66 + surveyor WIP)
 
-> **surveyor, medievalweapons, nameplate, niftycarts, antique-atlas, smitherz,
-> libz, travelerz, another_furniture, treechop, grass-overhaul, particular,
-> immersive-snow, voidz, villager-transportation and villagerfix are now ported
-> and server-verified, and immersive-thunder, tooltipfix, shut-up-gl-error,
-> loadmyresources, euphonium, smarterfarmers, phantom, spider-caves and ships
-> are ported and built** (see the updates in the port queue section below): all
-> twenty-five are still unshipped -
-> antique-atlas
-> and particular because they are client-only and their client halves (atlas
-> screen/canvas/item-model; particle visuals and config screen) need the client
-> suite, and the rest because their client halves (item definitions, custom
+> **The W4 port batch is ported** (surveyor, medievalweapons, nameplate,
+> niftycarts, antique-atlas, smitherz, libz, travelerz, another_furniture,
+> treechop, grass-overhaul, immersive-snow, voidz, villager-transportation,
+> villagerfix, immersive-thunder, tooltipfix, shut-up-gl-error,
+> loadmyresources, euphonium, smarterfarmers, phantom, spider-caves and ships;
+> see the updates in the port queue section below). **0.1.58 ships all
+> twenty-four**; `particular` is held out of the release because its Yarn-era
+> mixin selectors (`randomDisplayTick`, `onUse`, `clientTick`,
+> `onScheduledTick`, `postMoveUpdate`, `tickRainSplashing`, `tryEat`) still need
+> the 26.2 migration, so it stays in-tree but unshipped. The per-mod client
+> halves below were exercised to Bootstrap by the client suite; their detailed
+> visuals (atlas
+> screen/canvas/item-model; particle visuals and config screen)
+> remain under the ongoing client-gametest suite, and the rest of the client
+> halves (item definitions, custom
 > offhand model, glint; nameplate text/health-bar rendering; niftycarts
 > screens, cart renderers and textured cart assembly; smitherz screens,
 > smither/grinder tabs and gem tooltips; libz tab rendering; travelerz title

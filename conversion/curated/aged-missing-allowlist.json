@@ -142,6 +142,11 @@
       "project_id": "xp45cyDI",
       "filename": "translucencyfix-2.2.0-fabric-quilt.jar",
       "reason": "W4 port queue (plan 5.2): translucencyfix - not yet ported"
+    },
+    {
+      "project_id": "B1CcCd9h",
+      "filename": "particular-1.1.1.jar",
+      "reason": "W4 port queue (plan 5.2): particular - held out of 0.1.58 (client mixin selectors need a 26.2 migration)"
     }
   ]
 }

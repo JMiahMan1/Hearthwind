@@ -9,7 +9,7 @@ contract of what the pack does. Grown from the Aged fork; server-side only.
 Twenty-five Aged mods that were still missing have been ported to 26.2 and are
 now shipped: surveyor, medieval weapons, nameplate, niftycarts, Antique Atlas,
 SmitherZ (+ LibZ), Traveler's Titles, Another Furniture, TreeChop, Grass
-Overhaul, Particular, Immersive Snow, Immersive Thunder, VoidZ, Villager
+Overhaul, Immersive Snow, Immersive Thunder, VoidZ, Villager
 Transportation, Villager Trade Fix, ToolTip Fix, Shut Up GL Error, Load My
 Resources, Euphonium, Smarter Farmers, Phantom Library, Spider Caves and the
 Ships structure datapack. Drip Sounds and Immersive UI were adopted from their

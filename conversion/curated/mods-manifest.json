@@ -1587,8 +1587,7 @@
       "slug": "particular",
       "project_id": "B1CcCd9h",
       "action": "keep",
-      "note": "Ported in-tree 0.1.58 (W4 port queue)",
-      "realized_by": "particular"
+      "note": "W4 port queue: particular held out of 0.1.58 (26.2 mixin selector migration pending)"
     },
     {
       "file": "immersive-snow",
