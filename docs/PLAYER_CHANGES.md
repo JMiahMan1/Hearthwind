@@ -4,6 +4,18 @@ Player-facing summary of everything Hearthwind changes or adds on top of
 vanilla. **Keep this updated with every gameplay commit** - it is the
 contract of what the pack does. Grown from the Aged fork; server-side only.
 
+## 0.1.58 - the W4 port batch
+
+Twenty-five Aged mods that were still missing have been ported to 26.2 and are
+now shipped: surveyor, medieval weapons, nameplate, niftycarts, Antique Atlas,
+SmitherZ (+ LibZ), Traveler's Titles, Another Furniture, TreeChop, Grass
+Overhaul, Particular, Immersive Snow, Immersive Thunder, VoidZ, Villager
+Transportation, Villager Trade Fix, ToolTip Fix, Shut Up GL Error, Load My
+Resources, Euphonium, Smarter Farmers, Phantom Library, Spider Caves and the
+Ships structure datapack. Drip Sounds and Immersive UI were adopted from their
+official 26.2 builds. Boids is pinned to its 26.2 build (the 26.3 build broke
+the 26.2 Mixin plugin API).
+
 ## Progression & Starting Health (replaces LevelZ Health progression)
 
 - **Starting Health (3 Hearts / 6.0 Max HP)**:
