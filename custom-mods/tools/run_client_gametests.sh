@@ -53,13 +53,28 @@ if [ -z "$CGT_API" ]; then
   exit 1
 fi
 cp "$CGT_API" "$WORK/mods/"
-# Overlay EVERY locally built module (fresh source wins over CLIENT_MODS,
-# which may hold stale dist jars - stale jars once masked real failures).
+# Overlay every locally built module the pack actually ships (fresh source wins
+# over CLIENT_MODS, which may hold stale dist jars - stale jars once masked real
+# failures). A module held out of the release must NOT be overlaid: it is not in
+# the dist and not in PORTED_MODULES, so copying it here would test an unshipped
+# mod (particular was held out of 0.1.58 and kept crashing the CI client run).
+PORTED_MODULES="$(python3 - "$REPO" <<'PY'
+import sys, pathlib
+repo = pathlib.Path(sys.argv[1])
+sys.path.insert(0, str(repo / "conversion" / "scripts"))
+import build_pack
+print(" ".join(build_pack.PORTED_MODULES))
+PY
+)"
 shopt -s nullglob
 for j in "$ROOT"/*/build/libs/*26.2+0.1.0.jar; do
   [ -f "$j" ] || continue
   case "$j" in *sources*) continue ;; esac
   base="$(basename "$j")"; mod="${base%-26.2*}"
+  case "$mod" in
+    hearthwind-*) ;;
+    *) printf '%s\n' $PORTED_MODULES | grep -qx "$mod" || { echo "skip unshipped module jar: $mod"; continue; } ;;
+  esac
   rm -f "$WORK/mods/$mod"-*.jar
   cp "$j" "$WORK/mods/"
 done
