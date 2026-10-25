@@ -15,6 +15,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
 import java.util.Map;
+import net.adventurez.client.IronGolemRenderStateHelper;
 
 @Environment(EnvType.CLIENT)
 @Mixin(IronGolemCrackinessLayer.class)

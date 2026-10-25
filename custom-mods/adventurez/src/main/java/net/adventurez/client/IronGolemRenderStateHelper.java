@@ -1,4 +1,4 @@
-package net.adventurez.mixin.client;
+package net.adventurez.client;
 
 public final class IronGolemRenderStateHelper {
     private static final ThreadLocal<Boolean> BLACKSTONED = new ThreadLocal<>();

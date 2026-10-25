@@ -4,6 +4,10 @@ Player-facing summary of everything Hearthwind changes or adds on top of
 vanilla. **Keep this updated with every gameplay commit** - it is the
 contract of what the pack does. Grown from the Aged fork; server-side only.
 
+## 0.1.59
+
+Fixed a client crash when an AdventureZ blackstone iron golem came into view: a helper class lived inside the mixin package and was loaded directly, which Mixin rejects. The helper now lives in `net.adventurez.client`.
+
 ## 0.1.58 - the W4 port batch
 
 Twenty-five Aged mods that were still missing have been ported to 26.2 and are
